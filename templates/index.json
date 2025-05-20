@@ -33,21 +33,21 @@
         "block_1": {
           "type": "icon_block",
           "settings": {
-            "icon": "shopify://shop_images/Screenshot_2.png",
+            "icon": "",
             "text": "Lifetime Guarantee"
           }
         },
         "block_2": {
           "type": "icon_block",
           "settings": {
-            "icon": "shopify://shop_images/Screenshot_3.png",
+            "icon": "",
             "text": "Free Shipping $250+"
           }
         },
         "block_3": {
           "type": "icon_block",
           "settings": {
-            "icon": "shopify://shop_images/Screenshot_4.png",
+            "icon": "",
             "text": "7,000+ Satisfied Customers"
           }
         }
@@ -192,7 +192,7 @@
         "caption_epYF98"
       ],
       "settings": {
-        "image": "shopify://shop_images/c683db3263f6bf7b4823b02ade2d9697.jpg",
+        "image": "",
         "height": "adapt",
         "desktop_image_width": "medium",
         "layout": "image_first",
@@ -250,7 +250,7 @@
         "hotspot_C"
       ],
       "settings": {
-        "image": "shopify://shop_images/bf5e2b0fa2e08627d8d95ac8b00ec031.jpg",
+        "image": "",
         "container_width": "standard",
         "container_horizontal_alignment": "center",
         "container_vertical_alignment": "center",
@@ -361,7 +361,7 @@
         "block_comp_1": {
           "type": "product_column",
           "settings": {
-            "image": "shopify://shop_images/fbb80e66561a67069d96a5627b817af9.png",
+            "image": "",
             "product_name": "PRO STOCK NECK & WRIST",
             "ideal_for": "Ideal for players who need top-rated neck and wrist protection against skate blade lacerations.",
             "feature_1_label": "Cut Resistant Forearms",
@@ -381,7 +381,7 @@
         "product_column_CFJVwd": {
           "type": "product_column",
           "settings": {
-            "image": "shopify://shop_images/c24980778bf0c3d75a1992b3b5f4ef45.png",
+            "image": "",
             "product_name": "PADLOC NECK & WRIST",
             "ideal_for": "Ideal for players who need top-rated neck and wrist protection against skate blade lacerations.",
             "feature_1_label": "Cut Resistant Forearms",
@@ -414,7 +414,7 @@
         "celeb_1": {
           "type": "celebrity",
           "settings": {
-            "image": "shopify://shop_images/fbb80e66561a67069d96a5627b817af9.png",
+            "image": "",
             "name": "TJ Oshie",
             "title": "Washington Capitals"
           }
@@ -422,7 +422,7 @@
         "celeb_2": {
           "type": "celebrity",
           "settings": {
-            "image": "shopify://shop_images/c24980778bf0c3d75a1992b3b5f4ef45.png",
+            "image": "",
             "name": "Tom Wilson",
             "title": "Washington Capitals"
           }
@@ -430,7 +430,7 @@
         "celeb_3": {
           "type": "celebrity",
           "settings": {
-            "image": "shopify://shop_images/3476b6ef9bf1785c69265c783a09c611.png",
+            "image": "",
             "name": "Brock Nelson",
             "title": "New York Islanders"
           }
@@ -438,7 +438,7 @@
         "celeb_4": {
           "type": "celebrity",
           "settings": {
-            "image": "shopify://shop_images/a3e603e90e40ccf1528c80fe4f0a60a8.png",
+            "image": "",
             "name": "Matthew Knies",
             "title": "Toronto Maple Leafs"
           }
@@ -446,7 +446,7 @@
         "celeb_5": {
           "type": "celebrity",
           "settings": {
-            "image": "shopify://shop_images/squatting-exercise.jpg",
+            "image": "",
             "name": "Josh Morrissey",
             "title": "Winnipeg Jets"
           }
@@ -454,7 +454,7 @@
         "celeb_6": {
           "type": "celebrity",
           "settings": {
-            "image": "shopify://shop_images/da4d55734407ed4fc25a417f3d4a51ee.png",
+            "image": "",
             "name": "Jared Spurgeon",
             "title": "Minnesota Wild"
           }
@@ -462,7 +462,7 @@
         "celebrity_9Baptk": {
           "type": "celebrity",
           "settings": {
-            "image": "shopify://shop_images/2015-07-02_Ashley_33_51032_24034.jpg",
+            "image": "",
             "name": "Bruce Wayne",
             "title": "Bat Man"
           }
@@ -514,7 +514,7 @@
         "button_FER6KN"
       ],
       "settings": {
-        "image": "shopify://shop_images/a35c29244d5539befa47d6401fd1d75f.jpg",
+        "image": "",
         "height": "adapt",
         "desktop_image_width": "medium",
         "layout": "image_first",
