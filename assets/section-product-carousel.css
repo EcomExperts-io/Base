@@ -1,0 +1,16 @@
+.product-carousel-section {
+  position: relative;
+}
+
+.product-carousel-section .swiper {
+  padding-bottom: 2rem;
+}
+
+.product-carousel-section .swiper-button-next,
+.product-carousel-section .swiper-button-prev {
+  color: black;
+}
+
+.product-carousel-section .swiper-pagination-bullet-active {
+  background: black;
+}

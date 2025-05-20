@@ -1,0 +1,63 @@
+{% comment %} /sections/product-carousel.liquid {% endcomment %}
+
+{{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-price.css' | asset_url | stylesheet_tag }}
+{{ 'section-product-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- if section.blocks.size > 0 -%}
+  <product-carousel class="product-carousel-section page-width">
+    <div class="swiper">
+      <div class="swiper-wrapper">
+        {%- for block in section.blocks -%}
+          {%- assign product = block.settings.product -%}
+          <div class="swiper-slide" {{ block.shopify_attributes }}>
+            {% render 'component-product-card',
+              card_product: product,
+              show_vendor: false,
+              enable_swatches: false %}
+          </div>
+        {%- endfor -%}
+      </div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </product-carousel>
+
+  <script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer="defer" id="swiper-script"></script>
+  <script src="{{ 'component-product-carousel.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product Carousel",
+  "tag": "section",
+  "class": "product-carousel",
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Product Card",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Carousel",
+      "blocks": [
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}
