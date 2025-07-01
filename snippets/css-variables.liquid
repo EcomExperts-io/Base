@@ -2,6 +2,24 @@
   assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
   assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
   assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+  
+  assign header_font_bold = settings.type_header_font | font_modify: 'weight', 'bold'
+  assign header_font_italic = settings.type_header_font | font_modify: 'style', 'italic'
+  assign header_font_bold_italic = header_font_bold | font_modify: 'style', 'italic'
+  
+  assign custom_body_font_family = ''
+  if settings.custom_body_font_name != blank
+    assign custom_body_font_family = settings.custom_body_font_name | append: ', sans-serif'
+  else
+    assign custom_body_font_family = settings.type_body_font.family | append: ', ' | append: settings.type_body_font.fallback_families
+  endif
+  
+  assign custom_heading_font_family = ''
+  if settings.custom_heading_font_name != blank
+    assign custom_heading_font_family = settings.custom_heading_font_name | append: ', sans-serif'
+  else
+    assign custom_heading_font_family = settings.type_header_font.family | append: ', ' | append: settings.type_header_font.fallback_families
+  endif
 %}
 
 <style>
@@ -11,11 +29,37 @@
 </style>
 
 {% style %}
-  {{ settings.type_body_font | font_face: font_display: 'swap' }}
-  {{ body_font_bold | font_face: font_display: 'swap' }}
-  {{ body_font_italic | font_face: font_display: 'swap' }}
-  {{ body_font_bold_italic | font_face: font_display: 'swap' }}
-  {{ settings.type_header_font | font_face: font_display: 'swap' }}
+  {% if settings.custom_heading_font_url != blank and settings.custom_heading_font_name != blank %}
+    @font-face {
+      font-family: '{{ settings.custom_heading_font_name }}';
+      src: url('{{ settings.custom_heading_font_url }}') format('woff2'),
+           url('{{ settings.custom_heading_font_url }}') format('woff');
+      font-display: swap;
+    }
+  {% endif %}
+  
+  {% if settings.custom_body_font_url != blank and settings.custom_body_font_name != blank %}
+    @font-face {
+      font-family: '{{ settings.custom_body_font_name }}';
+      src: url('{{ settings.custom_body_font_url }}') format('woff2'),
+           url('{{ settings.custom_body_font_url }}') format('woff');
+      font-display: swap;
+    }
+  {% endif %}
+  
+  {% if settings.custom_heading_font_name == blank %}
+    {{ settings.type_header_font | font_face: font_display: 'swap' }}
+    {{ header_font_bold | font_face: font_display: 'swap' }}
+    {{ header_font_italic | font_face: font_display: 'swap' }}
+    {{ header_font_bold_italic | font_face: font_display: 'swap' }}
+  {% endif %}
+  
+  {% if settings.custom_body_font_name == blank %}
+    {{ settings.type_body_font | font_face: font_display: 'swap' }}
+    {{ body_font_bold | font_face: font_display: 'swap' }}
+    {{ body_font_italic | font_face: font_display: 'swap' }}
+    {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+  {% endif %}
 
   {% for scheme in settings.color_schemes -%}
     {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
@@ -63,12 +107,12 @@
   }
 
   :root {
-    --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+    --font-body-family: {{ custom_body_font_family }};
     --font-body-style: {{ settings.type_body_font.style }};
     --font-body-weight: {{ settings.type_body_font.weight }};
     --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
 
-    --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+    --font-heading-family: {{ custom_heading_font_family }};
     --font-heading-style: {{ settings.type_header_font.style }};
     --font-heading-weight: {{ settings.type_header_font.weight }};
 

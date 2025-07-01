@@ -7,12 +7,16 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "current": {
     "logo_height": 60,
     "type_header_font": "mono",
+    "custom_heading_font_name": "Proxima Nova",
+    "custom_heading_font_url": "https://cdn.shopify.com/s/files/1/0619/1638/1272/files/proximanova_regular.ttf?v=1751399284",
     "heading_scale": 100,
     "type_body_font": "assistant_n4",
+    "custom_body_font_name": "Proxima Nova",
+    "custom_body_font_url": "https://cdn.shopify.com/s/files/1/0619/1638/1272/files/proximanova_regular.ttf?v=1751399284",
     "body_scale": 100,
     "page_width": 1200,
     "spacing_sections": 0,
@@ -197,7 +201,7 @@
         "settings": {
           "background": "#ffffff",
           "background_gradient": "",
-          "text": "#121212",
+          "text": "#000000",
           "button": "#121212",
           "button_label": "#ffffff",
           "secondary_button_label": "#121212",
@@ -241,7 +245,7 @@
         "settings": {
           "background": "#334fb4",
           "background_gradient": "",
-          "text": "#ffffff",
+          "text": "#ed1b1b",
           "button": "#ffffff",
           "button_label": "#334fb4",
           "secondary_button_label": "#ffffff",

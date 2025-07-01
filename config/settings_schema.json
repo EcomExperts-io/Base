@@ -116,6 +116,22 @@
         "info": "t:settings_schema.typography.settings.type_header_font.info"
       },
       {
+        "type": "header",
+        "content": "Custom Heading Font"
+      },
+      {
+        "type": "text",
+        "id": "custom_heading_font_name",
+        "label": "Custom Heading Font Name",
+        "info": "Enter the font family name (e.g., 'Roboto', 'Open Sans')"
+      },
+      {
+        "type": "url",
+        "id": "custom_heading_font_url",
+        "label": "Custom Heading Font URL",
+        "info": "Enter the Google Fonts URL or custom font CSS URL"
+      },
+      {
         "type": "range",
         "id": "heading_scale",
         "min": 100,
@@ -135,6 +151,22 @@
         "default": "assistant_n4",
         "label": "t:settings_schema.typography.settings.type_body_font.label",
         "info": "t:settings_schema.typography.settings.type_body_font.info"
+      },
+      {
+        "type": "header",
+        "content": "Custom Body Font"
+      },
+      {
+        "type": "text",
+        "id": "custom_body_font_name",
+        "label": "Custom Body Font Name",
+        "info": "Enter the font family name (e.g., 'Inter', 'Open Sans')"
+      },
+      {
+        "type": "url",
+        "id": "custom_body_font_url",
+        "label": "Custom Body Font URL",
+        "info": "Enter the Google Fonts URL or custom font CSS URL"
       },
       {
         "type": "range",

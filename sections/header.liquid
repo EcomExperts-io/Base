@@ -61,10 +61,16 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    {% if section.settings.logo_position == 'top-center' %}
-      justify-content: center;
-    {% endif %}
     gap: 1rem;
+  }
+  .header-menu-position-left ul {
+    justify-content: flex-start;
+  }
+  .header-menu-position-center ul {
+    justify-content: center;
+  }
+  .header-menu-position-right ul {
+    justify-content: flex-end;
   }
   #main-header .header-drawer_icons,
   #main-header .menu-toggle {
@@ -149,6 +155,7 @@
     align-items: center;
     gap: 1rem;
   }
+
   #header-search.active {
     display: flex;
   }
@@ -271,6 +278,26 @@
         border-top: 1px solid rgba(var(--color-foreground),var(--popup-border-opacity));
     }
   }
+  @media (min-width: 769px) {
+    .header-menu-position-center {
+      display: grid;
+    }
+    .header-menu-position-center .header-logo-container,
+    .header-menu-position-center .header-actions
+    {
+      min-width: 160px;
+    }
+  }
+
+  #main-header nav ul,
+  #main-header nav ul li,
+  #main-header nav ul li a {
+    color: {{ section.settings.menu_text_color }};
+  }
+  [data-cart-count] {
+    background: {{ section.settings.cart_count_color }};
+    color: #fff;
+  }
 </style>
 
 {% capture header_search %}
@@ -286,7 +313,7 @@
   {% endif %}
 >
   <header
-    class="page-width"
+    class="page-width{% if section.settings.menu_position == 'center' %} header-menu-position-center{% endif %}"
     id="main-header"
     x-data="{ searchOpen: false, searchTerm: '' }"
     @click.outside="searchOpen = false"
@@ -298,7 +325,7 @@
       {{ header_search }}
     {% endif %}
 
-    {% if request.page_type == 'index' %}<h1 style="margin: 0">{% endif %}
+    {% if request.page_type == 'index' %}<h1 class="header-logo-container" style="margin: 0">{% endif %}
     <a href="{{ routes.root_url }}" class="header-shop_link" style="display: flex">
       {% if settings.logo != blank %}
         {{ settings.logo | image_url: width: 900 | image_tag: class: 'header-logo' }}
@@ -309,7 +336,7 @@
     {% if request.page_type == 'index' %}</h1>{% endif %}
 
     {% if section.settings.menu != blank and section.settings.menu_type_desktop != 'drawer' %}
-      <nav>
+      <nav class="header-menu-position-{{ section.settings.menu_position }}">
         {% if section.settings.menu_type_desktop == 'dropdown' %}
           {% render 'component-nav-dropdown', nav_style: 'dropdown' %}
         {% elsif section.settings.menu_type_desktop != 'drawer' %}
@@ -479,6 +506,17 @@
       "info": "t:sections.header.settings.logo_help.content"
     },
     {
+      "type": "select",
+      "id": "menu_position",
+      "label": "Menu position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
       "type": "link_list",
       "id": "menu",
       "default": "main-menu",
@@ -642,6 +680,18 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 20
+    },
+    {
+      "type": "color",
+      "id": "menu_text_color",
+      "label": "Menu text color",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "cart_count_color",
+      "label": "Cart count color",
+      "default": "#2E2E2E"
     }
   ],
   "blocks": [

@@ -19,6 +19,9 @@
   assign show_endorsement = section.settings.show_endorsement
   assign endorsement_name = section.settings.endorsement_name
   assign endorsement_signature_image = section.settings.endorsement_signature_image
+
+  assign content_alignment = section.settings.content_alignment
+  assign vertical_alignment = section.settings.vertical_alignment
 -%}
 
 {{ 'section-hero-banner.css' | asset_url | stylesheet_tag }}
@@ -28,6 +31,8 @@
     --hero-text-color: {{ section.settings.text_color }};
     --hero-overlay-color: {{ section.settings.overlay_color }};
     --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --hero-content-alignment: {{ content_alignment }};
+    --hero-vertical-alignment: {{ vertical_alignment }};
     /* Add more variables here if needed for other settings */
   }
 </style>
@@ -75,7 +80,7 @@
     <div class="hero-banner__background-overlay"></div>
   </div>
 
-  <div class="hero-banner__content">
+  <div class="hero-banner__content hero-banner__content--h-{{ content_alignment }} hero-banner__content--v-{{ vertical_alignment }}">
     {% if stars_text != blank %}
       <div class="hero-banner__stars"><span class="stars">★★★★★</span> {{ stars_text }}</div>
     {% endif %}
@@ -164,6 +169,28 @@
     {
       "type": "header",
       "content": "Content Settings"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "bottom"
     },
     {
       "type": "color",

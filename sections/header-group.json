@@ -7,20 +7,41 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "name": "Header group",
   "type": "header",
   "sections": {
     "announcement_bar": {
       "type": "announcement-bar",
+      "blocks": {
+        "announcement_DVFxDX": {
+          "type": "announcement",
+          "settings": {
+            "text": "Text Here",
+            "link_text": "",
+            "link_url": "",
+            "emoji": "🚨"
+          }
+        },
+        "announcement_3wP6h3": {
+          "type": "announcement",
+          "settings": {
+            "text": "Text Here 2",
+            "link_text": "",
+            "link_url": "",
+            "emoji": "🚨"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_DVFxDX",
+        "announcement_3wP6h3"
+      ],
       "settings": {
         "show_announcement": true,
-        "text": "PROTECT HOCKEY'S FUTURE",
-        "link_text": "SAVE ON TILÖ TODAY",
-        "link_url": "shopify://blogs/news",
-        "emoji": "🚨",
         "background_color": "#000000",
-        "text_color": "#ffffff"
+        "text_color": "#ffffff",
+        "auto_rotate_interval": 2
       }
     },
     "header": {

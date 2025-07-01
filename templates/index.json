@@ -7,24 +7,23 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "sections": {
     "hero_banner_1": {
       "type": "hero-banner",
       "settings": {
         "background_type": "video",
-        "video_background_hosted": "shopify://files/videos/59bb8acc9ea57f4877482611729dfd7572f06907.mov",
         "video_background_url": "",
         "overlay_color": "#000000",
         "overlay_opacity": 30,
         "text_color": "#ffffff",
-        "stars_text": "Trusted By 30,539+ Players",
-        "heading": "END OF SEASON SALE",
-        "subheading": "Pro level protection for every level",
-        "button_text": "SAVE OVER 30%",
+        "stars_text": "",
+        "heading": "",
+        "subheading": "",
+        "button_text": "",
         "button_link": "shopify://collections/cam-plans",
         "show_endorsement": false,
-        "endorsement_name": "TJ Oshie"
+        "endorsement_name": ""
       }
     },
     "icon_bar_1": {
@@ -33,22 +32,19 @@
         "block_1": {
           "type": "icon_block",
           "settings": {
-            "icon": "shopify://shop_images/Screenshot_2.png",
-            "text": "Lifetime Guarantee"
+            "text": ""
           }
         },
         "block_2": {
           "type": "icon_block",
           "settings": {
-            "icon": "shopify://shop_images/Screenshot_3.png",
-            "text": "Free Shipping $250+"
+            "text": ""
           }
         },
         "block_3": {
           "type": "icon_block",
           "settings": {
-            "icon": "shopify://shop_images/Screenshot_4.png",
-            "text": "7,000+ Satisfied Customers"
+            "text": ""
           }
         }
       },
@@ -68,25 +64,26 @@
         "block_1": {
           "type": "product_card",
           "settings": {
-            "product": "alex-twill-pant-navy"
+            "product": ""
           }
         },
         "block_2": {
           "type": "product_card",
           "settings": {
-            "product": "alia-knit-trouser-1"
+            "product": ""
           }
         },
         "block_3": {
           "type": "product_card",
           "settings": {
-            "product": "alverstone-jacket-midnight"
+            "product": ""
           }
         },
         "block_4": {
           "type": "product_card",
+          "disabled": true,
           "settings": {
-            "product": "3-4-sleeve-kimono-dress-coral"
+            "product": ""
           }
         }
       },
@@ -109,31 +106,32 @@
         "block_1": {
           "type": "collection_card",
           "settings": {
-            "collection": "spring"
+            "collection": ""
           }
         },
         "block_2": {
           "type": "collection_card",
           "settings": {
-            "collection": "summer"
+            "collection": ""
           }
         },
         "block_3": {
           "type": "collection_card",
           "settings": {
-            "collection": "winter"
+            "collection": ""
           }
         },
         "block_4": {
           "type": "collection_card",
           "settings": {
-            "collection": "spring"
+            "collection": ""
           }
         },
         "block_5": {
           "type": "collection_card",
+          "disabled": true,
           "settings": {
-            "collection": "summer"
+            "collection": ""
           }
         }
       },
@@ -145,8 +143,8 @@
         "block_5"
       ],
       "settings": {
-        "heading": "Find the perfect fit for your game",
-        "subheading": "Browse through our collections"
+        "heading": "BEST SELLER",
+        "subheading": ""
       }
     },
     "fist-of-collections": {
@@ -159,375 +157,6 @@
         "columns_desktop": 3,
         "columns_mobile": "2"
       }
-    },
-    "image_with_text_UnGP37": {
-      "type": "image-with-text",
-      "blocks": {
-        "heading_M7BE4Y": {
-          "type": "heading",
-          "settings": {
-            "heading": "Designed & tested by the best players in the world",
-            "heading_size": "h1"
-          }
-        },
-        "text_WRhMqM": {
-          "type": "text",
-          "settings": {
-            "text": "<p>\"We worked with textile scientists for over two years to perfect TILO, and we finally got it just right.</p><p>Playing in the NHL for 16 seasons, I have seen far too many players suffer injuries due to severe cuts that could have been avoided.</p><p>TILO is what I wear every game. I won't take the ice without it. And as a parent… I make sure my kids wear TILO every time they play too.\"<br/><br/></p>",
-            "text_style": "body"
-          }
-        },
-        "caption_epYF98": {
-          "type": "caption",
-          "settings": {
-            "caption": "",
-            "text_style": "subtitle",
-            "text_size": "large"
-          }
-        }
-      },
-      "block_order": [
-        "heading_M7BE4Y",
-        "text_WRhMqM",
-        "caption_epYF98"
-      ],
-      "settings": {
-        "image": "shopify://shop_images/c683db3263f6bf7b4823b02ade2d9697.jpg",
-        "height": "adapt",
-        "desktop_image_width": "medium",
-        "layout": "image_first",
-        "desktop_content_position": "top",
-        "desktop_content_alignment": "left",
-        "content_layout": "no-overlap",
-        "section_color_scheme": "",
-        "color_scheme": "",
-        "image_behavior": "none",
-        "mobile_content_alignment": "left",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "image_hotspots_1": {
-      "type": "image-hotspots",
-      "blocks": {
-        "hotspot_CzVt6Q": {
-          "type": "hotspot",
-          "settings": {
-            "product": "alex-twill-pant-navy",
-            "position_x": 3,
-            "position_y": 7
-          }
-        },
-        "hotspot_A": {
-          "type": "hotspot",
-          "settings": {
-            "product": "3-4-sleeve-kimono-dress-coral",
-            "position_x": 21,
-            "position_y": 25
-          }
-        },
-        "hotspot_B": {
-          "type": "hotspot",
-          "settings": {
-            "product": "5-pocket-jean",
-            "position_x": 50,
-            "position_y": 50
-          }
-        },
-        "hotspot_C": {
-          "type": "hotspot",
-          "settings": {
-            "product": "a-line-jacket-in-black",
-            "position_x": 75,
-            "position_y": 75
-          }
-        }
-      },
-      "block_order": [
-        "hotspot_CzVt6Q",
-        "hotspot_A",
-        "hotspot_B",
-        "hotspot_C"
-      ],
-      "settings": {
-        "image": "shopify://shop_images/bf5e2b0fa2e08627d8d95ac8b00ec031.jpg",
-        "container_width": "standard",
-        "container_horizontal_alignment": "center",
-        "container_vertical_alignment": "center",
-        "color_scheme": "scheme-1",
-        "popup_corner_radius": 4,
-        "popup_shadow_horizontal_offset": 0,
-        "popup_shadow_vertical_offset": 4,
-        "popup_shadow_blur_radius": 10,
-        "popup_shadow_opacity": 10,
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "testimonials_1": {
-      "type": "testimonials",
-      "blocks": {
-        "testimonial_1": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "GREAT QUALITY & FIT",
-            "text": "<p>I purchased the Tilo cut-resistant gear for my son, and it fits perfectly while providing top-notch protection. Excellent quality, he loves wearing it!</p>",
-            "author": "Mark T."
-          }
-        },
-        "testimonial_2": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "VERSATILE TECH SPORTSWEAR",
-            "text": "<p>I love the tech sportswear collection from Warroad. It's functional for training, and the material is breathable, making it perfect for intense workouts.</p>",
-            "author": "David"
-          }
-        },
-        "testimonial_3": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "IMPRESSIVE CUSTOMER SERVICE",
-            "text": "<p>Had a great experience with Warroad's customer service. They answered all my questions about sizing and shipping quickly and were very helpful throughout the process.</p>",
-            "author": "Honey"
-          }
-        },
-        "testimonial_4": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "EXCELLENT PROTECTION",
-            "text": "<p>I purchased this for my daughter. Excellent quality and protection!</p>",
-            "author": "Sarah P."
-          }
-        },
-        "testimonial_5": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "EXCELLENT PROTECTION",
-            "text": "<p>I purchased this for my daughter. Excellent quality and protection!</p>",
-            "author": "Sarah P."
-          }
-        },
-        "testimonial_6": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "EXCELLENT PROTECTION",
-            "text": "<p>I purchased this for my daughter. Excellent quality and protection!</p>",
-            "author": "Sarah P."
-          }
-        },
-        "testimonial_7": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "EXCELLENT PROTECTION",
-            "text": "<p>I purchased this for my daughter. Excellent quality and protection!</p>",
-            "author": "Sarah P."
-          }
-        },
-        "testimonial_8": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "title": "EXCELLENT PROTECTION",
-            "text": "<p>I purchased this for my daughter. Excellent quality and protection!</p>",
-            "author": "Sarah P."
-          }
-        }
-      },
-      "block_order": [
-        "testimonial_1",
-        "testimonial_2",
-        "testimonial_3",
-        "testimonial_4",
-        "testimonial_5",
-        "testimonial_6",
-        "testimonial_7",
-        "testimonial_8"
-      ],
-      "settings": {
-        "heading": "HEAR WHAT PLAYERS & PARENTS HAVE TO SAY",
-        "subheading": "Warroad Testimonials"
-      }
-    },
-    "product_comparison_1": {
-      "type": "product-comparison",
-      "blocks": {
-        "block_comp_1": {
-          "type": "product_column",
-          "settings": {
-            "image": "shopify://shop_images/fbb80e66561a67069d96a5627b817af9.png",
-            "product_name": "PRO STOCK NECK & WRIST",
-            "ideal_for": "Ideal for players who need top-rated neck and wrist protection against skate blade lacerations.",
-            "feature_1_label": "Cut Resistant Forearms",
-            "feature_1": true,
-            "feature_2_label": "Cut Resistant Neck Guard",
-            "feature_2": true,
-            "feature_3_label": "Padloc Elbow Pad Securing System",
-            "feature_3": false,
-            "feature_4_label": "Additional Feature 1",
-            "feature_4": true,
-            "feature_5_label": "Additional Feature 2",
-            "feature_5": true,
-            "feature_6_label": "Additional Feature 3",
-            "feature_6": false
-          }
-        },
-        "product_column_CFJVwd": {
-          "type": "product_column",
-          "settings": {
-            "image": "shopify://shop_images/c24980778bf0c3d75a1992b3b5f4ef45.png",
-            "product_name": "PADLOC NECK & WRIST",
-            "ideal_for": "Ideal for players who need top-rated neck and wrist protection against skate blade lacerations.",
-            "feature_1_label": "Cut Resistant Forearms",
-            "feature_1": true,
-            "feature_2_label": "Cut Resistant Neck Guard",
-            "feature_2": true,
-            "feature_3_label": "Padloc Elbow Pad Securing System",
-            "feature_3": false,
-            "feature_4_label": "Additional Feature 1",
-            "feature_4": true,
-            "feature_5_label": "Additional Feature 2",
-            "feature_5": true,
-            "feature_6_label": "Additional Feature 3",
-            "feature_6": false
-          }
-        }
-      },
-      "block_order": [
-        "block_comp_1",
-        "product_column_CFJVwd"
-      ],
-      "settings": {
-        "title": "WHICH VERSION OF TILO IS RIGHT FOR YOUR GAME?",
-        "subtitle": "The Difference"
-      }
-    },
-    "celebrities_endorsement_1": {
-      "type": "celebrities-endorsement",
-      "blocks": {
-        "celeb_1": {
-          "type": "celebrity",
-          "settings": {
-            "image": "shopify://shop_images/fbb80e66561a67069d96a5627b817af9.png",
-            "name": "TJ Oshie",
-            "title": "Washington Capitals"
-          }
-        },
-        "celeb_2": {
-          "type": "celebrity",
-          "settings": {
-            "image": "shopify://shop_images/c24980778bf0c3d75a1992b3b5f4ef45.png",
-            "name": "Tom Wilson",
-            "title": "Washington Capitals"
-          }
-        },
-        "celeb_3": {
-          "type": "celebrity",
-          "settings": {
-            "image": "shopify://shop_images/3476b6ef9bf1785c69265c783a09c611.png",
-            "name": "Brock Nelson",
-            "title": "New York Islanders"
-          }
-        },
-        "celeb_4": {
-          "type": "celebrity",
-          "settings": {
-            "image": "shopify://shop_images/a3e603e90e40ccf1528c80fe4f0a60a8.png",
-            "name": "Matthew Knies",
-            "title": "Toronto Maple Leafs"
-          }
-        },
-        "celeb_5": {
-          "type": "celebrity",
-          "settings": {
-            "image": "shopify://shop_images/squatting-exercise.jpg",
-            "name": "Josh Morrissey",
-            "title": "Winnipeg Jets"
-          }
-        },
-        "celeb_6": {
-          "type": "celebrity",
-          "settings": {
-            "image": "shopify://shop_images/da4d55734407ed4fc25a417f3d4a51ee.png",
-            "name": "Jared Spurgeon",
-            "title": "Minnesota Wild"
-          }
-        },
-        "celebrity_9Baptk": {
-          "type": "celebrity",
-          "settings": {
-            "image": "shopify://shop_images/2015-07-02_Ashley_33_51032_24034.jpg",
-            "name": "Bruce Wayne",
-            "title": "Bat Man"
-          }
-        }
-      },
-      "block_order": [
-        "celeb_1",
-        "celeb_2",
-        "celeb_3",
-        "celeb_4",
-        "celeb_5",
-        "celeb_6",
-        "celebrity_9Baptk"
-      ],
-      "settings": {
-        "title": "TRUSTED BY PROS IN EVERY MATCH POSSIBLE",
-        "subtitle": "Celebrities Endorsement"
-      }
-    },
-    "image_with_text_kj8i3w": {
-      "type": "image-with-text",
-      "blocks": {
-        "heading_9r7TNY": {
-          "type": "heading",
-          "settings": {
-            "heading": "WARROAD, MN HOCKEYTOWN USA",
-            "heading_size": "h2"
-          }
-        },
-        "text_9cri4T": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Warroad is a hockey company dedicated to player performance, safety, and recovery.<br/><br/>Our Roots: Warroad, MN is referred to as \"Hockeytown USA\" for good reason. Despite a population of less than 2000, Warroad has produced 7 Olympians, 5 NHLers, and over 80 Division I college hockey players. In fact, the U.S. Men's Hockey Team has never won Olympic gold without a player from Warroad on the roster.<br/><br/></p>",
-            "text_style": "body"
-          }
-        },
-        "button_FER6KN": {
-          "type": "button",
-          "settings": {
-            "button_label": "Learn More",
-            "button_link": "shopify://pages/contact",
-            "button_style_secondary": false
-          }
-        }
-      },
-      "block_order": [
-        "heading_9r7TNY",
-        "text_9cri4T",
-        "button_FER6KN"
-      ],
-      "settings": {
-        "image": "shopify://shop_images/a35c29244d5539befa47d6401fd1d75f.jpg",
-        "height": "adapt",
-        "desktop_image_width": "medium",
-        "layout": "image_first",
-        "desktop_content_position": "top",
-        "desktop_content_alignment": "left",
-        "content_layout": "no-overlap",
-        "section_color_scheme": "",
-        "color_scheme": "",
-        "image_behavior": "none",
-        "mobile_content_alignment": "left",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
     }
   },
   "order": [
@@ -535,12 +164,6 @@
     "icon_bar_1",
     "featured_products_example",
     "featured_collections_example",
-    "fist-of-collections",
-    "image_with_text_UnGP37",
-    "image_hotspots_1",
-    "testimonials_1",
-    "product_comparison_1",
-    "celebrities_endorsement_1",
-    "image_with_text_kj8i3w"
+    "fist-of-collections"
   ]
 }

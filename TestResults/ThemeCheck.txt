@@ -1,0 +1,8 @@
+╭─ error ──────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│  ENOENT: no such file or directory, open 'C:\Users\Hadi\Documents\EcomExper  │
+│  ts\LintingRules\pipeline-rules\.theme-check.yml'                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Theme Check checked All files. Check TestResults/ThemeCheck.txt for details.

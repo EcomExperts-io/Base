@@ -8,18 +8,67 @@
   assign text_color = section.settings.text_color
 -%}
 
-{% if section.settings.show_announcement %}
-  <div class="announcement-bar" style="background-color: {{ bg_color }}; color: {{ text_color }};">
+{% if section.settings.show_announcement and section.blocks.size > 0 %}
+  <div 
+    class="announcement-bar"
+    style="background-color: {{ bg_color }}; color: {{ text_color }};"
+    x-data="{
+      idx: 0,
+      total: {{ section.blocks.size }},
+      interval: null,
+      startAutoScroll() {
+        if (this.total > 1) {
+          this.interval = setInterval(() => {
+            this.idx = (this.idx + 1) % this.total;
+          }, ({{ section.settings.auto_rotate_interval | default: 4 }} * 1000));
+        }
+      },
+      stopAutoScroll() {
+        if (this.interval) clearInterval(this.interval);
+        this.interval = null;
+      }
+    }"
+    x-init="startAutoScroll()"
+    @mouseenter="stopAutoScroll()"
+    @mouseleave="startAutoScroll()"
+    @focusin="stopAutoScroll()"
+    @focusout="startAutoScroll()"
+  >
     <div class="page-width announcement-bar__content">
+      {% if section.blocks.size > 1 %}
+        <button 
+          @click="idx = idx === 0 ? total - 1 : idx - 1" 
+          aria-label="Previous" 
+          class="announcement-bar__arrow announcement-bar__arrow--prev"
+          x-show="total > 1"
+        >&larr;</button>
+      {% endif %}
       <div class="announcement-bar__message">
-        {{ section.settings.text }}
-        {%- if section.settings.link_text != blank and section.settings.link_url != blank -%}
-          <a href="{{ section.settings.link_url }}" class="announcement-bar__link" style="color: {{ text_color }};">
-            {{ section.settings.link_text }}
-          </a>
-        {%- endif -%}
-        {{ section.settings.emoji }}
+        {% for block in section.blocks %}
+          <div 
+            x-show="idx === {{ forloop.index0 }}" 
+            x-transition:fade.300ms
+            {% unless forloop.first %}style="display:none"{% endunless %}
+            :class="idx === {{ forloop.index0 }} ? 'fade-in' : ''"
+          >
+            {{ block.settings.text }}
+            {% if block.settings.link_text and block.settings.link_url %}
+              <a href="{{ block.settings.link_url }}" class="announcement-bar__link" style="color: {{ text_color }};">
+                {{ block.settings.link_text }}
+              </a>
+            {% endif %}
+            {{ block.settings.emoji }}
+          </div>
+        {% endfor %}
       </div>
+      {% if section.blocks.size > 1 %}
+        <button 
+          @click="idx = idx === total - 1 ? 0 : idx + 1" 
+          aria-label="Next" 
+          class="announcement-bar__arrow announcement-bar__arrow--next"
+          x-show="total > 1"
+        >&rarr;</button>
+      {% endif %}
     </div>
   </div>
 {% endif %}
@@ -34,36 +83,58 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 1em;
   }
-
+  .announcement-bar__arrow {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0 0.5em;
+  }
+  .announcement-bar__arrow {
+    display: inline-block;
+  }
+  @media (max-width: 767px) {
+    .announcement-bar__arrow {
+      display: none !important;
+    }
+  }
+  .announcement-bar__message > div {
+    min-width: 200px;
+  }
   .announcement-bar__message {
     margin: 0;
-    font-size: 14px; /* Adjust as needed */
-    font-weight: 500; /* Adjust as needed */
+    font-size: 14px;
+    font-weight: 500;
     line-height: 1.2;
-    white-space: nowrap;
+    white-space: normal;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5em;
   }
-
   .announcement-bar__link {
     text-decoration: underline;
-    text-underline-offset: 0.2em; /* Adjust underline position */
+    text-underline-offset: 0.2em;
   }
-
   .announcement-bar__link:hover {
-    text-decoration-thickness: 2px; /* Optional: thicker underline on hover */
+    text-decoration-thickness: 2px;
   }
-
-  /* Ensure page-width is defined or adjust selector accordingly */
   .page-width {
-    max-width: 1200px; /* Example max-width, adjust to your theme's standard */
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 15px; /* Example padding, adjust to your theme's standard */
+    padding: 0 15px;
   }
 
+  .fade-in {
+    animation: fadeInAnim 0.4s;
+  }
+  @keyframes fadeInAnim {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 </style>
 
 {% schema %}
@@ -80,29 +151,6 @@
       "default": true
     },
     {
-      "type": "text",
-      "id": "text",
-      "label": "Text",
-      "default": "PROTECT HOCKEY'S FUTURE"
-    },
-    {
-      "type": "text",
-      "id": "link_text",
-      "label": "Link text",
-      "default": "SAVE ON TILÖ TODAY"
-    },
-    {
-      "type": "url",
-      "id": "link_url",
-      "label": "Link URL"
-    },
-    {
-        "type": "text",
-        "id": "emoji",
-        "label": "Emoji",
-        "default": "🚨"
-    },
-    {
       "type": "color",
       "id": "background_color",
       "label": "Background color",
@@ -113,11 +161,53 @@
       "id": "text_color",
       "label": "Text color",
       "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "auto_rotate_interval",
+      "label": "Auto-rotate interval (seconds)",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "PROTECT HOCKEY'S FUTURE"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        },
+        {
+          "type": "text",
+          "id": "emoji",
+          "label": "Emoji",
+          "default": "🚨"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Announcement Bar"
+      "name": "Announcement Bar",
+      "blocks": [
+        { "type": "announcement" }
+      ]
     }
   ]
 }
