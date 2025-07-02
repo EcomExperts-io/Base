@@ -1,4 +1,1 @@
-[[31merror[39m] Invalid configuration for file "C:\Users\Hadi\Documents\EcomExperts\Clients\Base\sections\hero-banner.liquid":
-[[31merror[39m] JSON Error in C:\Users\Hadi\Documents\EcomExperts\LintingRules\pipeline-rules\.prettierrc.json:
-[[31merror[39m] "undefined" is not valid JSON
-Prettier checked 1 files. Check TestResults/Prettier.txt for details.
+Prettier checked 0 files. Check TestResults/Prettier.txt for details.

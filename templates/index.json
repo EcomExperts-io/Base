@@ -30,38 +30,6 @@
         "endorsement_name": ""
       }
     },
-    "icon_bar_1": {
-      "type": "icon-bar",
-      "blocks": {
-        "block_1": {
-          "type": "icon_block",
-          "settings": {
-            "text": ""
-          }
-        },
-        "block_2": {
-          "type": "icon_block",
-          "settings": {
-            "text": ""
-          }
-        },
-        "block_3": {
-          "type": "icon_block",
-          "settings": {
-            "text": ""
-          }
-        }
-      },
-      "block_order": [
-        "block_1",
-        "block_2",
-        "block_3"
-      ],
-      "settings": {
-        "background_color": "#000000",
-        "text_color": "#ffffff"
-      }
-    },
     "featured_products_example": {
       "type": "featured-products",
       "blocks": {
@@ -165,7 +133,6 @@
   },
   "order": [
     "hero_banner_1",
-    "icon_bar_1",
     "featured_products_example",
     "featured_collections_example",
     "fist-of-collections"
