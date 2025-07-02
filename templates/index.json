@@ -19,7 +19,7 @@
         "overlay_opacity": 30,
         "content_alignment": "center",
         "vertical_alignment": "center",
-        "text_color": "#ffffff",
+        "text_color": "#000000",
         "stars_text": "",
         "heading": "Main Banner Title Here",
         "subheading": "SubHeader Here",
@@ -30,80 +30,44 @@
         "endorsement_name": ""
       }
     },
-    "featured_products_example": {
-      "type": "featured-products",
-      "blocks": {
-        "block_1": {
-          "type": "product_card",
-          "settings": {
-            "product": ""
-          }
-        },
-        "block_2": {
-          "type": "product_card",
-          "settings": {
-            "product": ""
-          }
-        },
-        "block_3": {
-          "type": "product_card",
-          "settings": {
-            "product": ""
-          }
-        },
-        "block_4": {
-          "type": "product_card",
-          "disabled": true,
-          "settings": {
-            "product": ""
-          }
-        }
-      },
-      "block_order": [
-        "block_1",
-        "block_2",
-        "block_3",
-        "block_4"
-      ],
-      "settings": {
-        "heading": "Shop the Pro Selection",
-        "subheading": "Skate like the pros",
-        "view_all_text": "View All",
-        "view_all_url": "shopify://collections/spring"
-      }
-    },
     "featured_collections_example": {
       "type": "featured-collections",
       "blocks": {
         "block_1": {
           "type": "collection_card",
           "settings": {
-            "collection": ""
+            "collection": "",
+            "custom_title": ""
           }
         },
         "block_2": {
           "type": "collection_card",
           "settings": {
-            "collection": ""
+            "collection": "",
+            "custom_title": ""
           }
         },
         "block_3": {
           "type": "collection_card",
           "settings": {
-            "collection": ""
+            "collection": "",
+            "custom_title": ""
           }
         },
         "block_4": {
           "type": "collection_card",
+          "disabled": true,
           "settings": {
-            "collection": ""
+            "collection": "",
+            "custom_title": ""
           }
         },
         "block_5": {
           "type": "collection_card",
           "disabled": true,
           "settings": {
-            "collection": ""
+            "collection": "",
+            "custom_title": ""
           }
         }
       },
@@ -115,8 +79,74 @@
         "block_5"
       ],
       "settings": {
-        "heading": "BEST SELLER",
-        "subheading": ""
+        "heading": "EXPLORE OUR CATEGORIES",
+        "subheading": "",
+        "heading_alignment": "center",
+        "style": "style2",
+        "text_color": "#000000",
+        "hide_shop_now": true
+      }
+    },
+    "featured_products_example": {
+      "type": "featured-products",
+      "blocks": {
+        "block_1": {
+          "type": "product_card",
+          "settings": {
+            "product": "3-4-sleeve-kimono-dress-coral"
+          }
+        },
+        "block_2": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_bpd4Xd": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_tP6QmJ": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_RUFfmj": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_QizrFh": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "product_card_bpd4Xd",
+        "product_card_tP6QmJ",
+        "product_card_RUFfmj",
+        "product_card_QizrFh"
+      ],
+      "settings": {
+        "heading": "Best Sellers",
+        "subheading": "",
+        "view_all_text": "View All",
+        "view_all_url": "shopify://products/acb-top-in-chipped-brick",
+        "heading_alignment": "center",
+        "show_view_all_as_button": true,
+        "button_background_color": "#2e2e2e",
+        "button_text_color": "#ffffff",
+        "product_content_alignment": "center",
+        "review_content_alignment": "center",
+        "product_info_text_color": "#111111"
       }
     },
     "fist-of-collections": {
@@ -129,12 +159,131 @@
         "columns_desktop": 3,
         "columns_mobile": "2"
       }
+    },
+    "exclusive_section_NfqBik": {
+      "type": "exclusive-section",
+      "name": "Exclusive Section",
+      "settings": {
+        "background_image": "shopify://shop_images/Image_of_Glutathione_Plus_Lozenge_1.png",
+        "background_image_mobile": "shopify://shop_images/Frame_1261153144.png",
+        "title": "This store is exclusive to Carvana<br> employees &amp; select customers",
+        "subtitle": "Please log in to access your account.",
+        "button_text": "Login to your account",
+        "title_mobile": "This store is exclusive to Carvana employees &amp; select customers",
+        "subtitle_mobile": "Please log in to access your account.",
+        "button_text_mobile": "Login to your account",
+        "title_color": "#183558",
+        "title_color_mobile": "#183558",
+        "subtitle_color": "#183558",
+        "subtitle_color_mobile": "#183558",
+        "button_color": "#ffffff",
+        "button_color_mobile": "#ffffff"
+      }
+    },
+    "exclusie_faq_g9G4yC": {
+      "type": "exclusie-faq",
+      "blocks": {
+        "faq_rhXyyY": {
+          "type": "faq",
+          "settings": {
+            "question": "How does your process work?",
+            "answer": "Answer goes here."
+          }
+        },
+        "faq_kEpRGR": {
+          "type": "faq",
+          "settings": {
+            "question": "How does your process work?",
+            "answer": "Answer goes here."
+          }
+        },
+        "faq_7N4DJx": {
+          "type": "faq",
+          "settings": {
+            "question": "How does your process work?",
+            "answer": "Answer goes here."
+          }
+        }
+      },
+      "block_order": [
+        "faq_rhXyyY",
+        "faq_kEpRGR",
+        "faq_7N4DJx"
+      ],
+      "name": "Exclusie FAQ",
+      "settings": {
+        "heading": "PROGRAM FAQS"
+      }
+    },
+    "exclusie_icons_with_text_K6q6tD": {
+      "type": "exclusie-icons-with-text",
+      "blocks": {
+        "icon_text_7yeU4h": {
+          "type": "icon_text",
+          "settings": {
+            "icon_image": "shopify://shop_images/worldwide_15808138_2.png",
+            "icon_svg": "",
+            "icon_color": "#222222",
+            "title": "FREE SHIPPING",
+            "title_color": "#222222",
+            "subtitle": "Free shipping over $150 USD",
+            "subtitle_color": "#222222"
+          }
+        },
+        "icon_text_4wWPPL": {
+          "type": "icon_text",
+          "settings": {
+            "icon_image": "shopify://shop_images/package_5272184_1.png",
+            "icon_svg": "",
+            "icon_color": "#222222",
+            "title": "28 DAY FREE RETURNS",
+            "title_color": "#222222",
+            "subtitle": "Free Returns: Link to See conditions for Free Returns",
+            "subtitle_color": "#222222"
+          }
+        },
+        "icon_text_nGXTQV": {
+          "type": "icon_text",
+          "settings": {
+            "icon_image": "shopify://shop_images/credit-card_492927_1.png",
+            "icon_svg": "",
+            "icon_color": "#222222",
+            "title": "PAYMENT OPTIONS",
+            "title_color": "#222222",
+            "subtitle": "We accept all credit Cards: Klarna, PayPal, Shop Pay Installments by Affirm, etc.",
+            "subtitle_color": "#222222"
+          }
+        },
+        "icon_text_XmRJK4": {
+          "type": "icon_text",
+          "settings": {
+            "icon_image": "shopify://shop_images/question_10821051_1.png",
+            "icon_svg": "",
+            "icon_color": "#222222",
+            "title": "HERE FOR YOU",
+            "title_color": "#222222",
+            "subtitle": "customerservice@dummy.com (000) 000-0000",
+            "subtitle_color": "#222222"
+          }
+        }
+      },
+      "block_order": [
+        "icon_text_7yeU4h",
+        "icon_text_4wWPPL",
+        "icon_text_nGXTQV",
+        "icon_text_XmRJK4"
+      ],
+      "name": "Exclusie Icons With Text",
+      "settings": {}
     }
   },
   "order": [
     "hero_banner_1",
-    "featured_products_example",
     "featured_collections_example",
-    "fist-of-collections"
+    "featured_products_example",
+    "fist-of-collections",
+    "exclusive_section_NfqBik",
+    "exclusie_faq_g9G4yC",
+    "exclusie_icons_with_text_K6q6tD"
   ]
 }

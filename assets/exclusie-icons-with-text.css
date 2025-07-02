@@ -1,0 +1,110 @@
+/* Exclusie Icons With Text Section Styles */
+.exclusie-icons-section {
+  width: 100%;
+  background: #fafafa;
+  padding: 50px 0;
+}
+
+.exclusie-icons-container {
+  max-width: 85%;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.exclusie-icons-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 0;
+}
+
+.exclusie-icon-item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 16px;
+  background: none;
+}
+
+.exclusie-icon-svg {
+  margin-bottom: 12px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exclusie-icon-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0px;
+  margin-top: 0;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.exclusie-icon-subtitle {
+  font-size: 14px;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: #222;
+  margin: 0;
+}
+
+.exclusie-icon-divider {
+  width: 1px;
+  background: #d9dde9;
+  display: block !important;
+  margin: 0 .5rem;
+  height: 40px;
+  min-height: 125px;
+  align-self: center;
+}
+
+@media (max-width: 900px) {
+  .exclusie-icons-container {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+  .exclusie-icons-list {
+    gap: 20px;
+  }
+  .exclusie-icon-item {
+    padding: 0 6px;
+  }
+}
+
+@media (max-width: 750px) {
+  .exclusie-icons-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .exclusie-icon-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .exclusie-icon-subtitle {
+    max-width: 70%;
+  }
+  .exclusie-icon-divider {
+    width: 200px;
+    background: #d9dde9;
+    display: block !important;
+    margin: 0 .5rem;
+    height: 2px;
+    min-height: 2px;
+    align-self: center;
+  }
+  .exclusie-icon-item {
+    padding: 18px 0;
+    border-radius: 0;
+    border: none;
+  }
+  .exclusie-icon-divider {
+    display: none;
+  }
+} 

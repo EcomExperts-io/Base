@@ -14,7 +14,7 @@
   margin-bottom: 0.5rem; /* Adjust spacing */
   font-weight: bold; /* Make heading bold */
   color: #000000; /* Make heading black */
-  font-size: 3rem; /* Match featured products heading size */
+  font-size: 24px; /* Match featured products heading size */
   /* Inherits h2 style */
 }
 
@@ -38,7 +38,8 @@
 }
 
 .collection-card__link {
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: relative; /* Needed for overlay child */
   color: inherit;
   text-decoration: none;
@@ -53,6 +54,10 @@
 /* Override base.css padding for taller portrait images */
 .collection-card__image-wrapper.media--portrait {
   padding-bottom: 144%; /* Approx 15% taller than 125% */
+}
+
+.collection-card__link--below .collection-card__image-wrapper.media--portrait {
+  padding-bottom: 100%; /* Approx 15% taller than 125% */
 }
 
 .collection-card__image {
@@ -107,4 +112,48 @@
 .placeholder-svg.collection-card__image {
   height: 100%;
   width: 100%;
+}
+
+/* Style 2: Info below image */
+.collection-card__info--below {
+  position: static;
+  background: #fff;
+  color: #111;
+  text-align: center;
+  padding: 1.25rem 0 0.75rem 0;
+  margin-top: 0.5rem;
+  border-radius: 0 0 8px 8px;
+  box-shadow: none;
+}
+.collection-card__info--below .collection-card__title {
+  color: #111;
+  margin-bottom: 0.25rem;
+  text-transform: none;
+}
+.collection-card__info--below .collection-card__shop-now {
+  color: #0D6EFD;
+  font-size: 1rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 750px) {
+  .featured-collections__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .featured-collections__card.grid__item {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+  .collection-card__link {
+    min-width: 0;
+  }
+  .collection-card__image-wrapper.media--portrait {
+    padding-bottom: 100%;
+  }
 }

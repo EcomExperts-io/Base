@@ -6,11 +6,15 @@
   assign heading = section.settings.heading
   assign subheading = section.settings.subheading
   assign collections_to_show = section.blocks.size
+  assign heading_alignment = section.settings.heading_alignment
+  assign style = section.settings.style
+  assign text_color = section.settings.text_color 
+  assign hide_shop_now = section.settings.hide_shop_now
 -%}
 
 {%- if collections_to_show > 0 -%}
   <div class="featured-collections-section page-width">
-    <div class="featured-collections__header title-wrapper title-wrapper--no-top-margin">
+    <div class="featured-collections__header title-wrapper title-wrapper--no-top-margin" style="text-align: {{ heading_alignment }};">
       {%- if heading != blank -%}
         <h2 class="featured-collections__heading title h2">{{ heading | escape }}</h2>
       {%- endif -%}
@@ -24,10 +28,13 @@
     <div class="featured-collections__grid {{ grid_classes }}">
       {%- for block in section.blocks -%}
         {%- assign collection = block.settings.collection -%}
-        {%- assign collection_image = collection.featured_image | default: collection.image -%}
+        {%- assign custom_image = block.settings.custom_image -%}
+        {%- assign custom_title = block.settings.custom_title -%}
+        {%- assign collection_image = custom_image | default: collection.featured_image | default: collection.image -%}
+        {%- assign display_title = custom_title | default: collection.title -%}
 
         <div class="featured-collections__card grid__item" {{ block.shopify_attributes }}>
-          <a href="{{ collection.url | default: '#' }}" class="collection-card__link">
+          <a href="{{ collection.url | default: '#' }}" class="collection-card__link {% if style == 'style2' %} collection-card__link--below{% endif %}">
             <div class="collection-card__image-wrapper media media--portrait {% if collection_image == blank %} placeholder {% endif %}">
               {%- if collection_image != blank -%}
                 <img
@@ -50,10 +57,21 @@
                 {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg collection-card__image' }}
               {%- endif -%}
             </div>
-            <div class="collection-card__info">
-              <h3 class="collection-card__title h3">{{ collection.title | default: 'Collection Title' }}</h3>
-              <span class="collection-card__shop-now link underlined-link">Shop Now</span>
-            </div>
+            {%- if style == 'style2' -%}
+              <div class="collection-card__info collection-card__info--below">
+                <h3 class="collection-card__title h3" style="color: {{ text_color }}">{{ display_title | default: 'Collection Title' }}</h3>
+                {%- unless hide_shop_now -%}
+                  <span class="collection-card__shop-now link underlined-link" style="color: {{ text_color }}">Shop Now</span>
+                {%- endunless -%}
+              </div>
+            {%- else -%}
+              <div class="collection-card__info">
+                <h3 class="collection-card__title h3" style="color: {{ text_color }}">{{ display_title | default: 'Collection Title' }}</h3>
+                {%- unless hide_shop_now -%}
+                  <span class="collection-card__shop-now link underlined-link" style="color: {{ text_color }}">Shop Now</span>
+                {%- endunless -%}
+              </div>
+            {%- endif -%}
           </a>
         </div>
       {%- endfor -%}
@@ -78,6 +96,48 @@
       "id": "subheading",
       "label": "Subheading",
       "default": "Browse through our collections"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Card Style",
+      "options": [
+        { "value": "style1", "label": "Style 1 (Text/Button above or overlay)" },
+        { "value": "style2", "label": "Style 2 (Text/Button below image)" }
+      ],
+      "default": "style2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_shop_now",
+      "label": "Hide 'Shop Now' Button",
+      "default": true
     }
   ],
   "blocks": [
@@ -90,6 +150,18 @@
           "type": "collection",
           "id": "collection",
           "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image (optional)",
+          "info": "Overrides the collection image if set."
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title (optional)",
+          "info": "Overrides the collection title if set."
         }
       ]
     }

@@ -1,3 +1,4 @@
+💡 Version 3.82.0 available! Run `npm install -g @shopify/cli@latest`
 ╭─ error ──────────────────────────────────────────────────────────────────────╮
 │                                                                              │
 │  ENOENT: no such file or directory, open 'C:\Users\Hadi\Documents\EcomExper  │

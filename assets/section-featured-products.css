@@ -18,6 +18,19 @@
   flex-grow: 1; /* Allow titles to take available space */
 }
 
+/* Heading alignment classes */
+.featured-products__titles--left {
+  text-align: left;
+}
+
+.featured-products__titles--center {
+  text-align: center;
+}
+
+.featured-products__titles--right {
+  text-align: right;
+}
+
 .featured-products__heading {
   margin-bottom: 0.5rem; /* Adjust spacing */
   font-size: 3rem; /* Example size */
@@ -39,6 +52,32 @@
   white-space: nowrap; /* Prevent wrap */
   font-weight: bold;
   /* Use link styles from base.css */
+}
+
+.featured-products__button-wrapper {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.featured-products__view-all-button {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: var(--button-bg-color, #000);
+  color: var(--button-text-color, #fff);
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.featured-products__view-all-button:hover {
+  background-color: var(--button-bg-color, #000);
+  opacity: 0.8;
+  transform: translateY(-2px);
+  color: var(--button-text-color, #fff);
+  text-decoration: none;
 }
 
 .featured-products__grid {
@@ -100,15 +139,31 @@
 }
 
 .product-card__info {
-  padding: 0 0.5rem; /* Add some padding if needed */
-  margin-top: auto; /* Push info to bottom if image wrapper doesn't fill height */
+  padding: 0 0.5rem;
+  margin-top: auto;
+  z-index: 2;
+  background: #fff;
+}
+
+/* Product content alignment classes */
+.product-card__info--left {
+  text-align: left;
+}
+
+.product-card__info--center {
+  text-align: center;
+}
+
+.product-card__info--right {
+  text-align: right;
 }
 
 .product-card__title {
-  font-size: 2.2rem; /* Doubled font size */
+  font-size: 18px; /* Doubled font size */
   margin-top: 0;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: #262626;
   /* Assume H3 style from base.css or adjust */
 }
 
@@ -118,6 +173,19 @@
   display: flex;
   align-items: center;
   gap: 0.5rem; /* Increased gap slightly */
+}
+
+/* Review content alignment classes */
+.product-card__reviews--left {
+  justify-content: flex-start;
+}
+
+.product-card__reviews--center {
+  justify-content: center;
+}
+
+.product-card__reviews--right {
+  justify-content: flex-end;
 }
 
 .product-card__stars {
@@ -142,12 +210,12 @@
 }
 
 .product-card__price {
-  font-size: 2.2rem; /* Doubled font size */
+  font-size: 1.8rem; /* Doubled font size */
   font-weight: bold;
 }
 
 .product-card__price .price__regular {
-  color: #000000; /* Make regular price black */
+  color: #262626;
 }
 
 .price--on-sale {
@@ -168,4 +236,90 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* Swiper layout and navigation fixes */
+.featured-products__swiper {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem; /* space for arrows */
+}
+
+.swiper-wrapper {
+  align-items: stretch;
+}
+
+.featured-products__card.swiper-slide {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+}
+
+.featured-products__swiper .swiper-button-prev:after,
+.featured-products__swiper .swiper-button-next:after {
+  display: none;
+}
+
+.featured-products__swiper-arrows {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+.featured-products__swiper {
+  position: unset!important;
+}
+.featured-products__swiper-arrows .swiper-button-prev,
+.featured-products__swiper-arrows .swiper-button-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  border-radius: 100%;
+  width: 42px;
+  border: 1px solid #c0bcbc;
+}
+
+.featured-products__swiper-arrows .swiper-button-prev {
+  left: -20px;
+}
+.featured-products__swiper-arrows .swiper-button-next {
+  right: -20px;
+}
+
+/* Hide Swiper's default arrow icons completely */
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  display: none;
+}
+
+@media (max-width: 750px) {
+  .featured-products__swiper {
+    padding: 0 0.5rem;
+  }
+  .featured-products__card.swiper-slide {
+    width: 100%;
+    margin: 0 auto;
+  }
+  .featured-products__swiper-arrows .swiper-button-prev,
+  .featured-products__swiper-arrows .swiper-button-next {
+    width: 40px;
+    height: 40px;
+    border-width: 1.5px;
+    font-size: 1.5rem;
+  }
+  .featured-products__swiper-arrows .swiper-button-prev {
+    left: 0;
+  }
+  .featured-products__swiper-arrows .swiper-button-next {
+    right: 0;
+  }
 }
