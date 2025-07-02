@@ -1,19 +1,4 @@
-[[31merror[39m] Invalid configuration for file "C:\Users\Hadi\Documents\EcomExperts\Clients\Base\sections\announcement-bar.liquid":
-[[31merror[39m] JSON Error in C:\Users\Hadi\Documents\EcomExperts\LintingRules\pipeline-rules\.prettierrc.json:
-[[31merror[39m] "undefined" is not valid JSON
-[[31merror[39m] Invalid configuration for file "C:\Users\Hadi\Documents\EcomExperts\Clients\Base\sections\exclusie-faq.liquid":
-[[31merror[39m] JSON Error in C:\Users\Hadi\Documents\EcomExperts\LintingRules\pipeline-rules\.prettierrc.json:
-[[31merror[39m] "undefined" is not valid JSON
-[[31merror[39m] Invalid configuration for file "C:\Users\Hadi\Documents\EcomExperts\Clients\Base\sections\exclusie-icons-with-text.liquid":
-[[31merror[39m] JSON Error in C:\Users\Hadi\Documents\EcomExperts\LintingRules\pipeline-rules\.prettierrc.json:
-[[31merror[39m] "undefined" is not valid JSON
 [[31merror[39m] Invalid configuration for file "C:\Users\Hadi\Documents\EcomExperts\Clients\Base\sections\exclusive-section.liquid":
 [[31merror[39m] JSON Error in C:\Users\Hadi\Documents\EcomExperts\LintingRules\pipeline-rules\.prettierrc.json:
 [[31merror[39m] "undefined" is not valid JSON
-[[31merror[39m] Invalid configuration for file "C:\Users\Hadi\Documents\EcomExperts\Clients\Base\sections\featured-collections.liquid":
-[[31merror[39m] JSON Error in C:\Users\Hadi\Documents\EcomExperts\LintingRules\pipeline-rules\.prettierrc.json:
-[[31merror[39m] "undefined" is not valid JSON
-[[31merror[39m] Invalid configuration for file "C:\Users\Hadi\Documents\EcomExperts\Clients\Base\sections\featured-products.liquid":
-[[31merror[39m] JSON Error in C:\Users\Hadi\Documents\EcomExperts\LintingRules\pipeline-rules\.prettierrc.json:
-[[31merror[39m] "undefined" is not valid JSON
-Prettier checked 6 files. Check TestResults/Prettier.txt for details.
+Prettier checked 1 files. Check TestResults/Prettier.txt for details.

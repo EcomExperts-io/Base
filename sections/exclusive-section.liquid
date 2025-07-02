@@ -19,11 +19,13 @@
   data-subtitle-color-mobile="{{ section.settings.subtitle_color_mobile }}"
   data-button-color-desktop="{{ section.settings.button_color }}"
   data-button-color-mobile="{{ section.settings.button_color_mobile }}"
+  data-button-bg-desktop="{{ section.settings.button_bg_color }}"
+  data-button-bg-mobile="{{ section.settings.button_bg_color_mobile }}"
 >
     <div class="exclusive-content">
       <h2 class="exclusive-title" id="exclusive-title" style="color: {{ section.settings.title_color }}">{{ section.settings.title | default: 'This store is exclusive to Carvana employees & select customers' }}</h2>
       <p class="exclusive-subtitle" id="exclusive-subtitle" style="color: {{ section.settings.subtitle_color }}">{{ section.settings.subtitle | default: 'Please log in to access your account.' }}</p>
-      <button class="btn-login" id="exclusive-btn" onclick="showLoginModal()" style="color: {{ section.settings.button_color }}">{{ section.settings.button_text | default: 'Login to your account' }}</button>
+      <button class="btn-login" id="exclusive-btn" onclick="showLoginModal()" style="color: {{ section.settings.button_color }}; background-color: {{ section.settings.button_bg_color }};">{{ section.settings.button_text | default: 'Login to your account' }}</button>
     </div>
 </section>
 
@@ -54,6 +56,8 @@
       if (btn) btnEl.innerHTML = btn;
       var btnColor = mobile ? section.getAttribute('data-button-color-mobile') : section.getAttribute('data-button-color-desktop');
       if (btnColor) btnEl.style.color = btnColor;
+      var btnBg = mobile ? section.getAttribute('data-button-bg-mobile') : section.getAttribute('data-button-bg-desktop');
+      if (btnBg) btnEl.style.backgroundColor = btnBg;
     }
     setExclusiveContent();
     window.addEventListener('resize', setExclusiveContent);
@@ -149,6 +153,18 @@
       "id": "button_color_mobile",
       "label": "Mobile Button Text Color",
       "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#00aed9"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color_mobile",
+      "label": "Mobile Button Background Color",
+      "default": "#00aed9"
     }
   ],
   "presets": [

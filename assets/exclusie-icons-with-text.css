@@ -57,13 +57,19 @@
 .exclusie-icon-divider {
   width: 1px;
   background: #d9dde9;
-  display: block !important;
+  /* Important is needed to override the default display: none on empty divs */
+  display: block!important;
   margin: 0 .5rem;
   height: 40px;
   min-height: 125px;
   align-self: center;
 }
 
+@media (max-width: 1350px) {
+  .exclusie-icons-container {
+      max-width: 100%;
+  }
+}
 @media (max-width: 900px) {
   .exclusie-icons-container {
     max-width: 100%;
@@ -93,7 +99,7 @@
   .exclusie-icon-divider {
     width: 200px;
     background: #d9dde9;
-    display: block !important;
+    display: block;
     margin: 0 .5rem;
     height: 2px;
     min-height: 2px;
