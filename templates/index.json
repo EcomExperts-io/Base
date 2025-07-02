@@ -12,16 +12,20 @@
     "hero_banner_1": {
       "type": "hero-banner",
       "settings": {
-        "background_type": "video",
+        "background_type": "image",
+        "image_background": "shopify://shop_images/nobg.png",
         "video_background_url": "",
-        "overlay_color": "#000000",
+        "overlay_color": "#d9d9d9",
         "overlay_opacity": 30,
+        "content_alignment": "center",
+        "vertical_alignment": "center",
         "text_color": "#ffffff",
         "stars_text": "",
-        "heading": "",
-        "subheading": "",
-        "button_text": "",
+        "heading": "Main Banner Title Here",
+        "subheading": "SubHeader Here",
+        "button_text": "Shop Now",
         "button_link": "shopify://collections/cam-plans",
+        "button_color": "#ffffff",
         "show_endorsement": false,
         "endorsement_name": ""
       }

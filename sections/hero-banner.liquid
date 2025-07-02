@@ -22,6 +22,7 @@
 
   assign content_alignment = section.settings.content_alignment
   assign vertical_alignment = section.settings.vertical_alignment
+  assign button_color = section.settings.button_color
 -%}
 
 {{ 'section-hero-banner.css' | asset_url | stylesheet_tag }}
@@ -33,6 +34,7 @@
     --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
     --hero-content-alignment: {{ content_alignment }};
     --hero-vertical-alignment: {{ vertical_alignment }};
+    --hero-button-color: {{ button_color }};
     /* Add more variables here if needed for other settings */
   }
 </style>
@@ -226,6 +228,12 @@
       "type": "url",
       "id": "button_link",
       "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button Color",
+      "default": "#FFFFFF"
     },
     {
       "type": "header",

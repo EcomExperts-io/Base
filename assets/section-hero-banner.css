@@ -112,16 +112,18 @@
 .hero-banner-section .hero-banner__button {
   display: inline-block;
   padding: 12px 30px;
-  background-color: #fff;
+  background-color: var(--hero-button-color, #FFFFFF);
   color: #000;
   text-decoration: none;
   font-weight: bold;
   border-radius: 4px;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .hero-banner-section .hero-banner__button:hover {
-  background-color: #eee;
+  background-color: var(--hero-button-color, #FFFFFF);
+  opacity: 0.8;
+  transform: translateY(-2px);
 }
 
 .hero-banner-section .hero-banner__endorsement {
