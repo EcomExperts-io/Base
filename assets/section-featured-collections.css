@@ -14,7 +14,7 @@
   margin-bottom: 0.5rem; /* Adjust spacing */
   font-weight: bold; /* Make heading bold */
   color: #000000; /* Make heading black */
-  font-size: 24px; /* Match featured products heading size */
+  font-size: 3rem; /* Match featured products heading size */
   /* Inherits h2 style */
 }
 
@@ -57,7 +57,7 @@
 }
 
 .collection-card__link--below .collection-card__image-wrapper.media--portrait {
-  padding-bottom: 100%; /* Approx 15% taller than 125% */
+  padding-bottom: 100%;
 }
 
 .collection-card__image {

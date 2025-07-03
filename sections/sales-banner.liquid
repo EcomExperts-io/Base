@@ -1,7 +1,8 @@
 <!-- Sales Banner Section -->
 {{ 'section-sales-banner.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'component-sales-banner.js' | asset_url }}" defer="defer"></script>
 
-<section
+<sales-banner
   class="exclusive-section"
   style="
         {% if section.settings.background_image %}background-image: url('{{ section.settings.background_image | image_url }}');{% endif %}
@@ -39,42 +40,7 @@
       {{ section.settings.button_text | default: 'Login to your account' }}
     </button>
   </div>
-</section>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var section = document.querySelector('.exclusive-section');
-    if (!section) return;
-    var titleEl = document.getElementById('exclusive-title');
-    var subtitleEl = document.getElementById('exclusive-subtitle');
-    var btnEl = document.getElementById('exclusive-btn');
-    function setExclusiveContent() {
-      var mobile = window.innerWidth <= 750;
-      // Background
-      var bg = mobile ? section.getAttribute('data-bg-mobile') : section.getAttribute('data-bg-desktop');
-      if (bg) section.style.backgroundImage = 'url(' + bg + ')';
-      // Title
-      var title = mobile ? section.getAttribute('data-title-mobile') : section.getAttribute('data-title-desktop');
-      if (title) titleEl.innerHTML = title;
-      var titleColor = mobile ? section.getAttribute('data-title-color-mobile') : section.getAttribute('data-title-color-desktop');
-      if (titleColor) titleEl.style.color = titleColor;
-      // Subtitle
-      var subtitle = mobile ? section.getAttribute('data-subtitle-mobile') : section.getAttribute('data-subtitle-desktop');
-      if (subtitle) subtitleEl.innerHTML = subtitle;
-      var subtitleColor = mobile ? section.getAttribute('data-subtitle-color-mobile') : section.getAttribute('data-subtitle-color-desktop');
-      if (subtitleColor) subtitleEl.style.color = subtitleColor;
-      // Button
-      var btn = mobile ? section.getAttribute('data-button-mobile') : section.getAttribute('data-button-desktop');
-      if (btn) btnEl.innerHTML = btn;
-      var btnColor = mobile ? section.getAttribute('data-button-color-mobile') : section.getAttribute('data-button-color-desktop');
-      if (btnColor) btnEl.style.color = btnColor;
-      var btnBg = mobile ? section.getAttribute('data-button-bg-mobile') : section.getAttribute('data-button-bg-desktop');
-      if (btnBg) btnEl.style.backgroundColor = btnBg;
-    }
-    setExclusiveContent();
-    window.addEventListener('resize', setExclusiveContent);
-  });
-</script>
+</sales-banner>
 
 {% schema %}
 {

@@ -14,6 +14,12 @@
   gap: 1rem; /* Add gap for wrapping */
 }
 
+.featured-products-content{
+  position: relative;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  width: 95%;
+}
 .featured-products__titles {
   flex-grow: 1; /* Allow titles to take available space */
 }

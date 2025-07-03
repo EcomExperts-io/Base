@@ -1,14 +1,14 @@
 <!-- Exclusie Icons With Text Section -->
-{{ 'exclusie-icons-with-text.css' | asset_url | stylesheet_tag }}
+{{ 'icons-with-text.css' | asset_url | stylesheet_tag }}
 
 <section class="exclusie-icons-section">
-  <div class="exclusie-icons-container">
+  <div class="exclusie-icons-container page-width">
     <div class="exclusie-icons-list">
       {% for block in section.blocks %}
         <div class="exclusie-icon-item" {{ block.shopify_attributes }}>
           <div class="exclusie-icon-media">
             {% if block.settings.icon_image %}
-              <img src="{{ block.settings.icon_image | image_url: width: 64 }}" alt="Icon" style="width: 48px; height: 48px; object-fit: contain; {% if block.settings.icon_color %}filter: drop-shadow(0 0 0 {{ block.settings.icon_color }});{% endif %}">
+              <img width="48" height="48" src="{{ block.settings.icon_image | image_url: width: 96 }}" alt="Icon" style="width: 48px; height: 48px; object-fit: contain; {% if block.settings.icon_color %}filter: drop-shadow(0 0 0 {{ block.settings.icon_color }});{% endif %}">
             {% else %}
               <span class="exclusie-icon-svg" style="{% if block.settings.icon_color %}color: {{ block.settings.icon_color }}; fill: {{ block.settings.icon_color }};{% endif %}">{{ block.settings.icon_svg }}</span>
             {% endif %}
@@ -26,7 +26,7 @@
 
 {% schema %}
 {
-  "name": "Exclusive Icons With Text",
+  "name": "Icons With Text",
   "tag": "section",
   "class": "exclusie-icons-wrapper",
   "settings": [],
@@ -83,7 +83,7 @@
   "max_blocks": 4,
   "presets": [
     {
-      "name": "Exclusie Icons With Text",
+      "name": "Icons With Text",
       "category": "Custom",
       "blocks": [
         { "type": "icon_text" },

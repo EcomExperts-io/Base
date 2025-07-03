@@ -1,0 +1,93 @@
+/* Custom Testimonials Section Styles */
+.custom-testimonials-section {
+  width: 100%;
+}
+.custom-testimonials__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.custom-testimonials__heading {
+  font-weight: bold;
+  letter-spacing: 0.01em;
+  margin-bottom: 2.5rem;
+  margin-top: 0;
+}
+.custom-testimonials__grid {
+  display: grid;
+  width: 100%;
+  gap: 20px;
+}
+.cols-1 { grid-template-columns: 1fr; }
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+@media (max-width: 900px) {
+  .custom-testimonials__grid.cols-tablet-1 { grid-template-columns: 1fr; }
+  .custom-testimonials__grid.cols-tablet-2 { grid-template-columns: repeat(2, 1fr); }
+  .custom-testimonials__grid.cols-tablet-3 { grid-template-columns: repeat(3, 1fr); }
+  .custom-testimonials__grid.cols-tablet-4 { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 600px) {
+  .custom-testimonials__grid.cols-mobile-1 { grid-template-columns: 1fr; }
+  .custom-testimonials__grid.cols-mobile-2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 749px) {
+  .custom-testimonials__swiper .swiper-wrapper {
+    padding-left: 0;
+  }
+  .custom-testimonials__card.swiper-slide {
+    margin-right: 0;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+  }
+  .custom-testimonials__swiper .swiper-slide:first-child {
+    margin-left: 0;
+  }
+}
+
+.custom-testimonials__card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 320px;
+  transition: box-shadow 0.2s;
+}
+.custom-testimonials__quote {
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+.custom-testimonials__stars {
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+.custom-testimonials__title {
+  margin-bottom: 0.5rem;
+  text-transform: none;
+}
+.custom-testimonials__text {
+  margin: 0;
+  font-style: italic;
+  letter-spacing: 0;
+  line-height: 15px;
+}
+.custom-testimonials__author {
+  margin-top: auto;
+  margin-bottom: 0;
+  font-style: normal;
+  letter-spacing: 0.01em;
+}
+.custom-testimonials__stars span {
+  display: inline-block;
+  margin-right: 2px;
+}
+.custom-testimonials__stars span:last-child {
+  margin-right: 0;
+} 

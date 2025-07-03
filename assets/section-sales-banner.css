@@ -1,12 +1,11 @@
 /* Sales Banner Section Styles */
 .exclusive-section {
-  max-width: 80%;
+  max-width: 1100px;
   border: 1px solid #d9dde9;
   border-radius: 6px;
   background-color: #ffffff;
   background-size: cover;
   background-position: center;
-  height: 300px;
   display: flex;
   align-items: center;
   position: relative;
@@ -26,7 +25,7 @@
 
 .exclusive-content {
   flex: 1;
-  padding: 0 50px;
+  padding: 49px 50px;
   gap: 10px;
   display: flex;
   flex-flow: column;
@@ -36,8 +35,7 @@
 }
 
 .exclusive-title {
-  font-family: 'HvDTrial Brandon Text', Arial, sans-serif;
-  font-size: 32px;
+  font-size: 3rem;
   font-weight: 700;
   line-height: 40px;
   text-transform: uppercase;
