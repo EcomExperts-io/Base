@@ -1,0 +1,8 @@
+node_modules/
+.vs
+.vscode
+package.json
+package-lock.json
+.shopify
+
+.early.coverage

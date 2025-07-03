@@ -1,7 +1,8 @@
 <!-- Exclusive Section -->
 {{ 'exclusive-section.css' | asset_url | stylesheet_tag }}
 
-<section class="exclusive-section"
+<section
+  class="exclusive-section"
   style="
     {% if section.settings.background_image %}background-image: url('{{ section.settings.background_image | image_url }}');{% endif %}
   "
@@ -22,15 +23,26 @@
   data-button-bg-desktop="{{ section.settings.button_bg_color }}"
   data-button-bg-mobile="{{ section.settings.button_bg_color_mobile }}"
 >
-    <div class="exclusive-content">
-      <h2 class="exclusive-title" id="exclusive-title" style="color: {{ section.settings.title_color }}">{{ section.settings.title | default: 'This store is exclusive to Carvana employees & select customers' }}</h2>
-      <p class="exclusive-subtitle" id="exclusive-subtitle" style="color: {{ section.settings.subtitle_color }}">{{ section.settings.subtitle | default: 'Please log in to access your account.' }}</p>
-      <button class="btn-login" id="exclusive-btn" onclick="showLoginModal()" style="color: {{ section.settings.button_color }}; background-color: {{ section.settings.button_bg_color }};">{{ section.settings.button_text | default: 'Login to your account' }}</button>
-    </div>
+  <div class="exclusive-content">
+    <h2 class="exclusive-title" id="exclusive-title" style="color: {{ section.settings.title_color }}">
+      {{ section.settings.title | default: 'This store is exclusive to Carvana employees & select customers' }}
+    </h2>
+    <p class="exclusive-subtitle" id="exclusive-subtitle" style="color: {{ section.settings.subtitle_color }}">
+      {{ section.settings.subtitle | default: 'Please log in to access your account.' }}
+    </p>
+    <button
+      class="btn-login"
+      id="exclusive-btn"
+      onclick="showLoginModal()"
+      style="color: {{ section.settings.button_color }}; background-color: {{ section.settings.button_bg_color }};"
+    >
+      {{ section.settings.button_text | default: 'Login to your account' }}
+    </button>
+  </div>
 </section>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     var section = document.querySelector('.exclusive-section');
     if (!section) return;
     var titleEl = document.getElementById('exclusive-title');
@@ -175,4 +187,3 @@
   ]
 }
 {% endschema %}
-  

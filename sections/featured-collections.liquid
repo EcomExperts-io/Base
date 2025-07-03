@@ -8,7 +8,7 @@
   assign collections_to_show = section.blocks.size
   assign heading_alignment = section.settings.heading_alignment
   assign style = section.settings.style
-  assign text_color = section.settings.text_color 
+  assign text_color = section.settings.text_color
   assign hide_shop_now = section.settings.hide_shop_now
 -%}
 
@@ -34,7 +34,10 @@
         {%- assign display_title = custom_title | default: collection.title -%}
 
         <div class="featured-collections__card grid__item" {{ block.shopify_attributes }}>
-          <a href="{{ collection.url | default: '#' }}" class="collection-card__link {% if style == 'style2' %} collection-card__link--below{% endif %}">
+          <a
+            href="{{ collection.url | default: '#' }}"
+            class="collection-card__link {% if style == 'style2' %} collection-card__link--below{% endif %}"
+          >
             <div class="collection-card__image-wrapper media media--portrait {% if collection_image == blank %} placeholder {% endif %}">
               {%- if collection_image != blank -%}
                 <img

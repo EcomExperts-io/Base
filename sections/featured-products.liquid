@@ -1,9 +1,8 @@
 {% comment %} /sections/featured-products.liquid {% endcomment %}
 
 {{ 'section-featured-products.css' | asset_url | stylesheet_tag }}
-<script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
 {{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
-
+<script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
 
 {%- liquid
   assign heading = section.settings.heading
@@ -105,15 +104,17 @@
                       <span class="product-card__review-count">10 Reviews</span>
                     </a>
                   </div>
-                  <h3 class="product-card__title" style="color: {{ product_info_text_color | default: '#111111' }}">{{ product.title | default: 'Product Title' }}</h3>
+                  <h3 class="product-card__title" style="color: {{ product_info_text_color | default: '#111111' }}">
+                    {{ product.title | default: 'Product Title' }}
+                  </h3>
                   <div class="product-card__price" style="color: {{ product_info_text_color | default: '#111111' }}">
                     {%- if product.price -%}
-                    {%- if product.compare_at_price > product.price -%}
-                      <s class="price__compare-at">{{ product.compare_at_price | money }}</s>
-                    {%- endif -%}
-                    <span class="price__regular {% if product.compare_at_price > product.price %}price--on-sale{% endif %}">
-                      {{ product.price | money }}
-                    </span>
+                      {%- if product.compare_at_price > product.price -%}
+                        <s class="price__compare-at">{{ product.compare_at_price | money }}</s>
+                      {%- endif -%}
+                      <span class="price__regular {% if product.compare_at_price > product.price %}price--on-sale{% endif %}">
+                        {{ product.price | money }}
+                      </span>
                     {% else %}
                       <span class="price__regular">
                         {{ 20000 | money }}
@@ -128,8 +129,6 @@
       </div>
     </div>
 
-    
-
     {%- if show_view_all_as_button and view_all_text != blank and view_all_url != blank -%}
       <div class="featured-products__button-wrapper">
         <a href="{{ view_all_url }}" class="featured-products__view-all-button button">
@@ -139,6 +138,36 @@
     {%- endif -%}
   </div>
 {%- endif -%}
+
+<!-- Swiper initialization for featured products -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.Swiper) {
+      var featuredProductsSwiper = new Swiper('#featured-products-{{ section.id }}', {
+        slidesPerView: 1,
+        centeredSlides: true,
+        spaceBetween: 24,
+        autoHeight: true,
+        navigation: {
+          nextEl: '#featured-products-{{ section.id }} .featured-products__swiper-next',
+          prevEl: '#featured-products-{{ section.id }} .featured-products__swiper-prev',
+        },
+        breakpoints: {
+          750: {
+            slidesPerView: 2,
+            centeredSlides: false,
+          },
+          990: {
+            slidesPerView: 4,
+            centeredSlides: false,
+          },
+        },
+        loop: false,
+        watchOverflow: true,
+      });
+    }
+  });
+</script>
 
 {% schema %}
 {
@@ -275,33 +304,3 @@
   ]
 }
 {% endschema %}
-
-<!-- Swiper initialization for featured products -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.Swiper) {
-      var featuredProductsSwiper = new Swiper('#featured-products-{{ section.id }}', {
-        slidesPerView: 1,
-        centeredSlides: true,
-        spaceBetween: 24,
-        autoHeight: true,
-        navigation: {
-          nextEl: '#featured-products-{{ section.id }} .featured-products__swiper-next',
-          prevEl: '#featured-products-{{ section.id }} .featured-products__swiper-prev',
-        },
-        breakpoints: {
-          750: {
-            slidesPerView: 2,
-            centeredSlides: false
-          },
-          990: {
-            slidesPerView: 4,
-            centeredSlides: false
-          }
-        },
-        loop: false,
-        watchOverflow: true
-      });
-    }
-  });
-</script>

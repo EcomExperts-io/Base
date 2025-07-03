@@ -72,16 +72,19 @@
     max-width: 95%;
     padding: 0 0 16px 0;
   }
+
   .exclusie-faq-heading {
     font-size: 24px;
     margin: 24px 0 24px 0;
   }
+
   .exclusie-faq-question {
     font-size: 14px;
     padding: 18px 0 18px 0;
   }
+
   .exclusie-faq-answer {
     font-size: 14px;
     padding-bottom: 18px;
   }
-} 
+}

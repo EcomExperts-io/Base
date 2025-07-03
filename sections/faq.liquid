@@ -1,5 +1,5 @@
 <!-- Exclusie FAQ Section -->
-{{ 'exclusie-faq.css' | asset_url | stylesheet_tag }}
+{{ 'section-faq.css' | asset_url | stylesheet_tag }}
 
 <section class="exclusie-faq-section">
   <div class="exclusie-faq-container">
@@ -7,7 +7,12 @@
     <div class="exclusie-faq-list">
       {% for block in section.blocks %}
         <div class="exclusie-faq-item" {{ block.shopify_attributes }}>
-          <button class="exclusie-faq-question" aria-expanded="false" aria-controls="faq-answer-{{ block.id }}" onclick="this.classList.toggle('open'); var ans = document.getElementById('faq-answer-{{ block.id }}'); ans.style.display = ans.style.display === 'block' ? 'none' : 'block'; this.setAttribute('aria-expanded', ans.style.display === 'block');">
+          <button
+            class="exclusie-faq-question"
+            aria-expanded="false"
+            aria-controls="faq-answer-{{ block.id }}"
+            onclick="this.classList.toggle('open'); var ans = document.getElementById('faq-answer-{{ block.id }}'); ans.style.display = ans.style.display === 'block' ? 'none' : 'block'; this.setAttribute('aria-expanded', ans.style.display === 'block');"
+          >
             <span>{{ block.settings.question }}</span>
             <span class="exclusie-faq-arrow">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="9" viewBox="0 0 16 9" fill="none">
@@ -26,7 +31,7 @@
 
 {% schema %}
 {
-  "name": "Exclusie FAQ",
+  "name": "FAQ",
   "tag": "section",
   "class": "exclusie-faq-wrapper",
   "settings": [
@@ -62,12 +67,8 @@
     {
       "name": "Exclusie FAQ",
       "category": "Custom",
-      "blocks": [
-        { "type": "faq" },
-        { "type": "faq" },
-        { "type": "faq" }
-      ]
+      "blocks": [{ "type": "faq" }, { "type": "faq" }, { "type": "faq" }]
     }
   ]
 }
-{% endschema %} 
+{% endschema %}
