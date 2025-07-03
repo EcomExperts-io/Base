@@ -149,17 +149,6 @@
         "product_info_text_color": "#111111"
       }
     },
-    "fist-of-collections": {
-      "type": "main-list-collections",
-      "disabled": true,
-      "settings": {
-        "title": "Collections",
-        "sort": "alphabetical",
-        "image_ratio": "adapt",
-        "columns_desktop": 3,
-        "columns_mobile": "2"
-      }
-    },
     "exclusive_section_NfqBik": {
       "type": "exclusive-section",
       "name": "Exclusive Section",
@@ -281,7 +270,6 @@
     "hero_banner_1",
     "featured_collections_example",
     "featured_products_example",
-    "fist-of-collections",
     "exclusive_section_NfqBik",
     "exclusie_faq_g9G4yC",
     "exclusie_icons_with_text_K6q6tD"
