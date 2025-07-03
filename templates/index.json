@@ -150,8 +150,8 @@
       }
     },
     "exclusive_section_NfqBik": {
-      "type": "exclusive-section",
-      "name": "Exclusive Section",
+      "type": "sales-banner",
+      "name": "Sales Banner",
       "settings": {
         "background_image": "shopify://shop_images/Image_of_Glutathione_Plus_Lozenge_1.png",
         "background_image_mobile": "shopify://shop_images/Frame_1261153144.png",

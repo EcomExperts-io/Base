@@ -1,10 +1,10 @@
-<!-- Exclusive Section -->
-{{ 'exclusive-section.css' | asset_url | stylesheet_tag }}
+<!-- Sales Banner Section -->
+{{ 'section-sales-banner.css' | asset_url | stylesheet_tag }}
 
 <section
   class="exclusive-section"
   style="
-    {% if section.settings.background_image %}background-image: url('{{ section.settings.background_image | image_url }}');{% endif %}
+        {% if section.settings.background_image %}background-image: url('{{ section.settings.background_image | image_url }}');{% endif %}
   "
   data-bg-desktop="{% if section.settings.background_image %}{{ section.settings.background_image | image_url }}{% endif %}"
   data-bg-mobile="{% if section.settings.background_image_mobile %}{{ section.settings.background_image_mobile | image_url }}{% endif %}"
@@ -78,7 +78,7 @@
 
 {% schema %}
 {
-  "name": "Exclusive Section",
+  "name": "Sales Banner",
   "tag": "section",
   "class": "exclusive-section-wrapper",
   "settings": [
@@ -181,7 +181,7 @@
   ],
   "presets": [
     {
-      "name": "Exclusive Section",
+      "name": "Sales Banner",
       "category": "Custom"
     }
   ]
