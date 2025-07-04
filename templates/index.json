@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "hero_banner_1": {
       "type": "hero-banner",
@@ -181,12 +181,7 @@
             "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
             "author": "NAME",
             "stars": 5,
-            "quote_align": "left",
             "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
             "quote_icon_img_width": 27
           }
         },
@@ -197,12 +192,7 @@
             "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
             "author": "NAME",
             "stars": 5,
-            "quote_align": "left",
             "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
             "quote_icon_img_width": 27
           }
         },
@@ -213,12 +203,7 @@
             "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
             "author": "NAME",
             "stars": 5,
-            "quote_align": "left",
             "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
             "quote_icon_img_width": 27
           }
         },
@@ -229,12 +214,7 @@
             "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
             "author": "NAME",
             "stars": 5,
-            "quote_align": "left",
             "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
             "quote_icon_img_width": 27
           }
         }
@@ -250,32 +230,9 @@
         "heading": "WHAT OTHER ARE SAYING",
         "heading_color": "#000000",
         "heading_align": "center",
-        "heading_font": "inherit",
-        "heading_size_mobile": 22,
-        "heading_size_desktop": 30,
         "bg_color": "#ffffff",
         "padding_top": 42,
-        "padding_bottom": 30,
-        "card_bg": "#ffffff",
-        "card_text_color": "#222222",
-        "card_border": "none",
-        "card_shadow": "",
-        "card_radius": 8,
-        "card_padding": 12,
-        "card_gap": 26,
-        "columns_desktop": 4,
-        "columns_tablet": 2,
-        "columns_mobile": "1",
-        "star_color": "#000000",
-        "star_empty_color": "#bbbbbb",
-        "star_size": 25,
-        "quote_icon": "",
-        "quote_color": "#444444",
-        "quote_size": 48,
-        "title_size": 18,
-        "text_size": 14,
-        "author_color": "#000000",
-        "author_size": 14
+        "padding_bottom": 30
       }
     },
     "exclusie_faq_g9G4yC": {
@@ -419,12 +376,10 @@
       "settings": {
         "heading": "STYLE GALLERY",
         "heading_color": "#000000",
-        "heading_size": 30,
         "heading_align": "center",
-        "heading_font": "inherit",
         "bg_color": "#ffffff",
         "padding_top": 32,
-        "padding_bottom": 32,
+        "padding_bottom": 32
       }
     },
     "newsletter_signup_GGiDB7": {
@@ -437,7 +392,6 @@
         "button_text": "SIGN UP",
         "bg_color": "#ffffff",
         "text_color": "#000000",
-        "heading_size": 28,
         "desc_size": 13,
         "section_padding": 32,
         "button_bg": "#222222",
