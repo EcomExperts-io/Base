@@ -109,3 +109,9 @@
     display: none;
   }
 } 
+@media screen and (max-width: 768px) {
+  .exclusie-icons-section {
+    background: #ffffff;
+    padding: 20px 0;
+  }
+}

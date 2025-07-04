@@ -18,15 +18,14 @@
   margin-top: 0;
   text-align: var(--heading-align);
   color: var(--heading-color);
-  font-family: var(--heading-font);
-  font-size: var(--heading-size);
+  font-size: 3rem;
 }
 .style-gallery__swiper {
   width: 100%;
 }
 .style-gallery__grid {
   display: flex;
-  gap: var(--card-gap);
+  gap: 20px;
 }
 .style-gallery__card {
   display: flex;
@@ -60,6 +59,9 @@
     min-width: 140px;
     min-height: 140px;
     height: 140px;
+  }
+  .style-gallery__heading{
+    font-size: 2.5rem;
   }
 }
 @media (max-width: 600px) {

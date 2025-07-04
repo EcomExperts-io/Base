@@ -93,7 +93,7 @@
         "block_1": {
           "type": "product_card",
           "settings": {
-            "product": "3-4-sleeve-kimono-dress-coral"
+            "product": ""
           }
         },
         "block_2": {
@@ -423,9 +423,8 @@
         "heading_align": "center",
         "heading_font": "inherit",
         "bg_color": "#ffffff",
-        "padding_top": 54,
-        "padding_bottom": 0,
-        "card_gap": 0
+        "padding_top": 32,
+        "padding_bottom": 32,
       }
     },
     "newsletter_signup_GGiDB7": {

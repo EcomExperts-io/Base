@@ -7,15 +7,73 @@
 
 <link rel="stylesheet" href="{{ 'section-newsletter-signup.css' | asset_url }}">
 
-<section class="newsletter-signup-section" style="--newsletter-bg-color: {{ section.settings.bg_color }}; --newsletter-text-color: {{ section.settings.text_color }}; --newsletter-heading-size: {{ section.settings.heading_size }}px; --newsletter-desc-size: {{ section.settings.desc_size }}px; --newsletter-padding: {{ section.settings.section_padding }}px; --newsletter-btn-bg: {{ section.settings.button_bg }}; --newsletter-btn-color: {{ section.settings.button_color }}; --newsletter-btn-size: {{ section.settings.button_size }}px;">
+<style>
+  .newsletter-signup-section-{{ section.id }} {
+    --newsletter-bg-color: {{ section.settings.bg_color }};
+    --newsletter-text-color: {{ section.settings.text_color }};
+    --newsletter-desc-size: {{ section.settings.desc_size }}px;
+    --newsletter-padding: {{ section.settings.section_padding }}px;
+    --newsletter-btn-bg: {{ section.settings.button_bg }};
+    --newsletter-btn-color: {{ section.settings.button_color }};
+    --newsletter-btn-size: {{ section.settings.button_size }}px;
+    {% if section.settings.bg_image %}
+    background-image: url('{{ section.settings.bg_image | image_url: width: 1920 }}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    {% endif %}
+  }
+
+  .newsletter-heading-{{ section.id }} {
+    text-align: {{ section.settings.heading_align }};
+    color: {{ section.settings.text_color }};
+  }
+
+  .newsletter-desc-{{ section.id }} {
+    text-align: {{ section.settings.desc_align }};
+    color: {{ section.settings.text_color }};
+  }
+
+  input.newsletter-email-{{ section.id }} {
+    border: none;
+    text-align: {{ section.settings.email_align }};
+    color: {{ section.settings.text_color }};
+    border-bottom: 2px solid {{ section.settings.text_color }};
+  }
+  input.newsletter-email-{{ section.id }}::placeholder {
+    color: {{ section.settings.text_color }};
+  }
+  
+  input.newsletter-email-{{ section.id }}::-ms-input-placeholder {
+    color: {{ section.settings.text_color }};
+  }
+  .newsletter-btn-{{ section.id }} {
+    {% if section.settings.button_align == 'left' %}
+      margin-left: 0;
+      margin-right: auto;
+    {% elsif section.settings.button_align == 'center' %}
+      margin-left: auto;
+      margin-right: auto;
+    {% elsif section.settings.button_align == 'right' %}
+      margin-left: auto;
+      margin-right: 0;
+    {% endif %}
+  }
+
+  .newsletter-btn-{{ section.id }}:hover {
+    background-color: {{ section.settings.button_bg | color_modify: 'alpha', 0.9 }} !important;
+  }
+</style>
+
+<section class="newsletter-signup-section newsletter-signup-section-{{ section.id }}">
   <div class="newsletter-content">
-    <h2 class="newsletter-heading newsletter-heading--{{ section.settings.heading_align }}" style="text-align: {{ section.settings.heading_align }};">{{ section.settings.heading }}</h2>
-    <p class="newsletter-desc newsletter-desc--{{ section.settings.desc_align }}" style="text-align: {{ section.settings.desc_align }};">{{ section.settings.description }}</p>
+    <h2 class="newsletter-heading newsletter-heading-{{ section.id }}">{{ section.settings.heading }}</h2>
+    <p class="newsletter-desc newsletter-desc-{{ section.id }}">{{ section.settings.description }}</p>
     <form class="newsletter-form" method="post" action="/contact#newsletter-signup">
       <input type="hidden" name="form_type" value="customer" />
       <input type="hidden" name="contact[tags]" value="newsletter">
-      <input id="newsletter-email-{{ section.id }}" type="email" name="contact[email]" placeholder="{{ section.settings.email_placeholder }}" required class="newsletter-email newsletter-email--{{ section.settings.email_align }}" style="text-align: {{ section.settings.email_align }};">
-      <button type="submit" class="newsletter-btn newsletter-btn--{{ section.settings.button_align }}" style="{% if section.settings.button_align == 'left' %}margin-left: 0; margin-right: auto;{% elsif section.settings.button_align == 'center' %}margin-left: auto; margin-right: auto;{% elsif section.settings.button_align == 'right' %}margin-left: auto; margin-right: 0;{% endif %}">{{ section.settings.button_text }}</button>
+      <input id="newsletter-email-{{ section.id }}" type="email" name="contact[email]" placeholder="{{ section.settings.email_placeholder }}" required class="newsletter-email newsletter-email-{{ section.id }}">
+      <button type="submit" class="newsletter-btn newsletter-btn-{{ section.id }}">{{ section.settings.button_text }}</button>
     </form>
   </div>
 </section>
@@ -28,9 +86,9 @@
     { "type": "text", "id": "description", "label": "Description", "default": "Subscribe to get special offers, free giveaways, and once in a lifetime deals." },
     { "type": "text", "id": "email_placeholder", "label": "Email Placeholder", "default": "Enter your email" },
     { "type": "text", "id": "button_text", "label": "Button Text", "default": "SIGN UP" },
+    { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
     { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#fff" },
     { "type": "color", "id": "text_color", "label": "Text Color", "default": "#111" },
-    { "type": "range", "id": "heading_size", "label": "Heading Size (px)", "min": 18, "max": 48, "step": 1, "default": 28 },
     { "type": "range", "id": "desc_size", "label": "Desc Size (px)", "min": 12, "max": 28, "step": 1, "default": 16 },
     { "type": "range", "id": "section_padding", "label": "Padding (px)", "min": 0, "max": 100, "step": 4, "default": 32 },
     { "type": "color", "id": "button_bg", "label": "Button BG Color", "default": "#222" },

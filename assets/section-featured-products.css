@@ -308,8 +308,14 @@
 }
 
 @media (max-width: 750px) {
+  .featured-products-content{
+    width: 100%;
+  }
   .featured-products__swiper {
     padding: 0 0.5rem;
+  }
+  .featured-products__heading{
+    font-size: 2.5rem;
   }
   .featured-products__card.swiper-slide {
     width: 100%;
@@ -327,5 +333,8 @@
   }
   .featured-products__swiper-arrows .swiper-button-next {
     right: 0;
+  }
+  .featured-products__swiper-arrows {
+    display: none;
   }
 }

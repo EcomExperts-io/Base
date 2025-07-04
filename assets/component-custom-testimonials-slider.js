@@ -41,9 +41,8 @@ class CustomTestimonialsSlider extends HTMLElement {
       if (this.shouldEnableSwiper()) {
         if (!this.swiper) {
           this.swiper = new Swiper(selector, {
-            slidesPerView: 1,
+            slidesPerView: 1.2,
             spaceBetween: 16,
-            loop: true,
             navigation: {
               nextEl: `${selector} .custom-testimonials__swiper-next`,
               prevEl: `${selector} .custom-testimonials__swiper-prev`,
@@ -57,7 +56,7 @@ class CustomTestimonialsSlider extends HTMLElement {
                 spaceBetween: 24
               },
             },
-            loop: window.innerWidth >= 990 ? (this.querySelectorAll('.swiper-slide').length > 4) : false,
+            loop: (this.querySelectorAll('.swiper-slide').length > 4) ? false : true,
             watchOverflow: true,
             initialSlide: 0,
           });

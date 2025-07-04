@@ -24,9 +24,7 @@
     --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     --heading-color: {{ section.settings.heading_color }};
     --heading-align: {{ section.settings.heading_align }};
-    --heading-font: {{ section.settings.heading_font }};
     --heading-size: {{ section.settings.heading_size }}px;
-    --card-gap: {{ section.settings.card_gap }}px;
   "
 >
   <div class="style-gallery__container">
@@ -61,13 +59,10 @@
   "settings": [
     { "type": "text", "id": "heading", "label": "Heading", "default": "STYLE GALLERY" },
     { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#000000" },
-    { "type": "range", "id": "heading_size", "label": "Heading Font Size (px)", "min": 18, "max": 48, "step": 1, "default": 24 },
     { "type": "select", "id": "heading_align", "label": "Heading Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "center" },
-    { "type": "text", "id": "heading_font", "label": "Heading Font Family", "default": "inherit" },
     { "type": "color", "id": "bg_color", "label": "Section Background Color", "default": "#fff" },
     { "type": "range", "id": "padding_top", "label": "Section Padding Top (px)", "min": 0, "max": 100, "step": 1, "default": 32 },
     { "type": "range", "id": "padding_bottom", "label": "Section Padding Bottom (px)", "min": 0, "max": 100, "step": 1, "default": 32 },
-    { "type": "range", "id": "card_gap", "label": "Gap Between Cards (px)", "min": 0, "max": 48, "step": 1, "default": 24 }
   ],
   "blocks": [
     {

@@ -156,4 +156,7 @@
   .collection-card__image-wrapper.media--portrait {
     padding-bottom: 100%;
   }
+  .featured-collections__heading{
+    font-size: 2.5rem;
+  }
 }

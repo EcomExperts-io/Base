@@ -20,9 +20,7 @@
   style="
     --heading-color: {{ section.settings.heading_color }};
     --heading-align: {{ section.settings.heading_align }};
-    --heading-font: {{ section.settings.heading_font }};
-    --heading-size-mobile: {{ section.settings.heading_size_mobile }}px;
-    --heading-size-desktop: {{ section.settings.heading_size_desktop }}px;
+    --content-align: {{ section.settings.content_align }};
     --section-bg: {{ section.settings.bg_color }};
     --section-padding-top: {{ section.settings.padding_top }}px;
     --section-padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -33,39 +31,18 @@
       {{ section.settings.heading }}
     </h2>
     <div class="custom-testimonials__swiper swiper" id="custom-testimonials-swiper-{{ section.id }}">
-      <div class="custom-testimonials__grid swiper-wrapper cols-{{ section.settings.columns_desktop }} cols-tablet-{{ section.settings.columns_tablet }} cols-mobile-{{ section.settings.columns_mobile }}">
+      <div class="custom-testimonials__grid swiper-wrapper">
         {%- for block in section.blocks -%}
-          <div class="custom-testimonials__card swiper-slide"
-            style="
-              --card-bg: {{ section.settings.card_bg }};
-              --card-text-color: {{ section.settings.card_text_color }};
-              --card-radius: {{ section.settings.card_radius }}px;
-              --card-shadow: {{ section.settings.card_shadow }};
-              --card-border: {{ section.settings.card_border }};
-              --title-size: {{ section.settings.title_size }}px;
-              --title-align: {{ block.settings.title_align }};
-              --text-size: {{ section.settings.text_size }}px;
-              --text-align: {{ block.settings.text_align }};
-              --author-size: {{ section.settings.author_size }}px;
-              --author-color: {{ section.settings.author_color }};
-              --author-align: {{ block.settings.author_align }};
-              --quote-color: {{ section.settings.quote_color }};
-              --quote-size: {{ section.settings.quote_size }}px;
-              --quote-align: {{ block.settings.quote_align }};
-              --star-color: {{ section.settings.star_color }};
-              --star-size: {{ section.settings.star_size }}px;
-              --star-align: {{ block.settings.stars_align }};
-              --star-empty-color: {{ section.settings.star_empty_color }};
-            "
-          >
+          <div class="custom-testimonials__card swiper-slide">
             <div class="custom-testimonials__quote">
               {%- if block.settings.quote_icon_img != blank -%}
                 <img src="{{ block.settings.quote_icon_img | image_url: width: 80 }}"
                      alt="Quote Icon"
                      width="{{ block.settings.quote_icon_img_width | default: 40 }}"
+                     height="{{ block.settings.quote_icon_img_width | default: 40 }}"
                      style="display:inline-block;vertical-align:middle;margin-right:6px;width:{{ block.settings.quote_icon_img_width | default: 40 }}px;height:auto;max-height:60px;" />
               {%- endif -%}
-              {{ section.settings.quote_icon }}
+              
             </div>
             <div class="custom-testimonials__stars">
               {%- assign empty_stars_start = block.settings.stars | plus: 1 -%}
@@ -101,41 +78,10 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "WHAT OTHER ARE SAYING" },
     { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#000000" },
     { "type": "select", "id": "heading_align", "label": "Heading Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "center" },
-    { "type": "text", "id": "heading_font", "label": "Heading Font Family", "default": "inherit" },
-    { "type": "range", "id": "heading_size_mobile", "label": "Heading Font Size (Mobile, px)", "min": 14, "max": 32, "step": 1, "default": 22 },
-    { "type": "range", "id": "heading_size_desktop", "label": "Heading Font Size (Desktop, px)", "min": 24, "max": 64, "step": 1, "default": 36 },
+    { "type": "select", "id": "content_align", "label": "Content Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "left" },
     { "type": "color", "id": "bg_color", "label": "Section Background Color", "default": "#fff" },
     { "type": "range", "id": "padding_top", "label": "Section Padding Top (px)", "min": 0, "max": 100, "step": 1, "default": 32 },
-    { "type": "range", "id": "padding_bottom", "label": "Section Padding Bottom (px)", "min": 0, "max": 100, "step": 1, "default": 32 },
-    { "type": "color", "id": "card_bg", "label": "Card Background Color", "default": "#fff" },
-    { "type": "color", "id": "card_text_color", "label": "Card Text Color", "default": "#222" },
-    { "type": "text", "id": "card_border", "label": "Card Border (CSS)", "default": "none" },
-    { "type": "text", "id": "card_shadow", "label": "Card Box Shadow (CSS)", "default": "0 2px 8px rgba(0,0,0,0.04)" },
-    { "type": "range", "id": "card_radius", "label": "Card Border Radius (px)", "min": 0, "max": 32, "step": 1, "default": 8 },
-    { "type": "range", "id": "card_padding", "label": "Card Padding (px)", "min": 8, "max": 48, "step": 1, "default": 24 },
-    { "type": "range", "id": "card_gap", "label": "Gap Between Cards (px)", "min": 0, "max": 48, "step": 1, "default": 24 },
-    { "type": "range", "id": "columns_desktop", "label": "Columns on Desktop", "min": 1, "max": 6, "step": 1, "default": 4 },
-    { "type": "range", "id": "columns_tablet", "label": "Columns on Tablet", "min": 1, "max": 4, "step": 1, "default": 2 },
-    {
-      "type": "select",
-      "id": "columns_mobile",
-      "label": "Columns on Mobile",
-      "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" }
-      ],
-      "default": "1"
-    },
-    { "type": "color", "id": "star_color", "label": "Star Color", "default": "#000" },
-    { "type": "color", "id": "star_empty_color", "label": "Empty Star Color", "default": "#bbb" },
-    { "type": "range", "id": "star_size", "label": "Star Size (px)", "min": 12, "max": 32, "step": 1, "default": 20 },
-    { "type": "text", "id": "quote_icon", "label": "Quote Icon (HTML)", "default": "&#8220;&#8220;" },
-    { "type": "color", "id": "quote_color", "label": "Quote Icon Color", "default": "#444" },
-    { "type": "range", "id": "quote_size", "label": "Quote Icon Size (px)", "min": 16, "max": 48, "step": 1, "default": 32 },
-    { "type": "range", "id": "title_size", "label": "Review Title Font Size (px)", "min": 12, "max": 32, "step": 1, "default": 18 },
-    { "type": "range", "id": "text_size", "label": "Review Text Font Size (px)", "min": 10, "max": 24, "step": 1, "default": 14 },
-    { "type": "color", "id": "author_color", "label": "Author Color", "default": "#000" },
-    { "type": "range", "id": "author_size", "label": "Author Font Size (px)", "min": 10, "max": 24, "step": 1, "default": 14 }
+    { "type": "range", "id": "padding_bottom", "label": "Section Padding Bottom (px)", "min": 0, "max": 100, "step": 1, "default": 32 }
   ],
   "blocks": [
     {
@@ -146,12 +92,7 @@
         { "type": "textarea", "id": "text", "label": "Review Text", "default": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et." },
         { "type": "text", "id": "author", "label": "Author Name", "default": "NAME" },
         { "type": "range", "id": "stars", "label": "Star Rating", "min": 1, "max": 5, "step": 1, "default": 5 },
-        { "type": "select", "id": "quote_align", "label": "Quote Icon Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "left" },
         { "type": "image_picker", "id": "quote_icon_img", "label": "Quote Icon Image (optional)" },
-        { "type": "select", "id": "stars_align", "label": "Stars Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "left" },
-        { "type": "select", "id": "title_align", "label": "Title Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "left" },
-        { "type": "select", "id": "text_align", "label": "Text Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "left" },
-        { "type": "select", "id": "author_align", "label": "Author Alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "left" },
         { "type": "range", "id": "quote_icon_img_width", "label": "Quote Icon Image Width (px)", "min": 16, "max": 80, "step": 1, "default": 40 }
       ]
     }

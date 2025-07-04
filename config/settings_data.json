@@ -109,7 +109,7 @@
     "badge_corner_radius": 40,
     "sale_badge_color_scheme": "scheme-5",
     "sold_out_badge_color_scheme": "scheme-3",
-    "brand_headline": "Discover the Story Behind the Brand - Your Trusted Source for Quality Info.",
+    "brand_headline": "About Our Store",
     "brand_description": "<p>Discover the benefits of our products through accurate descriptions based on scientific research and expert knowledge.</p>",
     "brand_image_width": 100,
     "social_facebook_link": "xxx",
@@ -153,6 +153,19 @@
       "main-footer": {
         "type": "main-footer",
         "blocks": {
+          "brand_information_6yLG3J": {
+            "type": "brand_information",
+            "settings": {
+              "show_social": false
+            }
+          },
+          "link_list_j64d79": {
+            "type": "link_list",
+            "settings": {
+              "heading": "Customer Service",
+              "menu": "customer-account-main-menu"
+            }
+          },
           "link_list_tRGQXg": {
             "type": "link_list",
             "settings": {
@@ -160,24 +173,16 @@
               "menu": "footer"
             }
           },
-          "brand_information_mfQiAe": {
-            "type": "brand_information",
-            "settings": {
-              "show_social": false
-            }
-          },
-          "image_ignBDg": {
-            "type": "image",
-            "settings": {
-              "image_width": 65,
-              "alignment": "center"
-            }
+          "social_icons_H6RVrc": {
+            "type": "social_icons",
+            "settings": {}
           }
         },
         "block_order": [
+          "brand_information_6yLG3J",
+          "link_list_j64d79",
           "link_list_tRGQXg",
-          "brand_information_mfQiAe",
-          "image_ignBDg"
+          "social_icons_H6RVrc"
         ],
         "settings": {
           "color_scheme": "",
