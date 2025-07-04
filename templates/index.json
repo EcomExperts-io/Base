@@ -171,6 +171,113 @@
         "button_bg_color_mobile": "#00aed9"
       }
     },
+    "custom_testimonials_7UWRGN": {
+      "type": "custom-testimonials",
+      "blocks": {
+        "testimonial_9g4YBd": {
+          "type": "testimonial",
+          "settings": {
+            "title": "Review Title",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
+            "author": "NAME",
+            "stars": 5,
+            "quote_align": "left",
+            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
+            "stars_align": "left",
+            "title_align": "left",
+            "text_align": "left",
+            "author_align": "left",
+            "quote_icon_img_width": 27
+          }
+        },
+        "testimonial_e6iktR": {
+          "type": "testimonial",
+          "settings": {
+            "title": "Review Title",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
+            "author": "NAME",
+            "stars": 5,
+            "quote_align": "left",
+            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
+            "stars_align": "left",
+            "title_align": "left",
+            "text_align": "left",
+            "author_align": "left",
+            "quote_icon_img_width": 27
+          }
+        },
+        "testimonial_tT4WHg": {
+          "type": "testimonial",
+          "settings": {
+            "title": "Review Title",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
+            "author": "NAME",
+            "stars": 5,
+            "quote_align": "left",
+            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
+            "stars_align": "left",
+            "title_align": "left",
+            "text_align": "left",
+            "author_align": "left",
+            "quote_icon_img_width": 27
+          }
+        },
+        "testimonial_Jbbhk3": {
+          "type": "testimonial",
+          "settings": {
+            "title": "Review Title",
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
+            "author": "NAME",
+            "stars": 5,
+            "quote_align": "left",
+            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
+            "stars_align": "left",
+            "title_align": "left",
+            "text_align": "left",
+            "author_align": "left",
+            "quote_icon_img_width": 27
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_9g4YBd",
+        "testimonial_e6iktR",
+        "testimonial_tT4WHg",
+        "testimonial_Jbbhk3"
+      ],
+      "name": "Custom Testimonials",
+      "settings": {
+        "heading": "WHAT OTHER ARE SAYING",
+        "heading_color": "#000000",
+        "heading_align": "center",
+        "heading_font": "inherit",
+        "heading_size_mobile": 22,
+        "heading_size_desktop": 30,
+        "bg_color": "#ffffff",
+        "padding_top": 42,
+        "padding_bottom": 30,
+        "card_bg": "#ffffff",
+        "card_text_color": "#222222",
+        "card_border": "none",
+        "card_shadow": "",
+        "card_radius": 8,
+        "card_padding": 12,
+        "card_gap": 26,
+        "columns_desktop": 4,
+        "columns_tablet": 2,
+        "columns_mobile": "1",
+        "star_color": "#000000",
+        "star_empty_color": "#bbbbbb",
+        "star_size": 25,
+        "quote_icon": "",
+        "quote_color": "#444444",
+        "quote_size": 48,
+        "title_size": 18,
+        "text_size": 14,
+        "author_color": "#000000",
+        "author_size": 14
+      }
+    },
     "exclusie_faq_g9G4yC": {
       "type": "faq",
       "blocks": {
@@ -267,112 +374,6 @@
       "name": "Exclusie Icons With Text",
       "settings": {}
     },
-    "custom_testimonials_7UWRGN": {
-      "type": "custom-testimonials",
-      "blocks": {
-        "testimonial_9g4YBd": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_align": "left",
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
-            "quote_icon_img_width": 27
-          }
-        },
-        "testimonial_e6iktR": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_align": "left",
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
-            "quote_icon_img_width": 27
-          }
-        },
-        "testimonial_tT4WHg": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_align": "left",
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
-            "quote_icon_img_width": 27
-          }
-        },
-        "testimonial_Jbbhk3": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_align": "left",
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "stars_align": "left",
-            "title_align": "left",
-            "text_align": "left",
-            "author_align": "left",
-            "quote_icon_img_width": 27
-          }
-        }
-      },
-      "block_order": [
-        "testimonial_9g4YBd",
-        "testimonial_e6iktR",
-        "testimonial_tT4WHg",
-        "testimonial_Jbbhk3"
-      ],
-      "name": "Custom Testimonials",
-      "settings": {
-        "heading": "WHAT OTHER ARE SAYING",
-        "heading_color": "#000000",
-        "heading_size": 32,
-        "heading_align": "center",
-        "heading_font": "inherit",
-        "bg_color": "#ffffff",
-        "padding_top": 14,
-        "padding_bottom": 0,
-        "card_bg": "#ffffff",
-        "card_text_color": "#222222",
-        "card_border": "none",
-        "card_shadow": "",
-        "card_radius": 8,
-        "card_padding": 12,
-        "card_gap": 26,
-        "columns_desktop": 4,
-        "columns_tablet": 2,
-        "columns_mobile": "1",
-        "star_color": "#000000",
-        "star_empty_color": "#bbbbbb",
-        "star_size": 25,
-        "quote_icon": "",
-        "quote_color": "#444444",
-        "quote_size": 48,
-        "title_size": 18,
-        "text_size": 14,
-        "author_color": "#000000",
-        "author_size": 14
-      }
-    },
     "style_gallery_gki89j": {
       "type": "style-gallery",
       "blocks": {
@@ -418,13 +419,13 @@
       "settings": {
         "heading": "STYLE GALLERY",
         "heading_color": "#000000",
-        "heading_size": 24,
+        "heading_size": 30,
         "heading_align": "center",
         "heading_font": "inherit",
         "bg_color": "#ffffff",
-        "padding_top": 32,
+        "padding_top": 54,
         "padding_bottom": 0,
-        "card_gap": 24
+        "card_gap": 0
       }
     },
     "newsletter_signup_GGiDB7": {
@@ -455,9 +456,9 @@
     "featured_collections_example",
     "featured_products_example",
     "exclusive_section_NfqBik",
+    "custom_testimonials_7UWRGN",
     "exclusie_faq_g9G4yC",
     "exclusie_icons_with_text_K6q6tD",
-    "custom_testimonials_7UWRGN",
     "style_gallery_gki89j",
     "newsletter_signup_GGiDB7"
   ]

@@ -41,10 +41,9 @@ class CustomTestimonialsSlider extends HTMLElement {
       if (this.shouldEnableSwiper()) {
         if (!this.swiper) {
           this.swiper = new Swiper(selector, {
-            slidesPerView: 1.5,
-            centeredSlides: false,
-            spaceBetween: 0,
-            autoHeight: true,
+            slidesPerView: 1,
+            spaceBetween: 16,
+            loop: true,
             navigation: {
               nextEl: `${selector} .custom-testimonials__swiper-next`,
               prevEl: `${selector} .custom-testimonials__swiper-prev`,

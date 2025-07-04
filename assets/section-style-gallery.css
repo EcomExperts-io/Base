@@ -1,6 +1,9 @@
 /* Style Gallery Section Styles */
 .style-gallery-section {
   width: 100%;
+  background: var(--section-bg);
+  padding-top: var(--section-padding-top);
+  padding-bottom: var(--section-padding-bottom);
 }
 .style-gallery__container {
   max-width: 100%;
@@ -13,14 +16,17 @@
   letter-spacing: 0.01em;
   margin-bottom: 2.5rem;
   margin-top: 0;
-  text-align: center;
+  text-align: var(--heading-align);
+  color: var(--heading-color);
+  font-family: var(--heading-font);
+  font-size: var(--heading-size);
 }
 .style-gallery__swiper {
   width: 100%;
 }
 .style-gallery__grid {
   display: flex;
-  gap: 24px;
+  gap: var(--card-gap);
 }
 .style-gallery__card {
   display: flex;
@@ -46,10 +52,10 @@
   justify-content: center;
   border-radius: 8px;
 }
+.swiper-autoheight, .swiper-autoheight .swiper-slide {
+    height: 284px;
+}
 @media (max-width: 900px) {
-  .style-gallery__grid {
-    gap: 16px;
-  }
   .style-gallery__img, .style-gallery__img--placeholder, .style-gallery__card {
     min-width: 140px;
     min-height: 140px;
@@ -57,9 +63,6 @@
   }
 }
 @media (max-width: 600px) {
-  .style-gallery__grid {
-    gap: 8px;
-  }
   .style-gallery__img, .style-gallery__img--placeholder, .style-gallery__card {
     min-width: 100px;
     min-height: 100px;

@@ -27,10 +27,11 @@ class CustomStyleGallerySlider extends HTMLElement {
       const selector = `#style-gallery-swiper-${this.sectionId}`;
       if (!this.swiper) {
         this.swiper = new Swiper(selector, {
-          slidesPerView: 1,
-          centeredSlides: false,
-          spaceBetween: 0,
-          autoHeight: true,
+          slidesPerView: 2,
+          centeredSlides: true,
+          spaceBetween: 10,
+          autoHeight: false,
+          loop: true,
           navigation: {
             nextEl: `${selector} .style-gallery__swiper-next`,
             prevEl: `${selector} .style-gallery__swiper-prev`,
@@ -44,9 +45,30 @@ class CustomStyleGallerySlider extends HTMLElement {
               spaceBetween: 24
             },
           },
-          loop: window.innerWidth >= 990 ? true : false,
           watchOverflow: true,
           initialSlide: 0,
+        });
+        
+        // Set responsive height directly on Swiper container and slides
+        const swiperContainer = this.querySelector('.swiper');
+        const swiperWrapper = this.querySelector('.swiper-wrapper');
+        const swiperSlides = this.querySelectorAll('.swiper-slide');
+        
+        // Set responsive height based on screen size
+        let slideHeight = '200px'; // Default for mobile
+        if (window.innerWidth >= 750) {
+          slideHeight = '250px'; // Medium screens
+        }
+        if (window.innerWidth >= 990) {
+          slideHeight = '284px'; // Desktop
+        }
+        
+        if (swiperContainer) {
+          swiperContainer.style.height = slideHeight;
+        }
+        if (swiperWrapper) swiperWrapper.style.height = slideHeight;
+        swiperSlides.forEach(slide => {
+          slide.style.height = slideHeight;
         });
       }
       this.toggleNav(true);

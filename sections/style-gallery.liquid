@@ -17,13 +17,24 @@
 -%}
 
 <custom-style-gallery-slider data-section-id="{{ section.id }}">
-<section id="{{ section_id }}" class="style-gallery-section" style="background: {{ section.settings.bg_color }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
-  <div class="style-gallery__container" style="max-width: 95%;">
-    <h2 class="style-gallery__heading" style="color: {{ section.settings.heading_color }}; text-align: {{ section.settings.heading_align }}; font-size: {{ section.settings.heading_size }}px; font-family: {{ section.settings.heading_font }};">
+<section id="{{ section_id }}" class="style-gallery-section"
+  style="
+    --section-bg: {{ section.settings.bg_color }};
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --heading-color: {{ section.settings.heading_color }};
+    --heading-align: {{ section.settings.heading_align }};
+    --heading-font: {{ section.settings.heading_font }};
+    --heading-size: {{ section.settings.heading_size }}px;
+    --card-gap: {{ section.settings.card_gap }}px;
+  "
+>
+  <div class="style-gallery__container">
+    <h2 class="style-gallery__heading">
       {{ section.settings.heading }}
     </h2>
     <div class="style-gallery__swiper swiper" id="style-gallery-swiper-{{ section.id }}">
-      <div class="style-gallery__grid swiper-wrapper" style="gap: {{ section.settings.card_gap }}px;">
+      <div class="style-gallery__grid swiper-wrapper">
         {%- for block in section.blocks -%}
           <div class="style-gallery__card swiper-slide">
             {%- if block.settings.image != blank -%}
