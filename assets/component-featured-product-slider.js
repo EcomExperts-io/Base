@@ -23,9 +23,9 @@ class FeaturedProducts extends HTMLElement {
       if (window.Swiper && this.sectionId) {
         const selector = `#featured-products-${this.sectionId}`;
         this.swiper = new Swiper(selector, {
-          slidesPerView: 1,
+          slidesPerView: 1.2,
           centeredSlides: true,
-          spaceBetween: 24,
+          spaceBetween: 16,
           autoHeight: true,
           navigation: {
             nextEl: `${selector} .featured-products__swiper-next`,

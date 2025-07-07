@@ -156,6 +156,9 @@
   }
   .collection-card__link {
     min-width: 0;
+    max-width: 343px;
+    margin: auto;
+    width: 100%;
   }
   .collection-card__image-wrapper.media--portrait {
     padding-bottom: 100%;
