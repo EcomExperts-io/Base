@@ -96,7 +96,7 @@
 }
 
 .hero-banner-section .hero-banner__heading {
-  font-size: 2.5em;
+  font-size: 4.4rem;
   margin-bottom: 5px;
   font-weight: bold;
   line-height: 1.2;
@@ -104,20 +104,23 @@
 }
 
 .hero-banner-section .hero-banner__subheading {
-  font-size: 1.2em;
+  font-size: 2.2rem;
   margin-bottom: 20px;
   max-width: 600px;
 }
 
 .hero-banner-section .hero-banner__button {
   display: inline-block;
-  padding: 12px 30px;
+  padding: 18px 30px 18px 30px;
   background-color: var(--hero-button-color, #FFFFFF);
-  color: #000;
+  color: var(--hero-button-text-color, #000000);
   text-decoration: none;
   font-weight: bold;
-  border-radius: 4px;
   transition: all 0.3s ease;
+  max-width: 211px;
+  width: 100%;
+  text-transform: uppercase;
+  font-size: 2rem;
 }
 
 .hero-banner-section .hero-banner__button:hover {
@@ -215,11 +218,14 @@
   }
 
   .hero-banner-section .hero-banner__heading {
-    font-size: 2em;
+    font-size: 3rem;
   }
 
   .hero-banner-section .hero-banner__subheading {
-    font-size: 1em;
+    font-size: 1.8rem;
+  }
+  .hero-banner-section .hero-banner__button{
+    font-size: 1.4rem;
   }
 
   .hero-banner-section .hero-banner__endorsement {

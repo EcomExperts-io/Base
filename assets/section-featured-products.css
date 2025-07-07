@@ -16,7 +16,7 @@
 
 .featured-products-content{
   position: relative;
-  padding-top: 3rem;
+  padding-top: 8rem;
   padding-bottom: 3rem;
   width: 95%;
 }
@@ -39,8 +39,8 @@
 
 .featured-products__heading {
   margin-bottom: 0.5rem; /* Adjust spacing */
-  font-size: 3rem; /* Example size */
-  font-weight: bold;
+  font-size: 3.6rem; /* Example size */
+  font-weight: 600;
   text-transform: uppercase;
   margin-top: 0;
   /* Assuming H2 style from base.css is sufficient */
@@ -62,12 +62,12 @@
 
 .featured-products__button-wrapper {
   text-align: center;
-  margin-top: 3rem;
+  margin-top: 7rem;
 }
 
 .featured-products__view-all-button {
   display: inline-block;
-  padding: 15px 30px;
+  padding: 18px 30px;
   background-color: var(--button-bg-color, #000);
   color: var(--button-text-color, #fff);
   text-decoration: none;
@@ -76,6 +76,8 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  width: 100%;
+  max-width: 211px;
 }
 
 .featured-products__view-all-button:hover {
@@ -165,7 +167,7 @@
 }
 
 .product-card__title {
-  font-size: 18px; /* Doubled font size */
+  font-size: 1.8rem; /* Doubled font size */
   margin-top: 0;
   margin-bottom: 0;
   font-weight: 600;
@@ -203,6 +205,8 @@
 .product-card__review-link {
   text-decoration: none; /* Remove default underline if needed */
   color: rgba(var(--color-foreground), 0.75); /* Use existing theme variable/opacity */
+  font-size: 1.4rem;
+  font-weight: 400;
 }
 
 .product-card__review-link:hover {
@@ -222,6 +226,8 @@
 
 .product-card__price .price__regular {
   color: #262626;
+  font-size: 1.8rem;
+  font-weight: 400;
 }
 
 .price--on-sale {
@@ -315,7 +321,7 @@
     padding: 0 0.5rem;
   }
   .featured-products__heading{
-    font-size: 2.5rem;
+    font-size: 2.4rem;
   }
   .featured-products__card.swiper-slide {
     width: 100%;

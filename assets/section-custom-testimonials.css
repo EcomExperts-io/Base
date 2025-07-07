@@ -7,7 +7,7 @@
 }
 
 .custom-testimonials__container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 30px auto;
   padding-left: 16px;
   padding-right: 16px;
@@ -25,7 +25,7 @@
 
 @media (min-width: 750px) {
   .custom-testimonials__heading {
-    font-size: 3rem;
+    font-size: 3.6rem;
   }
 }
 
@@ -64,6 +64,20 @@
   .custom-testimonials__swiper .swiper-slide:first-child {
     margin-left: 0;
   }
+}
+@media (max-width: 768px) {
+.custom-testimonials__heading {
+  font-size: 2.4rem;
+}
+.custom-testimonials__title {
+  font-size: 1.6rem;
+}
+.custom-testimonials__text{
+  font-size: 1.2rem;
+}
+.custom-testimonials__author{
+  font-size: 1.2rem;
+}
 }
 
 .custom-testimonials__card {
@@ -116,8 +130,8 @@
 }
 
 .custom-testimonials__title {
-  font-weight: bold;
-  font-size: 18px;
+  font-weight: 600;
+  font-size: 1.8rem;
   text-align: var(--content-align, left);
   margin-top: 0;
   margin-bottom: 0.5rem;
@@ -125,21 +139,22 @@
 }
 
 .custom-testimonials__text {
-  font-size: 14px;
+  font-size: 1.6rem;
   text-align: var(--content-align, left);
   margin-top: 0;
   margin-bottom: 0;
   font-style: italic;
   line-height: 1.4;
+  font-weight: 400;
 }
 
 .custom-testimonials__author {
-  font-size: 14px;
+  font-size: 1.4rem;
   color: #000;
   text-align: var(--content-align, left);
   margin-top: 16px;
   margin-bottom: 0;
-  font-weight: bold;
+  font-weight: 600;
   font-style: normal;
   letter-spacing: 0.01em;
 }

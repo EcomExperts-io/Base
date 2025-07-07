@@ -10,6 +10,7 @@
   margin: 0 auto;
   padding-left: 0;
   padding-right: 0;
+  margin-bottom: 10rem;
 }
 .style-gallery__heading {
   font-weight: bold;
@@ -18,7 +19,7 @@
   margin-top: 0;
   text-align: var(--heading-align);
   color: var(--heading-color);
-  font-size: 3rem;
+  font-size: 3.6rem;
 }
 .style-gallery__swiper {
   width: 100%;
@@ -61,7 +62,7 @@
     height: 140px;
   }
   .style-gallery__heading{
-    font-size: 2.5rem;
+    font-size: 2.4rem;
   }
 }
 @media (max-width: 600px) {

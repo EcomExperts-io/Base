@@ -1,20 +1,22 @@
 /* sections/featured-collections.liquid */
 
 .featured-collections-section {
-  padding-top: 3rem;
+  padding-top: 9rem;
   padding-bottom: 3rem;
+  max-width: 1280px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .featured-collections__header {
   text-align: left; /* Align header text left */
-  margin-bottom: 2rem;
 }
 
 .featured-collections__heading {
   margin-bottom: 0.5rem; /* Adjust spacing */
   font-weight: bold; /* Make heading bold */
   color: #000000; /* Make heading black */
-  font-size: 3rem; /* Match featured products heading size */
+  font-size: 3.6rem; /* Match featured products heading size */
   /* Inherits h2 style */
 }
 
@@ -28,6 +30,7 @@
 .featured-collections__grid {
   margin: 0; /* Remove default grid margin if any */
   padding: 0; /* Remove default grid padding if any */
+  gap: 25px;
   /* Uses base.css flexbox grid */
 }
 
@@ -121,7 +124,6 @@
   color: #111;
   text-align: center;
   padding: 1.25rem 0 0.75rem 0;
-  margin-top: 0.5rem;
   border-radius: 0 0 8px 8px;
   box-shadow: none;
 }
@@ -129,6 +131,8 @@
   color: #111;
   margin-bottom: 0.25rem;
   text-transform: none;
+  font-size: 2.4rem;
+  font-weight: 600;
 }
 .collection-card__info--below .collection-card__shop-now {
   color: #0D6EFD;
@@ -158,5 +162,9 @@
   }
   .featured-collections__heading{
     font-size: 2.5rem;
+  }
+  .collection-card__info--below .collection-card__title{
+    font-size: 2rem;
+    font-weight: 600;
   }
 }

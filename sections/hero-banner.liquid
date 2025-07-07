@@ -15,6 +15,7 @@
   assign subheading = section.settings.subheading
   assign button_text = section.settings.button_text
   assign button_link = section.settings.button_link
+  assign button_text_color = section.settings.button_text_color
 
   assign show_endorsement = section.settings.show_endorsement
   assign endorsement_name = section.settings.endorsement_name
@@ -35,6 +36,7 @@
     --hero-content-alignment: {{ content_alignment }};
     --hero-vertical-alignment: {{ vertical_alignment }};
     --hero-button-color: {{ button_color }};
+    --hero-button-text-color: {{ button_text_color }};
     /* Add more variables here if needed for other settings */
   }
 </style>
@@ -232,8 +234,14 @@
     {
       "type": "color",
       "id": "button_color",
-      "label": "Button Color",
+      "label": "Button Background Color",
       "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#000000"
     },
     {
       "type": "header",

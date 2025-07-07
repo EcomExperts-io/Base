@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "sections": {
     "hero_banner_1": {
       "type": "hero-banner",
@@ -22,10 +22,11 @@
         "text_color": "#000000",
         "stars_text": "",
         "heading": "Main Banner Title Here",
-        "subheading": "SubHeader Here",
+        "subheading": "Sub Header Here",
         "button_text": "Shop Now",
         "button_link": "shopify://collections/cam-plans",
-        "button_color": "#ffffff",
+        "button_color": "#000000",
+        "button_text_color": "#ffffff",
         "show_endorsement": false,
         "endorsement_name": ""
       }
@@ -230,6 +231,7 @@
         "heading": "WHAT OTHER ARE SAYING",
         "heading_color": "#000000",
         "heading_align": "center",
+        "content_align": "left",
         "bg_color": "#ffffff",
         "padding_top": 42,
         "padding_bottom": 30
@@ -276,49 +278,49 @@
         "icon_text_7yeU4h": {
           "type": "icon_text",
           "settings": {
-            "icon_image": "shopify://shop_images/worldwide_15808138_2.png",
+            "icon_image": "shopify://shop_images/worldwide_15808138_2_6ffd423c-be08-47d7-9504-560026b77612.png",
             "icon_svg": "",
-            "icon_color": "#222222",
+            "icon_color": "#000000",
             "title": "FREE SHIPPING",
-            "title_color": "#222222",
+            "title_color": "#000000",
             "subtitle": "Free shipping over $150 USD",
-            "subtitle_color": "#222222"
+            "subtitle_color": "#4d4d4d"
           }
         },
         "icon_text_4wWPPL": {
           "type": "icon_text",
           "settings": {
-            "icon_image": "shopify://shop_images/package_5272184_1.png",
+            "icon_image": "shopify://shop_images/package_5272184_1_24242416-331e-4a54-8468-69b9e9a53663.png",
             "icon_svg": "",
-            "icon_color": "#222222",
+            "icon_color": "#000000",
             "title": "28 DAY FREE RETURNS",
-            "title_color": "#222222",
+            "title_color": "#000000",
             "subtitle": "Free Returns: Link to See conditions for Free Returns",
-            "subtitle_color": "#222222"
+            "subtitle_color": "#4d4d4d"
           }
         },
         "icon_text_nGXTQV": {
           "type": "icon_text",
           "settings": {
-            "icon_image": "shopify://shop_images/credit-card_492927_1.png",
+            "icon_image": "shopify://shop_images/credit-card_492927_1_15362030-2954-4b51-9a80-17564898b217.png",
             "icon_svg": "",
-            "icon_color": "#222222",
+            "icon_color": "#000000",
             "title": "PAYMENT OPTIONS",
-            "title_color": "#222222",
+            "title_color": "#000000",
             "subtitle": "We accept all credit Cards: Klarna, PayPal, Shop Pay Installments by Affirm, etc.",
-            "subtitle_color": "#222222"
+            "subtitle_color": "#4d4d4d"
           }
         },
         "icon_text_XmRJK4": {
           "type": "icon_text",
           "settings": {
-            "icon_image": "shopify://shop_images/question_10821051_1.png",
+            "icon_image": "shopify://shop_images/question_10821051_1_0212845e-9b9e-48b4-9718-c5085516d232.png",
             "icon_svg": "",
-            "icon_color": "#222222",
+            "icon_color": "#000000",
             "title": "HERE FOR YOU",
-            "title_color": "#222222",
+            "title_color": "#000000",
             "subtitle": "customerservice@dummy.com (000) 000-0000",
-            "subtitle_color": "#222222"
+            "subtitle_color": "#4d4d4d"
           }
         }
       },

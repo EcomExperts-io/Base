@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   position: relative;
-  margin: auto;
+  margin: 99px auto;
 }
 
 .exclusive-circle {
@@ -25,7 +25,7 @@
 
 .exclusive-content {
   flex: 1;
-  padding: 49px 50px;
+  padding: 52px 50px;
   gap: 10px;
   display: flex;
   flex-flow: column;
@@ -35,7 +35,7 @@
 }
 
 .exclusive-title {
-  font-size: 3rem;
+  font-size: 3.2rem;
   font-weight: 700;
   line-height: 40px;
   text-transform: uppercase;
@@ -45,7 +45,7 @@
 
 .exclusive-subtitle {
   font-family: 'HvDTrial Brandon Text', Arial, sans-serif;
-  font-size: 20px;
+  font-size: 2rem;
   font-weight: 400;
   line-height: 36px;
   text-transform: uppercase;
@@ -58,9 +58,9 @@
   color: #ffffff;
   border: none;
   border-radius: 4px;
-  padding: 16px 50px;
+  padding: 19px 42px;
   font-family: 'HvDTrial Brandon Text', Arial, sans-serif;
-  font-size: 16px;
+  font-size: 1.6rem;
   font-weight: 700;
   text-transform: uppercase;
   cursor: pointer;
@@ -80,11 +80,7 @@
 }
 
 
-@media (max-width: 1350px) {
-  .exclusive-section {
-    max-width: 90%;
-  }
-}
+
 
 @media (max-width: 750px) {
   .exclusive-section {
@@ -105,19 +101,19 @@
   }
 
   .exclusive-title {
-    font-size: 20px;
+    font-size: 2rem;
     line-height: 1.2;
     text-align: center;
   }
 
   .exclusive-subtitle {
-    font-size: 16px;
+    font-size: 1.6rem;
     text-align: center;
     line-height: 1.3;
   }
 
   .btn-login {
-    font-size: 14px;
+    font-size: 1.4rem;
     text-align: center;
     padding: 12px 24px;
   }

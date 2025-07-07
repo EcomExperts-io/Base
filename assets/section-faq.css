@@ -1,23 +1,23 @@
 /* FAQ Section Styles */
 .exclusie-faq-section {
   width: 100%;
-  max-width: 900px;
-  margin: 40px auto;
+  max-width: 1132px;
+  margin: 91px auto;
   background: #fff;
   border-radius: 8px;
   box-shadow: none;
-  padding: 0 0 32px 0;
 }
 
 .exclusie-faq-container {
   width: 100%;
   margin: 0 auto;
   padding: 0 16px;
+  padding-bottom: 16rem;
 }
 
 .exclusie-faq-heading {
   text-align: center;
-  font-size: 3rem;
+  font-size: 3.6rem;
   font-weight: 700;
   margin: 32px 0 32px 0;
   letter-spacing: 0.01em;
@@ -26,7 +26,7 @@
 
 .exclusie-faq-list {
   width: 100%;
-  margin: 0 auto;
+  margin: 27px auto 0px auto;
 }
 
 .exclusie-faq-item {
@@ -39,7 +39,7 @@
   background: none;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 1.6rem;
   font-weight: 600;
   text-align: left;
   padding: 24px 0 24px 0;
@@ -75,17 +75,17 @@
   }
 
   .exclusie-faq-heading {
-    font-size: 2.5rem;
+    font-size: 2.4rem;
     margin: 24px 0 24px 0;
   }
 
   .exclusie-faq-question {
-    font-size: 14px;
+    font-size: 1.4rem;
     padding: 18px 0 18px 0;
   }
 
   .exclusie-faq-answer {
-    font-size: 14px;
+    font-size: 1.4rem;
     padding-bottom: 18px;
   }
 }
