@@ -18,6 +18,7 @@
   assign product_content_alignment = section.settings.product_content_alignment
   assign review_content_alignment = section.settings.review_content_alignment
   assign product_info_text_color = section.settings.product_info_text_color
+  assign stars_color = section.settings.stars_color
 -%}
 
 <style>
@@ -26,6 +27,7 @@
     --button-text-color: {{ button_text_color }};
     --product-content-alignment: {{ product_content_alignment }};
     --review-content-alignment: {{ review_content_alignment }};
+    --stars-color: {{ stars_color }};
   }
 </style>
 
@@ -101,7 +103,7 @@
                     {% comment %} Placeholder for reviews/ratings {% endcomment %}
                     <div class="product-card__reviews product-card__reviews--{{ review_content_alignment }}">
                       <span class="visually-hidden">Rating:</span>
-                      <span class="product-card__stars">★★★★☆</span>
+                      <span class="product-card__stars" style="color: {{ stars_color | default: '#FFD700' }}">★★★★☆</span>
                       <a href="#reviews" class="product-card__review-link">
                         <span class="product-card__review-count">10 Reviews</span>
                       </a>
@@ -254,6 +256,12 @@
       "id": "product_info_text_color",
       "label": "Product Info Text Color",
       "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "stars_color",
+      "label": "Stars Color",
+      "default": "#FFD700"
     }
   ],
   "blocks": [

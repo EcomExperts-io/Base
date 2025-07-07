@@ -147,7 +147,8 @@
         "button_text_color": "#ffffff",
         "product_content_alignment": "center",
         "review_content_alignment": "center",
-        "product_info_text_color": "#111111"
+        "product_info_text_color": "#111111",
+        "stars_color": "#000000"
       }
     },
     "exclusive_section_NfqBik": {
@@ -233,7 +234,7 @@
         "heading_align": "center",
         "content_align": "left",
         "bg_color": "#ffffff",
-        "padding_top": 42,
+        "padding_top": 15,
         "padding_bottom": 30
       }
     },
@@ -380,8 +381,8 @@
         "heading_color": "#000000",
         "heading_align": "center",
         "bg_color": "#ffffff",
-        "padding_top": 32,
-        "padding_bottom": 32
+        "padding_top": 100,
+        "padding_bottom": 0
       }
     },
     "newsletter_signup_GGiDB7": {
