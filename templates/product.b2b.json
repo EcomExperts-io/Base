@@ -1,0 +1,132 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+    "sections": {
+      "main-product": {
+        "type": "main-product",
+        "blocks": {
+          "title_bpmXVj": {
+            "type": "title",
+            "settings": {
+              "title_color": "#000000",
+              "title_font_size": 32,
+              "title_font_weight": "500"
+            }
+          },
+          "price_4XTzqR": {
+            "type": "price",
+            "settings": {
+              "price_color": "#000000",
+              "price_font_size": 16,
+              "price_font_weight": "500"
+            }
+          },
+          "inventory_aTTemW": {
+            "type": "inventory",
+            "settings": {
+              "text_style": "body",
+              "inventory_threshold": 3,
+              "show_inventory_quantity": false,
+              "low_stock_color": "#000000"
+            }
+          },
+          "variant_picker_NWh8q7": {
+            "type": "variant_picker",
+            "settings": {
+              "picker_type": "button",
+              "swatch_shape": "circle"
+            }
+          },
+          "quantity_selector_cwaLFj": {
+            "type": "quantity_selector",
+            "settings": {}
+          },
+          "subscription_AbipnR": {
+            "type": "subscription",
+            "settings": {
+              "supporting_text_title": "Purchase options"
+            }
+          },
+          "share_ybFkAW": {
+            "type": "share",
+            "settings": {
+              "share_label": "Share"
+            }
+          },
+          "buy_buttons_JPDYXc": {
+            "type": "buy_buttons",
+            "settings": {
+              "show_dynamic_checkout": true,
+              "show_gift_card_recipient": true
+            }
+          },
+          "description_RxGjaP": {
+            "type": "description",
+            "settings": {
+              "show_as_accordion": true,
+              "description_color": "#000000",
+              "description_font_size": 16,
+              "description_font_weight": "500"
+            }
+          }
+        },
+        "block_order": [
+          "title_bpmXVj",
+          "price_4XTzqR",
+          "inventory_aTTemW",
+          "variant_picker_NWh8q7",
+          "quantity_selector_cwaLFj",
+          "subscription_AbipnR",
+          "share_ybFkAW",
+          "buy_buttons_JPDYXc",
+          "description_RxGjaP"
+        ],
+        "settings": {
+          "enable_sticky_info": true,
+          "color_scheme": "",
+          "media_size": "medium",
+          "constrain_to_viewport": true,
+          "media_fit": "cover",
+          "media_position": "left",
+          "image_zoom": "hover",
+          "enable_video_looping": true,
+          "padding_top": 36,
+          "padding_bottom": 100,
+          "variant_label_color": "#000000",
+          "variant_label_font_size": 13,
+          "variant_label_font_weight": "300"
+        }
+      },
+      "related-products": {
+        "type": "related-products",
+        "settings": {
+          "heading": "You may also like",
+          "heading_size": "h2",
+          "products_to_show": 4,
+          "columns_desktop": 4,
+          "enable_swatches": true,
+          "swatch_type": "image",
+          "swatch_trigger": "Color",
+          "color_scheme": "scheme-1",
+          "image_ratio": "square",
+          "show_vendor": false,
+          "show_rating": false,
+          "columns_mobile": "2",
+          "padding_top": 36,
+          "padding_bottom": 28
+        }
+      }
+    },
+    "order": [
+      "main-product",
+      "related-products"
+    ]
+  }
+  

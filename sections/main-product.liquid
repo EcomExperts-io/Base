@@ -241,10 +241,29 @@
 
             {%- when 'description' -%}
               {%- if product.description != blank -%}
+                {% if block.settings.show_as_accordion %}
+                  <div class="product__accordion-group">
+                    <div class="product__accordion accordion">
+                      <details>
+                        <summary>
+                          <div class="summary__title" style="display: flex; align-items: center;">
+                            <span class="svg-wrapper" style="margin-right: 8px;">{{ 'icon-info.svg' | inline_asset_content }}</span>
+                            <h2 class="accordion__title">Description</h2>
+                          </div>
+                          {{ 'icon-caret.svg' | inline_asset_content }}
+                        </summary>
+                        <div class="accordion__content">
+                          <p>{{ product.description }}</p>
+                        </div>
+                      </details>
+                    </div>
+                  </div>
+                {% else %}
                 <div class="product__description" {{ block.shopify_attributes }}>
                   <p>{{ product.description }}</p>
                 </div>
               {%- endif -%}
+            {%- endif -%}
 
             {%- when 'buy_buttons' -%}
               <div class="product-form__buttons" {{ block.shopify_attributes }}>
@@ -314,7 +333,7 @@
                 {%- if selected_variant.inventory_management == 'shopify' -%}
                   {%- if selected_variant.inventory_quantity > 0 -%}
                     {%- if selected_variant.inventory_quantity <= block.settings.inventory_threshold -%}
-                      <span class="svg-wrapper" style="color: rgb(238, 148, 65)">
+                      <span class="svg-wrapper" style="color: {{ block.settings.low_stock_color | default: 'rgb(238, 148, 65)' }}">
                         {{- 'icon-inventory-status.svg' | inline_asset_content -}}
                       </span>
                       {%- if block.settings.show_inventory_quantity -%}
@@ -684,6 +703,12 @@
           "id": "show_inventory_quantity",
           "label": "t:sections.main-product.blocks.inventory.settings.show_inventory_quantity.label",
           "default": true
+        },
+        {
+          "type": "color",
+          "id": "low_stock_color",
+          "label": "Low stock icon color",
+          "default": "#000000"
         }
       ]
     },
@@ -762,6 +787,12 @@
       "name": "t:sections.main-product.blocks.description.name",
       "limit": 1,
       "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_as_accordion",
+          "label": "Show as accordion",
+          "default": false
+        },
         {
           "type": "color",
           "id": "description_color",
