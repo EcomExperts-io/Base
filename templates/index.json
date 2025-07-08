@@ -395,7 +395,7 @@
         "button_text": "SIGN UP",
         "bg_color": "#ffffff",
         "text_color": "#000000",
-        "desc_size": 13,
+        "desc_size": 20,
         "section_padding": 32,
         "button_bg": "#222222",
         "button_color": "#ffffff",
