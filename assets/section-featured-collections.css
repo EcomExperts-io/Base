@@ -1,7 +1,7 @@
 /* sections/featured-collections.liquid */
 
 .featured-collections-section {
-  padding-top: 9rem;
+  padding-top: 11rem;
   padding-bottom: 3rem;
   max-width: 1280px;
   padding-left: 0px;
@@ -161,7 +161,7 @@
     width: 100%;
   }
   .collection-card__image-wrapper.media--portrait {
-    padding-bottom: 100%;
+    padding-bottom: 72%!important;
   }
   .featured-collections__heading{
     font-size: 2.5rem;
@@ -170,4 +170,5 @@
     font-size: 2rem;
     font-weight: 600;
   }
+  
 }

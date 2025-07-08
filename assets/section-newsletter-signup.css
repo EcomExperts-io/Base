@@ -17,8 +17,9 @@
   margin-right: auto;
 }
 .newsletter-signup-section .newsletter-content {
-  max-width: 90%;
+  max-width: 543px;
   margin: 0 auto;
+  width: 100%;
 }
 .newsletter-signup-section .newsletter-heading {
   font-size: 3.6rem;
@@ -82,5 +83,14 @@
     max-width: 288px;
     margin: auto;
     margin-bottom: 3.5rem;
+  }
+  .newsletter-signup-section .newsletter-content {
+    max-width: 283px;
+    width: 100%;
+  }
+  .newsletter-signup-section .newsletter-btn{
+    max-width: 175px;
+    width: 100%;
+    margin-top: unset;
   }
 }

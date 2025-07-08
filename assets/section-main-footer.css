@@ -794,3 +794,12 @@ ul.footer-block__details-content a.link.link--text.list-menu__item.list-menu__it
     flex: 1 1 25%;
   }
 }
+@media screen and (max-width: 768px) {
+  .list-social__link{
+    padding: 2px;
+  }
+  li.list-social__item a {
+    width: 24px;
+    height: 24px;
+  }
+}

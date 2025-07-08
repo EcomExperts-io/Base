@@ -315,6 +315,26 @@
 @media (max-width: 750px) {
   .featured-products-content{
     width: 100%;
+    padding-top: 6rem;
+  }
+  .featured-products__view-all-button{
+    width: 100%;
+    max-width: 175px;
+  }
+  .placeholder-svg{
+    width: 100%;
+    height: 237px;
+    max-width: 211px;
+  }
+  .featured-products__button-wrapper{
+    margin-top: unset;
+  }
+  .exclusive-section{
+    margin: 40px auto!important;
+  }
+  .btn-login{
+    max-width: 255px;
+    width: 100%;
   }
   .featured-products__swiper {
     padding: 0 0.5rem;

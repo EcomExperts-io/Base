@@ -2,7 +2,6 @@
 .style-gallery-section {
   width: 100%;
   background: var(--section-bg);
-  padding-top: var(--section-padding-top);
   padding-bottom: var(--section-padding-bottom);
 }
 .style-gallery__container {
