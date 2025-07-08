@@ -78,7 +78,7 @@
     max-width: 211px;
   }
   .newsletter-signup-section .newsletter-desc {
-    font-size: var(--newsletter-desc-size, 16px);
+    font-size: 1.6rem;
     width: 100%;
     max-width: 288px;
     margin: auto;
