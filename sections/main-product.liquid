@@ -27,7 +27,7 @@
         {% when 'title' %}
           .product__title h1 {
             color: {{ block.settings.title_color }};
-            font-size: {{ block.settings.title_font_size }}px;
+            font-size: {{ block.settings.title_font_size_mobile | default: block.settings.title_font_size }}px;
             font-weight: {{ block.settings.title_font_weight }};
           }
         {% when 'description' %}
@@ -39,7 +39,7 @@
         {% when 'price' %}
           .price-item {
             color: {{ block.settings.price_color }};
-            font-size: {{ block.settings.price_font_size }}px;
+            font-size: {{ block.settings.price_font_size_mobile | default: block.settings.price_font_size }}px;
             font-weight: {{ block.settings.price_font_weight }};
           }
       {% endcase %}
@@ -50,6 +50,23 @@
         padding-top: {{ section.settings.padding_top }}px;
         padding-bottom: {{ section.settings.padding_bottom }}px;
       }
+      
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'title' %}
+            .product__title h1 {
+              font-size: {{ block.settings.title_font_size }}px;
+            }
+          {% when 'price' %}
+            .price-item {
+              font-size: {{ block.settings.price_font_size }}px;
+            }
+          {% when 'inventory' %}
+            #inventory-{{ section.id }} {
+              font-size: {{ block.settings.inventory_font_size }}px !important;
+            }
+        {% endcase %}
+      {% endfor %}
     }
     product-info .page-width {
       max-width: {{ settings.page_width }}px;
@@ -84,6 +101,28 @@
             {%- when 'title' -%}
               <div class="product__title" {{ block.shopify_attributes }}>
                 <h1>{{ product.title }}</h1>
+              </div>
+              
+            {%- when 'rating' -%}
+              <div class="product__rating" {{ block.shopify_attributes }}>
+                {%- comment -%} Example star rating UI, replace with app or metafield integration as needed {%- endcomment -%}
+                <div class="stars">
+                  {%- assign filled_stars = block.settings.filled_stars | default: 4 -%}
+                  {%- assign total_stars = block.settings.total_stars | default: 5 -%}
+                  {%- assign empty_stars = total_stars | minus: filled_stars -%}
+                  
+                  <span style="color: {{ block.settings.star_color | default: '#000' }}; font-size: {{ block.settings.star_size | default: 22 }}px;">
+                    {%- for i in (1..filled_stars) -%}
+                      &#9733;
+                    {%- endfor -%}
+                    {%- for i in (1..empty_stars) -%}
+                      &#9734;
+                    {%- endfor -%}
+                  </span>
+                  <span class="review-count" style="color: {{ block.settings.review_text_color | default: '#888' }}; font-size: {{ block.settings.review_text_size | default: 16 }}px; margin-left: 8px;">
+                    {{ block.settings.review_count | default: '124' }} {{ block.settings.review_text | default: 'Reviews' }}
+                  </span>
+                </div>
               </div>
 
             {%- when 'price' -%}
@@ -131,74 +170,88 @@
                 {{- selected_variant.sku -}}
               </p>
 
-            {%- when 'variant_picker' -%}
+                        {%- when 'variant_picker' -%}
+              {%- assign has_bulk_selector = false -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'bulk_quantity_selector' -%}
+                  {%- assign has_bulk_selector = true -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+              
               <div class="product__variants" {{ block.shopify_attributes }}>
                 {% unless product.has_only_default_variant %}
                   <variant-selector id="variant-selector-{{ section.id }}" data-picker-type="{{ block.settings.picker_type }}">
                     {%- if block.settings.picker_type == 'dropdown' -%}
                       <div class="variant-block__dropdown">
                         {% for option in product.options_with_values %}
-                          <label class="option__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
-                          <fieldset class="product-form__input">
-                            <select
-                              name="options[{{ option.name | escape }}]"
-                              id="Option-{{ section.id }}-{{ forloop.index0 }}"
-                              form="{{ product_form_id }}"
-                            >
-                              {% for value in option.values %}
-                                {%- capture input_id -%}
-                                  {{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}
-                                {%- endcapture -%}
-                                <option
-                                  id="{{ input_id }}"
-                                  value="{{ value | escape }}"
-                                  data-option-value-id="{{ value.id }}"
-                                  data-product-url="{{ value.product_url }}"
-                                  {% if value.selected %}
-                                    selected="selected"
-                                  {% endif %}
-                                  {% unless value.available %}
-                                    style="color: red; text-decoration: line-through;"
-                                  {% endunless %}
-                                >
-                                  {{ value }}
-                                  {% unless value.available %}
-                                    Unavailable
-                                  {% endunless %}
-                                </option>
-                              {% endfor %}
-                            </select>
-                          </fieldset>
+                          {%- assign downcased_option_name = option.name | downcase -%}
+                          {%- unless has_bulk_selector and downcased_option_name contains 'size' -%}
+                            <label class="option__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                            <fieldset class="product-form__input">
+                              <select
+                                name="options[{{ option.name | escape }}]"
+                                id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                                form="{{ product_form_id }}"
+                              >
+                                {% for value in option.values %}
+                                  {%- capture input_id -%}
+                                    {{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}
+                                  {%- endcapture -%}
+                                  <option
+                                    id="{{ input_id }}"
+                                    value="{{ value | escape }}"
+                                    data-option-value-id="{{ value.id }}"
+                                    data-product-url="{{ value.product_url }}"
+                                    {% if value.selected %}
+                                      selected="selected"
+                                    {% endif %}
+                                    {% unless value.available %}
+                                      style="color: red; text-decoration: line-through;"
+                                    {% endunless %}
+                                  >
+                                    {{ value }}
+                                    {% unless value.available %}
+                                      Unavailable
+                                    {% endunless %}
+                                  </option>
+                                {% endfor %}
+                              </select>
+                            </fieldset>
+                          {%- endunless -%}
                         {% endfor %}
                       </div>
                     {%- endif -%}
                     {%- if block.settings.picker_type == 'button' -%}
                       <div class="variant-select__button">
                         {%- for option in product.options_with_values -%}
-                          <fieldset class="product-form__input">
-                            <legend class="option__label">{{ option.name }}</legend>
-                            {%- for value in option.values -%}
-                              <input
-                                type="radio"
-                                id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}"
-                                name="{{ option.name }}-{{ option.position }}"
-                                form="{{ product_form_id }}"
-                                value="{{ value | escape }}"
-                                class="pill-radio {% unless value.available %}disabled{% endunless %}"
-                                {% if value.selected %}
-                                  checked
-                                {% endif %}
-                                data-product-url="{{ value.product_url }}"
-                                data-option-value-id="{{ value.id }}"
-                              >
-                              <label
-                                class="pill-label {% unless value.available %}pill-disabled{% endunless %}"
-                                for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}"
-                              >
-                                {{ value }}
-                              </label>
-                            {%- endfor -%}
-                          </fieldset>
+                          {%- assign downcased_option_name = option.name | downcase -%}
+                          {%- unless has_bulk_selector and downcased_option_name contains 'size' -%}
+                            <fieldset class="product-form__input">
+                              <legend class="option__label">{{ option.name }}</legend>
+                              {%- for value in option.values -%}
+                                <input
+                                  type="radio"
+                                  id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}"
+                                  name="{{ option.name }}-{{ option.position }}"
+                                  form="{{ product_form_id }}"
+                                  value="{{ value | escape }}"
+                                  class="pill-radio {% unless value.available %}disabled{% endunless %}"
+                                  {% if value.selected %}
+                                    checked
+                                  {% endif %}
+                                  data-product-url="{{ value.product_url }}"
+                                  data-option-value-id="{{ value.id }}"
+                                >
+                                <label
+                                  class="pill-label {% unless value.available %}pill-disabled{% endunless %}"
+                                  for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}"
+                                >
+                                  {{ value }}
+                                </label>
+                              {%- endfor -%}
+                            </fieldset>
+                          {%- endunless -%}
                         {%- endfor -%}
                       </div>
                     {%- endif -%}
@@ -208,36 +261,132 @@
                   </variant-selector>
                 {% endunless %}
               </div>
+            {%- when 'bulk_quantity_selector' -%}
+              <style>
+                .bulk-quantity-title { font-weight: bold; margin-bottom: 8px; font-size: 20px; color: black;}
+                .bulk-quantity-list { display: flex; flex-direction: column; gap: 8px; }
+                .bulk-quantity-row { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 297px; }
+                .bulk-quantity-label { flex: 1; font-size: 16px; }
+                .bulk-quantity-input { width: 71px; height: 36px; padding: 2px 6px; font-size: 16px; }
+                .bulk-quantity-minimum { margin-top: 8px; font-size: 15px; color: #222; display: flex; align-items: center; }
+                .bulk-quantity-info { font-size: 18px; margin-right: 4px; display: flex ; align-items: center; }
+                .minium-order-qyantity { width: 100%; max-width: 275px; justify-content: space-between; display: flex ; }
+                label.pill-label { border-radius: unset ! Important; }
+              </style>
 
-            {%- when 'quantity_selector' -%}
-              <div class="product__quantity" {{ block.shopify_attributes }}>
-                <label class="option__label" for="Quantity-{{ section.id }}">Quantity</label>
-                <quantity-selector>
-                  <button name="minus" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="icon icon-minus" viewBox="0 0 10 2">
-                      <path fill="currentColor" fill-rule="evenodd" d="M.5 1C.5.7.7.5 1 .5h8a.5.5 0 1 1 0 1H1A.5.5 0 0 1 .5 1" clip-rule="evenodd"></path>
-                    </svg>
-                  </button>
-                  <input
-                    id="Quantity-{{ section.id }}"
-                    type="number"
-                    name="quantity"
-                    form="{{ product_form_id }}"
-                    data-cart-quantity="{{ cart | item_count_for_variant: selected_variant.id }}"
-                    min="{{ selected_variant.quantity_rule.min }}"
-                    {% if selected_variant.quantity_rule.max != null %}
-                      max="{{ selected_variant.quantity_rule.max }}"
-                    {% endif %}
-                    step="{{ selected_variant.quantity_rule.increment }}"
-                    value="1"
-                  >
-                  <button name="plus" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="icon icon-plus" viewBox="0 0 10 10">
-                      <path fill="currentColor" fill-rule="evenodd" d="M1 4.51a.5.5 0 0 0 0 1h3.5l.01 3.5a.5.5 0 0 0 1-.01V5.5l3.5-.01a.5.5 0 0 0-.01-1H5.5L5.49.99a.5.5 0 0 0-1 .01v3.5l-3.5.01z" clip-rule="evenodd"></path>
-                    </svg>
-                  </button>
-                </quantity-selector>
+              {%- comment -%} Count total unique sizes using size option values {%- endcomment -%}
+              {%- assign size_count = 0 -%}
+              {%- for option in product.options_with_values -%}
+                {%- assign downcased = option.name | downcase -%}
+                {%- if downcased contains 'size' -%}
+                  {%- assign size_count = option.values.size -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+              
+              <bulk-product-atc>
+                <div class="bulk-quantity-title"><strong>Size & Quantity ({{ size_count }})</strong></div>
+                 <div class="bulk-quantity-list" id="bulk-quantity-rows-{{ section.id }}">
+                {%- assign color_option = nil -%}
+                {%- assign size_option = nil -%}
+                {%- for option in product.options_with_values -%}
+                  {%- assign downcased = option.name | downcase -%}
+                  {%- if downcased contains 'color' or downcased contains 'colour' -%}
+                    {%- assign color_option = option.name -%}
+                  {%- endif -%}
+                  {%- if downcased contains 'size' -%}
+                    {%- assign size_option = option.name -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- assign color_index = nil -%}
+                {%- assign size_index = nil -%}
+                {%- if color_option -%}
+                  {%- for option in product.options_with_values -%}
+                    {%- if option.name == color_option -%}
+                      {%- assign color_index = forloop.index0 -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+                {%- if size_option -%}
+                  {%- for option in product.options_with_values -%}
+                    {%- if option.name == size_option -%}
+                      {%- assign size_index = forloop.index0 -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+                
+
+                
+                {%- comment -%} Build variant key excluding size {%- endcomment -%}
+                {%- assign variant_key = '' -%}
+                {%- for option in product.options_with_values -%}
+                  {%- assign downcased_option_name = option.name | downcase -%}
+                  {%- unless downcased_option_name contains 'size' -%}
+                    {%- assign option_value = selected_variant.options[forloop.index0] -%}
+                    {%- assign variant_key = variant_key | append: option_value | append: '-' -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+                {%- assign shown_sizes = '' -%}
+                {%- assign shown_variant_keys = '' -%}
+                {%- for variant in product.variants -%}
+                  {%- comment -%} Build variant key for this variant excluding size {%- endcomment -%}
+                  {%- assign current_variant_key = '' -%}
+                  {%- for option in product.options_with_values -%}
+                    {%- assign downcased_option_name = option.name | downcase -%}
+                    {%- unless downcased_option_name contains 'size' -%}
+                      {%- assign option_value = variant.options[forloop.index0] -%}
+                      {%- assign current_variant_key = current_variant_key | append: option_value | append: '-' -%}
+                    {%- endunless -%}
+                  {%- endfor -%}
+                  
+                  {%- if size_index != nil -%}
+                    {%- assign size_value = variant.options[size_index] -%}
+                  {%- else -%}
+                    {%- assign size_value = variant.title -%}
+                  {%- endif -%}
+                  
+                  {%- comment -%} Check if we've already shown this variant key {%- endcomment -%}
+                  {%- unless shown_variant_keys contains current_variant_key -%}
+                    {%- assign shown_variant_keys = shown_variant_keys | append: current_variant_key | append: ',' -%}
+                    
+                    {%- comment -%} Now show all sizes for this variant key {%- endcomment -%}
+                    {%- for size_variant in product.variants -%}
+                      {%- assign size_variant_key = '' -%}
+                      {%- for option in product.options_with_values -%}
+                        {%- assign downcased_option_name = option.name | downcase -%}
+                        {%- unless downcased_option_name contains 'size' -%}
+                          {%- assign option_value = size_variant.options[forloop.index0] -%}
+                          {%- assign size_variant_key = size_variant_key | append: option_value | append: '-' -%}
+                        {%- endunless -%}
+                      {%- endfor -%}
+                      
+                      {%- if size_variant_key == current_variant_key -%}
+                        {%- if size_index != nil -%}
+                          {%- assign size_value = size_variant.options[size_index] -%}
+                        {%- else -%}
+                          {%- assign size_value = size_variant.title -%}
+                        {%- endif -%}
+                        
+                        <div class="bulk-quantity-row" data-variant-id="{{ size_variant.id }}" data-variant-key="{{ current_variant_key | escape }}" style="display: none;">
+                          <label class="bulk-quantity-label" for="bulk-qty-{{ size_variant.id }}">
+                            {{ size_value }}
+                            {% if size_variant.price > product.price %}
+                              (+{{ size_variant.price | minus: product.price | money }})
+                            {% endif %}
+                          </label>
+                          <input type="number" min="0" value="0" id="bulk-qty-{{ size_variant.id }}" name="bulk_qty[{{ size_variant.id }}]" class="bulk-quantity-input" {% unless size_variant.available %}disabled{% endunless %}>
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- endunless -%}
+                {%- endfor -%}
               </div>
+              <div class="bulk-quantity-minimum">
+                <span class="bulk-quantity-info"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M8.25 12.75H9.75V8.25H8.25V12.75ZM9 6.75C9.2125 6.75 9.39075 6.678 9.53475 6.534C9.67875 6.39 9.7505 6.212 9.75 6C9.7495 5.788 9.6775 5.61 9.534 5.466C9.3905 5.322 9.2125 5.25 9 5.25C8.7875 5.25 8.6095 5.322 8.466 5.466C8.3225 5.61 8.2505 5.788 8.25 6C8.2495 6.212 8.3215 6.39025 8.466 6.53475C8.6105 6.67925 8.7885 6.751 9 6.75ZM9 16.5C7.9625 16.5 6.9875 16.303 6.075 15.909C5.1625 15.515 4.36875 14.9808 3.69375 14.3063C3.01875 13.6318 2.4845 12.838 2.091 11.925C1.6975 11.012 1.5005 10.037 1.5 9C1.4995 7.963 1.6965 6.988 2.091 6.075C2.4855 5.162 3.01975 4.36825 3.69375 3.69375C4.36775 3.01925 5.1615 2.485 6.075 2.091C6.9885 1.697 7.9635 1.5 9 1.5C10.0365 1.5 11.0115 1.697 11.925 2.091C12.8385 2.485 13.6323 3.01925 14.3063 3.69375C14.9803 4.36825 15.5148 5.162 15.9098 6.075C16.3048 6.988 16.5015 7.963 16.5 9C16.4985 10.037 16.3015 11.012 15.909 11.925C15.5165 12.838 14.9823 13.6318 14.3063 14.3063C13.6303 14.9808 12.8365 15.5152 11.925 15.9097C11.0135 16.3042 10.0385 16.501 9 16.5Z" fill="black"/>
+                  </svg></span> <div class="minium-order-qyantity">Minimum Order Quantity:<span>1</span></div>
+                               </div>
+               </bulk-product-atc>
 
             {%- when 'description' -%}
               {%- if product.description != blank -%}
@@ -247,7 +396,18 @@
                       <details>
                         <summary>
                           <div class="summary__title" style="display: flex; align-items: center;">
-                            <span class="svg-wrapper" style="margin-right: 8px;">{{ 'icon-info.svg' | inline_asset_content }}</span>
+                            <span class="svg-wrapper">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <g clip-path="url(#clip0_81_9663)">
+                                <path d="M8.00065 5.33325H8.00598M8.00065 10.6666V7.33325M14.6673 7.99992C14.6673 11.6819 11.6827 14.6666 8.00065 14.6666C4.31865 14.6666 1.33398 11.6819 1.33398 7.99992C1.33398 4.31792 4.31865 1.33325 8.00065 1.33325C11.6827 1.33325 14.6673 4.31792 14.6673 7.99992Z" stroke="black" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_81_9663">
+                                <rect width="16" height="16" fill="white"/>
+                                </clipPath>
+                                </defs>
+                                </svg>
+                            </span>
                             <h2 class="accordion__title">Description</h2>
                           </div>
                           {{ 'icon-caret.svg' | inline_asset_content }}
@@ -328,6 +488,7 @@
               <p
                 class="product__inventory{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if selected_variant.inventory_management != 'shopify' %} visibility-hidden{% endif %}"
                 id="inventory-{{ section.id }}"
+                style="font-size: {{ block.settings.inventory_font_size_mobile | default: block.settings.inventory_font_size }}px;"
                 {{ block.shopify_attributes }}
               >
                 {%- if selected_variant.inventory_management == 'shopify' -%}
@@ -477,6 +638,7 @@
                   >
                 {% endif %}
               </div>
+            
             {%- when 'monogram' -%}
               <div class="product__monogram" {{ block.shopify_attributes }}>
                 <modal-opener data-modal="#ProductMonogramPopup-{{ section.id }}">
@@ -499,6 +661,7 @@
   <script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
   <script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
   <script src="{{ 'component-modal-opener.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'component-bulk-product-atc.js' | asset_url }}" defer="defer"></script>
 
   {%- if section.settings.image_zoom != 'none' -%}
     <script src="{{ 'component-product-media-modal.js' | asset_url }}" defer="defer"></script>
@@ -517,6 +680,12 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "bulk_quantity_selector",
+      "name": "Bulk Selector",
+      "limit": 1,
+      "settings": []
     },
     {
       "type": "text",
@@ -572,6 +741,16 @@
           "unit": "px"
         },
         {
+          "type": "range",
+          "id": "title_font_size_mobile",
+          "label": "Title font size (mobile)",
+          "min": 14,
+          "max": 48,
+          "step": 1,
+          "default": 24,
+          "unit": "px"
+        },
+        {
           "type": "select",
           "id": "title_font_weight",
           "label": "t:sections.main-product.blocks.title.settings.title_font_weight.label",
@@ -612,6 +791,16 @@
           "max": 60,
           "step": 1,
           "default": 16,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "price_font_size_mobile",
+          "label": "Price font size (mobile)",
+          "min": 10,
+          "max": 40,
+          "step": 1,
+          "default": 14,
           "unit": "px"
         },
         {
@@ -709,6 +898,26 @@
           "id": "low_stock_color",
           "label": "Low stock icon color",
           "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "inventory_font_size",
+          "label": "Font size",
+          "min": 12,
+          "max": 50,
+          "step": 1,
+          "default": 14,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "inventory_font_size_mobile",
+          "label": "Font size (mobile)",
+          "min": 10,
+          "max": 36,
+          "step": 1,
+          "default": 12,
+          "unit": "px"
         }
       ]
     },
@@ -1109,6 +1318,76 @@
         {
           "type": "paragraph",
           "content": "t:sections.main-product.blocks.rating.settings.paragraph.content"
+        },
+        {
+          "type": "header",
+          "content": "Star Rating Settings"
+        },
+        {
+          "type": "range",
+          "id": "filled_stars",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 4,
+          "label": "Filled Stars"
+        },
+        {
+          "type": "range",
+          "id": "total_stars",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default": 5,
+          "label": "Total Stars"
+        },
+        {
+          "type": "color",
+          "id": "star_color",
+          "label": "Star Color",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "star_size",
+          "min": 12,
+          "max": 48,
+          "step": 1,
+          "default": 22,
+          "unit": "px",
+          "label": "Star Size"
+        },
+        {
+          "type": "header",
+          "content": "Review Text Settings"
+        },
+        {
+          "type": "text",
+          "id": "review_count",
+          "label": "Review Count",
+          "default": "124"
+        },
+        {
+          "type": "text",
+          "id": "review_text",
+          "label": "Review Text",
+          "default": "Reviews"
+        },
+        {
+          "type": "color",
+          "id": "review_text_color",
+          "label": "Review Text Color",
+          "default": "#888888"
+        },
+        {
+          "type": "range",
+          "id": "review_text_size",
+          "min": 10,
+          "max": 32,
+          "step": 1,
+          "default": 16,
+          "unit": "px",
+          "label": "Review Text Size"
         }
       ]
     },

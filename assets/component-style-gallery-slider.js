@@ -25,55 +25,52 @@ class CustomStyleGallerySlider extends HTMLElement {
   init() {
     if (window.Swiper && this.sectionId) {
       const selector = `#style-gallery-swiper-${this.sectionId}`;
-      // Destroy existing swiper if it exists
-      if (this.swiper) {
-        this.destroy();
-      }
-      this.swiper = new Swiper(selector, {
-        slidesPerView: 2,
-        centeredSlides: true,
-        spaceBetween: 10,
-        autoHeight: false,
-        loop: true,
-        navigation: {
-          nextEl: `${selector} .style-gallery__swiper-next`,
-          prevEl: `${selector} .style-gallery__swiper-prev`,
-        },
-        breakpoints: {
-          750: { slidesPerView: 2, centeredSlides: false, loop: false, spaceBetween: 24 },
-          990: {
-            slidesPerView: 6,
-            centeredSlides: false,
-            loop: true,
-            spaceBetween: 10
+      if (!this.swiper) {
+        this.swiper = new Swiper(selector, {
+          slidesPerView: 2,
+          centeredSlides: true,
+          spaceBetween: 10,
+          autoHeight: false,
+          loop: true,
+          navigation: {
+            nextEl: `${selector} .style-gallery__swiper-next`,
+            prevEl: `${selector} .style-gallery__swiper-prev`,
           },
-        },
-        watchOverflow: true,
-        initialSlide: 0,
-      });
-      
-      // Set responsive height directly on Swiper container and slides
-      const swiperContainer = this.querySelector('.swiper');
-      const swiperWrapper = this.querySelector('.swiper-wrapper');
-      const swiperSlides = this.querySelectorAll('.swiper-slide');
-      
-      // Set responsive height based on screen size
-      let slideHeight = '200px'; // Default for mobile
-      if (window.innerWidth >= 750) {
-        slideHeight = '250px'; // Medium screens
+          breakpoints: {
+            750: { slidesPerView: 2, centeredSlides: false, loop: false, spaceBetween: 24 },
+            990: {
+              slidesPerView: 6,
+              centeredSlides: false,
+              loop: true,
+              spaceBetween: 24
+            },
+          },
+          watchOverflow: true,
+          initialSlide: 0,
+        });
+        
+        // Set responsive height directly on Swiper container and slides
+        const swiperContainer = this.querySelector('.swiper');
+        const swiperWrapper = this.querySelector('.swiper-wrapper');
+        const swiperSlides = this.querySelectorAll('.swiper-slide');
+        
+        // Set responsive height based on screen size
+        let slideHeight = '200px'; // Default for mobile
+        if (window.innerWidth >= 750) {
+          slideHeight = '250px'; // Medium screens
+        }
+        if (window.innerWidth >= 990) {
+          slideHeight = '284px'; // Desktop
+        }
+        
+        if (swiperContainer) {
+          swiperContainer.style.height = slideHeight;
+        }
+        if (swiperWrapper) swiperWrapper.style.height = slideHeight;
+        swiperSlides.forEach(slide => {
+          slide.style.height = slideHeight;
+        });
       }
-      if (window.innerWidth >= 990) {
-        slideHeight = '284px'; // Desktop
-      }
-      
-      if (swiperContainer) {
-        swiperContainer.style.height = slideHeight;
-      }
-      if (swiperWrapper) swiperWrapper.style.height = slideHeight;
-      swiperSlides.forEach(slide => {
-        slide.style.height = slideHeight;
-      });
-      
       this.toggleNav(true);
     }
   }
