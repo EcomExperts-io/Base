@@ -9,6 +9,7 @@ if (!customElements.get('bulk-product-atc')) {
 
     connectedCallback() {
       this.initializeBulkSelector();
+      this.updateBulkTotal()
     }
 
     initializeBulkSelector() {
@@ -47,6 +48,10 @@ if (!customElements.get('bulk-product-atc')) {
       document.addEventListener('change', (e) => {
         if (e.target.matches('input[type="radio"], select')) {
           this.updateBulkSelector();
+          this.updateBulkTotal();
+        }
+        if (e.target.matches('.bulk-quantity-input')) {
+          this.updateBulkTotal();
         }
       });
 
@@ -134,6 +139,7 @@ if (!customElements.get('bulk-product-atc')) {
     }
 
     handleFormSubmit(e) {
+
       const selectedQuantities = this.getSelectedQuantities();
 
       if (selectedQuantities.length === 0) {
@@ -143,14 +149,17 @@ if (!customElements.get('bulk-product-atc')) {
         return false;
       }
 
+
+
       if (selectedQuantities.length === 1) {
-        // Single item: just update hidden input
+        // Single item: just update hidden input and let form submit normally
         const hiddenVariantInput = this.form.querySelector('input[name="id"]');
         if (hiddenVariantInput) {
           hiddenVariantInput.value = selectedQuantities[0].id;
         }
-        return;
+        // Don't return - let the form submit normally
       }
+
 
       // Multiple items: use single AJAX request
       e.preventDefault();
@@ -161,6 +170,7 @@ if (!customElements.get('bulk-product-atc')) {
     }
 
     addMultipleItemsToCart(selectedQuantities) {
+      
       const itemsToAdd = selectedQuantities.map(item => ({
         id: item.id,
         quantity: item.quantity
@@ -188,6 +198,37 @@ if (!customElements.get('bulk-product-atc')) {
         console.error('Failed to add items:', error);
         alert('There was an error adding items to the cart. Please try again.');
       });
+    }
+
+    updateBulkTotal() {
+      // Find all visible bulk-quantity-rows
+      const rows = document.querySelectorAll('.bulk-quantity-row');
+      let total = 0;
+      rows.forEach(row => {
+        if (row.style.display !== 'none') {
+          const qtyInput = row.querySelector('.bulk-quantity-input');
+          const qty = parseInt(qtyInput.value) || 0;
+          // Try to get price from a data attribute, fallback to 0
+          let price = 0;
+          if (row.dataset.price) {
+            price = parseInt(row.dataset.price);
+          } else {
+            // Try to get price from a hidden input or global object if needed
+            const priceInput = row.querySelector('input[type="hidden"][name^="variant_price_"]');
+            if (priceInput) price = parseInt(priceInput.value);
+          }
+          total += qty * price;
+        }
+      });
+      // Update the Add to Cart button
+      const addToCartTotal = document.querySelector('.add-to-cart-total');
+      if (addToCartTotal) {
+        if (window.Shopify && Shopify.formatMoney) {
+          addToCartTotal.textContent = `TOTAL ${Shopify.formatMoney(total, Shopify.money_format)}`;
+        } else {
+          addToCartTotal.textContent = `TOTAL $${(total / 100).toFixed(2)}`;
+        }
+      }
     }
   }
 

@@ -1,6 +1,8 @@
-<script src="{{ 'component-product-media-gallery.js' | asset_url }}" defer="defer"></script>
+{{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer="defer"></script>
+{{ 'component-product-media-gallery.css' | asset_url | stylesheet_tag }}
 
-<media-gallery>
+<media-gallery data-section-id="{{ section.id }}">
   <div class="swiper main-gallery">
     <div class="swiper-wrapper">
       {% assign media_index = 0 %}
@@ -78,18 +80,18 @@
     <div class="swiper-wrapper">
       {% assign thumb_index = 0 %}
       {% if selected_variant.featured_image != null %}
-        <div class="swiper-slide" data-media-index="{{ thumb_index }}">
+        <div class="swiper-slide thumb-slide" data-media-index="{{ thumb_index }}" data-swiper-slide-index="{{ thumb_index }}">
           <div class="product-media-thumb">
-            <img src="{{ selected_variant.featured_media | img_url: '100x100' }}" alt="Thumbnail" style="width: 64px; height: 64px; object-fit: cover;" />
+            <img src="{{ selected_variant.featured_media | img_url: '100x100' }}" alt="Thumbnail" width="64" height="64" style="width: 64px; height: 64px; object-fit: cover;" />
           </div>
         </div>
         {% assign thumb_index = thumb_index | plus: 1 %}
       {% endif %}
       {% for media in product_media %}
         {% unless selected_variant.featured_media.id == media.id %}
-          <div class="swiper-slide" data-media-index="{{ thumb_index }}">
+          <div class="swiper-slide thumb-slide" data-media-index="{{ thumb_index }}" data-swiper-slide-index="{{ thumb_index }}">
             <div class="product-media-thumb">
-              <img src="{{ media | img_url: '100x100' }}" alt="Thumbnail" style="width: 64px; height: 64px; object-fit: cover;" />
+              <img src="{{ media | img_url: '100x100' }}" alt="Thumbnail" width="64" height="64" style="width: 64px; height: 64px; object-fit: cover;" />
             </div>
           </div>
           {% assign thumb_index = thumb_index | plus: 1 %}

@@ -95,6 +95,7 @@ product-info .product__info-wrapper form > *:last-child {
   word-break: break-word;
   margin-bottom: 16px;
   margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .product__title h1,
@@ -129,11 +130,16 @@ product-info .product__info-wrapper form > *:last-child {
 
 .option__label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 0px;
   font-size: 13px;
   line-height: calc(1 + 0.5 / 1);
   letter-spacing: 0.6px;
   padding-left: 0px;
+}
+
+button.share-button__button {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .pill-radio {
@@ -147,7 +153,7 @@ product-info .product__info-wrapper form > *:last-child {
   background-color: rgb(var(--color-background));
   display: inline-block;
   margin: 7px 5px 2px 0;
-  padding: 10px 20px;
+  padding: 8px 20px;
   font-size: 14px;
   letter-spacing: 1px;
   line-height: 1;
@@ -183,7 +189,12 @@ product-info .product__info-wrapper form > *:last-child {
   height: 10px;
   pointer-events: none;
 }
-
+button.share-button__button {
+  justify-content: flex-start;
+}
+.product__quantity quantity-selector button {
+  justify-content: center;
+}
 .product__quantity button {
   padding: 0px;
   border: none;
@@ -191,7 +202,6 @@ product-info .product__info-wrapper form > *:last-child {
   width: calc(150px / 1);
   display: flex;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
   z-index: 1;
   min-height: 45px;
@@ -236,7 +246,9 @@ product-info .product__info-wrapper form > *:last-child {
   appearance: textfield;
   -moz-appearance: textfield;
 }
-
+.product-form__buttons button {
+  text-transform: uppercase;
+}
 .product-form__buttons button {
   width: 100%;
   background: transparent;
@@ -244,10 +256,12 @@ product-info .product__info-wrapper form > *:last-child {
   outline: var(--inputs-border-width) solid rgba(var(--color-foreground), var(--inputs-border-opacity));
   padding: 12.5px 10px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 18px;
+  justify-content: center;
   letter-spacing: 1px;
   color: var(--color-secondary-button);
   position: relative;
+  font-weight: 600;
 }
 
 .product-form__buttons button:hover {
@@ -365,7 +379,7 @@ shopify-buy-it-now-button .shopify-payment-button__button {
   gap: 0.5rem;
   font-size: 16px;
   letter-spacing: 0.5px;
-  margin: unset;
+  margin: 0px 0px 10px 0px;
 }
 
 .product__inventory .svg-wrapper,
@@ -464,6 +478,7 @@ shopify-buy-it-now-button .shopify-payment-button__button {
   .product__title h1,
   .product__title h2 {
     font-size: 40px;
+    text-transform: uppercase;
     color: rgb(var(--color-foreground));
   }
 
@@ -478,7 +493,7 @@ shopify-buy-it-now-button .shopify-payment-button__button {
   .product--medium .product__accordion,
   .product--medium .share-button {
     display: block;
-    max-width: 440px;
+    max-width: 507px;
   }
 
   .product--large .product__variants variant-selector,
@@ -537,6 +552,74 @@ shopify-buy-it-now-button .shopify-payment-button__button {
   }
 }
 
+@media screen and (max-width: 750px) {
+  .product-form__buttons button {
+    font-size: 14px;
+    padding: 16.5px 10px;
+  }
+  .product .product__info-wrapper span.badge.price__badge-sale {
+    width: 30%;
+  }
+}
+
 /* =============================
   END PRODUCT INFO SECTION STYLING
   =============================== */
+
+/*===============================
+  BULK QUANTITY SELECTOR STYLING
+  ==================================*/
+.bulk-quantity-title { 
+  font-weight: bold; 
+  margin-bottom: 8px; 
+  font-size: 20px; 
+  color: black;
+}
+
+.bulk-quantity-list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+}
+
+.bulk-quantity-row { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  width: 100%; 
+  max-width: 297px; 
+}
+
+.bulk-quantity-label { 
+  flex: 1; 
+  font-size: 16px; 
+}
+
+.bulk-quantity-input { 
+  width: 72px; 
+  height: 36px; 
+  padding: 2px 6px; 
+  font-size: 16px; 
+}
+
+.bulk-quantity-minimum { 
+  margin-top: 8px; 
+  font-size: 15px; 
+  color: #222; 
+  display: flex; 
+  align-items: center; 
+}
+
+.bulk-quantity-info { 
+  font-size: 18px; 
+  margin-right: 4px; 
+  display: flex; 
+  align-items: center; 
+}
+
+.minium-order-qyantity { 
+  width: 100%; 
+  max-width: 275px; 
+  justify-content: space-between; 
+  display: flex; 
+}

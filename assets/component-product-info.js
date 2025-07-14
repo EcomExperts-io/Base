@@ -8,9 +8,11 @@ if (!customElements.get('product-info')) {
 
     setupEventListeners() {
       this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
-      this.quantitySelector.addEventListener('change', this.onQuantitySelectorEvent.bind(this));
-      this.quantitySelector.querySelector('button[name="plus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
-      this.quantitySelector.querySelector('button[name="minus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
+      if(this.quantitySelector){
+        this.quantitySelector.addEventListener('change', this.onQuantitySelectorEvent.bind(this));
+        this.quantitySelector.querySelector('button[name="plus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
+        this.quantitySelector.querySelector('button[name="minus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
+      }
       document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
       document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
     }
@@ -23,17 +25,50 @@ if (!customElements.get('product-info')) {
     }
 
     initSwiper() {
-      this.swiper = new Swiper('.swiper', {
-        autoHeight: true,
-        direction: 'horizontal',
-        pagination: {
-          el: '.swiper-pagination',
-        },
-        navigation: {
-          prevEl: '.swiper-button-prev',
-          nextEl: '.swiper-button-next',
-        },
-      });
+      const thumbsSwiperEl = this.querySelector('.thumbs-gallery');
+      const mainSwiperEl = this.querySelector('.main-gallery');
+      
+      // Initialize thumbnail swiper if it exists
+      if (thumbsSwiperEl) {
+        this.thumbsSwiper = new Swiper(thumbsSwiperEl, {
+          spaceBetween: 15,
+          slidesPerView: 5,
+          freeMode: false,
+          watchSlidesProgress: true,
+          slideToClickedSlide: true,
+          simulateTouch: true,
+          breakpoints: {
+            600: { slidesPerView: 6 },
+            900: { slidesPerView: 6 }
+          }
+        });
+      }
+
+      // Initialize main swiper with thumbnail support if available
+      if (mainSwiperEl) {
+        this.swiper = new Swiper(mainSwiperEl, {
+          slidesPerView: 1,
+          spaceBetween: 10,
+          
+          thumbs: this.thumbsSwiper ? {
+            swiper: this.thumbsSwiper,
+          } : undefined,
+          simulateTouch: true,
+        });
+      } else {
+        // Fallback to original swiper initialization if no main-gallery
+        this.swiper = new Swiper('.swiper', {
+          autoHeight: true,
+          direction: 'horizontal',
+          pagination: {
+            el: '.swiper-pagination',
+          },
+          navigation: {
+            prevEl: '.swiper-button-prev',
+            nextEl: '.swiper-button-next',
+          },
+        });
+      }
     }
 
     onCartUpdate(e) {
@@ -83,6 +118,9 @@ if (!customElements.get('product-info')) {
       const hasDifferentProductUrl = e.target?.dataset?.productUrl ? (e.target?.dataset?.productUrl !== this.dataset.url) : false;
       const productUrl = e.target?.dataset?.productUrl || this.dataset.url;
       this.renderSection(hasDifferentProductUrl, productUrl);
+      
+      // Update bulk quantity total if bulk selector exists
+      this.updateBulkQuantityTotal();
     }
 
     onQuantitySelectorEvent(e) {
@@ -102,12 +140,66 @@ if (!customElements.get('product-info')) {
           quantityInput.value = maxValue;
         }
       }
+
+      // Update the Add to Cart button total price
+      const addToCartTotal = this.querySelector(`#add-to-cart-container-${this.dataset.section} .add-to-cart-total`);
+      const variantDataScript = this.querySelector('script[data-selected-variant]');
+      let variant = null;
+      if (variantDataScript) {
+        try {
+          variant = JSON.parse(variantDataScript.textContent);
+        } catch (err) {}
+      }
+      const qty = parseInt(quantityInput.value) || 1;
+      if (addToCartTotal && variant && typeof variant.price === 'number') {
+        debugger
+        const total = variant.price * qty;
+        if (window.Shopify && Shopify.formatMoney) {
+          addToCartTotal.textContent = `TOTAL ${Shopify.formatMoney(total, Shopify.money_format)}`;
+        } else {
+          addToCartTotal.textContent = `TOTAL $${(total / 100).toFixed(2)}`;
+        }
+      }
     }
 
     updateMedia(variantFeaturedMediaId) {
       if (!variantFeaturedMediaId) return;
-      var index = this.querySelector(`.swiper-slide[data-media-id="${variantFeaturedMediaId}"]`).dataset.mediaIndex;
-      this.swiper?.slideTo(index);
+      const slideElement = this.querySelector(`.swiper-slide[data-media-id="${variantFeaturedMediaId}"]`);
+      if (slideElement) {
+        const index = slideElement.dataset.mediaIndex;
+        this.swiper?.slideTo(index);
+      }
+    }
+
+    updateBulkQuantityTotal() {
+      const bulkSelector = this.querySelector('bulk-product-atc');
+      if (!bulkSelector) return;
+
+      const bulkInputs = bulkSelector.querySelectorAll('.bulk-quantity-input');
+      const addToCartTotal = this.querySelector(`#add-to-cart-container-${this.dataset.section} .add-to-cart-total`);
+      
+      if (!addToCartTotal || !bulkInputs.length) return;
+
+      let totalQuantity = 0;
+      let totalPrice = 0;
+
+      bulkInputs.forEach(input => {
+        const quantity = parseInt(input.value) || 0;
+        const variantId = input.closest('.bulk-quantity-row').dataset.variantId;
+        const variantPrice = parseInt(input.closest('.bulk-quantity-row').dataset.price) || 0;
+        
+        totalQuantity += quantity;
+        totalPrice += quantity * variantPrice;
+      });
+
+      // If no quantities are selected, show 0
+      if (totalQuantity === 0) {
+        addToCartTotal.textContent = 'TOTAL $0.00';
+      } else if (window.Shopify && Shopify.formatMoney) {
+        addToCartTotal.textContent = `TOTAL ${Shopify.formatMoney(totalPrice, Shopify.money_format)}`;
+      } else {
+        addToCartTotal.textContent = `TOTAL $${(totalPrice / 100).toFixed(2)}`;
+      }
     }
 
     updateURL(variantId) {
@@ -155,10 +247,23 @@ if (!customElements.get('product-info')) {
             this.updateURL(variant?.id);
             this.updateVariantInputs(variant?.id);
             this.updateSourceFromDestination(html, `add-to-cart-container-${this.dataset.section}`);
+            // Update the Add to Cart button price dynamically
+            const addToCartTotal = this.querySelector(`#add-to-cart-container-${this.dataset.section} .add-to-cart-total`);
+            if (addToCartTotal && variant && typeof variant.price === 'number') {
+              if (window.Shopify && Shopify.formatMoney) {
+                addToCartTotal.textContent = `TOTAL ${Shopify.formatMoney(variant.price, Shopify.money_format)}`;
+              } else {
+                // fallback if Shopify.formatMoney is not available
+                addToCartTotal.textContent = `TOTAL $${(variant.price / 100).toFixed(2)}`;
+              }
+            }
             this.updateSourceFromDestination(html, `variant-selector-${this.dataset.section}`);
             this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
             this.updateSourceFromDestination(html, `sku-${this.dataset.section}`);
             this.updateSourceFromDestination(html, `inventory-${this.dataset.section}`);
+            
+            // Update bulk quantity total after section update
+            this.updateBulkQuantityTotal();
           }
         })
         .catch((error) => {

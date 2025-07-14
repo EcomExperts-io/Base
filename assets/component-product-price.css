@@ -86,7 +86,11 @@
 .price--on-sale .price-item--regular {
   text-decoration: line-through;
   color: rgba(var(--color-foreground), 0.75);
-  font-size: 12px;
+}
+
+.price.price--on-sale.price--show-badge {
+  display: flex;
+  align-items: center;
 }
 
 .price-item--sale {

@@ -36,6 +36,12 @@
             font-size: {{ block.settings.description_font_size }}px;
             font-weight: {{ block.settings.description_font_weight }};
           }
+        {% when 'variant_picker' %}
+            {% if block.settings.swatch_shape == 'square' %}
+              .product .product__info-wrapper .product-form__input .pill-label {
+                border-radius: 2px;
+              }
+            {% endif %}
         {% when 'price' %}
           .price-item {
             color: {{ block.settings.price_color }};
@@ -170,7 +176,7 @@
                 {{- selected_variant.sku -}}
               </p>
 
-                        {%- when 'variant_picker' -%}
+            {%- when 'variant_picker' -%}
               {%- assign has_bulk_selector = false -%}
               {%- for block in section.blocks -%}
                 {%- if block.type == 'bulk_quantity_selector' -%}
@@ -261,18 +267,35 @@
                   </variant-selector>
                 {% endunless %}
               </div>
+            {%- when 'quantity_selector' -%}
+              <div class="product__quantity" {{ block.shopify_attributes }}>
+                <label class="option__label" for="Quantity-{{ section.id }}">Quantity</label>
+                <quantity-selector>
+                  <button name="minus" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="icon icon-minus" viewBox="0 0 10 2">
+                      <path fill="currentColor" fill-rule="evenodd" d="M.5 1C.5.7.7.5 1 .5h8a.5.5 0 1 1 0 1H1A.5.5 0 0 1 .5 1" clip-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                  <input
+                    id="Quantity-{{ section.id }}"
+                    type="number"
+                    name="quantity"
+                    form="{{ product_form_id }}"
+                    data-cart-quantity="{{ cart | item_count_for_variant: selected_variant.id }}"
+                    min="{{ selected_variant.quantity_rule.min }}"
+                    {% if selected_variant.quantity_rule.max != null %}
+                      max="{{ selected_variant.quantity_rule.max }}"
+                    {% endif %}
+                    step="{{ selected_variant.quantity_rule.increment }}"
+                    value="1"
+                  >
+                  <button name="plus" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="icon icon-plus" viewBox="0 0 10 10">
+                      <path fill="currentColor" fill-rule="evenodd" d="M1 4.51a.5.5 0 0 0 0 1h3.5l.01 3.5a.5.5 0 0 0 1-.01V5.5l3.5-.01a.5.5 0 0 0-.01-1H5.5L5.49.99a.5.5 0 0 0-1 .01v3.5l-3.5.01z" clip-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                </quantity-selector>  
             {%- when 'bulk_quantity_selector' -%}
-              <style>
-                .bulk-quantity-title { font-weight: bold; margin-bottom: 8px; font-size: 20px; color: black;}
-                .bulk-quantity-list { display: flex; flex-direction: column; gap: 8px; }
-                .bulk-quantity-row { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 297px; }
-                .bulk-quantity-label { flex: 1; font-size: 16px; }
-                .bulk-quantity-input { width: 71px; height: 36px; padding: 2px 6px; font-size: 16px; }
-                .bulk-quantity-minimum { margin-top: 8px; font-size: 15px; color: #222; display: flex; align-items: center; }
-                .bulk-quantity-info { font-size: 18px; margin-right: 4px; display: flex ; align-items: center; }
-                .minium-order-qyantity { width: 100%; max-width: 275px; justify-content: space-between; display: flex ; }
-                label.pill-label { border-radius: unset ! Important; }
-              </style>
 
               {%- comment -%} Count total unique sizes using size option values {%- endcomment -%}
               {%- assign size_count = 0 -%}
@@ -367,7 +390,7 @@
                           {%- assign size_value = size_variant.title -%}
                         {%- endif -%}
                         
-                        <div class="bulk-quantity-row" data-variant-id="{{ size_variant.id }}" data-variant-key="{{ current_variant_key | escape }}" style="display: none;">
+                        <div class="bulk-quantity-row" data-variant-id="{{ size_variant.id }}" data-variant-key="{{ current_variant_key | escape }}" data-price="{{ size_variant.price }}" style="display: none;">
                           <label class="bulk-quantity-label" for="bulk-qty-{{ size_variant.id }}">
                             {{ size_value }}
                             {% if size_variant.price > product.price %}
@@ -446,7 +469,25 @@
                         {% elsif selected_variant.available == false %}
                           Sold out
                         {% else %}
-                          Add to cart
+                          {% if section.settings.hide_add_to_cart_total %}
+                            Add to cart
+                          {% else %}
+                            <span class="add-to-cart-total" style="font-weight: 600;">
+                              {% if selected_variant %}
+                                TOTAL {{ selected_variant.price | money }}
+                              {% endif %}
+                            </span>
+                            -
+                            <span class="add-to-cart-label">
+                              {% if selected_variant == null %}
+                                Unavailable
+                              {% elsif selected_variant.available == false %}
+                                Sold out
+                              {% else %}
+                                Add to cart
+                              {% endif %}
+                            </span>
+                          {% endif %}
                         {% endif %}
                         <span class="loading__spinner hidden">
                           {{ 'icon-loader.svg' | inline_asset_content }}
@@ -468,9 +509,16 @@
                 <details>
                   <summary>
                     <div class="summary__title">
-                      {%- if block.settings.icon != 'none' -%}
-                        {%- assign file = block.settings.icon | replace: '_', '-' | prepend: 'icon-' | append: '.svg' -%}
-                        <span class="svg-wrapper">{{ file | inline_asset_content }}</span>
+                      {%- if block.settings.custom_image != blank -%}
+                        <span class="svg-wrapper">
+                          <img 
+                            src="{{ block.settings.custom_image | image_url: width: block.settings.image_width, height: block.settings.image_height }}" 
+                            alt="{{ block.settings.heading | escape }}"
+                            width="{{ block.settings.image_width }}"
+                            height="{{ block.settings.image_height }}"
+                            style="width: {{ block.settings.image_width }}px; height: {{ block.settings.image_height }}px; object-fit: contain;"
+                          >
+                        </span>
                       {%- endif -%}
                       <h2 class="accordion__title">
                         {{ block.settings.heading | default: block.settings.page.title | escape }}
@@ -1098,188 +1146,30 @@
           "label": "t:sections.main-product.blocks.collapsible_tab.settings.heading.label"
         },
         {
-          "type": "select",
-          "id": "icon",
-          "options": [
-            {
-              "value": "none",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__1.label"
-            },
-            {
-              "value": "apple",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__2.label"
-            },
-            {
-              "value": "banana",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__3.label"
-            },
-            {
-              "value": "bottle",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__4.label"
-            },
-            {
-              "value": "box",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__5.label"
-            },
-            {
-              "value": "carrot",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__6.label"
-            },
-            {
-              "value": "chat_bubble",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__7.label"
-            },
-            {
-              "value": "check_mark",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__8.label"
-            },
-            {
-              "value": "clipboard",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__9.label"
-            },
-            {
-              "value": "dairy",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__10.label"
-            },
-            {
-              "value": "dairy_free",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__11.label"
-            },
-            {
-              "value": "dryer",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__12.label"
-            },
-            {
-              "value": "eye",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__13.label"
-            },
-            {
-              "value": "fire",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__14.label"
-            },
-            {
-              "value": "gluten_free",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__15.label"
-            },
-            {
-              "value": "heart",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__16.label"
-            },
-            {
-              "value": "iron",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__17.label"
-            },
-            {
-              "value": "leaf",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__18.label"
-            },
-            {
-              "value": "leather",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__19.label"
-            },
-            {
-              "value": "lightning_bolt",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__20.label"
-            },
-            {
-              "value": "lipstick",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__21.label"
-            },
-            {
-              "value": "lock",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__22.label"
-            },
-            {
-              "value": "map_pin",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__23.label"
-            },
-            {
-              "value": "nut_free",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__24.label"
-            },
-            {
-              "value": "pants",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__25.label"
-            },
-            {
-              "value": "paw_print",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__26.label"
-            },
-            {
-              "value": "pepper",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__27.label"
-            },
-            {
-              "value": "perfume",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__28.label"
-            },
-            {
-              "value": "plane",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__29.label"
-            },
-            {
-              "value": "plant",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__30.label"
-            },
-            {
-              "value": "price_tag",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__31.label"
-            },
-            {
-              "value": "question_mark",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__32.label"
-            },
-            {
-              "value": "recycle",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__33.label"
-            },
-            {
-              "value": "return",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__34.label"
-            },
-            {
-              "value": "ruler",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__35.label"
-            },
-            {
-              "value": "serving_dish",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__36.label"
-            },
-            {
-              "value": "shirt",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__37.label"
-            },
-            {
-              "value": "shoe",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__38.label"
-            },
-            {
-              "value": "silhouette",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__39.label"
-            },
-            {
-              "value": "snowflake",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__40.label"
-            },
-            {
-              "value": "star",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__41.label"
-            },
-            {
-              "value": "stopwatch",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__42.label"
-            },
-            {
-              "value": "truck",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__43.label"
-            },
-            {
-              "value": "washing",
-              "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.options__44.label"
-            }
-          ],
-          "default": "check_mark",
-          "label": "t:sections.main-product.blocks.collapsible_tab.settings.icon.label"
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image",
+          "info": "Upload a custom image to replace the default icon"
+        },
+        {
+          "type": "range",
+          "id": "image_width",
+          "min": 12,
+          "max": 100,
+          "step": 1,
+          "default": 20,
+          "unit": "px",
+          "label": "Image Width"
+        },
+        {
+          "type": "range",
+          "id": "image_height",
+          "min": 12,
+          "max": 100,
+          "step": 1,
+          "default": 20,
+          "unit": "px",
+          "label": "Image Height"
         },
         {
           "type": "richtext",
@@ -2293,6 +2183,11 @@
   ],
   "settings": [
     {
+      "type": "checkbox",
+      "id": "hide_add_to_cart_total",
+      "default": false,
+      "label": "Hide Add to Cart Total"
+    },{
       "type": "checkbox",
       "id": "enable_sticky_info",
       "default": true,

@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "sections": {
     "main-product": {
       "type": "main-product",
@@ -16,29 +16,31 @@
           "type": "title",
           "settings": {
             "title_color": "#000000",
-            "title_font_size": 32,
-            "title_font_weight": "500"
+            "title_font_size": 40,
+            "title_font_size_mobile": 30,
+            "title_font_weight": "700"
+          }
+        },
+        "rating_8zP444": {
+          "type": "rating",
+          "settings": {
+            "filled_stars": 4,
+            "total_stars": 5,
+            "star_color": "#000000",
+            "star_size": 18,
+            "review_count": "124",
+            "review_text": "Reviews",
+            "review_text_color": "#000000",
+            "review_text_size": 16
           }
         },
         "price_4XTzqR": {
           "type": "price",
           "settings": {
             "price_color": "#000000",
-            "price_font_size": 16,
-            "price_font_weight": "500"
-          }
-        },
-        "text_CmhREB": {
-          "type": "text",
-          "settings": {
-            "text": "{{ product.vendor }}",
-            "text_style": "body"
-          }
-        },
-        "sku_m7MALE": {
-          "type": "sku",
-          "settings": {
-            "text_style": "uppercase"
+            "price_font_size": 30,
+            "price_font_size_mobile": 25,
+            "price_font_weight": "700"
           }
         },
         "inventory_aTTemW": {
@@ -46,7 +48,10 @@
           "settings": {
             "text_style": "body",
             "inventory_threshold": 3,
-            "show_inventory_quantity": false
+            "show_inventory_quantity": false,
+            "low_stock_color": "#000000",
+            "inventory_font_size": 18,
+            "inventory_font_size_mobile": 18
           }
         },
         "variant_picker_NWh8q7": {
@@ -56,15 +61,14 @@
             "swatch_shape": "circle"
           }
         },
+        "bulk_quantity_selector_fmhXMY": {
+          "type": "bulk_quantity_selector",
+          "disabled": true,
+          "settings": {}
+        },
         "quantity_selector_cwaLFj": {
           "type": "quantity_selector",
           "settings": {}
-        },
-        "monogram_block": {
-          "type": "monogram",
-          "settings": {
-            "button_text": "Add Monogram"
-          }
         },
         "subscription_AbipnR": {
           "type": "subscription",
@@ -78,37 +82,75 @@
             "share_label": "Share"
           }
         },
-        "description_RxGjaP": {
-          "type": "description",
-          "settings": {
-            "description_color": "#000000",
-            "description_font_size": 16,
-            "description_font_weight": "500"
-          }
-        },
         "buy_buttons_JPDYXc": {
           "type": "buy_buttons",
           "settings": {
             "show_dynamic_checkout": true,
             "show_gift_card_recipient": true
           }
+        },
+        "description_RxGjaP": {
+          "type": "description",
+          "disabled": true,
+          "settings": {
+            "show_as_accordion": true,
+            "description_color": "#000000",
+            "description_font_size": 16,
+            "description_font_weight": "500"
+          }
+        },
+        "collapsible_tab_M4JRLF": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "DESCRIPTION",
+            "custom_image": "shopify://shop_images/si_info-line.png",
+            "image_width": 16,
+            "image_height": 16,
+            "content": "<p><em>This is a demonstration store. You can purchase products like this from </em><a href=\"http://babyandco.us/\" target=\"_blank\"><em>Baby & Company</em></a></p><p>The Emanuela Jacket is a quilted comfort with warmth and style offerings. Side angled pockets at front. Zip closure at center front. By Malene Birger. Color Olive. 100% Polyamide, Trimming Polyester. <em>Ashley is wearing a Size 32.</em></p>",
+            "page": ""
+          }
+        },
+        "collapsible_tab_VJTXqb": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "SHIPPING",
+            "custom_image": "shopify://shop_images/la_shipping-fast.png",
+            "image_width": 16,
+            "image_height": 16,
+            "content": "",
+            "page": ""
+          }
+        },
+        "collapsible_tab_aCp7BM": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "RETURN",
+            "custom_image": "shopify://shop_images/mage_clock.png",
+            "image_width": 16,
+            "image_height": 16,
+            "content": "",
+            "page": ""
+          }
         }
       },
       "block_order": [
         "title_bpmXVj",
+        "rating_8zP444",
         "price_4XTzqR",
-        "text_CmhREB",
-        "sku_m7MALE",
         "inventory_aTTemW",
         "variant_picker_NWh8q7",
+        "bulk_quantity_selector_fmhXMY",
         "quantity_selector_cwaLFj",
         "subscription_AbipnR",
         "share_ybFkAW",
-        "description_RxGjaP",
         "buy_buttons_JPDYXc",
-        "monogram_block"
+        "description_RxGjaP",
+        "collapsible_tab_M4JRLF",
+        "collapsible_tab_VJTXqb",
+        "collapsible_tab_aCp7BM"
       ],
       "settings": {
+        "hide_add_to_cart_total": true,
         "enable_sticky_info": true,
         "color_scheme": "",
         "media_size": "medium",
@@ -120,12 +162,13 @@
         "padding_top": 36,
         "padding_bottom": 100,
         "variant_label_color": "#000000",
-        "variant_label_font_size": 13,
-        "variant_label_font_weight": "300"
+        "variant_label_font_size": 20,
+        "variant_label_font_weight": "700"
       }
     },
     "related-products": {
       "type": "related-products",
+      "disabled": true,
       "settings": {
         "heading": "You may also like",
         "heading_size": "h2",
@@ -142,10 +185,68 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
+    },
+    "featured_products_8dy9Xn": {
+      "type": "featured-products",
+      "blocks": {
+        "product_card_fxtEb6": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_Fk76Di": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_VYE4nK": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_ibLg6k": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_DKk7Xp": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_card_fxtEb6",
+        "product_card_Fk76Di",
+        "product_card_VYE4nK",
+        "product_card_ibLg6k",
+        "product_card_DKk7Xp"
+      ],
+      "name": "Featured Products",
+      "settings": {
+        "heading": "you may also like",
+        "subheading": "",
+        "view_all_text": "View All",
+        "view_all_url": "shopify://collections",
+        "heading_alignment": "center",
+        "show_view_all_as_button": true,
+        "button_background_color": "#2e2e2e",
+        "button_text_color": "#ffffff",
+        "product_content_alignment": "center",
+        "review_content_alignment": "center",
+        "product_info_text_color": "#111111",
+        "stars_color": "#000000"
+      }
     }
   },
   "order": [
     "main-product",
-    "related-products"
+    "related-products",
+    "featured_products_8dy9Xn"
   ]
 }

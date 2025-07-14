@@ -30,7 +30,7 @@ class FeaturedProducts extends HTMLElement {
       if (!swiperEl || swiperEl.classList.contains('swiper-initialized')) return;
 
       this.swiper = new Swiper(selector, {
-        slidesPerView: 1.4,
+        slidesPerView: 1.8,
         spaceBetween: 16,
         autoHeight: true,
         navigation: {
