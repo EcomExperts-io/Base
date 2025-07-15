@@ -116,7 +116,7 @@
 
 .results-count {
   width: max-content;
-  font-size: 2.2rem;
+  font-size: 2rem;
 }
 
 .active-filter-group__item-wrapper {
@@ -199,6 +199,9 @@
   align-items: center;
   z-index: 2;
 }
+.product-grid {
+  gap: 16px;
+}
 
 @keyframes spin {
   to {
@@ -207,17 +210,29 @@
 }
 
 @media screen and (max-width: 750px) {
+  .mobile-filters-drawer {
+    width: 100%;
+    border: 1px solid #DDD7D7;
+    width: 100%;
+    max-width: 139px;
+    height: 40px;
+    padding: 10px 5px 10px 5px;
+  }
   .product-grid {
-    gap: 5px;
     row-gap: var(--grid-mobile-horizontal-spacing);
     column-gap: var(--grid-mobile-vertical-spacing);
+    gap: 20px;
   }
   .collection-hero__title {
     font-size: 2.4rem;
   }
 
+  .drawer__facet-button-trigger{
+
+  }
   .sorting-wrapper {
     margin-bottom: 0px;
+    align-items: center;
   }
 
   .results-count{

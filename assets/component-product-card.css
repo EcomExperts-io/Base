@@ -35,12 +35,13 @@
 }
 
 .product-card-child {
-  display: block;
+  display: flex;
   width: 100%;
   height: 100%;
   text-decoration: none;
   position: relative;
   z-index: 1;
+  flex-direction: column;
 }
 
 .card-vendor {
@@ -114,6 +115,11 @@
 .card--standard .card-information {
   padding-top: 17px;
   padding-bottom: 17px;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+  flex: 1;
 }
 
 .card--standard .price--on-sale .price__sale {
