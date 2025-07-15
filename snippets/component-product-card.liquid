@@ -83,6 +83,9 @@
       {% if show_vendor %}
         <span class="card-vendor">{{ card_product.vendor }}</span>
       {% endif %}
+      <div class="card-pricing">
+        {% render 'component-product-price', product: card_product, show_compare_at_price: true %}
+      </div>
       {% if enable_swatches %}
         <div class="product-color-swatches">
           {%- for option in card_product.options_with_values -%}
@@ -127,9 +130,7 @@
           {%- endfor -%}
         </div>
       {% endif %}
-      <div class="card-pricing">
-        {% render 'component-product-price', product: card_product, show_compare_at_price: true %}
-      </div>
+
       {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
       {% if quick_add == 'standard' %}
         <div class="quick-add no-js-hidden">
