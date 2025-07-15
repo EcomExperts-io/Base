@@ -327,8 +327,9 @@
     max-width: 211px;
   }
   .featured-products__button-wrapper{
-    margin-top: unset;
+    margin-top: 30px;
   }
+  
   .exclusive-section{
     margin: 40px auto!important;
   }

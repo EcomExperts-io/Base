@@ -82,7 +82,7 @@
       {% if selected_variant.featured_image != null %}
         <div class="swiper-slide thumb-slide" data-media-index="{{ thumb_index }}" data-swiper-slide-index="{{ thumb_index }}">
           <div class="product-media-thumb">
-            <img src="{{ selected_variant.featured_media | img_url: '100x100' }}" alt="Thumbnail" width="64" height="64" style="width: 64px; height: 64px; object-fit: cover;" />
+            <img src="{{ selected_variant.featured_media | img_url: '100x100' }}" alt="Thumbnail" width="100" height="100" style="width: 100px; height: 100px; object-fit: cover;" />
           </div>
         </div>
         {% assign thumb_index = thumb_index | plus: 1 %}
@@ -91,7 +91,7 @@
         {% unless selected_variant.featured_media.id == media.id %}
           <div class="swiper-slide thumb-slide" data-media-index="{{ thumb_index }}" data-swiper-slide-index="{{ thumb_index }}">
             <div class="product-media-thumb">
-              <img src="{{ media | img_url: '100x100' }}" alt="Thumbnail" width="64" height="64" style="width: 64px; height: 64px; object-fit: cover;" />
+              <img src="{{ media | img_url: '100x100' }}" alt="Thumbnail" width="100" height="100" style="width: 100px; height: 100px; object-fit: cover;" />
             </div>
           </div>
           {% assign thumb_index = thumb_index | plus: 1 %}
