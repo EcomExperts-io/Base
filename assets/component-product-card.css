@@ -113,7 +113,7 @@
 }
 
 .card--standard .card-information {
-  padding-top: 17px;
+  padding-top: 50px;
   padding-bottom: 17px;
   display: flex;
   flex-direction: column;
@@ -165,6 +165,9 @@
 }
 
 .product-card.card--standard .card-media-child {
+  width: 100%;
+  max-width: 244px;
+  height: 297px;
   border-radius: calc(var(--product-card-corner-radius) - var(--product-card-border-width) - 5px);
 }
 
@@ -229,5 +232,18 @@
 }
 
 .card__badge.bottom {
-  align-self: flex-end;
+  align-self: flex-start;
+}
+@media (max-width: 768px) {
+  .product-card.card--standard .card-media-child {
+    width: 100%;
+    max-width: 165px;
+    height: auto;
+  }
+  .card--standard .card-information {
+    padding-top: 17px;
+  }
+  .card-heading{
+    font-size: 1.6rem;
+  }
 }

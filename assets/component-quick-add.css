@@ -181,6 +181,9 @@ quick-add-modal .product-media-container.constrain-height {
     margin-left: 1.5rem;
     margin-right: 1.5rem;
   }
+  .quick-add__submit{
+    font-size: 1.3rem;
+  }
 
   .quick-add-modal__content {
     bottom: var(--modal-height-offset);

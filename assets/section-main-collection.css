@@ -1,5 +1,5 @@
 .collection-hero__title {
-  margin: 25px 0;
+  margin: 75px 0;
   font-size: 3.6rem;
   font-weight: 600;
   color: black;
@@ -210,6 +210,9 @@
 }
 
 @media screen and (max-width: 750px) {
+  .collection-hero__title {
+    margin: 20px 0px 0px 0px;
+  }
   .mobile-filters-drawer {
     width: 100%;
     border: 1px solid #DDD7D7;
