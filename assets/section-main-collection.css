@@ -1,3 +1,9 @@
+body.collection .shopify-section.section .page-width {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 0px;
+}
+
 .collection-hero__title {
   margin: 75px 0;
   font-size: 3.6rem;
