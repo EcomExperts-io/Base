@@ -39,6 +39,30 @@
       grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr);
     }
   }
+
+  /* Button styling for product grid */
+  .product-grid-{{ section.id }} .quick-add__submit {
+    color: {{ section.settings.button_text_color }};
+    background-color: {{ section.settings.button_background_color }};
+    transition: all 0.2s ease;
+  }
+  
+  .product-grid-{{ section.id }} .quick-add__submit:hover {
+    background-color: {{ section.settings.button_background_color | color_modify: 'alpha', 0.8 }};
+  }
+  
+  .product-grid-{{ section.id }} .quick-add__submit:after {
+    box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset))
+        {{ section.settings.button_border_color }},
+      0 0 0 var(--buttons-border-width) rgba(var(--color-button), var(--alpha-button-background));
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .product-grid-{{ section.id }} .quick-add__submit:hover:after {
+    box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset))
+        {{ section.settings.button_border_color | color_modify: 'alpha', 0.8 }},
+      0 0 0 var(--buttons-border-width) rgba(var(--color-button), var(--alpha-button-background));
+  }
 {%- endstyle -%}
 
 {% comment %} COMPONENT STYLES {% endcomment %}
@@ -200,7 +224,7 @@
                   {% endif %}
                 </div>
 
-                <div class="product-grid-wrapper" id="product-grid-{{ section.id }}">
+                <div class="product-grid-wrapper product-grid-{{ section.id }}" id="product-grid-{{ section.id }}">
                   <div id="loading-overlay-{{ section.id }}" class="loading-overlay"></div>
                   <div class="product-grid">
                     {%- if collection.products.size == 0 -%}
@@ -214,8 +238,10 @@
                           swatch_trigger: section.settings.swatch_trigger,
                           swatch_type: section.settings.swatch_type,
                           media_aspect_ratio: section.settings.image_ratio,
-                          quick_add: section.settings.quick_add
-                          section_id: section.id
+                          quick_add: section.settings.quick_add,
+                          section_id: section.id,
+                          button_text_color: section.settings.button_text_color,
+                          button_border_color: section.settings.button_border_color
                         %}
                       {%- endfor -%}
                     {%- endif -%}
@@ -350,6 +376,28 @@
       "label": "Swatch trigger",
       "default": "Color",
       "info": "Enter the product option name to use for variant swatches (e.g. 'Color', 'Size', etc.)"
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#838383"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border color",
+      "default": "#838383"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background color",
+      "default": "#ffffff"
     },
     {
       "type": "header",

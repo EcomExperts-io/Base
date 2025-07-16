@@ -8,6 +8,8 @@
   - swatch_trigger: {String} Product option name to use for swatches (e.g., 'Color')
   - swatch_type: {String} Type of swatch to display ('color' or 'image')
   - media_aspect_ratio: {String} Size of the product image card. Values are "square" "adapt" and "portrait". Default is "adapt" (optional)
+  - button_text_color: {String} Color for button text (optional)
+  - button_border_color: {String} Color for button border (optional)
 
   Example usage:
   {% render 'card-product',
@@ -16,7 +18,9 @@
     enable_swatches: section.settings.enable_swatches,
     swatch_trigger: section.settings.swatch_trigger,
     swatch_type: section.settings.swatch_type,
-    media_aspect_ratio: section.settings.media_aspect_ratio
+    media_aspect_ratio: section.settings.media_aspect_ratio,
+    button_text_color: section.settings.button_text_color,
+    button_border_color: section.settings.button_border_color
   %}
 {% endcomment %}
 
@@ -95,6 +99,8 @@
                   {%- if variant.options contains value -%}
                     <span
                       class="color-swatch"
+                      src="{{ variant.featured_image | image_url: width: 800 }}"
+                      srcset="{{ variant.featured_image | image_url: width: 800 }} 1x, {{ variant.featured_image | image_url: width: 1600 }} 2x"
                       {%- unless swatch_type == 'image' -%}
                         style="background-color: {{ value | handleize }};"
                       {%- endunless -%}
@@ -150,6 +156,9 @@
                 aria-haspopup="dialog"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 data-product-url="{{ card_product.url }}"
+                {% if button_text_color %}
+                  style="color: {{ button_text_color }};"
+                {% endif %}
               >
                 {{ 'products.product.choose_options' | t }}
                 <div class="loading__spinner hidden">
@@ -199,6 +208,9 @@
                   aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                   aria-live="polite"
                   data-sold-out-message="true"
+                  {% if button_text_color %}
+                    style="color: {{ button_text_color }};"
+                  {% endif %}
                   {% if card_product.selected_or_first_available_variant.available == false %}
                     disabled
                   {% endif %}

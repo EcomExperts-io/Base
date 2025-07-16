@@ -1,7 +1,7 @@
 body.collection .shopify-section.section .page-width {
-  max-width: 1280px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 0 0px;
+  padding: 0px 20px;
 }
 
 .collection-hero__title {
@@ -81,6 +81,7 @@ body.collection .shopify-section.section .page-width {
   cursor: pointer;
   color: rgba(var(--color-foreground),.75);
   max-width: 225px;
+  font-weight: 600;
 }
 
 .facet-filters__sort:focus {
