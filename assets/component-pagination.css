@@ -30,7 +30,8 @@
   width: 100%;
   padding: 0;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 18px;
+  font-weight: 400;
 }
 
 .pagination__item.pagination__item--current {
