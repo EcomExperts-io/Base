@@ -180,13 +180,13 @@
             {% endif %}
 
             <div class="cart-total">
-              <span>Estimated total</span> <span>{{ cart.total_price | money }}</span>
+              <span class="cart-total__label">Estimated total</span> <span class="cart-total__price">{{ cart.total_price | money }}</span>
             </div>
-            <small>Taxes, discounts and shipping calculated at checkout.</small>
+            <small class="cart-total__small">Taxes, discounts and shipping calculated at checkout.</small>
           </div>
 
           {% form 'cart', cart, id: 'my-ajax-cart-form' %}
-            <button type="submit" name="checkout">Checkout</button>
+            <button type="submit" name="checkout">Check out</button>
           {% endform %}
         </div>
       </div>
