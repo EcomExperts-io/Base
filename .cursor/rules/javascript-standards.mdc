@@ -1,0 +1,475 @@
+---
+description: Writing JavaScript inside `.js` files, or within the `{% javascript %}` or `{% script %}` or <script> </script> tags in `.liquid` files.
+alwaysApply: false
+---
+# JavaScript Standards
+
+## General Principles
+
+- **Zero external dependencies** - Use native browser APIs
+- **Avoid mutation** - Use `const` over `let` unless necessary  
+- **Use `for (const item of items)`** over `items.forEach()`
+- **Add new lines before blocks** with `{` and `}`
+- **Use vanilla Web Components** - Extend HTMLElement directly for custom elements
+
+## Async Operations and Request Management
+
+**Always use async/await over .then() chaining:**
+
+```javascript
+async renderSection(hasDifferentProductUrl, productUrl) {
+  this.abortController?.abort();
+  this.abortController = new AbortController();
+
+  try {
+    const response = await fetch(`${productUrl}?option_values=${this.selectedOptionValues}&section_id=${this.dataset.section}`, {
+      signal: this.abortController.signal,
+    });
+    
+    const responseText = await response.text();
+    const html = new DOMParser().parseFromString(responseText, 'text/html');
+    const variant = this.getSelectedVariant(html);
+    
+    if (hasDifferentProductUrl) {
+      const productInfo = html.querySelector('product-info');
+      this.replaceWith(productInfo);
+      productInfo.updateURL(variant?.id);
+    } else {
+      this.updateMedia(variant?.featured_media?.id);
+      this.updateURL(variant?.id);
+      this.updateVariantInputs(variant?.id);
+      this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
+    }
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Fetch aborted by user');
+    } else {
+      console.error(error);
+    }
+  }
+}
+```
+
+## Web Components Pattern
+
+**Use vanilla Web Components with HTMLElement:**
+
+```javascript
+if (!customElements.get('product-info')) {
+  class ProductInfo extends HTMLElement {
+    // Property declarations with initialization
+    abortController = undefined;
+    swiper = null;
+
+    constructor() {
+      super();
+      // Minimal constructor - defer setup to connectedCallback
+    }
+
+    setupEventListeners() {
+      this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
+      this.quantitySelector.addEventListener('change', this.onQuantitySelectorEvent.bind(this));
+      this.quantitySelector.querySelector('button[name="plus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
+      this.quantitySelector.querySelector('button[name="minus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
+      document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
+      document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
+    }
+
+    connectedCallback() {
+      this.setupEventListeners();
+      if (typeof Swiper !== 'undefined') {
+        this.initSwiper();
+      }
+    }
+
+    disconnectedCallback() {
+      this.abortController?.abort();
+      this.swiper?.destroy();
+    }
+
+    // Getter methods for DOM element access
+    get variantSelector() {
+      return this.querySelector('variant-selector');
+    }
+
+    get quantitySelector() {
+      return this.querySelector('quantity-selector');
+    }
+
+    // Event handlers with descriptive names
+    onVariantChange(e) {
+      const hasDifferentProductUrl = e.target?.dataset?.productUrl ? 
+        (e.target?.dataset?.productUrl !== this.dataset.url) : false;
+      const productUrl = e.target?.dataset?.productUrl || this.dataset.url;
+      this.renderSection(hasDifferentProductUrl, productUrl);
+    }
+
+    // Public methods for external component communication
+    updateMedia(variantFeaturedMediaId) {
+      if (!variantFeaturedMediaId) return;
+      var index = this.querySelector(`.swiper-slide[data-media-id="${variantFeaturedMediaId}"]`).dataset.mediaIndex;
+      this.swiper?.slideTo(index);
+    }
+
+    // Arrow function for helper methods
+    updateSourceFromDestination = (html, id) => {
+      const source = html.getElementById(`${id}`);
+      const destination = this.querySelector(`#${id}`);
+      if (source && destination) {
+        destination.innerHTML = source.innerHTML;
+      }
+    };
+  }
+
+  customElements.define('product-info', ProductInfo);
+}
+```
+
+**HTML integration with Liquid templates:**
+
+```liquid
+<product-info
+  data-url="{{ product.url}}"
+  data-section="{{ section.id }}"
+  class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+>
+  <!-- Component content with nested custom elements -->
+  <variant-selector id="variant-selector-{{ section.id }}" data-picker-type="{{ block.settings.picker_type }}">
+    <!-- Variant selection UI -->
+  </variant-selector>
+  
+  <quantity-selector>
+    <!-- Quantity controls -->
+  </quantity-selector>
+</product-info>
+
+<!-- Load component script -->
+<script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
+```
+
+## Early Returns and Conditional Logic
+
+**Use early returns over nested conditionals:**
+
+```javascript
+// Good
+const processOrder = (order) => {
+  if (!order) return;
+  if (!order.items.length) return;
+  if (order.status !== 'pending') return;
+
+  // Process the order
+  updateOrderStatus(order.id, 'processing');
+  sendConfirmationEmail(order.email);
+};
+
+// Avoid
+const processOrder = (order) => {
+  if (order) {
+    if (order.items.length) {
+      if (order.status === 'pending') {
+        updateOrderStatus(order.id, 'processing');
+        sendConfirmationEmail(order.email);
+      }
+    }
+  }
+};
+```
+
+**Optional chaining guidelines:**
+
+```javascript
+// Multiple chains - use early return
+const updateButton = (product) => {
+  const button = product.querySelector('[data-ref="button"]');
+  if (!button) return;
+
+  button.disabled = false;
+  button.textContent = 'Add to cart';
+};
+
+// Single chain is fine
+const updateButton = (product) => {
+  const button = product.querySelector('[data-ref="button"]');
+  button?.enable();
+};
+```
+
+## Simplification Patterns
+
+**Ternary operators for simple conditions:**
+```javascript
+const buttonText = isLoading ? 'Loading...' : 'Add to cart';
+element.textContent = buttonText;
+```
+
+**One-liner conditionals:**
+```javascript
+if (isOutOfStock) return;
+```
+
+**Return boolean comparisons directly:**
+```javascript
+const isAvailable = product.available && product.price > 0;
+return isAvailable;
+```
+
+## Event-Driven Architecture
+
+**Use custom events for component communication:**
+
+```javascript
+class ProductInfo extends HTMLElement {
+  onCartUpdate(e) {
+    // Check page context before executing
+    if (!window.location.pathname.includes('/products/')) return;
+    
+    const { requestState } = e.detail;
+    
+    // If the "add to cart" request is successful
+    if (requestState.requestType === 'add' && requestState.responseData?.ok) {
+      // Add the CSS class to the "body" tag
+      document.body.classList.add('js-show-ajax-cart');
+      
+      // Dispatch a custom event for other components
+      document.dispatchEvent(
+        new CustomEvent('item-added-to-cart', {
+          detail: requestState?.responseData?.body,
+        })
+      );
+    }
+  }
+
+  setupEventListeners() {
+    // Listen to third-party library events
+    document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
+    // Listen to own component events
+    this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
+  }
+}
+```
+
+**Page context awareness:**
+
+```javascript
+class ProductInfo extends HTMLElement {
+  updateURL(variantId) {
+    // Only execute on product pages
+    if (!window.location.pathname.includes('/products/')) return;
+    window.history.replaceState({}, '', `${this.dataset.url}${variantId ? `?variant=${variantId}` : ''}`);
+  }
+
+  onCartUpdate(e) {
+    // Only execute on product pages
+    if (!window.location.pathname.includes('/products/')) return;
+    // Implementation
+  }
+}
+```
+
+## External Library Integration
+
+**Check for library availability before initialization:**
+
+```javascript
+class ProductInfo extends HTMLElement {
+  connectedCallback() {
+    this.setupEventListeners();
+    
+    // Check if external library is loaded
+    if (typeof Swiper !== 'undefined') {
+      this.initSwiper();
+    }
+  }
+
+  initSwiper() {
+    this.swiper = new Swiper('.swiper', {
+      autoHeight: true,
+      direction: 'horizontal',
+      pagination: {
+        el: '.swiper-pagination',
+      },
+      navigation: {
+        prevEl: '.swiper-button-prev',
+        nextEl: '.swiper-button-next',
+      },
+    });
+  }
+
+  setupEventListeners() {
+    // Listen for external script loading
+    document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
+  }
+
+  disconnectedCallback() {
+    // Clean up external library instances
+    this.swiper?.destroy();
+  }
+}
+```
+
+**Loading external scripts in Liquid templates:**
+
+```liquid
+<script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
+<script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
+```
+
+## Input Validation and Bounds Checking
+
+**Always validate and constrain input values:**
+
+```javascript
+class ProductInfo extends HTMLElement {
+  onQuantitySelectorEvent(e) {
+    const quantityInput = this.quantitySelector.querySelector('input[type="number"]');
+    let currentValue = parseInt(quantityInput.value);
+    const minValue = parseInt(quantityInput.getAttribute('min')) || 0;
+    const maxValue = parseInt(quantityInput.getAttribute('max')) || Infinity;
+
+    if (e.target.name === 'minus' && currentValue > minValue) {
+      quantityInput.value = currentValue - 1;
+    } else if (e.target.name === 'plus' && currentValue < maxValue) {
+      quantityInput.value = currentValue + 1;
+    } else if (e.type === 'change') {
+      if (currentValue < minValue) {
+        quantityInput.value = minValue;
+      } else if (currentValue > maxValue) {
+        quantityInput.value = maxValue;
+      }
+    }
+  }
+}
+```
+
+## Data Parsing and JSON Handling
+
+**Parse JSON data with error handling:**
+
+```javascript
+class ProductInfo extends HTMLElement {
+  getSelectedVariant(html) {
+    const selectedVariant = html.querySelector('[data-selected-variant]')?.innerHTML;
+    return !!selectedVariant ? JSON.parse(selectedVariant) : null;
+  }
+}
+```
+
+**Embed JSON data in Liquid templates:**
+
+```liquid
+<script type="application/json" data-selected-variant>
+  {{ selected_variant | json }}
+</script>
+```
+
+## DOM Manipulation Patterns
+
+**Update specific sections with helper methods:**
+
+```javascript
+class ProductInfo extends HTMLElement {
+  updateSourceFromDestination = (html, id) => {
+    const source = html.getElementById(`${id}`);
+    const destination = this.querySelector(`#${id}`);
+    if (source && destination) {
+      destination.innerHTML = source.innerHTML;
+    }
+  };
+
+  updateVariantInputs(variantId) {
+    this.querySelectorAll(`#product-form-${this.dataset.section}, #product-form-installment-${this.dataset.section}`).forEach(
+      (productForm) => {
+        const input = productForm.querySelector('input[name="id"]');
+        input.value = variantId ?? '';
+      }
+    );
+  }
+}
+```
+
+
+
+## AbortController for Request Cancellation
+
+**Use AbortController to cancel previous requests:**
+
+```javascript
+class ProductInfo extends HTMLElement {
+  abortController = undefined;
+
+  async renderSection(hasDifferentProductUrl, productUrl) {
+    // Cancel previous request
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+
+    try {
+      const response = await fetch(`${productUrl}?option_values=${this.selectedOptionValues}&section_id=${this.dataset.section}`, {
+        signal: this.abortController.signal,
+      });
+      
+      const responseText = await response.text();
+      // Process response
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted by user');
+      } else {
+        console.error(error);
+      }
+    }
+  }
+
+  disconnectedCallback() {
+    this.abortController?.abort();
+  }
+}
+```
+
+## Error Handling
+
+**Always handle errors gracefully:**
+
+```javascript
+const fetchData = async (url) => {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Fetch error:', error);
+    // Return fallback data or empty state
+    return null;
+  }
+};
+```
+
+## Type Safety with JSDoc
+
+**Always annotate function parameters, return types, and complex objects:**
+
+```javascript
+/**
+ * @typedef {Object} ProductData
+ * @property {string} id - Product identifier
+ * @property {number} price - Product price
+ * @property {boolean} [available] - Availability status (optional)
+ */
+
+/**
+ * Updates product pricing display
+ * @param {ProductData} product - The product to update
+ * @param {HTMLElement} container - Target container element
+ * @returns {Promise<void>}
+ * @throws {Error} If container element is invalid
+ */
+const updateProductDisplay = async (product, container) => {
+  if (!(container instanceof HTMLElement)) {
+    throw new Error('Invalid container element');
+  }
+  // Implementation
+};
+```
