@@ -3,7 +3,7 @@
   data-section="{{ section.id }}"
   class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
 >
-  {{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
+  {{ 'vendor-swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
   {{ 'component-product-price.css' | asset_url | stylesheet_tag }}
   {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
   {%- if section.settings.image_zoom != 'none' -%}
@@ -478,7 +478,7 @@
   {%- endif -%}
 
   <script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
+  <script src="{{ "vendor-swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
   <script src="{{ 'component-modal-opener.js' | asset_url }}" defer="defer"></script>
 
   {%- if section.settings.image_zoom != 'none' -%}

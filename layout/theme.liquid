@@ -33,13 +33,13 @@
 
     {{ content_for_header }}
 
-    <script src="{{ 'alpinejs-persist@3.14.8.min.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'alpinejs@3.14.8.min.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'vendor-alpinejs-persist@3.14.8.min.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'vendor-alpinejs@3.14.8.min.js' | asset_url }}" defer="defer"></script>
 
     {%- if settings.animations_reveal_on_scroll -%}
       <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
-    
+
     {% comment %} liquid-ajax-cart.js.org {% endcomment %}
     <script type="application/json" data-ajax-cart-initial-state>
       {{ cart | json }}
@@ -50,7 +50,7 @@
     </script>
 
     {% comment %} Theme Styles {% endcomment %}
-  
+
     {%- render 'css-variables' -%}
     {{ 'base.css' | asset_url | stylesheet_tag }}
     {%- if settings.predictive_search_enabled -%}
