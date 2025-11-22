@@ -19,10 +19,15 @@ alwaysApply: true
 - **Indent consistently**: Poorly formatted code is hard to read and maintain. Always keep indentation and spacing consistent with the project’s existing style (do not mix tabs and spaces).
 - **Auto-format on save**: Use the project formatter configuration where available. If no formatter is configured, match the surrounding file’s style.
 
+## Code Hygiene
+
+- **Do not leave commented-out code**: Either delete unused code or re-enable it. Do not keep large commented blocks or "temporary" comments in commits.
+
 ## Quick Checklist
 
 - `theme.liquid` is <= ~300 lines and delegates to snippets/sections
 - No new uses of `DOMContentLoaded`; behavior lives in custom elements
 - Custom elements extend `HTMLElement` and are registered once
 - Code is consistently indented and formatted
+- No commented-out code left behind
 

@@ -194,9 +194,9 @@
   {%- else -%}
     <div class="cart__warnings">
       <h1 class="cart__empty-text">Your cart is empty</h1>
-      <a href="/collections/all" class="button"> Continue shopping </a>
+      <a href="{{ routes.all_products_collection_url }}" class="button"> Continue shopping </a>
       <h2 class="cart__login-title">Have an account?</h2>
-      <p class="cart__login-paragraph"><a href="/account/login" class="link underlined-link">Log in</a> to check out faster.</p>
+      <p class="cart__login-paragraph"><a href="{{ routes.account_login_url }}" class="link underlined-link">Log in</a> to check out faster.</p>
     </div>
   {% endif %}
 </div>
