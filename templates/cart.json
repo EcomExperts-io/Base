@@ -1,12 +1,17 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
-      "type": "main-cart-items",
-      "settings": {
-        "color_scheme": "",
-        "padding_top": 8,
-        "padding_bottom": 8
-      }
+      "type": "cart",
+      "settings": {}
     }
   },
   "order": [

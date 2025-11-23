@@ -67,7 +67,7 @@
   top: 1.2rem;
   z-index: 1;
   opacity: 1;
-  transition: color var(--duration-short)ease, opacity var(--duration-short)ease;
+  transition: color 150ms ease, opacity 150ms ease;
   pointer-events: none;
 }
 
@@ -91,6 +91,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
 media-gallery .swiper-slide .loading__spinner {
@@ -99,21 +100,18 @@ media-gallery .swiper-slide .loading__spinner {
   top: 50%;
   transform: translate(-50%, -50%);
   width: 4rem;
+  z-index: 2;
 }
 
 media-gallery .image-magnify-full-size {
   cursor: zoom-out;
   z-index: 1;
   margin: 0;
-  border-radius: calc(var(--media-radius) - var(--media-border-width));
+  border-radius: 8px;
   display: block;
   width: 100%;
   height: 100%;
   position: absolute;
-}
-
-.image-magnify-hover {
-  pointer-events: none;
 }
 
 .light-box-zoom-trigger {
@@ -124,12 +122,12 @@ media-gallery .image-magnify-full-size {
   cursor: pointer;
 }
 
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 769px) {
   .product-media-modal__toggle {
     right: 50px;
     top: 22px;
   }
-  
+
   .product-media-modal__dialog .global-media-settings--no-shadow {
     overflow: visible !important;
   }
@@ -137,7 +135,7 @@ media-gallery .image-magnify-full-size {
   .product__media-icon {
     opacity: 0;
   }
-  
+
   media-gallery .swiper:hover .product__media-icon {
     opacity: 1;
   }
@@ -164,10 +162,14 @@ media-gallery .image-magnify-full-size {
   .product__media-icon.hover-zoom-enabled {
     display: none;
   }
-  
-  .light-box-zoom-trigger.hover-zoom-enabled{
+
+  .light-box-zoom-trigger.hover-zoom-enabled {
     pointer-events: none;
     cursor: zoom-in;
+  }
+
+  .image-magnify-hover .light-box-zoom-trigger {
+    pointer-events: none;
   }
 
   media-gallery .swiper-pagination {
@@ -175,12 +177,12 @@ media-gallery .image-magnify-full-size {
   }
 }
 
-@media screen and (max-width: 750px) {
-  .product-media-modal__content>*:not(.active){
+@media screen and (max-width: 768px) {
+  .product-media-modal__content>*:not(.active) {
     display: none;
   }
 
-  .product-media-modal__content>*.active{
+  .product-media-modal__content>*.active {
     display: block;
   }
 

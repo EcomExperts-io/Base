@@ -1,16 +1,94 @@
-<media-gallery>
-  <div class="swiper">
-    <div class="swiper-wrapper">
-      {% assign media_index = 0 %}
-      {% if selected_variant.featured_image != null %}
-        <div
-          class="swiper-slide"
-          data-media-id="{{ selected_variant.featured_media.id }}"
-          data-media-index="{{ media_index }}"
-        >
+{% doc %}
+  Renders product media gallery with Swiper.js integration.
+
+  @param {object} product_media - Array of media items to display
+  @param {object} selected_variant - Variant used to prioritize featured media
+  @param {string} is_zoom - Zoom mode ('none' or 'hover')
+  @param {string} section_id - Section DOM id used for modal targeting
+  @param {boolean} video_looping - Whether videos should loop
+  @param {string} media_layout - Desktop layout mode ('carousel' or 'thumbnail')
+  @param {string} mobile_media_layout - Mobile layout mode ('default' or 'thumbnail')
+
+  @example
+  {% render 'component-product-media-gallery',
+    product_media: product.media,
+    selected_variant: product.selected_or_first_available_variant,
+    is_zoom: 'hover',
+    section_id: section.id,
+    video_looping: true,
+    media_layout: 'carousel',
+    mobile_media_layout: 'default'
+  %}
+{% enddoc %}
+
+{% liquid
+  assign media_layout = media_layout | default: 'carousel'
+  assign mobile_media_layout = mobile_media_layout | default: 'default'
+
+  assign gallery_classes = 'media-gallery'
+
+  if media_layout == 'thumbnail'
+    assign gallery_classes = gallery_classes | append: ' media-gallery--desktop-thumbnail'
+  elsif media_layout == '2_columns'
+    assign gallery_classes = gallery_classes | append: ' media-gallery--desktop-2columns'
+  endif
+
+  if mobile_media_layout == 'thumbnail'
+    assign gallery_classes = gallery_classes | append: ' media-gallery--mobile-thumbnail'
+  endif
+
+  assign render_thumbnail = false
+  assign render_carousel = false
+  assign render_2columns = false
+
+  if media_layout == 'thumbnail'
+    assign render_thumbnail = true
+  endif
+
+  if mobile_media_layout == 'thumbnail'
+    assign render_thumbnail = true
+  endif
+
+  if media_layout == 'carousel' or media_layout == ''
+    assign render_carousel = true
+  endif
+
+  if mobile_media_layout == 'default' or mobile_media_layout == ''
+    assign render_carousel = true
+  endif
+
+  if media_layout == '2_columns'
+    assign render_2columns = true
+  endif
+%}
+
+<media-gallery
+  class="{{ gallery_classes }}"
+  data-desktop-layout="{{ media_layout }}"
+  data-mobile-layout="{{ mobile_media_layout }}"
+>
+  {%- if render_thumbnail -%}
+    <div class="swiper product-media-gallery__main">
+      <div class="swiper-wrapper">
+        {% assign media_index = 0 %}
+        {% if selected_variant.featured_image != null %}
+          {% if is_zoom == 'hover' %}
+            <product-media-magnify
+              class="swiper-slide image-magnify-hover"
+              data-media-id="{{ selected_variant.featured_media.id }}"
+              data-media-index="{{ media_index }}"
+            >
+          {% else %}
+            <div
+              class="swiper-slide"
+              data-media-id="{{ selected_variant.featured_media.id }}"
+              data-media-index="{{ media_index }}"
+            >
+          {% endif %}
+
           {%- if is_zoom == 'hover' -%}
             <div class="loading__spinner hidden">
-              {{ 'icon-loading-spinner.svg' | inline_asset_content }}
+              {{ 'icon-spinner.svg' | inline_asset_content }}
             </div>
           {%- endif -%}
           <div class="product-media">
@@ -18,26 +96,49 @@
               <div
                 class="light-box-zoom-trigger {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}"
                 data-media-id="{{ selected_variant.featured_media.id }}"
-                data-modal="#ProductModal-{{ section.id }}"
+                data-modal="#ProductModal-{{ section_id }}"
               >
                 &nbsp;
               </div>
             {%- endif -%}
+
             {% render 'component-product-media', media: selected_variant.featured_media, loop: video_looping %}
           </div>
-        </div>
-        {% assign media_index = media_index | plus: 1 %}
-      {% endif %}
-      {% for media in product_media %}
-        {% unless selected_variant.featured_media.id == media.id %}
-          <div
-            class="swiper-slide"
-            data-media-id="{{ media.id }}"
-            data-media-index="{{ media_index }}"
-          >
+          {%- if is_zoom != 'none' -%}
+            <div class="product__media-icon {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}">
+              <span class="lightbox-icon">
+                <div class="svg-wrapper">
+                  {{ 'icon-zoom.svg' | inline_asset_content }}
+                </div>
+              </span>
+            </div>
+          {%- endif -%}
+          {% if is_zoom == 'hover' %}
+            </product-media-magnify>
+          {% else %}
+            </div>
+          {% endif %}
+          {% assign media_index = media_index | plus: 1 %}
+        {% endif %}
+        {% for media in product_media %}
+          {% unless selected_variant.featured_media.id == media.id %}
+            {% if is_zoom == 'hover' %}
+              <product-media-magnify
+                class="swiper-slide image-magnify-hover"
+                data-media-id="{{ media.id }}"
+                data-media-index="{{ media_index }}"
+              >
+            {% else %}
+              <div
+                class="swiper-slide"
+                data-media-id="{{ media.id }}"
+                data-media-index="{{ media_index }}"
+              >
+            {% endif %}
+
             {%- if is_zoom == 'hover' -%}
               <div class="loading__spinner hidden">
-                {{ 'icon-loading-spinner.svg' | inline_asset_content }}
+                {{ 'icon-spinner.svg' | inline_asset_content }}
               </div>
             {%- endif -%}
             <div class="product-media">
@@ -45,29 +146,228 @@
                 <div
                   class="light-box-zoom-trigger {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}"
                   data-media-id="{{ media.id }}"
-                  data-modal="#ProductModal-{{ section.id }}"
+                  data-modal="#ProductModal-{{ section_id }}"
                 >
                   &nbsp;
                 </div>
               {%- endif -%}
               {% render 'component-product-media', media: media, loop: video_looping %}
             </div>
+            {%- if is_zoom != 'none' -%}
+              <div class="product__media-icon {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}">
+                <span class="lightbox-icon">
+                  <div class="svg-wrapper">
+                    {{ 'icon-zoom.svg' | inline_asset_content }}
+                  </div>
+                </span>
+              </div>
+            {%- endif -%}
+
+            {% if is_zoom == 'hover' %}
+              </product-media-magnify>
+            {% else %}
+              </div>
+            {% endif %}
+            {% assign media_index = media_index | plus: 1 %}
+          {% endunless %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="swiper product-media-gallery__thumbnails">
+      <div class="swiper-wrapper">
+        {% assign media_index = 0 %}
+        {% if selected_variant.featured_image != null %}
+          <div class="swiper-slide" data-media-id="{{ selected_variant.featured_media.id }}">
+            {% render 'component-product-media', media: selected_variant.featured_media, loop: video_looping %}
           </div>
           {% assign media_index = media_index | plus: 1 %}
+        {% endif %}
+        {% for media in product_media %}
+          {% unless selected_variant.featured_media.id == media.id %}
+            <div class="swiper-slide" data-media-id="{{ media.id }}">
+              {% render 'component-product-media', media: media, loop: video_looping %}
+            </div>
+            {% assign media_index = media_index | plus: 1 %}
+          {% endunless %}
+        {% endfor %}
+      </div>
+      <div class="swiper-button-prev product-media-gallery__nav product-media-gallery__nav--prev">&nbsp;</div>
+      <div class="swiper-button-next product-media-gallery__nav product-media-gallery__nav--next">&nbsp;</div>
+    </div>
+  {%- endif -%}
+
+  {%- if render_carousel -%}
+    <div class="swiper product-media-gallery__carousel">
+      <div class="swiper-wrapper">
+        {% assign media_index = 0 %}
+        {% if selected_variant.featured_image != null %}
+          {% if is_zoom == 'hover' %}
+            <product-media-magnify
+              class="swiper-slide image-magnify-hover"
+              data-media-id="{{  selected_variant.featured_media.id }}"
+              data-media-index="{{ media_index }}"
+            >
+          {% else %}
+            <div
+              class="swiper-slide"
+              data-media-id="{{ selected_variant.featured_media.id }}"
+              data-media-index="{{ media_index }}"
+            >
+          {% endif %}
+          {%- if is_zoom == 'hover' -%}
+            <div class="loading__spinner hidden">
+              {{ 'icon-spinner.svg' | inline_asset_content }}
+            </div>
+          {%- endif -%}
+          <div class="product-media">
+            {%- if is_zoom != 'none' -%}
+              <div
+                class="light-box-zoom-trigger {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}"
+                data-media-id="{{ selected_variant.featured_media.id }}"
+                data-modal="#ProductModal-{{ section_id }}"
+              >
+                &nbsp;
+              </div>
+            {%- endif -%}
+            {% render 'component-product-media', media: selected_variant.featured_media, loop: video_looping %}
+          </div>
+          {% if is_zoom == 'hover' %}
+            </product-media-magnify>
+          {% else %}
+            </div>
+          {% endif %}
+          {% assign media_index = media_index | plus: 1 %}
+        {% endif %}
+        {% for media in product_media %}
+          {% unless selected_variant.featured_media.id == media.id %}
+            {% if is_zoom == 'hover' %}
+              <product-media-magnify
+                class="swiper-slide image-magnify-hover"
+                data-media-id="{{ media.id }}"
+                data-media-index="{{ media_index }}"
+              >
+            {% else %}
+              <div
+                class="swiper-slide"
+                data-media-id="{{ media.id }}"
+                data-media-index="{{ media_index }}"
+              >
+            {% endif %}
+            {%- if is_zoom == 'hover' -%}
+              <div class="loading__spinner hidden">
+                {{ 'icon-spinner.svg' | inline_asset_content }}
+              </div>
+            {%- endif -%}
+            <div class="product-media">
+              {%- if is_zoom != 'none' -%}
+                <div
+                  class="light-box-zoom-trigger {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}"
+                  data-media-id="{{ media.id }}"
+                  data-modal="#ProductModal-{{ section_id }}"
+                >
+                  &nbsp;
+                </div>
+              {%- endif -%}
+              {% render 'component-product-media', media: media, loop: video_looping %}
+            </div>
+            {% if is_zoom == 'hover' %}
+              </product-media-magnify>
+            {% else %}
+              </div>
+            {% endif %}
+            {% assign media_index = media_index | plus: 1 %}
+          {% endunless %}
+        {% endfor %}
+      </div>
+      <div class="swiper-pagination product-media-gallery__pagination">&nbsp;</div>
+      <div class="swiper-button-prev product-media-gallery__nav product-media-gallery__nav--prev">&nbsp;</div>
+      <div class="swiper-button-next product-media-gallery__nav product-media-gallery__nav--next">&nbsp;</div>
+      {%- if is_zoom != 'none' -%}
+        <div class="product__media-icon {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}">
+          <span class="lightbox-icon">
+            <div class="svg-wrapper">
+              {{ 'icon-zoom.svg' | inline_asset_content }}
+            </div>
+          </span>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if render_2columns -%}
+    <div class="media-gallery__2columns">
+      {% if selected_variant.featured_image != null %}
+        <div class="media-gallery__2columns-item" data-media-id="{{ selected_variant.featured_media.id }}">
+          <div class="product-media">
+            {%- if is_zoom != 'none' -%}
+              <div
+                class="light-box-zoom-trigger {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}"
+                data-media-id="{{ selected_variant.featured_media.id }}"
+                data-modal="#ProductModal-{{ section_id }}"
+              >
+                &nbsp;
+              </div>
+            {%- endif -%}
+            {% if is_zoom == 'hover' %}
+              <product-media-magnify class="image-magnify-hover">
+                <div class="loading__spinner hidden">
+                  {{ 'icon-spinner.svg' | inline_asset_content }}
+                </div>
+            {% endif %}
+            {% render 'component-product-media', media: selected_variant.featured_media, loop: video_looping %}
+            {% if is_zoom == 'hover' %}
+              </product-media-magnify>
+            {% endif %}
+          </div>
+          {%- if is_zoom != 'none' -%}
+            <div class="product__media-icon {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}">
+              <span class="lightbox-icon">
+                <div class="svg-wrapper">
+                  {{ 'icon-zoom.svg' | inline_asset_content }}
+                </div>
+              </span>
+            </div>
+          {%- endif -%}
+        </div>
+      {% endif %}
+
+      {% for media in product_media %}
+        {% unless selected_variant.featured_media.id == media.id %}
+          <div class="media-gallery__2columns-item" data-media-id="{{ media.id }}">
+            <div class="product-media">
+              {%- if is_zoom != 'none' -%}
+                <div
+                  class="light-box-zoom-trigger {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}"
+                  data-media-id="{{ media.id }}"
+                  data-modal="#ProductModal-{{ section_id }}"
+                >
+                  &nbsp;
+                </div>
+              {%- endif -%}
+              {% if is_zoom == 'hover' %}
+                <product-media-magnify class="image-magnify-hover">
+                  <div class="loading__spinner hidden">
+                    {{ 'icon-spinner.svg' | inline_asset_content }}
+                  </div>
+              {% endif %}
+              {% render 'component-product-media', media: media, loop: video_looping %}
+              {% if is_zoom == 'hover' %}
+                </product-media-magnify>
+              {% endif %}
+            </div>
+            {%- if is_zoom != 'none' -%}
+              <div class="product__media-icon {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}">
+                <span class="lightbox-icon">
+                  <div class="svg-wrapper">
+                    {{ 'icon-zoom.svg' | inline_asset_content }}
+                  </div>
+                </span>
+              </div>
+            {%- endif -%}
+          </div>
         {% endunless %}
       {% endfor %}
     </div>
-    <div class="swiper-pagination">&nbsp;</div>
-    <div class="swiper-button-prev">&nbsp;</div>
-    <div class="swiper-button-next">&nbsp;</div>
-    {%- if is_zoom != 'none' -%}
-      <div class="product__media-icon {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}">
-        <span class="lightbox-icon">
-          <div class="svg-wrapper">
-            {{ 'icon-zoom.svg' | inline_asset_content }}
-          </div>
-        </span>
-      </div>
-    {%- endif -%}
-  </div>
+  {%- endif -%}
 </media-gallery>

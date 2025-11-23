@@ -1,17 +1,24 @@
+{% doc %}
+  Renders the slide-out cart drawer with line items, options, totals, and actions.
+  Uses Alpine.js for open/close state and listens for an `item-added-to-cart` event.
+
+  @example
+  {% render 'component-cart-drawer' %}
+{% enddoc %}
 {{ 'cart.css' | asset_url | stylesheet_tag }}
 
-<div
+<cart-drawer
   id="cart-drawer"
-  class="color-{{ settings.cart_color_scheme }} gradient"
+  class="color-{{ settings.cart_color_scheme }}"
   :class="{ 'cart-open': cartOpen }"
 >
-  <button class="drawer-overlay" @click="closeCartDrawer">
-    <span hidden>Close</span>
+  <button class="drawer-overlay" @click="cartOpen = !cartOpen">
+    <span hidden>{{ 'accessibility.close' | t }}</span>
   </button>
   <div class="drawer__wrapper" data-ajax-cart-section>
     {%- if cart == empty -%}
       <div class="cart-header cart-header--empty">
-        <div class="cart-drawer__close" @click="closeCartDrawer">
+        <div class="cart-drawer__close" @click="cartOpen = !cartOpen">
           {{- 'icon-close.svg' | inline_asset_content -}}
         </div>
       </div>
@@ -23,7 +30,7 @@
           </a>
 
           {%- if shop.customer_accounts_enabled and customer == null -%}
-            <p class="cart__login-title h3">{{ 'sections.cart.login.title' | t }}</p>
+            <p>{{ 'sections.cart.login.title' | t }}</p>
             <p class="cart__login-paragraph">
               {{ 'sections.cart.login.paragraph_html' | t: link: routes.account_login_url }}
             </p>
@@ -46,7 +53,7 @@
 
     {%- else -%}
       <div class="cart-header">
-        <h2>Your cart ({{ cart.item_count }})</h2>
+        <h2>{{ 'cart.title' | t }} ({{ cart.item_count }})</h2>
         <div class="cart-drawer__close" @click="cartOpen = !cartOpen">
           {{- 'icon-close.svg' | inline_asset_content -}}
         </div>
@@ -104,7 +111,6 @@
                             {%- if property.last contains '/uploads/' -%}
                               <a
                                 href="{{ property.last }}"
-                                class="link"
                                 target="_blank"
                                 aria-describedby="a11y-new-window-message"
                               >
@@ -161,7 +167,7 @@
 
                 <div class="cart-item__remove">
                   {{- 'icon-close.svg' | inline_asset_content -}}
-                  <a href="{{ line_item.url_to_remove }}" data-ajax-cart-request-button>Remove</a>
+                  <a href="{{ line_item.url_to_remove }}" data-ajax-cart-request-button>{{ 'cart.remove' | t }}</a>
                 </div>
               </div>
 
@@ -192,7 +198,9 @@
       <div class="cart-footer">
         {%- if settings.show_cart_note -%}
           <div class="cart-note" x-data="{ noteOpen: false }">
-            <label for="CartNote" :class="{ 'note-open': noteOpen }" @click="noteOpen = !noteOpen">Order special instructions</label>
+            <label for="CartNote" :class="{ 'note-open': noteOpen }" @click="noteOpen = !noteOpen"
+              >{{ 'cart.seller_note' | t }}</label
+            >
             <textarea
               name="note"
               form="cart"
@@ -201,7 +209,9 @@
           </div>
         {%- endif -%}
 
-        <div class="cart-actions">
+        {% render 'cart-discount' %}
+
+        <div>
           <div class="cart-charges">
             {% if cart.cart_level_discount_applications.size > 0 %}
               <ul class="cart-discounts">
@@ -215,38 +225,19 @@
             {% endif %}
 
             <div class="cart-total">
-              <span class="cart-total__label">Estimated total</span> <span class="cart-total__price">{{ cart.total_price | money }}</span>
+              <span class="cart-total__label">{{ 'cart.estimated_total' | t }}</span>
+              <span>{{ cart.total_price | money }}</span>
             </div>
-            <small class="cart-total__small">Taxes, discounts and shipping calculated at checkout.</small>
+            <small class="cart-total__small">{{ 'cart.taxes_and_shipping_policy' | t }}</small>
           </div>
 
           {% form 'cart', cart, id: 'my-ajax-cart-form' %}
-            <button type="submit" name="checkout">Check out</button>
+            <button type="submit" name="checkout">{{ 'cart.checkout' | t }}</button>
           {% endform %}
         </div>
       </div>
     {%- endif -%}
   </div>
-</div>
-
-<script>
-  document.addEventListener('alpine:init', () => {
-    Alpine.data('cartDrawer', () => ({
-      cartOpen: false,
-
-      openCartDrawer() {
-        this.cartOpen = true;
-      },
-
-      closeCartDrawer() {
-        this.cartOpen = false;
-      },
-
-      init() {
-        document.addEventListener('item-added-to-cart', () => {
-          this.openCartDrawer();
-        });
-      },
-    }));
-  });
-</script>
+</cart-drawer>
+<script src="{{ 'component-cart-drawer.js' | asset_url }}" type="module"></script>
+<script src="{{ 'cart-discount.js' | asset_url }}" type="module"></script>

@@ -1,4 +1,4 @@
-class ProductCard extends HTMLElement {
+export class ProductCard extends HTMLElement {
   constructor() {
     super();
   }

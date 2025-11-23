@@ -10,7 +10,7 @@
 {
   "sections": {
     "main": {
-      "type": "main-addresses",
+      "type": "addresses",
       "settings": {
         "padding_top": 36,
         "padding_bottom": 36

@@ -1,0 +1,247 @@
+{{ 'cart.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .cart__wrapper {
+    padding-top: {{ section.settings.padding_top | append: 'px' }};
+    padding-bottom: {{ section.settings.padding_bottom | append: 'px' }};
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+{% endstyle %}
+
+<div
+  id="cart-main"
+  class="color-{{ section.settings.color_scheme }}"
+>
+  {%- if cart.item_count > 0 -%}
+    <div class="cart__wrapper">
+      <div class="cart-header">
+        <h2>Your cart ({{ cart.item_count }})</h2>
+        <a href="{{ routes.all_products_collection_url }}"> Continue shopping </a>
+      </div>
+
+      <div class="cart-items" data-ajax-cart-section data-ajax-cart-section-scroll>
+        {% for line_item in cart.items %}
+          {% assign line_item_index = forloop.index %}
+
+          <div class="cart-item">
+            <div class="cart-item__media">
+              {%- if line_item.image -%}
+                {{ line_item.image | image_url: width: 200 | image_tag: alt: line_item.title }}
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </div>
+
+            <div class="cart-item__details">
+              <div class="cart-item__heading">
+                <a href="{{ line_item.url }}">
+                  {{ line_item.title | escape }}
+                </a>
+
+                <small class="cart-item__price">
+                  {% if line_item.original_price > line_item.final_price %}
+                    <s>{{ line_item.original_price | money }}</s>
+                  {% endif %}
+                  <span>{{ line_item.final_price | money }}</span>
+                </small>
+
+                {%- if line_item.product.has_only_default_variant == false
+                  or line_item.properties.size != 0
+                  or line_item.selling_plan_allocation != null
+                -%}
+                  <dl class="cart-item__options">
+                    {%- if line_item.product.has_only_default_variant == false -%}
+                      {%- for option in line_item.options_with_values -%}
+                        <div class="cart-item__option">
+                          <dt>{{ option.name }}:</dt>
+                          <dd>
+                            {{ option.value -}}
+                            {%- unless forloop.last %}, {% endunless %}
+                          </dd>
+                        </div>
+                      {%- endfor -%}
+                    {%- endif -%}
+
+                    {%- for property in line_item.properties -%}
+                      {%- assign property_first_char = property.first | slice: 0 -%}
+                      {%- if property.last != blank and property_first_char != '_' -%}
+                        <div class="cart-item__option">
+                          <dt>{{ property.first }}:</dt>
+                          <dd>
+                            {%- if property.last contains '/uploads/' -%}
+                              <a
+                                href="{{ property.last }}"
+                                target="_blank"
+                                aria-describedby="a11y-new-window-message"
+                              >
+                                {{ property.last | split: '/' | last }}
+                              </a>
+                            {%- else -%}
+                              {{ property.last }}
+                            {%- endif -%}
+                          </dd>
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </dl>
+
+                  <p class="cart-item__option">{{ line_item.selling_plan_allocation.selling_plan.name }}</p>
+                {%- endif -%}
+
+                {% if line_item.line_level_discount_allocations.size > 0 %}
+                  <ul class="cart-discounts">
+                    {% for discount_allocation in line_item.line_level_discount_allocations %}
+                      <li>
+                        {{- 'icon-discount.svg' | inline_asset_content -}}
+                        {{ discount_allocation.discount_application.title }}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+
+              <div class="cart-item__action">
+                <ajax-cart-quantity>
+                  <a
+                    data-ajax-cart-quantity-minus
+                    href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | minus: 1 }}"
+                  >
+                    {{- 'icon-minus.svg' | inline_asset_content -}}
+                  </a>
+
+                  <input
+                    data-ajax-cart-quantity-input="{{ line_item_index }}"
+                    name="updates[]"
+                    value="{{ line_item.quantity }}"
+                    type="number"
+                    form="my-ajax-cart-form"
+                  >
+
+                  <a
+                    data-ajax-cart-quantity-plus
+                    href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | plus: 1 }}"
+                  >
+                    {{- 'icon-plus.svg' | inline_asset_content -}}
+                  </a>
+                </ajax-cart-quantity>
+
+                <div class="cart-item__remove">
+                  {{- 'icon-close.svg' | inline_asset_content -}}
+                  <a href="{{ line_item.url_to_remove }}" data-ajax-cart-request-button>Remove</a>
+                </div>
+              </div>
+
+              <div class="cart-item__total">
+                {%- if line_item.original_line_price != line_item.final_line_price -%}
+                  <s>
+                    {{ line_item.original_line_price | money }}
+                  </s>
+                  <span>
+                    {{ line_item.final_line_price | money }}
+                  </span>
+                {%- else -%}
+                  <span>
+                    {{ line_item.original_line_price | money }}
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+            <div class="cart-item__errors">
+              <div data-ajax-cart-errors="{{ line_item.key }}"></div>
+              {{- 'icon-info.svg' | inline_asset_content -}}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="cart-footer">
+        {%- if settings.show_cart_note -%}
+          <div class="cart-note">
+            <label for="CartNote">Order special instructions</label>
+            <textarea
+              name="note"
+              form="cart"
+              id="CartNote"
+            >{{ cart.note }}</textarea>
+          </div>
+        {%- endif -%}
+
+        <div class="cart-actions">
+          {% render 'cart-discount', section_id: section.id %}
+          
+          <div class="cart-charges" data-ajax-cart-section>
+            {% if cart.cart_level_discount_applications.size > 0 %}
+              <ul class="cart-discounts">
+                {% for discount_application in cart.cart_level_discount_applications %}
+                  <li>
+                    {{- 'icon-discount.svg' | inline_asset_content -}}
+                    {{ discount_application.title }} (-{{ discount_application.total_allocated_amount | money }})
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <div class="cart-total">
+              <span class="cart-total__label">Estimated total</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+            <small class="cart-total__small">Taxes, discounts and shipping calculated at checkout.</small>
+          </div>
+
+          {% form 'cart', cart, id: 'my-ajax-cart-form' %}
+            <button type="submit" name="checkout">Check out</button>
+          {% endform %}
+        </div>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="cart__warnings">
+      <h1 class="cart__empty-text">Your cart is empty</h1>
+      <a href="{{ routes.all_products_collection_url }}" class="button"> Continue shopping </a>
+      <h2>Have an account?</h2>
+      <p class="cart__login-paragraph"><a href="{{ routes.account_login_url }}">Log in</a> to check out faster.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script src="{{ 'cart-discount.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-items.name",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}

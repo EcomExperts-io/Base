@@ -8,42 +8,9 @@
  * ------------------------------------------------------------
  */
 {
-  "name": "Header group",
   "type": "header",
+  "name": "t:general.header",
   "sections": {
-    "announcement_bar": {
-      "type": "announcement-bar",
-      "blocks": {
-        "announcement_DVFxDX": {
-          "type": "announcement",
-          "settings": {
-            "text": "Text Here",
-            "link_text": "",
-            "link_url": "",
-            "emoji": "🚨"
-          }
-        },
-        "announcement_3wP6h3": {
-          "type": "announcement",
-          "settings": {
-            "text": "Text Here 2",
-            "link_text": "",
-            "link_url": "",
-            "emoji": "🚨"
-          }
-        }
-      },
-      "block_order": [
-        "announcement_DVFxDX",
-        "announcement_3wP6h3"
-      ],
-      "settings": {
-        "show_announcement": true,
-        "background_color": "#000000",
-        "text_color": "#ffffff",
-        "auto_rotate_interval": 2
-      }
-    },
     "header": {
       "type": "header",
       "settings": {
@@ -55,20 +22,19 @@
         "show_line_separator": true,
         "color_scheme": "",
         "menu_color_scheme": "",
-        "enable_country_selector": false,
-        "enable_language_selector": false,
+        "enable_country_selector": true,
+        "enable_language_selector": true,
         "enable_customer_avatar": true,
         "mobile_logo_position": "center",
         "margin_bottom": 0,
-        "padding_top": 36,
-        "padding_bottom": 36,
+        "padding_top": 20,
+        "padding_bottom": 20,
         "menu_text_color": "#000000",
         "cart_count_color": "#2e2e2e"
       }
     }
   },
   "order": [
-    "announcement_bar",
     "header"
   ]
 }

@@ -1,4 +1,4 @@
-class LocalizationForm extends HTMLElement {
+export class LocalizationForm extends HTMLElement {
   constructor() {
     super();
     this.elements = {

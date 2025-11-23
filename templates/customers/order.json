@@ -10,7 +10,7 @@
 {
   "sections": {
     "main": {
-      "type": "main-order",
+      "type": "order",
       "settings": {
         "padding_top": 36,
         "padding_bottom": 36

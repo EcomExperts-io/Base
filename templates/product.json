@@ -9,8 +9,8 @@
  */
 {
   "sections": {
-    "main-product": {
-      "type": "main-product",
+    "main": {
+      "type": "product",
       "blocks": {
         "title_bpmXVj": {
           "type": "title",
@@ -60,12 +60,6 @@
           "type": "quantity_selector",
           "settings": {}
         },
-        "monogram_block": {
-          "type": "monogram",
-          "settings": {
-            "button_text": "Add Monogram"
-          }
-        },
         "subscription_AbipnR": {
           "type": "subscription",
           "settings": {
@@ -90,7 +84,29 @@
           "type": "buy_buttons",
           "settings": {
             "show_dynamic_checkout": true,
-            "show_gift_card_recipient": true
+            "show_gift_card_recipient": true,
+            "show_pickup_availability": true
+          }
+        },
+        "collapsible_tab_pxw7hB": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Shipping",
+            "icon": "check_mark",
+            "content": "<p>Maximize Your Store's Potential with Superior Shipping Strategies.</p>",
+            "page": ""
+          }
+        },
+        "complementary_MeGfU6": {
+          "type": "complementary",
+          "settings": {
+            "heading": "Pairs Well With",
+            "show_vendor": false,
+            "products_to_show": 4,
+            "quick_add": "standard",
+            "enable_swatches": true,
+            "swatch_type": "image",
+            "swatch_trigger": "Color"
           }
         }
       },
@@ -106,15 +122,18 @@
         "share_ybFkAW",
         "description_RxGjaP",
         "buy_buttons_JPDYXc",
-        "monogram_block"
+        "collapsible_tab_pxw7hB",
+        "complementary_MeGfU6"
       ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "",
-        "media_size": "medium",
-        "constrain_to_viewport": true,
-        "media_fit": "cover",
+        "media_size": "large",
+        "constrain_to_viewport": false,
+        "media_fit": "contain",
         "media_position": "left",
+        "media_layout": "thumbnail",
+        "mobile_media_layout": "thumbnail",
         "image_zoom": "hover",
         "enable_video_looping": true,
         "padding_top": 36,
@@ -123,29 +142,9 @@
         "variant_label_font_size": 13,
         "variant_label_font_weight": "300"
       }
-    },
-    "related-products": {
-      "type": "related-products",
-      "settings": {
-        "heading": "You may also like",
-        "heading_size": "h2",
-        "products_to_show": 4,
-        "columns_desktop": 4,
-        "enable_swatches": true,
-        "swatch_type": "image",
-        "swatch_trigger": "Color",
-        "color_scheme": "scheme-1",
-        "image_ratio": "square",
-        "show_vendor": false,
-        "show_rating": false,
-        "columns_mobile": "2",
-        "padding_top": 36,
-        "padding_bottom": 28
-      }
     }
   },
   "order": [
-    "main-product",
-    "related-products"
+    "main"
   ]
 }

@@ -1,0 +1,111 @@
+<h1 class="collections__heading">{{ 'collections.title' | t }}</h1>
+
+<div
+  class="collections"
+  style="--grid-gap: {{ section.settings.grid_gap }}px"
+>
+  {% for collection in collections %}
+    <a class="collection-card" href="{{ collection.url }}">
+      {% if collection.featured_image %}
+        <div class="collection-card__image">
+          {{ collection.featured_image | image_url: width: 600, height: 600, crop: 'center' | image_tag }}
+        </div>
+      {% endif %}
+
+      <div class="collection-card__content">
+        <span>{{ collection.title }} </span>
+        <span class="collection-card__arrow">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+
+        {% if collection.description %}
+          <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
+        {% endif %}
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+{% stylesheet %}
+  .collections__heading {
+    font-size: 4rem;
+    padding: 4rem 0;
+  }
+  .collections {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--grid-gap);
+  }
+  .collection-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-decoration: none;
+  }
+  .collection-card__image {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+  }
+  .collection-card__image::before {
+    content: '';
+    display: block;
+    padding-bottom: 100%;
+  }
+  .collection-card__image > img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    object-position: center;
+  }
+  .collection-card__content {
+    padding: 1.7rem 0;
+    display: flex;
+  }
+  .collection-card__content span {
+    font-size: 1.6rem;
+    color: #121212;
+  }
+
+  .collection-card__arrow {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    margin-left: 1rem;
+    width: 2rem;
+    height: 2rem;
+  }
+  @media screen and (max-width: 768px) {
+    .collections__heading {
+      font-size: 3rem;
+      margin: 0 10px;
+    }
+    .collections {
+      grid-template-columns: repeat(2, 1fr);
+      padding: 0 10px;
+      gap: 4px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.collections_grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "t:labels.grid_gap",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 10
+    }
+  ],
+  "presets": [{ "name": "t:general.collections_grid" }]
+}
+{% endschema %}

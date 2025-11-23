@@ -1,4 +1,14 @@
-<style>
+{% doc %}
+  Renders an add-to-cart notification panel with product summary, actions, and
+  links to cart/checkout. Uses a color scheme and adapts layout to header type.
+
+  @param {string} [color_scheme] - Optional color scheme handle for the wrapper
+  @param {string} [desktop_menu_type] - If not 'drawer', uses page-width wrapper
+
+  @example
+  {% render 'component-cart-notification', color_scheme: 'primary' %}
+{% enddoc %}
+{% stylesheet %}
   .cart-notification-wrapper {
     position: relative;
     display: block;
@@ -10,9 +20,8 @@
     position: absolute;
     top: 100%;
     right: 0;
-    border: 1px solid rgba(var(--color-foreground), var(--popup-border-opacity));
-    box-shadow: var(--popup-shadow-horizontal-offset) var(--popup-shadow-vertical-offset) var(--popup-shadow-blur-radius)
-      rgba(var(--color-shadow), var(--popup-shadow-opacity));
+    border: 1px solid rgba(var(--color-foreground), 0.2);
+    box-shadow: 0 4px 10px rgba(var(--color-shadow), 0.1);
     padding: 1.5rem 2rem;
     max-width: 350px;
     box-sizing: border-box;
@@ -118,20 +127,20 @@
     cursor: pointer;
   }
 
-  @media screen and (min-width: 750px) {
+  @media screen and (min-width: 769px) {
     .cart-notification {
       right: 20px;
     }
   }
-  @media screen and (max-width: 750px) {
+  @media screen and (max-width: 768px) {
     .cart-notification {
       width: 100%;
       max-width: 100%;
     }
   }
-</style>
+{% endstylesheet %}
 
-<cart-notification class="cart-notification-wrapper{% if desktop_menu_type != 'drawer' %} page-width{% endif %}">
+<cart-notification  data-ajax-cart-section class="cart-notification-wrapper{% if desktop_menu_type != 'drawer' %} page-width{% endif %}">
   <div
     id="cart-notification"
     class="cart-notification {% if color_scheme %} color-{{ color_scheme }} gradient{% endif %}"
@@ -159,7 +168,11 @@
         href="{{ routes.cart_url }}"
         class="cart-notification-button"
       >
-        {{ 'general.cart.view_empty_cart' | t }} (<span data-ajax-cart-bind="item_count" id="cart-notification-count"></span>)
+        {{ 'general.cart.view_empty_cart' | t }} (<span
+          data-ajax-cart-bind="item_count"
+          id="cart-notification-count"
+        ></span
+        >)
       </a>
       <form action="{{ routes.cart_url }}" method="post" id="cart-notification-form">
         <button name="checkout">
@@ -172,4 +185,4 @@
     </div>
   </div>
 </cart-notification>
-<script src="{{ 'component-cart-notification.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'component-cart-notification.js' | asset_url }}" type="module"></script>

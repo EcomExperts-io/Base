@@ -4,21 +4,21 @@
     margin-right: 20px;
     width: unset;
     font-family: var(--font-body-family);
-    font-size: 14px;
-    line-height: 2;
+    font-size: 16px;
   }
 
   .filters-horizontal {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
+    row-gap: 1.5rem;
     max-width: 700px;
   }
 
   .facets__wrapper {
     position: relative;
     margin-right: 30px;
-    margin-bottom: 15px;
+    font-size: 16px;
   }
 
   .filter-button {
@@ -39,6 +39,7 @@
   }
 
   .filter-button .icon-caret {
+    display: inline-block;
     height: 6px;
     position: relative;
     top: -1px;
@@ -46,12 +47,11 @@
   }
 
   .filter-content {
-    border-width: var(--popup-border-width);
+    border-width: 0.1rem;
     border-style: solid;
-    border-color: rgba(var(--color-foreground), var(--popup-border-opacity));
-    border-radius: var(--popup-corner-radius);
-    box-shadow: var(--popup-shadow-horizontal-offset) var(--popup-shadow-vertical-offset) var(--popup-shadow-blur-radius)
-      rgba(var(--color-shadow), var(--popup-shadow-opacity));
+    border-color: rgba(var(--color-foreground), 0.1);
+    border-radius: 0.4rem;
+    box-shadow: 0 1.2rem 2.4rem rgba(var(--color-shadow), 0.15);
     background-color: rgb(var(--color-background));
     position: absolute;
     top: calc(100% + 10px);
@@ -148,7 +148,8 @@
                   <div class="svg-wrapper">
                     {{- 'icon-checkmark.svg' | inline_asset_content -}}
                   </div>
-                  {{- v.label }} ({{ v.count }})</label
+                  {{- v.label }} {% if show_filter_count %} ({{ v.count }}){% endif %}
+                  </label
                 >
               </li>
             {%- endfor -%}

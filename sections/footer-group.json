@@ -1,0 +1,65 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "t:general.footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "link_list_xdP99L": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "footer"
+          }
+        },
+        "link_list_kkNmcT": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Quick links",
+            "menu": "footer"
+          }
+        },
+        "brand_information_pLUCGY": {
+          "type": "brand_information",
+          "settings": {
+            "show_social": true
+          }
+        },
+        "text_3D9g6x": {
+          "type": "text",
+          "settings": {
+            "heading": "Provide 3 distinct proposals in JSON form indexed by keys.",
+            "subtext": "<p>Upgrade Your Kitchen Game with Cookware Fit for Experts</p>"
+          }
+        }
+      },
+      "block_order": [
+        "link_list_xdP99L",
+        "link_list_kkNmcT",
+        "brand_information_pLUCGY",
+        "text_3D9g6x"
+      ],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "show_social": false,
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "payment_enable": true,
+        "show_policy": true,
+        "margin_top": 60
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

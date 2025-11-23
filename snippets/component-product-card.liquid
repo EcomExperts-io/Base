@@ -24,27 +24,14 @@
   %}
 {% endcomment %}
 
-{%- liquid
-  assign ratio = 1
-  if card_product.featured_media and media_aspect_ratio == 'portrait'
-    assign ratio = 0.8
-  elsif card_product.featured_media and media_aspect_ratio == 'adapt'
-    assign ratio = card_product.featured_media.aspect_ratio
-  endif
-  if ratio == 0 or ratio == null
-    assign ratio = 1
-  endif
--%}
-
 <product-card
-  class="product-card card--{{ settings.card_style }}{% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }}{% endif %}"
+  class="product-card"
   data-product-id="{{ card_product.id }}"
 >
   <div class="product-card-child">
     <a
       href="{{ card_product.url }}"
       class="card-media"
-      style="--media-ratio: {{ 1 | divided_by: ratio | times: 100 }}%;"
     >
       <div class="card-media-child{% if card_product.featured_image == blank %} card-media-no-image{% endif %}">
         {% if card_product.featured_image != blank %}
@@ -62,80 +49,85 @@
           {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
         {% endif %}
       </div>
-      <div class="card-badge-wrapper {{ settings.badge_position }}">
-        <div class="card__badge {{ settings.badge_position }}">
-          {%- if card_product.available == false -%}
+      <div class="card-badge-wrapper">
+        {%- if card_product.available == false -%}
+          <div class="card__badge">
             <span
-              class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
+              class="badge badge--bottom-left"
             >
               {{- 'products.product.sold_out' | t -}}
             </span>
-          {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
-            <span
-              class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
-            >
+          </div>
+        {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
+          <div class="card__badge">
+            <span class="badge badge--bottom-left">
               {{- 'products.product.on_sale' | t -}}
             </span>
-          {%- endif -%}
-        </div>
+          </div>
+        {%- endif -%}
       </div>
     </a>
     <div class="card-information">
-      <h2 class="card-heading">
-        <a href="{{ card_product.url }}">{{ card_product.title }}</a>
-      </h2>
-      {% if show_vendor %}
-        <span class="card-vendor">{{ card_product.vendor }}</span>
-      {% endif %}
-      <div class="card-pricing">
-        {% render 'component-product-price', product: card_product, show_compare_at_price: true %}
-      </div>
-      {% if enable_swatches %}
-        <div class="product-color-swatches">
-          {%- for option in card_product.options_with_values -%}
-            {%- if option.name == swatch_trigger -%}
-              {%- for value in option.values -%}
-                {%- for variant in card_product.variants -%}
-                  {%- if variant.options contains value -%}
-                    <span
-                      class="color-swatch"
-                      src="{{ variant.featured_image | image_url: width: 800 }}"
-                      srcset="{{ variant.featured_image | image_url: width: 800 }} 1x, {{ variant.featured_image | image_url: width: 1600 }} 2x"
-                      {%- unless swatch_type == 'image' -%}
-                        style="background-color: {{ value | handleize }};"
-                      {%- endunless -%}
-                      title="{{ value }}"
-                      data-variant-id="{{ variant.id }}"
-                      data-swatch-color="{{ value | handleize }}"
-                    >
-                      {%- if swatch_type == 'image' -%}
-                        {%- liquid
-                          assign variant_image = null
-                          if variant.featured_image != null
-                            assign variant_image = variant.featured_image
-                          else
-                            assign variant_image = card_product.featured_image
-                          endif
-                        -%}
-                        {{
-                          variant_image
-                          | image_url: width: variant_image.width
-                          | image_tag:
-                            width: variant_image.width,
-                            height: variant_image.height,
-                            alt: variant_image.alt,
-                            class: 'data-variant-image'
-                        }}
-                      {%- endif -%}
-                    </span>
-                    {%- break -%}
-                  {%- endif -%}
-                {%- endfor -%}
-              {%- endfor -%}
-            {%- endif -%}
-          {%- endfor -%}
+      <div>
+        <h2 class="card-heading product-grid-heading">
+          <a href="{{ card_product.url }}">{{ card_product.title }}</a>
+        </h2>
+        {% if show_vendor %}
+          <span class="card-vendor">{{ card_product.vendor }}</span>
+        {% endif %}
+        <div class="card-pricing">
+          {% render 'component-product-price', product: card_product, show_compare_at_price: true %}
         </div>
-      {% endif %}
+        {% if enable_swatches %}
+          <div class="product-color-swatches">
+            {%- for option in card_product.options_with_values -%}
+              {%- if option.name == swatch_trigger -%}
+                {%- for value in option.values -%}
+                  {%- for variant in card_product.variants -%}
+                    {%- if variant.options contains value -%}
+                      <span
+                        class="color-swatch"
+                        {%- if variant.featured_image -%}
+                          src="{{ variant.featured_image | image_url: width: 800 }}"
+                          srcset="{{ variant.featured_image | image_url: width: 800 }} 1x, {{ variant.featured_image | image_url: width: 1600 }} 2x"
+                        {%- endif -%}
+                        {%- unless swatch_type == 'image' -%}
+                          style="background-color: {{ value | handleize }};"
+                        {%- endunless -%}
+                        title="{{ value }}"
+                        data-variant-id="{{ variant.id }}"
+                        data-swatch-color="{{ value | handleize }}"
+                      >
+                        {%- if swatch_type == 'image' -%}
+                          {%- liquid
+                            assign variant_image = null
+                            if variant.featured_image != null
+                              assign variant_image = variant.featured_image
+                            else
+                              assign variant_image = card_product.featured_image
+                            endif
+                          -%}
+                          {{
+                            variant_image
+                            | image_url: width: variant_image.width
+                            | image_tag:
+                              width: variant_image.width,
+                              height: variant_image.height,
+                              alt: variant_image.alt,
+                              class: 'data-variant-image'
+                          }}
+                        {%- endif -%}
+                      </span>
+                      {%- break -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {% endif %}
+
+      </div>
 
       {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
       {% if quick_add == 'standard' %}
@@ -156,13 +148,10 @@
                 aria-haspopup="dialog"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 data-product-url="{{ card_product.url }}"
-                {% if button_text_color %}
-                  style="color: {{ button_text_color }};"
-                {% endif %}
               >
                 {{ 'products.product.choose_options' | t }}
                 <div class="loading__spinner hidden">
-                  {{ 'icon-loader.svg' | inline_asset_content }}
+                  {{ 'icon-spinner.svg' | inline_asset_content }}
                 </div>
               </button>
             </modal-opener>
@@ -187,7 +176,7 @@
             </quick-add-modal>
           {%- else -%}
             <ajax-cart-product-form
-              data-section-id="{{ section.id }}"
+              data-section-id="{{ section_id }}"
             >
               {% form 'product', card_product, id: product_form_id, novalidate: 'novalidate' %}
                 <input
@@ -226,7 +215,7 @@
                     {{ 'products.product.sold_out' | t }}
                   </span>
                   <div class="loading__spinner hidden">
-                    {{ 'icon-loader.svg' | inline_asset_content }}
+                    {{ 'icon-spinner.svg' | inline_asset_content }}
                   </div>
                 </button>
               {%- endform -%}

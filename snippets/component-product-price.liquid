@@ -1,17 +1,18 @@
-{% comment %}
-  Renders a list of product's price (regular, sale)
+{% doc %}
+  Renders a product's price block including regular, sale, compare-at, unit price,
+  and optional badges for Sale and Sold Out. Supports volume pricing messaging.
 
-  Accepts:
-  - product: {Object} Product Liquid object (optional)
-  - placeholder: {Boolean} Renders a placeholder price (optional)
-  - use_variant: {Boolean} Renders selected or first variant price instead of overall product pricing (optional)
-  - show_badges: {Boolean} Renders 'Sale' and 'Sold Out' tags if the product matches the condition (optional)
-  - price_class: {String} Adds a price class to the price element (optional)
-  - show_compare_at_price: {Boolean} Renders the compare at price if the product matches the condition (optional)
+  @param {product} [product] - Product object to render prices for
+  @param {boolean} [placeholder] - Render placeholder pricing when no product
+  @param {boolean} [use_variant] - Use selected/first variant instead of product
+  @param {boolean} [show_badges] - Show Sale and Sold Out badges
+  @param {string}  [price_class] - Extra class on the price wrapper
+  @param {boolean} [show_compare_at_price] - Show compare-at price when applicable
 
-  Usage:
+  @example
   {% render 'component-product-price', product: product %}
-{% endcomment %}
+  {% render 'component-product-price', product: product, use_variant: true, show_badges: true %}
+{% enddoc %}
 
 {%- liquid
   if use_variant
@@ -122,11 +123,11 @@
       </small>
     </div>
     {%- if show_badges -%}
-      <span class="badge price__badge-sale color-{{ settings.sale_badge_color_scheme }}">
+      <span class="badge price__badge-sale">
         {{ 'products.product.on_sale' | t }}
       </span>
 
-      <span class="badge price__badge-sold-out color-{{ settings.sold_out_badge_color_scheme }}">
+      <span class="badge price__badge-sold-out">
         {{ 'products.product.sold_out' | t }}
       </span>
     {%- endif -%}

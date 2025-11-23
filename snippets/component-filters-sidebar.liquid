@@ -4,6 +4,16 @@
     width: 260px;
     margin-right: 30px;
     flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--header-height, 80px) + 20px);
+    align-self: flex-start;
+    max-height: calc(100vh - var(--header-height, 80px) - 40px);
+    overflow-y: auto;
+  }
+
+  .facets__main-head-wrapper {
+    margin-bottom: 2rem;
+    font-size: 22px;
   }
 
   .facets__heading {
@@ -39,7 +49,7 @@
   .facets__display-vertical {
     display: flex;
     flex-direction: column;
-    padding: 6px 12px 25px 0px;
+    padding: 5px 5px 10px 0px;
   }
 
   .filters__show-more {
@@ -127,7 +137,7 @@
                   <div class="svg-wrapper">
                     {{- 'icon-checkmark.svg' | inline_asset_content -}}
                   </div>
-                  {{- v.label }} ({{ v.count }})
+                  {{- v.label }} {% if show_filter_count %} ({{ v.count }}){% endif %}
                 </label>
               {% endfor %}
             {% endif %}

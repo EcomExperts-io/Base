@@ -1,6 +1,16 @@
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 node_modules/
 .vs
 .vscode
+.shopify/
+release
+*.zip
 package-lock.json
 .shopify
 .early.coverage

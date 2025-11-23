@@ -1,26 +1,37 @@
+{% doc %}
+  Renders a share UI that uses the Web Share API when available and falls back to a copy-to-clipboard interface. Expects to be rendered within a section so it can access `section` and `block` for IDs and label text.
+
+  @param {block} block - Section block object providing labels and editor attributes
+  @param {string} share_link - URL to share when using native share or fallback
+  @param {string} section_id - Section DOM id used to namespace element IDs
+
+  @example
+  {% render 'component-product-share-button', block: block, share_link: product.url, section_id: section.id %}
+{% enddoc %}
+
 <share-button class="share-button quick-add-hidden" {{ block.shopify_attributes }}>
   <button class="share-button__button hidden">
     <span class="svg-wrapper">{{ 'icon-share.svg' | inline_asset_content }}</span>
     {{ block.settings.share_label | escape }}
   </button>
-  <details id="Details-{{ block.id }}-{{ section.id }}">
+  <details id="Details-{{ block.id }}-{{ section_id }}">
     <summary class="share-button__button">
       <span class="svg-wrapper">{{ 'icon-share.svg' | inline_asset_content }}</span>
       {{ block.settings.share_label | escape }}
     </summary>
-    <div class="share-button__fallback motion-reduce">
+    <div class="share-button__fallback">
       <div class="field">
-        <span id="ShareMessage-{{ section.id }}" class="share-button__message hidden" role="status"> </span>
+        <span id="ShareMessage-{{ section_id }}" class="share-button__message hidden" role="status"> </span>
         <input
           type="text"
           class="field__input"
-          id="ShareUrl-{{ section.id }}"
+          id="ShareUrl-{{ section_id }}"
           value="{{ share_link }}"
           placeholder="{{ 'general.share.share_url' | t }}"
           onclick="this.select();"
           readonly
         >
-        <label class="field__label" for="ShareUrl-{{ section.id }}">{{ 'general.share.share_url' | t }}</label>
+        <label class="field__label" for="ShareUrl-{{ section_id }}">{{ 'general.share.share_url' | t }}</label>
       </div>
       <button class="share-button__close hidden">
         <span class="svg-wrapper">
