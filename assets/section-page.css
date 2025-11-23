@@ -1,0 +1,32 @@
+.page-title {
+  margin-top: 0;
+}
+
+.main-page-title {
+  margin-bottom: 3rem;
+  font-size: 4rem;
+}
+
+@media screen and (min-width: 769px) {
+  .main-page-title {
+    margin-bottom: 4rem;
+    font-size: 5.2rem;
+  }
+}
+
+.rte p{
+  margin: 1.6rem 0;
+  color: rgba(var(--color-foreground), 0.75);
+  letter-spacing: 0.06rem;
+  line-height: 1.8;
+}
+
+.page-placeholder-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.page-placeholder {
+  width: 52.5rem;
+  height: 52.5rem;
+}

@@ -8,24 +8,26 @@
   assign collections_to_show = section.blocks.size
   assign heading_alignment = section.settings.heading_alignment
   assign style = section.settings.style
+  assign grid_gap = section.settings.grid_gap
   assign text_color = section.settings.text_color
   assign hide_shop_now = section.settings.hide_shop_now
 -%}
 
 {%- if collections_to_show > 0 -%}
-  <div class="featured-collections-section page-width">
-    <div class="featured-collections__header title-wrapper title-wrapper--no-top-margin" style="text-align: {{ heading_alignment }};">
+  <div class="featured-collections-section">
+    <div
+      class="featured-collections__header"
+      style="text-align: {{ heading_alignment }};"
+    >
       {%- if heading != blank -%}
-        <h2 class="featured-collections__heading title h2">{{ heading | escape }}</h2>
+        <h2 class="featured-collections__heading">{{ heading | escape }}</h2>
       {%- endif -%}
       {%- if subheading != blank -%}
-        <p class="featured-collections__subheading subtitle">{{ subheading | escape }}</p>
+        <p class="featured-collections__subheading">{{ subheading | escape }}</p>
       {%- endif -%}
     </div>
 
-    {% comment %} Use the grid classes from base.css (flexbox based) {% endcomment %}
-    {%- assign grid_classes = 'grid grid--5-col-desktop grid--2-col-tablet-down' -%}
-    <div class="featured-collections__grid {{ grid_classes }}">
+    <div class="featured-collections__grid" style="gap: {{ grid_gap }}px;">
       {%- for block in section.blocks -%}
         {%- assign collection = block.settings.collection -%}
         {%- assign custom_image = block.settings.custom_image -%}
@@ -38,7 +40,7 @@
             href="{{ collection.url | default: '#' }}"
             class="collection-card__link {% if style == 'style2' %} collection-card__link--below{% endif %}"
           >
-            <div class="collection-card__image-wrapper media media--portrait {% if collection_image == blank %} placeholder {% endif %}">
+            <div class="collection-card__image-wrapper media--portrait {% if collection_image == blank %} placeholder {% endif %}">
               {%- if collection_image != blank -%}
                 <img
                   srcset="
@@ -49,7 +51,7 @@
                     {{ collection_image | image_url }} {{ collection_image.width }}w
                   "
                   src="{{ collection_image | image_url: width: 533 }}"
-                  sizes="(min-width: 990px) calc(var(--page-width) / 5 - var(--grid-desktop-horizontal-spacing) * 4 / 5), (min-width: 750px) calc(100vw / 2 - var(--grid-desktop-horizontal-spacing) / 2 - 4rem), calc(100vw / 2 - var(--grid-mobile-horizontal-spacing) / 2 - 2rem)"
+                  sizes="(min-width: 990px) calc(var(--page-width) / 5 - 20px), (min-width: 769px) calc(100vw / 2 - 2rem), calc(100vw - 2rem)"
                   alt="{{ collection_image.alt | escape }}"
                   loading="lazy"
                   width="{{ collection_image.width }}"
@@ -62,16 +64,24 @@
             </div>
             {%- if style == 'style2' -%}
               <div class="collection-card__info collection-card__info--below">
-                <h3 class="collection-card__title h3" style="color: {{ text_color }}">{{ display_title | default: 'Collection Title' }}</h3>
+                <h3 class="collection-card__title" style="color: {{ text_color }}">
+                  {{ display_title | default: 'Collection Title' }}
+                </h3>
                 {%- unless hide_shop_now -%}
-                  <span class="collection-card__shop-now link underlined-link" style="color: {{ text_color }}">Shop Now</span>
+                  <span class="collection-card__shop-now" style="color: {{ text_color }}"
+                    >Shop Now</span
+                  >
                 {%- endunless -%}
               </div>
             {%- else -%}
               <div class="collection-card__info">
-                <h3 class="collection-card__title h3" style="color: {{ text_color }}">{{ display_title | default: 'Collection Title' }}</h3>
+                <h3 class="collection-card__title" style="color: {{ text_color }}">
+                  {{ display_title | default: 'Collection Title' }}
+                </h3>
                 {%- unless hide_shop_now -%}
-                  <span class="collection-card__shop-now link underlined-link" style="color: {{ text_color }}">Shop Now</span>
+                  <span class="collection-card__shop-now" style="color: {{ text_color }}"
+                    >Shop Now</span
+                  >
                 {%- endunless -%}
               </div>
             {%- endif -%}
@@ -129,6 +139,16 @@
         { "value": "style2", "label": "Style 2 (Text/Button below image)" }
       ],
       "default": "style2"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid Gap",
+      "default": 25,
+      "unit": "px",
+      "min": 0,
+      "max": 40,
+      "step": 1
     },
     {
       "type": "color",

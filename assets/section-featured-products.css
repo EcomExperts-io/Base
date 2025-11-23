@@ -110,7 +110,7 @@
 
 .featured-products__card.grid__item {
   /* Let base.css handle the width calculations */
-  /* e.g., width: calc(25% - var(--grid-desktop-horizontal-spacing) * 3 / 4); */
+  /* e.g., width: calc(25% - 2rem * 3 / 4); */
   max-width: none;
   /* Override base.css potentially limiting max-width */
 }

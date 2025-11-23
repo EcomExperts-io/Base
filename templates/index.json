@@ -9,8 +9,8 @@
  */
 {
   "sections": {
-    "hero_banner_1": {
-      "type": "hero-banner",
+    "hero_1": {
+      "type": "hero",
       "settings": {
         "background_type": "image",
         "video_background_url": "",
@@ -30,41 +30,39 @@
         "endorsement_name": ""
       }
     },
-    "featured_collections_example": {
+    "featured_collections_hhETJ9": {
       "type": "featured-collections",
       "blocks": {
-        "block_1": {
+        "collection_card_3ccame": {
           "type": "collection_card",
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "block_2": {
+        "collection_card_BRp9XN": {
           "type": "collection_card",
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "block_3": {
+        "collection_card_jbyADA": {
           "type": "collection_card",
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "block_4": {
+        "collection_card_LVn8DN": {
           "type": "collection_card",
-          "disabled": true,
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "block_5": {
+        "collection_card_nCgcp7": {
           "type": "collection_card",
-          "disabled": true,
           "settings": {
             "collection": "",
             "custom_title": ""
@@ -72,17 +70,19 @@
         }
       },
       "block_order": [
-        "block_1",
-        "block_2",
-        "block_3",
-        "block_4",
-        "block_5"
+        "collection_card_3ccame",
+        "collection_card_BRp9XN",
+        "collection_card_jbyADA",
+        "collection_card_LVn8DN",
+        "collection_card_nCgcp7"
       ],
+      "name": "Featured Collections",
       "settings": {
-        "heading": "EXPLORE OUR CATEGORIES",
-        "subheading": "",
+        "heading": "Find the perfect fit for your game",
+        "subheading": "Browse through our collections",
         "heading_alignment": "center",
         "style": "style2",
+        "grid_gap": 25,
         "text_color": "#000000",
         "hide_shop_now": true
       }
@@ -149,272 +149,11 @@
         "product_info_text_color": "#111111",
         "stars_color": "#000000"
       }
-    },
-    "exclusive_section_NfqBik": {
-      "type": "sales-banner",
-      "name": "Sales Banner",
-      "settings": {
-        "background_image": "shopify://shop_images/Image_of_Glutathione_Plus_Lozenge_1.png",
-        "background_image_mobile": "shopify://shop_images/Frame_1261153144.png",
-        "title": "This store is exclusive to Carvana<br> employees &amp; select customers",
-        "subtitle": "Please log in to access your account.",
-        "button_text": "Login to your account",
-        "title_mobile": "This store is exclusive to Carvana employees &amp; select customers",
-        "subtitle_mobile": "Please log in to access your account.",
-        "button_text_mobile": "Login to your account",
-        "title_color": "#183558",
-        "title_color_mobile": "#183558",
-        "subtitle_color": "#183558",
-        "subtitle_color_mobile": "#183558",
-        "button_color": "#ffffff",
-        "button_color_mobile": "#ffffff",
-        "button_bg_color": "#00aed9",
-        "button_bg_color_mobile": "#00aed9"
-      }
-    },
-    "custom_testimonials_7UWRGN": {
-      "type": "custom-testimonials",
-      "blocks": {
-        "testimonial_9g4YBd": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "quote_icon_img_width": 27
-          }
-        },
-        "testimonial_e6iktR": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "quote_icon_img_width": 27
-          }
-        },
-        "testimonial_tT4WHg": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "quote_icon_img_width": 27
-          }
-        },
-        "testimonial_Jbbhk3": {
-          "type": "testimonial",
-          "settings": {
-            "title": "Review Title",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut posuere feugiat sapien, nec laoreet justo facilisis et.",
-            "author": "NAME",
-            "stars": 5,
-            "quote_icon_img": "shopify://shop_images/quotation-mark_32371_1.png",
-            "quote_icon_img_width": 27
-          }
-        }
-      },
-      "block_order": [
-        "testimonial_9g4YBd",
-        "testimonial_e6iktR",
-        "testimonial_tT4WHg",
-        "testimonial_Jbbhk3"
-      ],
-      "name": "Custom Testimonials",
-      "settings": {
-        "heading": "WHAT OTHER ARE SAYING",
-        "heading_color": "#000000",
-        "heading_align": "center",
-        "content_align": "left",
-        "bg_color": "#ffffff",
-        "padding_top": 15,
-        "padding_bottom": 30
-      }
-    },
-    "exclusie_faq_g9G4yC": {
-      "type": "faq",
-      "blocks": {
-        "faq_rhXyyY": {
-          "type": "faq",
-          "settings": {
-            "question": "How does your process work?",
-            "answer": "Answer goes here."
-          }
-        },
-        "faq_kEpRGR": {
-          "type": "faq",
-          "settings": {
-            "question": "How does your process work?",
-            "answer": "Answer goes here."
-          }
-        },
-        "faq_7N4DJx": {
-          "type": "faq",
-          "settings": {
-            "question": "How does your process work?",
-            "answer": "Answer goes here."
-          }
-        }
-      },
-      "block_order": [
-        "faq_rhXyyY",
-        "faq_kEpRGR",
-        "faq_7N4DJx"
-      ],
-      "name": "FAQ",
-      "settings": {
-        "heading": "PROGRAM FAQS"
-      }
-    },
-    "exclusie_icons_with_text_K6q6tD": {
-      "type": "icons-with-text",
-      "blocks": {
-        "icon_text_7yeU4h": {
-          "type": "icon_text",
-          "settings": {
-            "icon_image": "shopify://shop_images/worldwide_15808138_2_6ffd423c-be08-47d7-9504-560026b77612.png",
-            "icon_svg": "",
-            "icon_color": "#000000",
-            "title": "FREE SHIPPING",
-            "title_color": "#000000",
-            "subtitle": "Free shipping over $150 USD",
-            "subtitle_color": "#4d4d4d"
-          }
-        },
-        "icon_text_4wWPPL": {
-          "type": "icon_text",
-          "settings": {
-            "icon_image": "shopify://shop_images/package_5272184_1_24242416-331e-4a54-8468-69b9e9a53663.png",
-            "icon_svg": "",
-            "icon_color": "#000000",
-            "title": "28 DAY FREE RETURNS",
-            "title_color": "#000000",
-            "subtitle": "Free Returns: Link to See conditions for Free Returns",
-            "subtitle_color": "#4d4d4d"
-          }
-        },
-        "icon_text_nGXTQV": {
-          "type": "icon_text",
-          "settings": {
-            "icon_image": "shopify://shop_images/credit-card_492927_1_15362030-2954-4b51-9a80-17564898b217.png",
-            "icon_svg": "",
-            "icon_color": "#000000",
-            "title": "PAYMENT OPTIONS",
-            "title_color": "#000000",
-            "subtitle": "We accept all credit Cards: Klarna, PayPal, Shop Pay Installments by Affirm, etc.",
-            "subtitle_color": "#4d4d4d"
-          }
-        },
-        "icon_text_XmRJK4": {
-          "type": "icon_text",
-          "settings": {
-            "icon_image": "shopify://shop_images/question_10821051_1_0212845e-9b9e-48b4-9718-c5085516d232.png",
-            "icon_svg": "",
-            "icon_color": "#000000",
-            "title": "HERE FOR YOU",
-            "title_color": "#000000",
-            "subtitle": "customerservice@dummy.com (000) 000-0000",
-            "subtitle_color": "#4d4d4d"
-          }
-        }
-      },
-      "block_order": [
-        "icon_text_7yeU4h",
-        "icon_text_4wWPPL",
-        "icon_text_nGXTQV",
-        "icon_text_XmRJK4"
-      ],
-      "name": "Exclusie Icons With Text",
-      "settings": {}
-    },
-    "style_gallery_gki89j": {
-      "type": "style-gallery",
-      "blocks": {
-        "gallery_image_NNFrNQ": {
-          "type": "gallery_image",
-          "settings": {}
-        },
-        "gallery_image_3B7CP4": {
-          "type": "gallery_image",
-          "settings": {}
-        },
-        "gallery_image_CBqAhC": {
-          "type": "gallery_image",
-          "settings": {}
-        },
-        "gallery_image_9mDYYB": {
-          "type": "gallery_image",
-          "settings": {}
-        },
-        "gallery_image_QTqtcB": {
-          "type": "gallery_image",
-          "settings": {}
-        },
-        "gallery_image_xMiH67": {
-          "type": "gallery_image",
-          "settings": {}
-        },
-        "gallery_image_KTznrj": {
-          "type": "gallery_image",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "gallery_image_NNFrNQ",
-        "gallery_image_3B7CP4",
-        "gallery_image_CBqAhC",
-        "gallery_image_9mDYYB",
-        "gallery_image_QTqtcB",
-        "gallery_image_xMiH67",
-        "gallery_image_KTznrj"
-      ],
-      "name": "Style Gallery",
-      "settings": {
-        "heading": "STYLE GALLERY",
-        "heading_color": "#000000",
-        "heading_align": "center",
-        "bg_color": "#ffffff",
-        "padding_top": 100,
-        "padding_bottom": 0
-      }
-    },
-    "newsletter_signup_GGiDB7": {
-      "type": "newsletter-signup",
-      "name": "Newsletter Signup Form",
-      "settings": {
-        "heading": "SIGN UP FOR THE LATEST DROPS",
-        "description": "Subscribe to get special offers, free giveaways, and once in a lifetime deals.",
-        "email_placeholder": "Email",
-        "button_text": "SIGN UP",
-        "bg_color": "#ffffff",
-        "text_color": "#000000",
-        "desc_size": 20,
-        "section_padding": 32,
-        "button_bg": "#222222",
-        "button_color": "#ffffff",
-        "button_size": 16,
-        "heading_align": "center",
-        "desc_align": "center",
-        "email_align": "left",
-        "button_align": "center"
-      }
     }
   },
   "order": [
-    "hero_banner_1",
-    "featured_collections_example",
-    "featured_products_example",
-    "exclusive_section_NfqBik",
-    "custom_testimonials_7UWRGN",
-    "exclusie_faq_g9G4yC",
-    "exclusie_icons_with_text_K6q6tD",
-    "style_gallery_gki89j",
-    "newsletter_signup_GGiDB7"
+    "hero_1",
+    "featured_collections_hhETJ9",
+    "featured_products_example"
   ]
 }

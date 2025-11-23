@@ -1,0 +1,326 @@
+body.collection .shopify-section.section .page-width {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0px 20px;
+}
+
+.collection-page__wrapper {
+  margin: 0;
+  width: 100%;
+}
+
+.collection-hero__title {
+  margin: 75px 0;
+  font-size: 3.6rem;
+  font-weight: 600;
+  color: black;
+}
+
+.sorting-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 30px;
+  margin-bottom: 5px;
+}
+
+.child-sorting-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 350px;
+}
+
+.product-grid-container {
+  width: 100%;
+}
+
+.facet-filters__label {
+  display: block;
+  color: rgba(var(--color-foreground), .85);
+  font-size: 2.2rem;
+  margin: 0 20px 0 0;
+  font-weight: 600;
+  width: max-content;
+  font-family: var(--font-body-family);
+}
+
+.facet-filters__field {
+  display: flex;
+  align-items: center;
+}
+
+.collection-filters-wrapper summary {
+  list-style: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.collection-filters-wrapper summary:hover {
+  text-decoration: underline;
+  color: rgba(var(--color-foreground), 1);
+}
+
+.collection-filters-wrapper summary span {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.collection-hero__text-wrapper {
+  padding: 30px 0;
+}
+
+.facets__label:hover,
+.facets__label:has(:focus-visible) {
+  color: rgba(var(--color-foreground), 1);
+}
+
+.facet-filters__sort {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  height: auto;
+  margin: 0;
+  padding-left: 0;
+  cursor: pointer;
+  color: rgba(var(--color-foreground), .75);
+  max-width: 225px;
+}
+
+.facet-filters__sort:focus {
+  box-shadow: none;
+  border: none;
+  outline: none;
+}
+
+.reset-button {
+  text-transform: capitalize;
+  color: rgba(var(--color-foreground), .75);
+  margin-left: 10px;
+}
+
+.active-filter-item {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50px;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.active-filter-item span {
+  font-size: 12px;
+  margin-right: 10px;
+  pointer-events: none
+}
+
+.item-counts-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 160px;
+  min-height: 25px;
+  position: relative;
+}
+
+.results-count {
+  width: max-content;
+  font-size: 2rem;
+}
+
+.active-filter-group__item-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.active-filter-group__item-wrapper .active-filter-item {
+  margin-top: 12px;
+  margin-right: 12px;
+}
+
+.filter-close .icon-close {
+  width: 15px;
+  height: 15px;
+  pointer-events: none;
+}
+
+.filter-close {
+  display: flex;
+}
+
+.active-filter-item.active-filter-clear-all {
+  background: none;
+  text-decoration: underline;
+}
+
+.horizontal-filters__parent-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.filter-type-horizontal .filter-close .icon-close {
+  width: 10px;
+  height: 10px;
+}
+
+.filter-type-horizontal .active-filter-group__item-wrapper {
+  gap: 15px;
+}
+
+.filter-type-horizontal .active-filter-group__item-wrapper .active-filter-item {
+  margin: 0px;
+}
+
+.filter-type-horizontal .filter.active-filter-item.active-filter-clear-all {
+  border: none;
+}
+
+.loading-overlay__spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(var(--color-foreground), 0.1);
+  border-top-color: rgb(var(--color-foreground));
+  border-radius: 100%;
+  animation: spin 0.6s infinite linear;
+  display: none;
+  position: absolute;
+}
+
+.product-grid-wrapper {
+  margin-top: 13px;
+}
+
+.mobile-filters-drawer {
+  width: 100%;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.product-grid {
+  gap: 16px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .collection-hero__title {
+    margin: 20px 0px 0px 0px;
+  }
+
+  .mobile-filters-drawer {
+    width: 100%;
+    border: 1px solid #DDD7D7;
+    width: 100%;
+    max-width: 139px;
+    height: 40px;
+    padding: 10px 5px 10px 5px;
+  }
+
+  .product-grid {
+    row-gap: 20px;
+    column-gap: 20px;
+    gap: 20px;
+  }
+
+  .collection-hero__title {
+    font-size: 2.4rem;
+  }
+
+  .sorting-wrapper {
+    justify-content: space-between;
+  }
+
+  .results-count {
+    font-size: 1.6rem;
+  }
+
+  .filter-type-horizontal .active-filter-group__item-wrapper {
+    gap: 0px;
+  }
+
+  .filter-type-horizontal .active-filter-group__item-wrapper .active-filter-item {
+    margin-top: 12px;
+    margin-right: 12px;
+  }
+}
+
+/* START - Filters checkbox styles for all filter types */
+.facet-checkbox {
+  padding: 10px 20px 10px 0;
+  flex-grow: 1;
+  position: relative;
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  word-break: break-word;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.facet-checkbox:hover {
+  color: rgba(var(--color-foreground), 1);
+  text-decoration: underline;
+}
+
+.facet-checkbox input[type='checkbox'] {
+  margin-right: 12px;
+  position: absolute;
+  opacity: 0;
+  width: 16px;
+  height: 16px;
+  top: 7px;
+  left: -4px;
+}
+
+.facet-checkbox>svg,
+.facet-checkbox>.svg-wrapper {
+  background-color: rgb(var(--color-background));
+  margin-right: 12px;
+  flex-shrink: 0;
+  height: auto;
+}
+
+.facet-checkbox>svg {
+  height: auto;
+}
+
+.facet-checkbox .svg-wrapper {
+  visibility: hidden;
+  position: absolute;
+  left: 3px;
+  z-index: 5;
+  top: 14px;
+  width: 11px;
+  height: 7px;
+}
+
+.facet-checkbox>input[type='checkbox']:checked~.svg-wrapper>.icon-checkmark {
+  visibility: visible;
+}
+
+.facet-checkbox:has(input:disabled) {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* END - Filters checkbox styles for all filter types */

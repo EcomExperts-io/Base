@@ -1,4 +1,4 @@
-class PriceRange extends HTMLElement {
+export class PriceRange extends HTMLElement {
   constructor() {
     super();
   }

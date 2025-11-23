@@ -1,4 +1,14 @@
-<style>
+{% doc %}
+  Renders a megamenu layout for a navigation item with child links. The menu
+  expands on click using Alpine.js and supports nested child links.
+
+  @param {linklist} menu - Menu object to render
+  @param {string} menu_color_scheme - Color scheme handle for menu background
+
+  @example
+  {% render 'component-nav-megamenu', menu: section.settings.menu, menu_color_scheme: section.settings.menu_color_scheme %}
+{% enddoc %}
+{% stylesheet %}
   #main-header .nav-megamenu {
     position: absolute;
     left: 0;
@@ -27,9 +37,9 @@
     font-size: 15px;
     line-height: 1.5;
   }
-</style>
+{% endstylesheet %}
 <ul>
-  {% for link in section.settings.menu.links %}
+  {% for link in menu.links %}
     <li x-data="{ menuOpen: false }" @click.outside="menuOpen = false">
       {% if link.links != blank %}
         <button
@@ -40,7 +50,12 @@
           {{- link.title | escape -}}
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </button>
-        <div x-show="menuOpen" x-transition x-cloak class="nav-megamenu color-{{ section.settings.menu_color_scheme }} gradient">
+        <div
+          x-show="menuOpen"
+          x-transition
+          x-cloak
+          class="nav-megamenu color-{{ menu_color_scheme }} gradient"
+        >
           <ul class="page-width" role="list">
             {%- for childlink in link.links -%}
               <li>

@@ -1,6 +1,6 @@
-<style>
+{% style %}
   #shopify-section-{{ section.id }} {
-      position: {% unless section.settings.sticky_header_type == 'none' %}sticky{% else %}relative{% endunless %};
+    position: {% unless section.settings.sticky_header_type == 'none' %}sticky{% else %}relative{% endunless %};
     top: 0;
     background: #fff;
     width: 100%;
@@ -36,7 +36,6 @@
     text-decoration: none;
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-family: var(--font-heading-family);
   }
   #main-header .header-shop_name {
     font-size: 24px;
@@ -115,6 +114,9 @@
       padding: 0;
       cursor: pointer;
   }
+  #header-cart-bubble svg, .header-actions_account svg {
+    width: 25px;
+  }
   [data-cart-count] {
     position: absolute;
     display: grid;
@@ -159,6 +161,7 @@
   #header-search.active {
     display: flex;
   }
+
   {%- if settings.predictive_search_enabled -%}
     #header-search predictive-search {
       position: relative;
@@ -170,13 +173,15 @@
       top: 100%;
       left: 0;
       background: rgb(var(--color-background));
-      border: 1px solid rgba(var(--color-foreground),var(--popup-border-opacity));
+      border: 1px solid rgba(var(--color-foreground),var(--color-background));
       border-top: 0;
       width: calc(100% - 2px);
       max-height: 80vh;
       overflow-y: auto;
+      z-index: 1000;
     }
   {%- endif -%}
+
   #header-search form {
     position: relative;
     border: 1px solid rgb(var(--color-foreground), 0.2);
@@ -187,6 +192,7 @@
     gap: 10px;
     padding-inline: 10px;
   }
+
   #header-search form input {
     width: 100%;
     border: 0;
@@ -196,6 +202,11 @@
     outline: none;
     box-shadow: none;
   }
+
+  #header-search form input:-internal-autofill-selected{
+    background-color: transparent;
+  }
+
   /* clears the 'X' from Internet Explorer */
   #header-search form input[type='search']::-ms-clear,
   #header-search form input[type='search']::-ms-reveal {
@@ -203,6 +214,7 @@
       width: 0;
       height: 0;
   }
+
   #header-search .reset__button {
     position: relative;
     border: 1px solid rgba(var(--color-foreground),.2) !important;
@@ -215,6 +227,7 @@
     margin: 0;
     margin-right: 15px;
   }
+
   #header-search .reset__button::before {
     content: '';
     position: absolute;
@@ -223,6 +236,7 @@
     height: calc(100% + 10px);
     background: rgba(var(--color-foreground),.08);
   }
+
   #header-search .reset__button svg.icon-close {
     width: 10px !important;
     height: auto;
@@ -241,19 +255,21 @@
     cursor: pointer;
     padding: 0;
   }
+
   #header-search svg {
     width: 20px;
     color: rgb(var(--color-foreground));
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 1025px) {
     {% unless section.settings.menu_type_desktop == 'drawer' %}
       #header-drawer {
         display: none;
       }
     {% endunless %}
   }
-  @media (max-width: 768px) {
+
+  @media (max-width: 1024px) {
     #main-header > nav,
     .header-actions_account,
     .header-actions_localization {
@@ -275,10 +291,10 @@
       position: static;
     }
     #predictive-search-wrapper {
-        border-top: 1px solid rgba(var(--color-foreground),var(--popup-border-opacity));
+        border-top: 1px solid rgba(var(--color-foreground),var(--color-background));
     }
   }
-  @media (min-width: 769px) {
+  @media (min-width: 1025px) {
     .header-menu-position-center {
       display: grid;
     }
@@ -298,7 +314,7 @@
     background: {{ section.settings.cart_count_color }};
     color: #fff;
   }
-</style>
+{% endstyle %}
 
 {% capture header_search %}
   <div id="header-actions_search" @click="searchOpen = !searchOpen; $nextTick(() => { if (searchOpen) $refs.searchInput.focus() })">
@@ -307,19 +323,26 @@
 {% endcapture %}
 
 <div
-  class="color-{{ section.settings.color_scheme }} gradient"
+  class="color-{{ section.settings.color_scheme }}"
   {% if settings.cart_type == 'drawer' %}
-    x-data="cartDrawer"
+    x-data="{ cartOpen: false }" @cart-open.window="cartOpen = true"
   {% endif %}
 >
   <header
-    class="page-width{% if section.settings.menu_position == 'center' %} header-menu-position-center{% endif %}"
+    {% if section.settings.menu_position == 'center' %}
+      class="header-menu-position-center"
+    {% endif %}
     id="main-header"
-    x-data="{ searchOpen: false, searchTerm: '' }"
+    x-data="{ searchOpen: false, searchTerm: '{{ search.terms | escape }}' }"
     @click.outside="searchOpen = false"
-    @input="searchTerm = $event.target.value"
   >
-    {% render 'component-nav-drawer' %}
+    {% render 'component-nav-drawer',
+      menu: section.settings.menu,
+      menu_color_scheme: section.settings.menu_color_scheme,
+      enable_country_selector: section.settings.enable_country_selector,
+      enable_language_selector: section.settings.enable_language_selector,
+      enable_customer_avatar: section.settings.enable_customer_avatar
+    %}
 
     {% if section.settings.logo_position == 'top-center' or section.settings.menu == blank %}
       {{ header_search }}
@@ -338,9 +361,16 @@
     {% if section.settings.menu != blank and section.settings.menu_type_desktop != 'drawer' %}
       <nav class="header-menu-position-{{ section.settings.menu_position }}">
         {% if section.settings.menu_type_desktop == 'dropdown' %}
-          {% render 'component-nav-dropdown', nav_style: 'dropdown' %}
+          {% render 'component-nav-dropdown',
+            nav_style: 'dropdown',
+            menu: section.settings.menu,
+            menu_color_scheme: section.settings.menu_color_scheme
+          %}
         {% elsif section.settings.menu_type_desktop != 'drawer' %}
-          {% render 'component-nav-megamenu' %}
+          {% render 'component-nav-megamenu',
+            menu: section.settings.menu,
+            menu_color_scheme: section.settings.menu_color_scheme
+          %}
         {% endif %}
       </nav>
     {% endif %}
@@ -350,7 +380,8 @@
         <div class="header-actions_localization">
           {%- render 'component-localization-form',
             enable_country_selector: section.settings.enable_country_selector,
-            enable_language_selector: section.settings.enable_language_selector
+            enable_language_selector: section.settings.enable_language_selector,
+            menu_color_scheme: section.settings.menu_color_scheme
           -%}
         </div>
       {% endif %}
@@ -365,7 +396,7 @@
           href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
           rel="nofollow"
         >
-          {{ 'icon-account.svg' | inline_asset_content }}
+          {{- 'icon-account.svg' | inline_asset_content -}}
         </a>
       {% endif %}
 
@@ -379,12 +410,12 @@
       <a
         id="header-cart-bubble"
         {%- if settings.cart_type == 'drawer' -%}
-          @click.prevent="openCartDrawer"
+          @click.prevent="cartOpen = !cartOpen"
         {%- else -%}
           href="{{ routes.cart_url }}"
         {%- endif -%}
       >
-        {{ 'icon-cart.svg' | inline_asset_content }}
+        {{- 'icon-cart.svg' | inline_asset_content -}}
         <div data-cart-count data-ajax-cart-bind="item_count">{{ cart.item_count }}</div>
       </a>
     </div>
@@ -408,7 +439,7 @@
             type="reset"
             class="reset__button"
             aria-label="Clear search term"
-            @click="$refs.searchInput.value = ''; searchTerm = ''; $dispatch('search-input-cleared');"
+            @click="searchTerm = ''"
             x-show="searchTerm.length > 0"
             x-transition
             x-cloak
@@ -472,7 +503,9 @@
     lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
   });
 </script>
-<script src="{{ 'component-localization-form.js' | asset_url }}" defer="defer"></script>
+{% if section.settings.enable_country_selector or section.settings.enable_language_selector %}
+  <script src="{{ 'component-localization-form.js' | asset_url }}" type="module"></script>
+{% endif %}
 
 {% schema %}
 {

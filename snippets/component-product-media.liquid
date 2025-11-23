@@ -1,14 +1,15 @@
-{% comment %}
-  Accepts:
-  - media: {Object} Product Media object
-  - loop: {Boolean} Enable video looping (optional)
+{% doc %}
+  Product media renderer.
 
-  Usage:
+  @param {object} media - Product media object
+  @param {boolean} [loop] - Enable video looping
+
+  @example
   {% render 'component-product-media',
-    media: media,
-    loop: section.settings.enable_video_looping
+    media: product.featured_media,
+    loop: true
   %}
-{% endcomment %}
+{% enddoc %}
 
 {% case media.media_type %}
   {% when 'image' %}
@@ -20,15 +21,23 @@
         height: media.height,
         loading: 'eager',
         alt: media.alt,
-        data-media-id: media.id,
-        class: 'image-magnify-hover'
+        data-media-id: media.id
     }}
 
   {% when 'external_video' %}
     {{ media | external_video_tag }}
 
   {% when 'video' %}
-    {{ media | media_tag: image_size: '2048x', autoplay: true, loop: loop, controls: true, preload: 'none', data-media-id: media.id }}
+    {{
+      media
+      | media_tag:
+        image_size: '2048x',
+        autoplay: true,
+        loop: loop,
+        controls: true,
+        preload: 'none',
+        data-media-id: media.id
+    }}
 
   {% when 'model' %}
     {{ media | model_viewer_tag }}

@@ -1,4 +1,23 @@
-<style>
+{% doc %}
+  Renders the header menu drawer for mobile navigation with toggle button,
+  slide-in panel, nested navigation, and optional localization and account link.
+
+  @param {linklist} menu - Menu object used by nested nav dropdown
+  @param {string} menu_color_scheme - Color scheme handle for menu background
+  @param {boolean} enable_country_selector - Whether to show country selector
+  @param {boolean} enable_language_selector - Whether to show language selector
+  @param {boolean} enable_customer_avatar - Whether to show account icon link
+
+  @example
+  {% render 'component-nav-drawer',
+    menu: section.settings.menu,
+    menu_color_scheme: section.settings.menu_color_scheme,
+    enable_country_selector: section.settings.enable_country_selector,
+    enable_language_selector: section.settings.enable_language_selector,
+    enable_customer_avatar: section.settings.enable_customer_avatar
+  %}
+{% enddoc %}
+{% stylesheet %}
   #menu-drawer {
     position: absolute;
     top: calc(100% + 1px);
@@ -75,7 +94,12 @@
     box-shadow: none;
     border: 1px solid rgb(var(--color-foreground), 0.2);
   }
-</style>
+  .menu-drawer_account svg {
+    max-width: 40px;
+    min-width: 40px;
+    height: 40px;
+  }
+{% endstylesheet %}
 <div
   id="header-drawer"
   x-data="{ drawerOpen: false }"
@@ -89,21 +113,30 @@
     {{- 'icon-menu.svg' | inline_asset_content -}}
     {{- 'icon-close.svg' | inline_asset_content -}}
   </button>
-  <div id="menu-drawer" class="color-{{ section.settings.menu_color_scheme }} gradient" :class="{ 'drawer-open': drawerOpen }">
-    {% render 'component-nav-dropdown', nav_style: 'drawer' %}
+  <div
+    id="menu-drawer"
+    class="color-{{ menu_color_scheme }} gradient"
+    :class="{ 'drawer-open': drawerOpen }"
+  >
+    {% render 'component-nav-dropdown', nav_style: 'drawer', menu: menu, menu_color_scheme: menu_color_scheme %}
 
     <div class="menu-drawer_action">
-      {% if section.settings.enable_country_selector or section.settings.enable_language_selector %}
+      {% if enable_country_selector or enable_language_selector %}
         <div class="menu-drawer_localization">
           {%- render 'component-localization-form',
-            enable_country_selector: section.settings.enable_country_selector,
-            enable_language_selector: section.settings.enable_language_selector
+            enable_country_selector: enable_country_selector,
+            enable_language_selector: enable_language_selector,
+            menu_color_scheme: menu_color_scheme
           -%}
         </div>
       {% endif %}
 
-      {% if shop.customer_accounts_enabled and section.settings.enable_customer_avatar %}
-        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" rel="nofollow">
+      {% if shop.customer_accounts_enabled and enable_customer_avatar %}
+        <a
+          href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+          rel="nofollow"
+          class="menu-drawer_account"
+        >
           {{ 'icon-account.svg' | inline_asset_content }}
         </a>
       {% endif %}

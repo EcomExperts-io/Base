@@ -1,24 +1,28 @@
-{% comment %}
-  Renders a product media modal. Also see 'product-media-gallery'
+{% doc %}
+  Renders a product media modal. Also see 'product-media-gallery'.
 
-  Accepts:
-  - product: {Object} Product liquid object
-  - variant_images: {Array} Product images associated with a variant
+  @param {string} section_id - Parent section id used for DOM ids
+  @param {string} color_scheme - Color scheme handle for modal background
+  @param {boolean} enable_video_looping - Whether to loop product videos
 
-  Usage:
-  {% render 'product-media-modal' %}
-{% endcomment %}
+  @example
+  {% render 'component-product-media-modal',
+    section_id: '1234567890',
+    color_scheme: 'scheme-1',
+    enable_video_looping: false
+  %}
+{% enddoc %}
 
-<product-media-modal id="ProductModal-{{ section.id }}" class="product-media-modal media-modal">
+<product-media-modal id="ProductModal-{{ section_id }}" class="product-media-modal media-modal">
   <div
-    class="product-media-modal__dialog color-{{ section.settings.color_scheme }} gradient"
+    class="product-media-modal__dialog color-{{ color_scheme }} gradient"
     role="dialog"
     aria-label="{{ 'products.modal.label' | t }}"
     aria-modal="true"
     tabindex="-1"
   >
     <button
-      id="ModalClose-{{ section.id }}"
+      id="ModalClose-{{ section_id }}"
       type="button"
       class="product-media-modal__toggle"
       aria-label="{{ 'accessibility.close' | t }}"
@@ -27,7 +31,7 @@
     </button>
 
     <div
-      class="product-media-modal__content color-{{ section.settings.color_scheme }} gradient"
+      class="product-media-modal__content color-{{ color_scheme }} gradient"
       role="document"
       aria-label="{{ 'products.modal.label' | t }}"
       tabindex="0"
@@ -35,20 +39,14 @@
       {%- liquid
         if product.selected_or_first_available_variant.featured_media != null
           assign media = product.selected_or_first_available_variant.featured_media
-          render 'component-product-media', media: media, loop: section.settings.enable_video_looping, variant_image: section.settings.hide_variants
+          render 'component-product-media', media: media, loop: enable_video_looping
         endif
       -%}
 
       {%- for media in product.media -%}
         {%- liquid
-          if section.settings.hide_variants and variant_images contains media.src or variant_images contains media.id
-            assign variant_image = true
-          else
-            assign variant_image = false
-          endif
-
           unless media.id == product.selected_or_first_available_variant.featured_media.id
-            render 'component-product-media', media: media, loop: section.settings.enable_video_looping, variant_image: variant_image
+            render 'component-product-media', media: media, loop: enable_video_looping
           endunless
         -%}
       {%- endfor -%}

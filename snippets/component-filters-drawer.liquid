@@ -1,3 +1,19 @@
+{% doc %}
+  Renders a slide-in filters drawer for collection pages with facets and optional sorting. 
+  Uses Alpine.js for open/close state and persists the last opened facet between visits.
+
+  @param {collection} results - The collection object providing filters/sort options
+  @param {boolean} enable_filtering - Show filter facets
+  @param {boolean} enable_sorting - Show sorting select inside the drawer
+  @param {string} color_scheme - Color scheme for the drawer (optional, defaults to 'scheme-1')
+  @param {string} section_id - Unique identifier for the section (required for proper DOM IDs)
+  @param {string} show_filter_count - Show filter count
+  @param {string} context - Context of the drawer (collection or search)
+
+  @example
+  {% render 'component-filters-drawer', results: collection, enable_sorting: true, enable_filtering: true, color_scheme: 'scheme-1', section_id: section.id %}
+{% enddoc %}
+
 {%- style -%}
   .filters-drawer {
     width: calc(100% - 50px);
@@ -9,6 +25,7 @@
     transition: opacity 0.4s, width 0s linear 0.4s, visibility 0s linear 0.4s;
     visibility: hidden;
     width: 0;
+    pointer-events: none;
   }
 
   .drawer-main-wrapper:not(.drawer-active) .drawer__wrapper {
@@ -53,7 +70,7 @@
   .mobile-facets__heading {
     margin: 0px;
     margin-bottom: 5px;
-    font-size: calc(var(--font-heading-scale) * 16px);
+    font-size: 16px;
   }
 
   .drawer__count-wrapper {
@@ -233,7 +250,7 @@
     overflow: hidden;
   }
 
-  @media screen and (max-width: 750px) {
+  @media screen and (max-width: 768px) {
     .drawer-main-wrapper .mobile-facets__heading {
       font-size: 14px;
     }
@@ -263,9 +280,9 @@
 
 <div
   x-data="{ open: false }"
-  class="drawer-main-wrapper color-{{ section.settings.color_scheme }} {% unless enable_filtering %}large-up-hide{% endunless %}"
+  class="drawer-main-wrapper color-{{ color_scheme | default: 'scheme-1' }} {% unless enable_filtering %}large-up-hide{% endunless %}"
   :class="{ 'drawer-active': open }"
-  id="Details-{{ f.param_name | escape }}-{{ section.id }}"
+  id="Details-{{ section_id }}"
 >
   <button type="button" @click="open = !open" class="drawer__facet-button-trigger">
     <div class="svg-wrapper">
@@ -278,7 +295,7 @@
         <span>{{ 'products.facets.sort_button' | t }}</span>
       {%- endif -%}
     </div>
-    <div class="mobile-facet-text-wrapper medium-hide large-up-hide">
+    <div class="mobile-facet-text-wrapper large-up-hide">
       {%- if enable_filtering and enable_sorting -%}
         <span>{{ 'products.facets.filter_and_sort' | t }}</span>
       {%- elsif enable_filtering -%}
@@ -290,14 +307,14 @@
   </button>
 
   <div class="drawer-overlay" @click="open = !open">
-    <span hidden>Close</span>
+    <span hidden>{{ 'accessibility.close' | t }}</span>
   </div>
 
   <div class="drawer__wrapper filters-drawer">
     <div class="facets__header-drawer">
       <div class="child-facets__header-wrapper">
         <div class="mobile-facets__header-inner">
-          <h2 class="mobile-facets__heading medium-hide large-up-hide">
+          <h2 class="mobile-facets__heading large-up-hide">
             {%- if enable_filtering and enable_sorting -%}
               {{ 'products.facets.filter_and_sort' | t }}
             {%- elsif enable_filtering -%}
@@ -314,14 +331,21 @@
             {%- endif -%}
           </h2>
           <div class="drawer__count-wrapper">
-            <p class="mobile-facets__count" id="drawer-results-count-{{ section.id }}">
-              {%- if collection.products_count == collection.all_products_count -%}
-                {{ collection.products_count }} products
+            <p class="mobile-facets__count" id="drawer-results-count-{{ section_id }}">
+              {% if context == 'collection' %}
+                {%- if results.products_count == results.all_products_count -%}
+                  {{ 'products.facets.results_count' | t: count: results.products_count }}
+                {% else %}
+                  {{
+                    'products.facets.results_count_of'
+                    | t: count: results.products_count, total: results.all_products_count
+                  }}
+                {% endif %}
               {% else %}
-                {{ collection.products_count }} of {{ collection.all_products_count }}
+                {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
               {% endif %}
             </p>
-            <div id="drawer-loading-spinner-{{ section.id }}" class="loading-overlay__spinner"></div>
+            <div id="drawer-loading-spinner-{{ section_id }}" class="loading-overlay__spinner"></div>
           </div>
         </div>
         <div class="drawer-close-icon" @click="open = !open">
@@ -336,10 +360,13 @@
         <div class="drawer__child-facets-wrapper">
           {%- for f in results.filters -%}
             <div
-              id="Details-{{ f.param_name | escape }}-{{ section.id }}-Drawer"
+              id="Details-{{ f.param_name | escape }}-{{ section_id }}-Drawer"
               class="single-facet__link js-filter"
             >
-              <div class="mobile-facets__block" @click="openFilter = openFilter === {{ forloop.index }} ? null : {{ forloop.index }}">
+              <div
+                class="mobile-facets__block"
+                @click="openFilter = openFilter === {{ forloop.index }} ? null : {{ forloop.index }}"
+              >
                 <span>{{ f.label }}</span>
                 <span class="mobile-facets__arrow">
                   <div class="svg-wrapper">
@@ -360,10 +387,15 @@
                 </button>
                 <div class="filter__values-wrapper">
                   {% if f.type == 'price_range' %}
-                    {% render 'component-filters-price-range', filter: f, id_prefix: 'Filter-', filter_type: filter_type %}
+                    {% render 'component-filters-price-range', filter: f, id_prefix: 'Filter-' %}
                   {% else %}
                     {%- for v in f.values -%}
-                      {%- assign input_id = 'Filter-Drawer-' | append: f.param_name | escape | append: '-' | append: forloop.index -%}
+                      {%- assign input_id = 'Filter-Drawer-'
+                        | append: f.param_name
+                        | escape
+                        | append: '-'
+                        | append: forloop.index
+                      -%}
                       <label class="facet-checkbox">
                         <input
                           id="{{ input_id }}"
@@ -382,7 +414,8 @@
                         <div class="svg-wrapper">
                           {{- 'icon-checkmark.svg' | inline_asset_content -}}
                         </div>
-                        {{- v.label }} ({{ v.count }})
+                        {{- v.label }}
+                        {% if show_filter_count != blank %} ({{ v.count }}){% endif %}
                       </label>
                     {%- endfor -%}
                   {% endif %}
@@ -393,10 +426,10 @@
         </div>
         {%- if enable_sorting -%}
           <div class="drawer__child-sorting-wrapper">
-            {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
-            <div id="sort-by-drawer-{{ section.id }}" class="facet-filters__field large-up-hide">
+            {%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+            <div id="sort-by-drawer-{{ section_id }}" class="facet-filters__field large-up-hide">
               <h2 class="facet-filters__label">
-                <label for="SortBy">Sort by:</label>
+                <label for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
               </h2>
               <select
                 data-render-section="filters-form-drawer"
@@ -404,7 +437,7 @@
                 id="SortBy"
                 class="facet-filters__sort"
               >
-                {%- for option in collection.sort_options -%}
+                {%- for option in results.sort_options -%}
                   <option
                     value="{{ option.value | escape }}"
                     {% if option.value == sort_by %}

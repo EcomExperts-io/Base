@@ -1,5 +1,16 @@
+{% doc %}
+  Renders a dropdown navigation list with support for nested child links.
+  Can render in a drawer style for mobile or inline for the header.
+
+  @param {string} [nav_style] - 'drawer' to render classes for drawer navigation
+  @param {linklist} menu - Menu object to render
+  @param {string} menu_color_scheme - Color scheme handle for menu background
+
+  @example
+  {% render 'component-nav-dropdown', nav_style: 'drawer', menu: section.settings.menu, menu_color_scheme: section.settings.menu_color_scheme %}
+{% enddoc %}
 {% unless nav_style == 'drawer' %}
-  <style>
+  {% style %}
     #main-header .nav-dropdown,
     #main-header .nav-dropdown_child {
       position: absolute;
@@ -26,27 +37,27 @@
       padding: 12px 18px;
       border-bottom: 1px solid rgb(var(--color-foreground), 0.2);
     }
-  </style>
+  {% endstyle %}
 {% endunless %}
 <ul
   {% if nav_style == 'drawer' %}
     class="menu-drawer_navigation"
   {% endif %}
 >
-  {% for link in section.settings.menu.links %}
+  {% for link in menu.links %}
     <li x-data="{ menuOpen: false, activeSubMenu: null }" @click.outside="menuOpen = false; activeSubMenu = null">
       {% if link.links != blank %}
-        <button
+        <div
           @click="menuOpen = !menuOpen"
           :class="{ 'menu-open': menuOpen }"
           class="menu-toggle"
         >
           {{- link.title | escape -}}
           {{- 'icon-caret.svg' | inline_asset_content -}}
-        </button>
+        </div>
         <ul
           x-show="menuOpen"
-          class="nav-{{ nav_style }} color-{{ section.settings.menu_color_scheme }} gradient"
+          class="nav-{{ nav_style }} color-{{ menu_color_scheme }} gradient"
           x-transition
           role="list"
           x-cloak
@@ -64,14 +75,14 @@
                   {{ childlink.title | escape }}
                 </a>
               {% else %}
-                <button
+                <div
                   @click="activeSubMenu = (activeSubMenu === '{{ childlink.title | escape }}' ? null : '{{ childlink.title | escape }}')"
                   :class="{ 'menu-open': activeSubMenu === '{{ childlink.title | escape }}' }"
                   class="menu-toggle"
                 >
                   {{- childlink.title | escape -}}
                   {{- 'icon-caret.svg' | inline_asset_content -}}
-                </button>
+                </div>
                 <ul
                   x-show="activeSubMenu === '{{ childlink.title | escape }}'"
                   class="nav-dropdown_child"

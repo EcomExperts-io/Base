@@ -1,22 +1,23 @@
-class PredictiveSearch extends HTMLElement {
+import { debounce } from './theme.js';
+
+export class PredictiveSearch extends HTMLElement {
   constructor() {
     super();
 
     this.input = this.querySelector('input[type="search"]');
     this.predictiveSearchResults = this.querySelector('#predictive-search');
+    this.resetButton = this.querySelector('.reset__button');
     this.searchTerm = this.input.value.trim();
     this.isOpen = false;
     this.abortController = new AbortController();
-
-    if (this.searchTerm.length) {
-      this.getSearchResults(this.searchTerm);
-    }
-
-    this.input.addEventListener('input', this.debounce(() => this.onChange(), 300));
-    this.addEventListener('search-input-cleared', () => this.onChange());
+    this.input.addEventListener('input', debounce((e) => this.onChange(e), 700));
+    this.input.addEventListener('focus', (e) => this.onChange(e));
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    document.addEventListener('click', this.handleClickOutside);
   }
 
-  onChange() {
+  onChange(e) {
+    console.log(e);
     const newSearchTerm = this.input.value.trim();
     this.searchTerm = newSearchTerm;
 
@@ -60,7 +61,7 @@ class PredictiveSearch extends HTMLElement {
     this.predictiveSearchResults.innerHTML = resultsMarkup;
     this.open();
   }
-
+  
   open() {
     this.toggleLoading(false);
     this.predictiveSearchResults.style.display = 'block';
@@ -72,17 +73,29 @@ class PredictiveSearch extends HTMLElement {
     this.isOpen = false;
   }
 
+  clearSearch(e) {
+    e.preventDefault();
+    this.input.value = '';
+    this.onChange();
+  }
+
+  handleClickOutside(event) {
+    // Check if the click is outside the predictive search component
+    if (this.isOpen && !this.contains(event.target)) {
+      this.close();
+    }
+  }
+
+  disconnectedCallback() {
+    // Clean up event listeners when component is removed
+    document.removeEventListener('click', this.handleClickOutside);
+  }
+
   toggleLoading(show) {
     this.querySelector('.predictive-search__loading')?.classList.toggle('hidden', !show);
   }
-
-  debounce(fn, wait) {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => fn.apply(this, args), wait);
-    };
-  }
 }
 
-customElements.define('predictive-search', PredictiveSearch);  
+if (!customElements.get('predictive-search')) {
+  customElements.define('predictive-search', PredictiveSearch);
+}

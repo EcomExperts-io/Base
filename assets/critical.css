@@ -1,0 +1,292 @@
+/** Critical CSS for the theme. This file is included on every page. */
+
+/* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+  height: 100%;
+}
+
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.06rem;
+  line-height: 1.1;
+  font-family: var(--font-body-family);
+  font-style: var(--font-body-style);
+  font-weight: var(--font-body-weight);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/**
+ * Main Content Layout
+ * 
+ * Creates a flexible main content area that:
+ * - Grows to fill available vertical space
+ * - Pushes footer to bottom of viewport on short pages
+ * - Maintains normal flow when content exceeds viewport height
+ * - Provides accessible focus target for skip navigation
+ */
+.content-for-layout {
+  flex: 1 0 auto;
+  outline: none; /* Remove focus outline since this is programmatic focus */
+  position: relative;
+}
+
+/* Ensure consistent spacing and proper stacking context */
+#MainContent {
+  isolation: isolate;
+}
+
+/**
+ * Skip Navigation Link
+ * 
+ * Accessibility feature that allows keyboard users to bypass navigation
+ * and jump directly to main content. Becomes visible when focused.
+ */
+.skip-to-content-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1.4rem;
+  transition: top 0.2s ease-in-out;
+}
+
+.skip-to-content-link:focus {
+  top: 6px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading-family);
+  font-style: var(--font-heading-style);
+  font-weight: var(--font-heading-weight);
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+select {
+  background-color: var(--color-background);
+  color: currentcolor;
+}
+
+dialog {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+p {
+  text-wrap: pretty;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p:empty {
+  display: none;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):first-child,
+:empty:first-child + :where(p, h1, h2, h3, h4, h5, h6) {
+  margin-block-start: 0;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):last-child,
+:where(p, h1, h2, h3, h4, h5, h6) + :has(+ :empty:last-child) {
+  margin-block-end: 0;
+}
+
+/** Theme styles below */
+
+/** Section layout utilities */
+
+/**
+ * Setup a grid that enables both full-width and constrained layouts
+ * depending on the class of the child elements.
+ *
+ * By default, a minimum content margin is set on the left and right
+ * sides of the section and the content is centered in the viewport to
+ * not exceed the maximum page width.
+ *
+ * When a child element is given the `full-width` class, it will span
+ * the entire viewport.
+ */
+.shopify-section {
+  --content-width: min(
+    calc(var(--page-width) - var(--page-margin) * 2),
+    calc(100% - var(--page-margin) * 2)
+  );
+  --content-margin: minmax(var(--page-margin), 1fr);
+  --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
+
+  /* This is required to make <img> elements work as background images */
+  position: relative;
+  grid-template-columns: var(--content-grid);
+  display: grid;
+  width: 100%;
+}
+
+/* Child elements, by default, are constrained to the central column of the grid. */
+.shopify-section > * {
+  grid-column: 2;
+}
+
+/* Child elements that use the full-width utility class span the entire viewport. */
+.shopify-section > .full-width {
+  grid-column: 1 / -1;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal !important;
+}
+
+.visually-hidden--inline {
+  margin: 0;
+  height: 1em;
+}
+
+.page-width {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.caption-large,
+.customer .field input,
+.customer select,
+.field__input,
+.form__label,
+.select__select {
+  font-size: 1.3rem;
+  line-height: calc(1 + .5 / var(--font-body-scale));
+  letter-spacing: .04rem;
+}
+
+
+.loading__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+}
+
+.drawer__wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(600px, 100%);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: inherit;
+  transform: translate(0%, 0px);
+  transition: transform 0.2s;
+  box-sizing: border-box;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.drawer-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #0003;
+  transition: opacity 0.4s;
+  z-index: 19;
+}
+
+@media screen and (min-width: 769px) {
+  body {
+    font-size: 1.6rem;
+  }
+  .large-up-hide {
+    display: none !important;
+  }
+}
+
+
+/* Mobile-first responsive design */
+@media screen and (max-width: 768px) {
+  .shopify-section {
+    display: block;
+    padding: 0;
+  }
+  
+  .shopify-section > * {
+    grid-column: auto;
+  }
+  
+  .page-width {
+    padding: 0 1rem;
+  }
+
+  .small-hide {
+    display: none !important;
+  }
+}

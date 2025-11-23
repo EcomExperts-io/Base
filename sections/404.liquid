@@ -1,0 +1,62 @@
+<style type="text/css">
+
+  .template-404 {
+    text-align: center;
+    margin: 7rem auto;
+  }
+
+  .template-404 p {
+    margin: 1.6rem 0;
+    font-size: 1.6rem;
+    color: #121212BF;
+  }
+
+  .template-404 .title {
+    color: #121212;
+    margin: 5rem 0 3rem;
+    font-size: 4rem;
+  }
+
+  .template-404 .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    padding: 0rem 3rem;
+    background: #121212 ;
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+    min-height: 4.7rem;
+    letter-spacing: 0.1em;
+  }
+
+  @media screen and (max-width: 768px) {
+    .template-404 p {
+      font-size: 1.5rem;
+    }
+
+    .template-404 .title {
+      font-size: 3rem;
+      margin: 3rem 0 2rem;
+    }
+
+    .template-404 .button {
+      font-size: 1.5rem;
+      margin-top: 1rem;
+    }
+  }
+</style>
+
+<div class="template-404 page-width">
+  <p>
+    {{ 'templates.404.subtext' | t }}
+  </p>
+  <h1 class="title">
+    {{ 'templates.404.title' | t }}
+  </h1>
+  <a href="{{ routes.all_products_collection_url }}" class="button">
+    {{ 'general.continue_shopping' | t }}
+  </a>
+</div>

@@ -1,8 +1,5 @@
 <!doctype html>
-<html
-  class="no-js"
-  lang="{{ request.locale.iso_code }}"
->
+<html lang="{{ request.locale.iso_code }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,32 +11,35 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
 
-    {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
+    {%- unless settings.type_body_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endunless -%}
+    {%- unless settings.type_heading_font.system? -%}
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
     {%- endunless -%}
 
-    <title>
-      {{ page_title }}
-      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
-      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
-    </title>
+    {% # Inlined CSS Variables %}
+    {% render 'css-variables' %}
+
+    {% # Load and preload the critical CSS %}
+    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+
 
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
     {% endif %}
 
+    {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
 
     <script src="{{ 'alpinejs-persist@3.14.8.min.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'alpinejs@3.14.8.min.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'theme.js' | asset_url }}" type="module"></script>
 
-    {%- if settings.animations_reveal_on_scroll -%}
-      <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
-    {%- endif -%}
-    
+
+
     {% comment %} liquid-ajax-cart.js.org {% endcomment %}
     <script type="application/json" data-ajax-cart-initial-state>
       {{ cart | json }}
@@ -49,26 +49,27 @@
       import '{{ "liquid-ajax-cart-v2.1.1.js" | asset_url }}';
     </script>
 
-    {% comment %} Theme Styles {% endcomment %}
-  
-    {%- render 'css-variables' -%}
-    {{ 'base.css' | asset_url | stylesheet_tag }}
+
     {%- if settings.predictive_search_enabled -%}
       {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
   </head>
 
-  <body class="{{ template.name }}">
+  <body>
+    <a class="skip-to-content-link visually-hidden" href="#MainContent">
+      Skip to content
+    </a>
+    
     {% sections 'header-group' %}
 
-    <main id="MainContent" role="main" tabindex="-1">
+    <main id="MainContent" class="content-for-layout" tabindex="-1">
       {{ content_for_layout }}
     </main>
 
-    {% section 'main-footer' %}
+    {% sections 'footer-group' %}
 
     {%- if settings.predictive_search_enabled -%}
-      <script src="{{ 'component-predictive-search.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'component-predictive-search.js' | asset_url }}" type="module"></script>
     {%- endif -%}
   </body>
 </html>

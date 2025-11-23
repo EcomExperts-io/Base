@@ -1,0 +1,101 @@
+.template-search__header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 3rem;
+  z-index: 2;
+}
+
+.template-search__header predictive-search {
+  position: relative;
+  display: flex;
+  width: min(750px, calc(100% - 3.5rem));
+  margin-inline: auto;
+}
+
+#predictive-search-wrapper {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgb(var(--color-background));
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  border-top: 0;
+  width: calc(100% - 2px);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.template-search__header form {
+  position: relative;
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  width: min(750px, 100%);
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-inline: 10px;
+}
+
+.template-search__header form input {
+  width: 100%;
+  border: 0;
+  font-size: 15px;
+  color: inherit;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+/* clears the 'X' from Internet Explorer */
+.template-search__header form input[type='search']::-ms-clear,
+.template-search__header form input[type='search']::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.template-search__header .reset__button {
+  position: relative;
+  border: 1px solid rgba(var(--color-foreground), .2) !important;
+  border-radius: 10rem;
+  min-width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  margin: 0;
+  margin-right: 15px;
+}
+
+.template-search__header .reset__button::before {
+  content: '';
+  position: absolute;
+  right: -15px;
+  width: 1px;
+  height: calc(100% + 10px);
+  background: rgba(var(--color-foreground), .08);
+}
+
+.template-search__header .reset__button svg.icon-close {
+  width: 10px !important;
+  height: auto;
+}
+
+/* clears the 'X' from Chrome */
+.template-search__header form input[type='search']::-webkit-search-decoration,
+.template-search__header form input[type='search']::-webkit-search-cancel-button,
+.template-search__header form input[type='search']::-webkit-search-results-button,
+.template-search__header form input[type='search']::-webkit-search-results-decoration {
+  display: none;
+}
+
+.template-search__header button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.template-search__header svg {
+  width: 20px;
+  color: rgb(var(--color-foreground));
+}

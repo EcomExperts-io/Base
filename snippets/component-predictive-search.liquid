@@ -1,4 +1,13 @@
-<predictive-search>
+{% doc %}
+  Renders the predictive search form and an empty results container that can be
+  populated via JavaScript.
+
+  @param {string} [context] - Optional context for the predictive search
+
+  @example
+  {% render 'component-predictive-search' %}
+{% enddoc %}
+<predictive-search x-ref="predictiveSearch">
   <form action="{{ routes.search_url }}" method="get" role="search">
     <input
       type="search"
@@ -8,7 +17,7 @@
       aria-controls="predictive-search-results"
       aria-haspopup="listbox"
       aria-autocomplete="list"
-      placeholder="{% if search.terms != blank %}{{ search.terms | escape }}{% else %}Search{% endif %}"
+      placeholder="Search"
       x-model="searchTerm"
       x-ref="searchInput"
       @focus="$event.target.select()"
@@ -19,7 +28,7 @@
       type="reset"
       class="reset__button"
       aria-label="Clear search term"
-      @click="$refs.searchInput.value = ''; searchTerm = ''; $dispatch('search-input-cleared');"
+      @click="searchTerm = ''; $refs.predictiveSearch.clearSearch($event)"
       x-show="searchTerm.length > 0"
       x-transition
       x-cloak
@@ -36,4 +45,15 @@
     </div>
     <div id="predictive-search"></div>
   </div>
+  {% if context == 'header' %}
+    <div
+      id="predictive-search-overlay"
+      x-on:click="searchOpen = false"
+      x-transition
+      x-cloak
+      x-show="searchOpen"
+      :style="{ opacity: searchOpen ? 1 : 0 }"
+      class="predictive-search-overlay"
+    ></div>
+  {% endif %}
 </predictive-search>

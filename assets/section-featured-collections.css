@@ -3,108 +3,133 @@
 .featured-collections-section {
   padding-top: 11rem;
   padding-bottom: 3rem;
-  max-width: 1280px;
   padding-left: 0px;
   padding-right: 0px;
 }
 
 .featured-collections__header {
-  text-align: left; /* Align header text left */
+  text-align: left;
+  /* Align header text left */
+  margin-bottom: 4rem;
 }
 
 .featured-collections__heading {
-  margin-bottom: 0.5rem; /* Adjust spacing */
-  font-weight: bold; /* Make heading bold */
-  color: #000000; /* Make heading black */
-  font-size: 3.6rem; /* Match featured products heading size */
+  margin-bottom: 0.5rem;
+  /* Adjust spacing */
+  font-weight: 600;
+  /* Make heading bold */
+  color: #000;
+  /* Make heading black */
+  font-size: 3.6rem;
+  /* Match featured products heading size */
   /* Inherits h2 style */
 }
 
 .featured-collections__subheading {
   margin-top: 0;
   /* Inherits subtitle style */
-  color: #000000; /* Make subheading black */
-  font-style: italic; /* Make subheading italic */
+  color: rgb(92, 95, 98);
+  /* Match hello-world description color */
+  font-style: normal;
+  /* Keep normal style like hello-world */
 }
 
 .featured-collections__grid {
-  margin: 0; /* Remove default grid margin if any */
-  padding: 0; /* Remove default grid padding if any */
+  margin: 0;
+  /* Remove default grid margin if any */
+  padding: 0;
+  /* Remove default grid padding if any */
   gap: 25px;
-  /* Uses base.css flexbox grid */
+  display: flex;
 }
 
 .featured-collections__card.grid__item {
-  max-width: none; /* Override base.css potentially limiting max-width */
-  position: relative; /* For positioning the text overlay */
-  overflow: hidden; /* Hide overflow if needed */
+  flex: 1;
+  /* each card takes up equal width */
+  max-width: none;
+  /* Override base.css potentially limiting max-width */
+  position: relative;
+  /* For positioning the text overlay */
+  overflow: hidden;
+  /* Hide overflow if needed */
 }
 
 .collection-card__link {
   display: flex;
   flex-direction: column;
-  position: relative; /* Needed for overlay child */
+  align-items: stretch;
+  position: relative;
+  /* Needed for overlay child */
   color: inherit;
   text-decoration: none;
-  height: 100%;
+  overflow: hidden;
 }
 
 .collection-card__image-wrapper {
-  height: 100%;
   width: 100%;
+  flex: 0 0 auto;
 }
 
-/* Override base.css padding for taller portrait images */
+/* Horizontal line layout overrides aspect-ratio hacks */
 .collection-card__image-wrapper.media--portrait {
-  padding-bottom: 144%; /* Approx 15% taller than 125% */
+  padding-bottom: 0 !important;
 }
 
 .collection-card__link--below .collection-card__image-wrapper.media--portrait {
-  padding-bottom: 100%;
+  padding-bottom: 0 !important;
 }
 
 .collection-card__image {
   display: block;
   width: 100%;
   height: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
-  transition: transform 0.3s ease; /* Optional: zoom effect on hover */
+  transition: transform 0.3s ease;
+  /* Optional: zoom effect on hover */
 }
 
 .collection-card__link:hover .collection-card__image {
-  transform: scale(1.05); /* Optional: zoom effect on hover */
+  transform: scale(1.05);
+  /* Optional: zoom effect on hover */
 }
 
 .collection-card__info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 1.5rem 1rem; /* Adjust padding as needed */
-  text-align: center;
-  color: #ffffff; /* White text */
-  z-index: 2;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%); /* Gradient overlay for text visibility */
+  position: static;
+  padding: 1.25rem 0;
+  /* Adjust padding as needed */
+  text-align: left;
+  color: inherit;
+  z-index: 1;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 60%;
 }
 
 .collection-card__title {
-  color: #ffffff;
+  color: #111;
   margin-top: 0;
-  margin-bottom: 0.5rem; /* Space between title and link */
+  margin-bottom: 0.5rem;
+  /* Space between title and link */
   text-transform: uppercase;
   /* Inherits h3 style */
 }
 
 .collection-card__shop-now {
   color: #ffffff;
-  font-size: 0.9rem; /* Smaller font size for shop now */
+  font-size: 0.9rem;
+  /* Smaller font size for shop now */
   text-decoration: underline;
   text-underline-offset: 0.2rem;
-  display: inline-block; /* Needed for link styling */
+  display: inline-block;
+  /* Needed for link styling */
 }
 
 .collection-card__shop-now:hover {
-  color: #ffffff; /* Keep white on hover */
+  color: #ffffff;
+  /* Keep white on hover */
   text-decoration-thickness: 0.15rem;
 }
 
@@ -120,20 +145,23 @@
 /* Style 2: Info below image */
 .collection-card__info--below {
   position: static;
-  background: #fff;
-  color: #111;
-  text-align: center;
-  padding: 1.25rem 0 0.75rem 0;
-  border-radius: 0 0 8px 8px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 1.25rem 0;
+  border-radius: 0;
   box-shadow: none;
 }
+
 .collection-card__info--below .collection-card__title {
-  color: #111;
+  color: rgb(32, 34, 35);
   margin-bottom: 0.25rem;
   text-transform: none;
   font-size: 2.4rem;
   font-weight: 600;
+  text-align: center;
 }
+
 .collection-card__info--below .collection-card__shop-now {
   color: #0D6EFD;
   font-size: 1rem;
@@ -143,32 +171,44 @@
   margin-top: 0.25rem;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 768px) {
+  .featured-collections__header {
+    margin-bottom: 3rem;
+  }
+
   .featured-collections__grid {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2.2rem;
+    padding: 0 16px;
   }
+
   .featured-collections__card.grid__item {
     width: 100%;
     max-width: 100%;
     margin: 0;
   }
+
   .collection-card__link {
     min-width: 0;
-    max-width: 343px;
-    margin: auto;
+    max-width: 100%;
+    margin: 0;
     width: 100%;
   }
+
+  .collection-card__image-wrapper,
   .collection-card__image-wrapper.media--portrait {
-    padding-bottom: 72%!important;
+    height: 254px;
+    padding-bottom: 0 !important;
   }
-  .featured-collections__heading{
-    font-size: 2.5rem;
+
+  .featured-collections__heading {
+    font-size: 2.4rem;
   }
-  .collection-card__info--below .collection-card__title{
+
+  .collection-card__info--below .collection-card__title {
     font-size: 2rem;
     font-weight: 600;
   }
-  
+
 }
