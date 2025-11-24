@@ -2,6 +2,8 @@
 
 Meet `<cart-notification>`, a lightweight Web Component defined in `assets/component-cart-notification.js` that keeps shoppers informed after an AJAX add-to-cart. It listens for Liquid Ajax Cart events, swaps in the latest product details, and controls the cart notification drawer UI.
 
+**Source:** [`assets/component-cart-notification.js`](../../assets/component-cart-notification.js)
+
 ---
 
 ## Overview
@@ -66,10 +68,7 @@ constructor() {
   this.hideNotification = this.hideNotification.bind(this);
   this.querySelector('.cart-notification-continue_shopping').addEventListener('click', () => this.hideNotification());
   this.querySelector('.cart-notification__close').addEventListener('click', () => this.hideNotification());
-  document.addEventListener(
-    'liquid-ajax-cart:request-end',
-    this.onCartUpdate.bind(this)
-  );
+  document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
 }
 ```
 
@@ -81,14 +80,9 @@ constructor() {
 
 ```js
 disconnectedCallback() {
-  this.querySelector('.cart-notification-continue_shopping')
-    .removeEventListener('click', this.hideNotification);
-  this.querySelector('.cart-notification__close')
-    .removeEventListener('click', this.hideNotification);
-  document.removeEventListener(
-    'liquid-ajax-cart:request-end',
-    this.onCartUpdate.bind(this)
-  );
+  this.querySelector('.cart-notification-continue_shopping').removeEventListener('click', this.hideNotification);
+  this.querySelector('.cart-notification__close').removeEventListener('click', this.hideNotification);
+  document.removeEventListener('liquid-ajax-cart:request-end',this.onCartUpdate.bind(this));
 }
 ```
 

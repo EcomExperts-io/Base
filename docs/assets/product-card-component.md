@@ -155,5 +155,3 @@ This snippet lives in `snippets/component-product-card.liquid`, linking the Java
 With these pieces in place, shoppers can click swatches and see instant image updates—no page reload needed! 🎨
 
 ---
-
-This narrative journey shows how **ProductCard** breathes life into static markup, delighting users with real-time swatch-driven imagery.

@@ -1,4 +1,11 @@
+/**
+ * Docs: docs/assets/component-cart-notification.md
+ * @extends HTMLElement
+ */
 export class CartNotification extends HTMLElement {
+  /**
+   * Sets up button handlers and subscribes to AJAX cart updates.
+   */
   constructor() {
     super();
     this.hideNotification = this.hideNotification.bind(this);
@@ -7,12 +14,19 @@ export class CartNotification extends HTMLElement {
     document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
   }
 
+  /**
+   * Removes listeners when the element detaches from the DOM.
+   */
   disconnectedCallback() {
     this.querySelector('.cart-notification-continue_shopping').removeEventListener('click', this.hideNotification);
     this.querySelector('.cart-notification__close').removeEventListener('click', this.hideNotification);
     document.removeEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
   }
 
+  /**
+   * Handles Liquid Ajax Cart responses and updates the UI after successful adds.
+   * @param {CustomEvent} event - Liquid Ajax Cart completion event.
+   */
   onCartUpdate(event) {
     const { requestState } = event.detail;
     if (requestState?.requestType === 'add' && requestState.responseData?.ok) {
@@ -20,6 +34,10 @@ export class CartNotification extends HTMLElement {
     }
   }
 
+  /**
+   * Renders the latest product info inside the notification drawer.
+   * @param {Object} updatedCartNotification - JSON payload returned from the cart request.
+   */
   updateNotification(updatedCartNotification) {
     const productElement = this.querySelector('#cart-notification-product');
     const optionsHTML = updatedCartNotification.options_with_values
@@ -41,10 +59,16 @@ export class CartNotification extends HTMLElement {
     this.showNotification();
   }
 
+  /**
+   * Displays the cart notification drawer.
+   */
   showNotification() {
     this.querySelector('#cart-notification').classList.add('cart-notification-open');
   }
 
+  /**
+   * Hides the cart notification drawer.
+   */
   hideNotification() {
     this.querySelector('#cart-notification').classList.remove('cart-notification-open');
   }
