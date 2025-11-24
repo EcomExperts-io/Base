@@ -1,0 +1,176 @@
+{% comment %} /sections/selling-points.liquid {% endcomment %}
+
+{{ 'section-selling-points.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign blocks_to_show = section.blocks.size
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign background_color = section.settings.background_color
+  assign text_color = section.settings.text_color
+  assign title_color = section.settings.title_color
+  assign icon_size = section.settings.icon_size
+-%}
+
+{%- if blocks_to_show > 0 -%}
+  <div
+    class="selling-points-section"
+    style="
+      --selling-points-padding-top: {{ padding_top }}px;
+      --selling-points-padding-bottom: {{ padding_bottom }}px;
+      --selling-points-background-color: {{ background_color }};
+      --selling-points-text-color: {{ text_color }};
+      --selling-points-title-color: {{ title_color }};
+      --selling-points-icon-size: {{ icon_size }}px;
+    "
+  >
+    <div class="page-width">
+      <div class="selling-points__grid">
+        {%- for block in section.blocks -%}
+          {%- assign icon = block.settings.icon -%}
+          {%- assign title = block.settings.title -%}
+          {%- assign description = block.settings.description -%}
+
+          <div class="selling-points__item" {{ block.shopify_attributes }}>
+            <div class="selling-points__icon-wrapper">
+              {%- if icon != blank -%}
+                <img
+                  srcset="
+                    {%- if icon.width >= 50 -%}{{ icon | image_url: width: 50 }} 50w,{%- endif -%}
+                    {%- if icon.width >= 100 -%}{{ icon | image_url: width: 100 }} 100w,{%- endif -%}
+                    {%- if icon.width >= 150 -%}{{ icon | image_url: width: 150 }} 150w,{%- endif -%}
+                    {{ icon | image_url }} {{ icon.width }}w
+                  "
+                  src="{{ icon | image_url: width: 100 }}"
+                  sizes="{{ icon_size }}px"
+                  alt="{{ icon.alt | escape }}"
+                  loading="lazy"
+                  width="{{ icon.width }}"
+                  height="{{ icon.height }}"
+                  class="selling-points__icon"
+                >
+              {%- else -%}
+                <div class="selling-points__icon-placeholder">
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="selling-points__content">
+              {%- if title != blank -%}
+                <h3 class="selling-points__title">{{ title | escape | default: 'Selling Point Title' }}</h3>
+              {%- endif -%}
+
+              {%- if description != blank -%}
+                <p class="selling-points__description">
+                  {{ description | escape | default: 'Selling point description text' }}
+                </p>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Selling Points",
+  "tag": "section",
+  "class": "selling-points",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Icon Settings"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon Size",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "selling_point",
+      "name": "Selling Point",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Selling Point Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Selling point description text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Selling Points",
+      "blocks": [{ "type": "selling_point" }, { "type": "selling_point" }, { "type": "selling_point" }, { "type": "selling_point" }]
+    }
+  ]
+}
+{% endschema %}
