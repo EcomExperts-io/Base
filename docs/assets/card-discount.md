@@ -1,78 +1,51 @@
-# cart-discount.js Documentation
+# cart-discount.js Components
 
-This file defines two custom elements: **CartDiscount** and **DisclosureCustom**.
+`assets/cart-discount.js` exports **two** custom elements—`<cart-discount-component>` and `<disclosure-custom>`—to enhance cart discounts and accessible accordions.
 
-They enhance cart interactions by managing discount codes and accessible disclosure toggles.
+**Source:** [`assets/cart-discount.js`](../../assets/cart-discount.js)
 
-## CartDiscount Component
+---
 
-The **CartDiscount** component handles discount code application and removal on the cart page.
+## What It Does
 
-It integrates with Shopify’s cart API and updates the UI accordingly.
+- **CartDiscount**: Applies, removes, and validates cart-level discount codes through Shopify’s `/cart/update.js` endpoint.
+- **DisclosureCustom**: Powers accessible disclosures (accordion panels) used by the discount UX.
 
-### Class Definition & Registration
+---
 
-This section outlines how the component initializes and registers itself.
+## CartDiscount API Overview
 
-- Extends the native `HTMLElement` class.
-- Initializes key properties and method bindings.
-- Registers under the tag name `cart-discount-component`.
+| Method / Property        | Purpose                                                                 |
+|--------------------------|-------------------------------------------------------------------------|
+| `constructor()`          | Caches DOM references, binds handlers, and prepares listeners.          |
+| `connectedCallback()`    | Attaches submit/click handlers for applying or removing codes.          |
+| `disconnectedCallback()` | Removes listeners when the component is detached.                       |
+| `applyDiscount(event)`   | Submits a code to `/cart/update.js`, handling duplicates and errors.    |
+| `removeDiscount(event)`  | Removes a pill’s code and reapplies remaining discounts if any.         |
+| `hideErrors()`           | Adds `hidden` to every error target before a new attempt.               |
+| `showError(code)`        | Displays shipping vs. generic errors based on the code contents.        |
+| `getExistingDiscounts()` | Returns an array of the current pill `data-discount-code` values.       |
 
-```js
-if (!customElements.get('cart-discount-component')) {
-  customElements.define('cart-discount-component', CartDiscount);
-}
-```
+---
 
-### Constructor
+## CartDiscount Detailed Methods
 
-The constructor sets up initial state and binds methods.
+### constructor()
 
-- **Properties initialized**:
-- `form`, `discountInput`, `cartDiscountError`, `cartDiscountErrorDiscountCode`, `cartDiscountErrorShipping`
-- `boundApplyDiscount` (bound `applyDiscount`)
-- `boundRemoveDiscount`  (bound `removeDiscount`)
+- Initializes selectors (`form`, `discountInput`, error containers).
+- Binds `applyDiscount` and `removeDiscount` to the component instance for reuse.
 
-### connectedCallback
+### connectedCallback()
 
-This lifecycle method runs when the element enters the DOM.
+- Validates the presence of the discount form and logs if it is missing.
+- Adds `submit` on the form to call `applyDiscount`.
+- Registers a delegated `click` listener on `document` for `.cart-discount__pill-remove`.
 
-- Locates DOM elements via `querySelector`.
-- Logs an error if the form is missing.
-- Attaches event listeners:
-- **Submit** on the discount form.
-- **Click** on the entire document for removal buttons.
+### disconnectedCallback()
 
-### disconnectedCallback
+- Removes the `submit` and delegated `click` listeners to avoid duplicates.
 
-This method cleans up event listeners on element removal.
-
-- Removes the form’s **submit** listener.
-- Removes the document’s **click** listener.
-
-### Properties Overview
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `form` | `Element` | The discount form element. |
-| `discountInput` | `HTMLInputElement` | The discount code input field. |
-| `cartDiscountError` | `Element` | Container for displaying error messages. |
-| `cartDiscountErrorDiscountCode` | `Element` | Error text for invalid discount codes. |
-| `cartDiscountErrorShipping` | `Element` | Error text for shipping-related codes. |
-| `boundApplyDiscount` | `Function` | Bound `applyDiscount` method. |
-| `boundRemoveDiscount` | `Function` | Bound `removeDiscount` method. |
-
-
-### applyDiscount 💳
-
-This async method applies a discount on form submission.
-
-- **Prevents** default form behavior.
-- **Trims** and **uppercases** the entered code.
-- **Checks** for empty or duplicate codes.
-- **Hides** previous errors.
-- Sends a **POST** to `/cart/update.js` with all discounts.
-- **Reloads** the page on success, or **shows** an error on failure.
+### applyDiscount(event) 💳
 
 ```js
 async applyDiscount(event) {
@@ -81,7 +54,7 @@ async applyDiscount(event) {
   if (!code) return;
 
   const existing = this.getExistingDiscounts();
-  if (existing.some(c => c.toUpperCase() === code)) {
+  if (existing.some((c) => c.toUpperCase() === code)) {
     this.discountInput.value = '';
     return;
   }
@@ -90,17 +63,16 @@ async applyDiscount(event) {
   const allDiscounts = [...existing, code].join(',');
 
   try {
-    const response = await fetch(
-      window.Shopify.routes.root + 'cart/update.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ discount: allDiscounts })
-      }
-    );
+    const response = await fetch(`${window.Shopify.routes.root}cart/update.js`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ discount: allDiscounts })
+    });
     const cart = await response.json();
-    const applied = cart.cart_level_discount_applications
-      ?.some(app => app.title?.toUpperCase() === code)
-      || (cart.cart_level_discount_applications?.length > existing.length);
+    const applied =
+      cart.cart_level_discount_applications?.some(
+        (app) => app.title?.toUpperCase() === code
+      ) || cart.cart_level_discount_applications?.length > existing.length;
 
     if (applied) window.location.reload();
     else this.showError(code);
@@ -111,35 +83,31 @@ async applyDiscount(event) {
 }
 ```
 
+- Normalizes user input (trim + uppercase) and prevents duplicates.
+- POSTs to `/cart/update.js` with every active code to keep Shopify in sync.
+- Reloads the page on success; otherwise exposes the correct error message.
+
 #### Process Flowchart
 
 ```mermaid
 flowchart TD
   A[User submits form] --> B[applyDiscount]
   B --> C[Trim & uppercase code]
-  C --> D[Empty code?]
+  C --> D{Empty code?}
   D -->|Yes| Z[Exit]
   D -->|No| E[Get existing discounts]
-  E --> F[Duplicate code?]
+  E --> F{Duplicate?}
   F -->|Yes| Y[Clear input & exit]
   F -->|No| G[Hide errors]
-  G --> H[POST to /cart/update.js]
-  H --> I[Receive cart JSON]
-  I --> J[Discount applied?]
+  G --> H[POST /cart/update.js]
+  H --> I[Parse cart JSON]
+  I --> J{Discount applied?}
   J -->|Yes| K[Reload page]
-  J -->|No| L[Show error]
+  J -->|No| L[showError]
   H -->|Error| L
 ```
 
-### removeDiscount
-
-This async method removes a single discount when its “×” button is clicked.
-
-- **Detects** the clicked remove button.
-- **Extracts** the discount code from the pill’s `data-discount-code`.
-- **Prevents** default link behavior.
-- **Fetches** `/cart/update.js` with an empty discount string.
-- **Redirects** to apply remaining codes or **reloads** the page.
+### removeDiscount(event)
 
 ```js
 async removeDiscount(event) {
@@ -152,12 +120,12 @@ async removeDiscount(event) {
   event.preventDefault();
 
   const existing = this.getExistingDiscounts();
-  const remaining = existing.filter(c =>
-    c.toUpperCase() !== codeToRemove.toUpperCase()
+  const remaining = existing.filter(
+    (c) => c.toUpperCase() !== codeToRemove.toUpperCase()
   );
 
   try {
-    await fetch(window.Shopify.routes.root + 'cart/update.js', {
+    await fetch(`${window.Shopify.routes.root}cart/update.js`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ discount: '' })
@@ -167,8 +135,7 @@ async removeDiscount(event) {
       const url = new URL(window.location.href);
       const returnUrl = encodeURIComponent(url.pathname + url.search);
       const path = remaining.map(encodeURIComponent).join(',');
-      window.location.href = 
-        `${window.Shopify.routes.root}discount/${path}?return_to=${returnUrl}`;
+      window.location.href = `${window.Shopify.routes.root}discount/${path}?return_to=${returnUrl}`;
     } else {
       window.location.reload();
     }
@@ -179,9 +146,10 @@ async removeDiscount(event) {
 }
 ```
 
-### hideErrors
+- Removes the selected code and leverages Shopify’s `/discount/{codes}` redirect when multiple codes remain.
+- Reloads the page if no codes are left.
 
-This method hides all error message elements by adding the `hidden` class.
+### hideErrors()
 
 ```js
 hideErrors() {
@@ -191,12 +159,9 @@ hideErrors() {
 }
 ```
 
-### showError
+- Ensures the UI resets before displaying a new error state.
 
-This method displays the appropriate error message based on the code content.
-
-- Determines if the code relates to **shipping** (contains “ship” or “free”).
-- Reveals either the shipping or discount-code error text.
+### showError(code)
 
 ```js
 showError(code) {
@@ -211,146 +176,74 @@ showError(code) {
 }
 ```
 
-### getExistingDiscounts
+- Differentiates shipping promos (“ship”/“free”) from generic code issues so the correct text displays.
 
-This utility returns an array of currently applied discount codes.
-
-- Selects all `.cart-discount__pill` elements.
-- Reads each pill’s `data-discount-code` attribute.
+### getExistingDiscounts()
 
 ```js
 getExistingDiscounts() {
-  return Array.from(
-    document.querySelectorAll('.cart-discount__pill')
-  )
-  .map(pill => pill.dataset.discountCode)
-  .filter(Boolean);
+  return Array.from(document.querySelectorAll('.cart-discount__pill'))
+    .map((pill) => pill.dataset.discountCode)
+    .filter(Boolean);
 }
 ```
 
-### API Endpoints Documentation
-
-```api
-{
-    "title": "Apply Discounts",
-    "description": "Adds one or multiple discount codes to the cart.",
-    "method": "POST",
-    "baseUrl": "https://your-shop.myshopify.com",
-    "endpoint": "/cart/update.js",
-    "headers": [
-        {
-            "key": "Content-Type",
-            "value": "application/json",
-            "required": true
-        }
-    ],
-    "queryParams": [],
-    "pathParams": [],
-    "bodyType": "json",
-    "requestBody": "{\n  \"discount\": \"CODE1,CODE2\"\n}",
-    "formData": [],
-    "rawBody": "",
-    "responses": {
-        "200": {
-            "description": "Cart updated successfully",
-            "body": "{\n  \"cart_level_discount_applications\": [\n    { \"title\": \"CODE1\" },\n    { \"title\": \"CODE2\" }\n  ]\n}"
-        },
-        "400": {
-            "description": "Invalid discount format",
-            "body": "{\n  \"description\": \"Bad Request\"\n}"
-        }
-    }
-}
-```
-
-```api
-{
-    "title": "Remove Discounts",
-    "description": "Clears all discount codes from the cart.",
-    "method": "POST",
-    "baseUrl": "https://your-shop.myshopify.com",
-    "endpoint": "/cart/update.js",
-    "headers": [
-        {
-            "key": "Content-Type",
-            "value": "application/json",
-            "required": true
-        }
-    ],
-    "queryParams": [],
-    "pathParams": [],
-    "bodyType": "json",
-    "requestBody": "{\n  \"discount\": \"\"\n}",
-    "formData": [],
-    "rawBody": "",
-    "responses": {
-        "200": {
-            "description": "Cart cleared of discounts",
-            "body": "{\n  \"cart_level_discount_applications\": []\n}"
-        }
-    }
-}
-```
-
-```card
-{
-    "title": "Duplicate Prevention",
-    "content": "The component blocks reapplying the same code to avoid redundant requests."
-}
-```
+- Reads every pill’s `data-discount-code` attribute to keep the component stateless.
 
 ---
 
-## DisclosureCustom Component
+## Shopify API Reference
 
-The **DisclosureCustom** component creates accessible toggle sections.
-
-It manages ARIA attributes and inert states for show/hide interactions.
-
-### Class Definition & Registration
-
-This section shows how the disclosure element sets up and registers itself.
-
-- Extends `HTMLElement`.
-- Looks for elements marked with `ref="disclosureTrigger"` and `ref="disclosureContent"`.
-- Registers under the tag name `disclosure-custom`.
-
-```js
-if (!customElements.get('disclosure-custom')) {
-  customElements.define('disclosure-custom', DisclosureCustom);
+```api
+{
+  "title": "Apply Discounts",
+  "method": "POST",
+  "endpoint": "/cart/update.js",
+  "body": "{ \"discount\": \"CODE1,CODE2\" }"
 }
 ```
 
-### Constructor
+```api
+{
+  "title": "Remove Discounts",
+  "method": "POST",
+  "endpoint": "/cart/update.js",
+  "body": "{ \"discount\": \"\" }"
+}
+```
 
-The constructor initializes reference properties.
+> **Duplicate Prevention:** The component blocks reapplying the same code to avoid redundant requests.
 
-- **Properties**:
-- `trigger`: button or element that toggles visibility
-- `content`: the collapsible content section
+---
 
-### connectedCallback
+## DisclosureCustom API Overview
 
-This lifecycle hook runs on element attachment.
+| Method / Property        | Purpose                                                         |
+|--------------------------|-----------------------------------------------------------------|
+| `constructor()`          | Sets up `trigger` and `content` references.                     |
+| `connectedCallback()`    | Queries DOM refs and binds `toggleDisclosure` to the trigger.   |
+| `disconnectedCallback()` | Removes the trigger listener when detached.                     |
+| `toggleDisclosure()`     | Toggles `aria-expanded`, updates labels, and sets `content.inert`. |
 
-- Queries for trigger and content elements.
-- Logs an error if either is missing.
-- Binds and attaches the `click` listener to the trigger.
+---
 
-### disconnectedCallback
+## DisclosureCustom Detailed Methods
 
-This method removes the event listener on detach.
+### constructor()
 
-- Detaches the `click` event from the trigger.
+- Initializes placeholder properties (`this.trigger`, `this.content`) for later hooks.
 
-### toggleDisclosure
+### connectedCallback()
 
-This method toggles the disclosure state.
+- Selects the `[ref="disclosureTrigger"]` and `[ref="disclosureContent"]` children.
+- Logs an error if either element is missing.
+- Attaches the `click` listener to the trigger.
 
-- Reads current `aria-expanded` on the trigger.
-- Inverts `aria-expanded` value.
-- Updates `aria-label` to match open/close text from `data-disclosure-open` and `data-disclosure-close`.
-- Toggles the `inert` property on the content for accessibility.
+### disconnectedCallback()
+
+- Removes the `click` listener to prevent memory leaks.
+
+### toggleDisclosure()
 
 ```js
 toggleDisclosure() {
@@ -359,9 +252,66 @@ toggleDisclosure() {
   this.trigger.setAttribute('aria-expanded', String(!expanded));
   this.trigger.setAttribute(
     'aria-label',
-    expanded ? this.trigger.dataset.disclosureOpen
-             : this.trigger.dataset.disclosureClose
+    expanded ? this.trigger.dataset.disclosureOpen : this.trigger.dataset.disclosureClose
   );
   this.content.inert = expanded;
 }
 ```
+
+- Flips `aria-expanded`, swaps the `aria-label`, and relies on the `inert` attribute to block focus when collapsed.
+
+---
+
+## Custom Element Definitions
+
+```js
+if (!customElements.get('cart-discount-component')) {
+  customElements.define('cart-discount-component', CartDiscount);
+}
+
+if (!customElements.get('disclosure-custom')) {
+  customElements.define('disclosure-custom', DisclosureCustom);
+}
+```
+
+Both elements are wrapped in guards so hot reloading or multiple bundles do not re-register them.
+
+---
+
+## Integration with Shopify Liquid
+
+```liquid
+<cart-discount-component>
+  <form class="cart-discount-form">
+    <input name="discount" placeholder="{{ 'cart.discount.code' | t }}">
+    <button type="submit">{{ 'cart.discount.apply' | t }}</button>
+    <p class="cart-discount__error hidden" data-error-type="code"></p>
+    <p class="cart-discount__error hidden" data-error-type="shipping"></p>
+  </form>
+
+  <div class="cart-discount__pills">
+    {% for code in cart.cart_level_discount_applications %}
+      <span class="cart-discount__pill" data-discount-code="{{ code.title }}">
+        {{ code.title }}
+        <button class="cart-discount__pill-remove" type="button" aria-label="{{ 'accessibility.remove' | t }}">
+          &times;
+        </button>
+      </span>
+    {% endfor %}
+  </div>
+</cart-discount-component>
+
+<script src="{{ 'cart-discount.js' | asset_url }}" type="module"></script>
+```
+
+Use `<disclosure-custom>` to wrap expandable help text or FAQ content within the same form.
+
+---
+
+## Usage Checklist
+
+1. Keep `.cart-discount__pill` and `.cart-discount__pill-remove` selectors intact.
+2. Include both error containers (code + shipping) so `showError` can target them.
+3. Load `cart-discount.js` on the cart page or wherever the discount UI appears.
+4. Pair `<disclosure-custom>` elements with descriptive `data-disclosure-open` and `data-disclosure-close` labels for accessibility.
+ 

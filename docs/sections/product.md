@@ -1,32 +1,13 @@
-# sections/product.liquid 🛍️
+# Product Section (`sections/product.liquid`) 🛍️
 
-The **`sections/product.liquid`** file defines Shopify’s Main Product section.  
-It renders a customizable product page with media, pricing, and interactive blocks.  
-This section leverages Storefront API, Liquid snippets, and JavaScript modules. 
+`sections/product.liquid` renders Shopify’s main product detail page, combining media galleries, pricing, purchasing blocks, and dynamic scripts to keep variant selections in sync. Like the collection section, it leans on inline style blocks, shared snippets, and a custom element (`<product-info>`) to encapsulate state.
 
-## Purpose  
-This section powers the product detail page.  
-It displays product media, information, and purchasable options.  
-Shopify merchants configure settings and blocks in the theme editor.
+---
 
-## Asset Includes  
-External CSS and JS assets load dynamically based on settings and blocks:
-```liquid
-{{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
-{{ 'component-product-price.css' | asset_url | stylesheet_tag }}
-{{ 'section-product.css' | asset_url | stylesheet_tag }}
-{% if section.settings.image_zoom != 'none' %}
-  {{ 'component-product-media-modal.css' | asset_url | stylesheet_tag }}
-{% endif %}
-…
-<script src="{{ 'section-product.js' | asset_url }}" type="module"></script>
-<script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer id="swiper-script"></script>
-```
-- **Swiper.js** powers media carousels.  
-- **section-product.js** handles interactivity (variant changes, quantity). 
+## Dynamic Styles
 
-## Inline Styles  
-A `<style>` block injects dynamic CSS per section settings:
+Each instance prints a scoped `<style>` block so merchants can fine-tune spacing and typography per section:
+
 ```liquid
 {%- style -%}
 .section-{{ section.id }}-padding {
@@ -38,13 +19,36 @@ A `<style>` block injects dynamic CSS per section settings:
   font-size: {{ section.settings.variant_label_font_size }}px;
   font-weight: {{ section.settings.variant_label_font_weight }};
 }
-…  
-@media screen and (min-width: 769px) { … }
+@media screen and (min-width: 769px) {
+  /* Desktop-specific tweaks */
+}
 {%- endstyle -%}
 ```
-Styles adapt typography, spacing, and responsive layout.
 
-## Section Structure  
+Spacing, option typography, and layout tweaks all key off section settings so every product page can feel unique without editing theme code.
+
+---
+
+## Component Styles & Assets
+
+The section registers CSS and JS assets based on configuration:
+
+- **CSS**
+  - `swiper7.4.1.min.css` (media carousel)
+  - `component-product-price.css`
+  - `section-product.css`
+  - `component-product-media-modal.css` *(when `image_zoom` ≠ `none`)*
+- **JavaScript**
+  - `section-product.js` (variant + form logic)
+  - `swiper7.4.1.min.js` (carousel, loaded with `defer`)
+  - Optional quick-add or modal helpers depending on enabled blocks
+
+This mirrors the pattern in `sections/collection.liquid`, ensuring all required assets load inline with the section.
+
+---
+
+## Markup Structure
+
 ```liquid
 <product-info
   data-url="{{ product.url }}"
@@ -52,20 +56,15 @@ Styles adapt typography, spacing, and responsive layout.
   class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
 >
   <div class="page-width">
-    <div class="product flex product--{{ section.settings.media_size }} …">
-      <!-- Media -->
+    <div class="product flex product--{{ section.settings.media_size }}">
       <div class="product__media-wrapper">
-        {% render 'component-product-media-gallery',
-           product_media: product.media,
-           selected_variant: selected_variant,
-           … %}
+        {% render 'component-product-media-gallery', product_media: product.media, selected_variant: selected_variant %}
       </div>
-      <!-- Info -->
       <div class="product__info-wrapper">
         {% assign product_form_id = 'product-form-' | append: section.id %}
         {% for block in section.blocks %}
           {% case block.type %}
-            <!-- Render each block -->
+            <!-- Block-specific rendering -->
           {% endcase %}
         {% endfor %}
       </div>
@@ -73,71 +72,93 @@ Styles adapt typography, spacing, and responsive layout.
   </div>
 </product-info>
 ```
-- **`<product-info>`**: Custom element for JS interactivity.  
-- **Media wrapper**: Renders gallery via snippet .  
-- **Info wrapper**: Iterates blocks to display content.
 
-## Block Types & Rendering  
-| Block Type           | Purpose                                          |
-|----------------------|--------------------------------------------------|
-| **text**             | Rich text paragraph                              |
-| **title**            | Product title heading                            |
-| **price**            | Price display with badges  |
-| **sku**              | Variant SKU                                      |
-| **inventory**        | Stock status and low-stock warnings               |
-| **variant_picker**   | Option selectors (dropdown or button swatches)   |
-| **quantity_selector**| Quantity input with +/– controls                 |
-| **description**      | Long product description                         |
-| **buy_buttons**      | Add-to-cart and dynamic checkout                  |
-| **share**            | Social share button                              |
-| **subscription**     | Recurring purchase widget                        |
-| **collapsible_tab**  | Accordion content                                |
-| **complementary**    | Product recommendations                          |
-| **custom_liquid**    | Admin-defined Liquid snippet                     |
+### Media Column
+- Powered by `component-product-media-gallery`, which in turn uses Swiper for carousels and optionally `component-product-media-modal` for zoom/lightbox experiences.
+- Supports images, videos, 3D models, and AR assets.
 
-## JavaScript Interactivity  
-The `section-product.js` module binds to `<product-info>` events:
-- **Variant changes**: Listens for `change` on `<variant-selector>`.  
-- **Quantity events**: Handles plus/minus clicks and input validation.  
-- **Section Rendering API**: Fetches updated HTML for new variants and swaps DOM fragments.  
-- **URL & history**: Updates browser URL with selected variant.
+### Info Column & Blocks
+- Iterates through all blocks (`section.blocks`) to render pricing, options, share buttons, etc.
+- `product_form_id` ties `<product-form>` instances to the JS controller.
+
+---
+
+## Block Types & Rendering
+
+| Block Type            | Purpose                                             |
+|-----------------------|-----------------------------------------------------|
+| `title`               | Renders the product title heading                   |
+| `text`                | Rich text content (marketing copy, notices)         |
+| `price`               | Uses `component-product-price` for badges + compare |
+| `sku` / `inventory`   | Displays SKU and stock messaging                    |
+| `variant_picker`      | Dropdowns or swatches for option selection          |
+| `quantity_selector`   | Quantity input with +/- controls                    |
+| `buy_buttons`         | Add to cart, dynamic checkout, Shop Pay, etc.       |
+| `description`         | Full product description content                    |
+| `share`               | Social sharing via `component-product-share-button` |
+| `subscription`        | Subscription selling plans                          |
+| `collapsible_tab`     | Accordion content for specs or FAQs                 |
+| `complementary`       | Recommendations using `component-complementary-products` |
+| `custom_liquid`       | Merchant-defined Liquid/HTML                        |
+
+---
+
+## JavaScript Behavior
+
+`section-product.js` targets the `<product-info>` element to manage everything from variant selection to cart state:
+
+- **Variant Changes**: Watches `<variant-selector>` change events, fetches updated HTML via the Section Rendering API, and swaps media, price, SKU, and inventory fragments.
+- **Quantity Controls**: Handles increment/decrement buttons and validation.
+- **URL Sync**: Pushes the active variant ID into the query string so share links reflect the selected option.
 
 ```mermaid
 flowchart TD
   A[User selects variant] -->|change| B[ProductInfo.onVariantChange]
-  B --> C[fetch URL with option_values and section_id]
-  C --> D{Parse response HTML}
-  D --> E[updateMedia]
-  D --> F[updatePrice, SKU, Inventory]
-  D --> G[updateAddToCart]
+  B --> C[Fetch section HTML with option values]
+  C --> D{Parse response}
+  D --> E[Update media + gallery]
+  D --> F[Update price, SKU, inventory]
+  D --> G[Update add-to-cart state]
 ```
-
-## Schema Configuration  
-### Section Settings  
-Merchants customize global appearance and behavior:
-- **enable_sticky_info**: Pin info sidebar  
-- **color_scheme**: Theme palette  
-- **media_size/position/layout**: Control gallery  
-- **image_zoom**: Lightbox or hover zoom  
-- **padding_top/bottom**: Vertical spacing  
-- **variant_label_*:** Typography of option labels
-
-### Block Settings  
-Each block type exposes editor controls:
-- **title**: Color, font size, weight  
-- **price**: Typography, badge toggles  
-- **inventory**: Threshold, show count  
-- **variant_picker**: Picker style, swatch shape  
-
-## Dependencies & Related Snippets  
-- **component-product-media-gallery**: Renders Swiper gallery   
-- **component-product-media-modal**: Lightbox modal  
-- **component-product-media**: Renders images, videos, 3D models  
-- **component-product-price**: Price logic and badges   
-- **component-product-card** & **component-complementary-products**: Recommendation cards  
-- **component-quick-add**, **component-modal-opener**: Quick-add UX  
-- **component-pickup-availability**, **component-product-share-button**  
 
 ---
 
-This documentation outlines the structure, purpose, and extensibility of the Main Product section. It highlights key snippets, interactive flows, and configuration options.
+## Settings Schema
+
+### Section Settings
+
+| Setting ID               | Type        | Purpose                                                   |
+|-------------------------|-------------|-----------------------------------------------------------|
+| `enable_sticky_info`    | checkbox    | Locks the info column on desktop                          |
+| `color_scheme`          | color       | Applies theme palette classes                             |
+| `media_size`/`position` | select      | Controls gallery width and placement                      |
+| `image_zoom`            | select      | Enables modal or hover zoom behaviors                     |
+| `padding_top/bottom`    | range (px)  | Section spacing controls                                  |
+| `variant_label_*`       | color/range | Typography for option labels                              |
+
+### Block Settings
+
+- `title`: Size, weight, color controls.
+- `price`: Toggles badges (sale, sold out), compare-at styling.
+- `inventory`: Thresholds for low-stock messaging.
+- `variant_picker`: Picker style (dropdown, pills) and swatch settings.
+- `buy_buttons`: Enable dynamic checkout, Shop Pay, or quick buy.
+
+---
+
+## Related Snippets & Assets
+
+- `component-product-media-gallery`, `component-product-media`, `component-product-media-modal`
+- `component-product-price`, `component-product-card`
+- `component-quick-add`, `component-modal-opener`, `component-pickup-availability`
+- `component-product-share-button`, `component-complementary-products`
+
+---
+
+## Implementation Notes
+
+1. Always wrap the section markup in `<product-info>` so the JS controller can hook into it.
+2. Ensure Swiper assets load only once by guarding them in the section or layout.
+3. When adding new blocks, keep selectors consistent so `section-product.js` can update them via Section Rendering responses.
+4. Align padding and color settings with the global theme options to maintain consistency across templates.
+

@@ -1,57 +1,42 @@
-# CollectionInfo Component 🗂️
+# CollectionInfo Web Component 🗂️
 
-The `section-collection.js` file defines a **custom Web Component** `<collection-info>` that powers dynamic filtering, sorting, pagination, and URL updates on Shopify collection pages without full reloads .
+`assets/section-collection.js` defines `<collection-info>`, a custom element that powers dynamic filtering, sorting, pagination, and URL updates on collection pages without a full reload.
 
-## Overview  
-The `CollectionInfo` class extends `HTMLElement` to:  
-- Listen for **filter changes** and **navigation clicks**.  
-- Fetch updated section HTML via Shopify’s Section Rendering API.  
-- Update page fragments (product grid, counts, filters).  
-- Manage browser history and smooth scrolling.  
-
-## Dependencies  
-- **`debounce(fn, wait)`**: Delays handler execution to prevent rapid requests .  
-- **`URLSearchParams`, `FormData`, `DOMParser`**: Native APIs for URL and HTML manipulation.  
-
-## Usage  
-Include the component script and wrap your collection markup:
-
-```liquid
-<collection-info data-section="{{ section.id }}">
-  <!-- filters, grid, pagination… -->
-</collection-info>
-<script src="{{ 'section-collection.js' | asset_url }}" type="module"></script>
-```  
-This integrates `<collection-info>` into your theme’s **main-collection** section .
+**Source:** [`assets/section-collection.js`](../../assets/section-collection.js)
 
 ---
 
-## Function Summary 📋
+## What It Does
 
-| Method                                     | Purpose                                                                          |
-|--------------------------------------------|----------------------------------------------------------------------------------|
-| `constructor()`                            | Binds event listeners and debounced change handler.                              |
-| `onClickHandler(event)`                    | Handles clicks on elements with `data-render-section-url`.                       |
-| `onChangeHandler(event)`                   | Captures filter input changes (`data-render-section`) and builds query params.   |
-| `fetchSection(searchParams)`               | Fetches new HTML, updates sections, URL, overlays, and scrolls to grid.          |
-| `updateSourceFromDestination(html, id)`    | Replaces innerHTML of target element with fetched content.                      |
-| `updateFilters(html, className)`           | Synchronizes filter facets—removes stale and updates existing ones.              |
-| `showLoadingOverlay()`<br>`hideLoadingOverlay()` | Toggles loading spinner and results count visibility.                           |
-| `updateURL(searchParams)`                  | Pushes new query string into browser history.                                   |
-| `scrollToProductGrid()`                    | Smooth-scrolls viewport to the product grid top.                                 |
-| `get form()`                               | Getter for the component’s `<form>`.                                             |
+- Debounces filter changes so rapid input doesn’t spam the network.
+- Listens for clicks on pagination, sorting, and filter badges via `data-render-section-url`.
+- Fetches fresh HTML from Shopify’s Section Rendering API and swaps specific DOM fragments.
+- Keeps filters, counts, and drawers synchronized across desktop and mobile layouts.
+- Toggles loading overlays and scrolls shoppers back to the product grid after updates.
 
 ---
 
-## Detailed API
+## API Overview
 
-### constructor()  
-Initializes the component by:  
-- Calling `super()`.  
-- Creating a **debounced** version of `onChangeHandler` (800 ms) via `debounce(fn, wait)` .  
-- Attaching:  
-  - `change` → debounced handler  
-  - `click` → `onClickHandler`  
+| Method / Property              | Purpose                                                                 |
+|--------------------------------|-------------------------------------------------------------------------|
+| `constructor()`                | Binds debounced change + click handlers.                                |
+| `onClickHandler(event)`        | Intercepts links with `data-render-section-url` for AJAX pagination.     |
+| `onChangeHandler(event)`       | Serializes filter forms into query params and triggers fetches.         |
+| `fetchSection(searchParams)`   | Calls the Section Rendering API, updates DOM, URL, and scroll position. |
+| `updateSourceFromDestination()`| Copies HTML fragments (grid, counts, etc.) from the fetched document.   |
+| `updateFilters()`              | Syncs facet markup between main view and drawers.                       |
+| `showLoadingOverlay()`         | Displays section-level loading overlays and hides result counts.        |
+| `hideLoadingOverlay()`         | Reverts the overlay state once the response is applied.                 |
+| `updateURL(searchParams)`      | Pushes the latest query string into browser history.                    |
+| `scrollToProductGrid()`        | Smooth-scrolls the viewport to the updated product grid.                |
+| `get form()`                   | Convenience getter for the component’s inner `<form>`.                  |
+
+---
+
+## Detailed Method Documentation
+
+### constructor()
 
 ```js
 constructor() {
@@ -65,40 +50,33 @@ constructor() {
 }
 ```
 
-### onClickHandler(event)  
-Fires when any click occurs inside `<collection-info>`.  
-- **Targets**: Elements matching `[data-render-section-url]`.  
-- **Behavior**:  
-  1. Prevents default link action.  
-  2. Extracts query string from `data-render-section-url`.  
-  3. Calls `fetchSection(searchParams)`.
+- Creates an `800ms` debounced wrapper around `onChangeHandler`.
+- Registers `change` and `click` listeners on the component root.
+
+### onClickHandler(event)
 
 ```js
 onClickHandler = (event) => {
   if (!event.target.matches('[data-render-section-url]')) return;
   event.preventDefault();
-  const query = event.target.dataset.renderSectionUrl
-    .split('?')[1];
+  const query = event.target.dataset.renderSectionUrl.split('?')[1];
   const searchParams = new URLSearchParams(query).toString();
   this.fetchSection(searchParams);
 };
 ```
 
-### onChangeHandler(event)  
-Handles input changes for filters.  
-- **Guard**: Only elements with `data-render-section`.  
-- **Flow**:  
-  1. Finds nearest `<form>` (or drawer/sidebar).  
-  2. Serializes form into `URLSearchParams`.  
-  3. Preserves any existing `q` (search) parameter.  
-  4. Calls `fetchSection(searchParams)`.
+- Captures clicks on pagination links, “clear filter” badges, and other controls that expose the next URL via `data-render-section-url`.
+
+### onChangeHandler(event)
 
 ```js
 onChangeHandler = (event) => {
-
   if (!event.target.matches('[data-render-section]')) return;
 
-  const form = event.target.closest('form') || document.querySelector('#filters-form') || document.querySelector('#filters-form-drawer');
+  const form =
+    event.target.closest('form') ||
+    document.querySelector('#filters-form') ||
+    document.querySelector('#filters-form-drawer');
   const formData = new FormData(form);
   let searchParams = new URLSearchParams(formData).toString();
   const existing = new URLSearchParams(window.location.search);
@@ -112,16 +90,9 @@ onChangeHandler = (event) => {
 };
 ```
 
-### fetchSection(searchParams)  
-Central method to update page content.  
-1. **Show** loading overlay.  
-2. **Fetch** HTML from `?section_id={section}&{searchParams}`.  
-3. **Parse** response into a `Document`.  
-4. **Update**:  
-   - Browser URL (`updateURL`)  
-   - Grid, counts, filters, sorting elements (`updateSourceFromDestination`, `updateFilters`)  
-5. **Hide** overlay and **scroll** to grid.  
-6. **Error**: Logs and hides overlay.
+- Serializes whichever filter form is available (inline, drawer, or fallback) and preserves the `q` search parameter.
+
+### fetchSection(searchParams)
 
 ```js
 fetchSection = (searchParams) => {
@@ -133,7 +104,9 @@ fetchSection = (searchParams) => {
     .then((text) => {
       const html = new DOMParser().parseFromString(text, 'text/html');
       this.updateURL(searchParams);
-      // Multiple updates…
+      this.updateSourceFromDestination(html, `product-grid-${this.dataset.section}`);
+      this.updateSourceFromDestination(html, `active-facets-${this.dataset.section}`);
+      this.updateFilters(html, 'facets-toggle');
       this.hideLoadingOverlay();
       this.scrollToProductGrid();
     })
@@ -144,12 +117,11 @@ fetchSection = (searchParams) => {
 };
 ```
 
-### updateSourceFromDestination(html, id)  
-Replaces a target fragment’s HTML with fetched content.  
-- **Inputs**:  
-  - `html`: Parsed Document  
-  - `id`: Element ID to update  
-- **Action**: If both source and destination exist, copy `innerHTML`.
+- Calls the Section Rendering API using the current section ID.
+- Parses the HTML with `DOMParser` so individual fragments can be queried.
+- Updates the URL, DOM fragments, loaders, and scroll position.
+
+### updateSourceFromDestination(html, id)
 
 ```js
 updateSourceFromDestination = (html, id) => {
@@ -159,36 +131,46 @@ updateSourceFromDestination = (html, id) => {
 };
 ```
 
-### updateFilters(html, className)  
-Keeps filter lists in sync:  
-1. **Removes** stale filter facets no longer returned.  
-2. **Updates** existing filters’ content.
+- Replaces the contents of matching IDs (product grid, result counts, toolbar blocks, etc.).
+
+### updateFilters(html, className)
 
 ```js
 updateFilters = (html, className) => {
   const fromFetch = html.querySelectorAll(`collection-info .${className}`);
-  const fromDom   = document.querySelectorAll(`collection-info .${className}`);
-  // Remove missing…
-  // Update matched…
+  const fromDom = document.querySelectorAll(`collection-info .${className}`);
+
+  fromDom.forEach((element) => {
+    const id = element.getAttribute('id');
+    const updated = Array.from(fromFetch).find((item) => item.getAttribute('id') === id);
+    if (!updated) {
+      element.remove();
+      return;
+    }
+    element.innerHTML = updated.innerHTML;
+  });
 };
 ```
 
-### showLoadingOverlay() & hideLoadingOverlay()  
-Toggles visibility of spinners vs. results counts for both main and drawer views:
+- Keeps sidebar, drawer, and sticky filter elements in sync by mirroring markup from the fetched response.
+
+### showLoadingOverlay() / hideLoadingOverlay()
 
 ```js
 showLoadingOverlay = () => {
   this.querySelector(`#loading-overlay-${this.dataset.section}`).style.display = 'flex';
-  // …toggle spinner/result-count elements
+  // Hide result count, show spinner, etc.
 };
+
 hideLoadingOverlay = () => {
   this.querySelector(`#loading-overlay-${this.dataset.section}`).style.display = 'none';
-  // …revert visibility
+  // Restore result count visibility
 };
 ```
 
-### updateURL(searchParams)  
-Pushes a new history entry with updated query string:
+- Toggles the loading overlay that sits on top of the grid and drawers.
+
+### updateURL(searchParams)
 
 ```js
 updateURL(searchParams) {
@@ -196,14 +178,15 @@ updateURL(searchParams) {
 }
 ```
 
-### scrollToProductGrid()  
-Smoothly scrolls viewport to the top of the product grid, accounting for header height:
+- Keeps the browser URL shareable by mirroring the current filter/sort state.
+
+### scrollToProductGrid()
 
 ```js
 scrollToProductGrid = () => {
   const grid = this.querySelector(`#product-grid-${this.dataset.section}`);
   const header = document.querySelector('#main-header');
-  const offset = (header.offsetHeight + 10) || 80;
+  const offset = (header?.offsetHeight || 70) + 10;
   if (grid) {
     const top = grid.getBoundingClientRect().top + window.pageYOffset - offset;
     window.scrollTo({ top, behavior: 'smooth' });
@@ -211,20 +194,52 @@ scrollToProductGrid = () => {
 };
 ```
 
-### Getter: `form`  
-Returns the component’s `<form>` element:
+- Smooth-scrolls users back to the grid after filters reload so context is preserved.
+
+### Getter: `form`
 
 ```js
 get form() {
-  return this.querySelector('collection-info form');
+  return this.querySelector('form');
 }
 ```
 
+- Convenience accessor used by other scripts to reference the active filter form.
+
 ---
 
-**Key Takeaways**  
-- **Debounced Filtering**: Prevents UI thrash on rapid input.  
-- **Partial Updates**: Only specific DOM regions reload, improving performance.  
-- **History & Scroll**: Maintains shareable URLs and user-friendly scrolling.  
+## Custom Element Definition
 
-This component encapsulates the collection page’s dynamic behavior into a reusable, maintainable Web Component.
+```js
+if (!customElements.get('collection-info')) {
+  customElements.define('collection-info', CollectionInfo);
+}
+```
+
+The guard prevents duplicate registrations when Shopify hot reloads assets in the theme editor.
+
+---
+
+## Integration with Shopify Liquid
+
+Wrap your collection layout with the custom element and include the script:
+
+```liquid
+<collection-info data-section="{{ section.id }}">
+  <!-- Filters, sorting, badges, grid, pagination -->
+</collection-info>
+
+{{ 'section-collection.js' | asset_url | script_tag }}
+```
+
+Each interactive control should expose either `data-render-section` (inputs) or `data-render-section-url` (links and buttons) so the component can react.
+
+---
+
+## Usage Checklist
+
+1. Render IDs like `product-grid-{{ section.id }}` and `active-facets-{{ section.id }}` so `updateSourceFromDestination` can target them.
+2. Mirror filter controls inside drawers and inline toolbars; `updateFilters` keeps them synchronized.
+3. Keep `loading-overlay-{{ section.id }}` in the markup for the spinner state.
+4. Preserve the `<collection-info>` wrapper whenever filters or grids are moved into new sections/snippets.
+
