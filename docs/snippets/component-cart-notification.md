@@ -2,8 +2,6 @@
 
 `snippets/component-cart-notification.liquid` renders the add-to-cart confirmation drawer. It wraps the `<cart-notification>` web component, injects its markup/styles, and wires color scheme + layout options so the notification can be reused across headers.
 
-**Source:** [`snippets/component-cart-notification.liquid`](../../snippets/component-cart-notification.liquid)
-
 ---
 
 ## What It Does
