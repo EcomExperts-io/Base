@@ -13,3 +13,4 @@ release
 *.zip
 .shopify
 .early.coverage
+docs/.vitepress/dist

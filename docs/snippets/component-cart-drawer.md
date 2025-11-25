@@ -50,7 +50,7 @@
 <script src="{{ 'cart-discount.js' | asset_url }}" type="module"></script>
 ```
 
-- Wrapper uses `color-{{ settings.cart_color_scheme }}` for theme integration.
+- Wrapper uses `color-\{\{ settings.cart_color_scheme \}\}` for theme integration.
 - Overlay button closes the drawer and is accessible via visually hidden text.
 - `data-ajax-cart-section` ensures the drawer updates after AJAX actions.
 

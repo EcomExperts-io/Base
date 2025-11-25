@@ -120,7 +120,7 @@ This ensures compatibility with other scripts and hot-reloading scenarios .
 
 On the server, a Liquid snippet injects the `<product-card>` wrapper:
 
-```liquid
+```liquid-html
 <product-card class="product-card" data-product-id="{{ card_product.id }}">
   <!-- Card markup with .color-swatch spans and data-variant-image -->
 </product-card>
@@ -134,7 +134,7 @@ This snippet lives in `snippets/component-product-card.liquid`, linking the Java
 
 1. **Render** a product card in Liquid:
 
-```liquid
+```liquid-html
    {% render 'component-product-card',
      card_product: product,
      enable_swatches: true,
@@ -143,13 +143,13 @@ This snippet lives in `snippets/component-product-card.liquid`, linking the Java
 
 1. **Ensure** your HTML includes:
 2. `data-product-id` on `<product-card>`
-3. Main `<img>` with `data-product-image="{{ product.id }}"`
+3. Main `<img>` with `data-product-image="\{\{ product.id \}\}"`
 4. `.color-swatch` elements with optional nested `.data-variant-image`
 
 1. **Include** the module:
 
 ```html
-   <script src="{{ 'component-product-card.js' | asset_url }}" type="module"></script>
+   <script src="\{\{ 'component-product-card.js' | asset_url \}\}" type="module"></script>
 ```
 
 With these pieces in place, shoppers can click swatches and see instant image updates—no page reload needed! 🎨

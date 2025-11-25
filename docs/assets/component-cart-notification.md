@@ -173,6 +173,6 @@ Ensure your add-to-cart logic (e.g., [Liquid Ajax Cart](https://shopify.dev/docs
 2. Keep the required selectors (`#cart-notification`, `#cart-notification-product`, button classes) intact.
 3. Load `component-cart-notification.js` as a module on every page where AJAX add-to-cart is available.
 4. Optionally extend `updateNotification` to output pricing, quantity, or upsell content.
+5. Close button uses `icon-close.svg`, `aria-label="\{\{ 'accessibility.close' | t \}\}"`, and a `cart-notification__close` class that the JS controller listens for.
 
 With this component in place, shoppers receive instant confirmation after adding to cart—no full page reloads required. 🎉
-

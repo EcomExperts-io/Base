@@ -61,7 +61,7 @@
 
 ### 2. Header
 - Contains `cart-notification__heading` with the checkmark icon (`icon-checkmark.svg`) and localized “item added” text.
-- Close button uses `icon-close.svg`, `aria-label="{{ 'accessibility.close' | t }}"`, and a `cart-notification__close` class that the JS controller listens for.
+- Close button uses `icon-close.svg`, `aria-label="\{\{ 'accessibility.close' | t \}\}"`, and a `cart-notification__close` class that the JS controller listens for.
 
 ### 3. Product Summary
 - Placeholder `#cart-notification-product` updated by `component-cart-notification.js` with product image, vendor, title, and options.

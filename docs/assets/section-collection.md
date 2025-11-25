@@ -238,8 +238,8 @@ Each interactive control should expose either `data-render-section` (inputs) or 
 
 ## Usage Checklist
 
-1. Render IDs like `product-grid-{{ section.id }}` and `active-facets-{{ section.id }}` so `updateSourceFromDestination` can target them.
+1. Render IDs like `product-grid-\{\{ section.id \}\}` and `active-facets-\{\{ section.id \}\}` so `updateSourceFromDestination` can target them.
 2. Mirror filter controls inside drawers and inline toolbars; `updateFilters` keeps them synchronized.
-3. Keep `loading-overlay-{{ section.id }}` in the markup for the spinner state.
+3. Keep `loading-overlay-\{\{ section.id \}\}` in the markup for the spinner state.
 4. Preserve the `<collection-info>` wrapper whenever filters or grids are moved into new sections/snippets.
 

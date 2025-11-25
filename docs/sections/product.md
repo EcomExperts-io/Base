@@ -155,4 +155,5 @@ flowchart TD
 2. Ensure Swiper assets load only once by guarding them in the section or layout.
 3. When adding new blocks, keep selectors consistent so `section-product.js` can update them via Section Rendering responses.
 4. Align padding and color settings with the global theme options to maintain consistency across templates.
-
+5. Render IDs like `product-grid-\{\{ section.id \}\}` and `active-facets-\{\{ section.id \}\}` so `updateSourceFromDestination` can target them.
+6. Keep `loading-overlay-\{\{ section.id \}\}` in the markup for the spinner state.

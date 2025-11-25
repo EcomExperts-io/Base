@@ -14,7 +14,7 @@
 | Icons | `icon-minus.svg`, `icon-plus.svg`, `icon-close.svg`, `icon-discount.svg`, `icon-info.svg` |
 
 - AJAX bindings rely on Liquid Ajax Cart (`data-ajax-cart-section`, `data-ajax-cart-quantity-*`, `data-ajax-cart-request-button`).
-- Section color scheme uses `color-{{ section.settings.color_scheme }}` classes to stay on theme.
+- Section color scheme uses `color-\{\{ section.settings.color_scheme \}\}` classes to stay on theme.
 
 ---
 

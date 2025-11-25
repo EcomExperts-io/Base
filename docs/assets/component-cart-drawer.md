@@ -95,4 +95,4 @@ In `component-cart-drawer.liquid`, the `<cart-drawer>` element typically sits in
 1. Ensure Liquid Ajax Cart is enabled so `liquid-ajax-cart:request-end` fires; otherwise the component does nothing.
 2. Only one `<cart-drawer>` should exist per page; multiple instances could open conflicting UI states.
 3. If you need to close the drawer programmatically after checkout, dispatch a parallel event (e.g., `window.dispatchEvent(new CustomEvent('cart-close'))`) and handle it in Alpine.
-
+4. Wrapper uses `color-\{\{ settings.cart_color_scheme \}\}` for theme integration.
