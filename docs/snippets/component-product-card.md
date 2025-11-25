@@ -2,6 +2,7 @@
 
 `snippets/component-product-card.liquid` renders a reusable product card wrapper around the `<product-card>` custom element. It outputs the media, pricing, vendor, optional swatches, and quick add controls inside a consistent markup structure so grids and carousels can reuse the same UI.
 
+
 **Source:** [`snippets/component-product-card.liquid`](../../snippets/component-product-card.liquid)
 
 ---
