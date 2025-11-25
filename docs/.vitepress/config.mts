@@ -15,6 +15,9 @@ export default defineConfig({
       {
         text: 'Sections',
         items: [
+          { text: '404', link: '/sections/404' },
+          { text: 'Account', link: '/sections/account' },
+          { text: 'Article', link: '/sections/article' },
           { text: 'Cart', link: '/sections/cart' },
           { text: 'Collection', link: '/sections/collection' },
           { text: 'Collections List', link: '/sections/collections' },
