@@ -2,6 +2,28 @@
 
 This **Shopify** section renders a collection page with faceted filtering, sorting, pagination (or infinite scroll), and a responsive product grid. It leverages dynamic CSS, Liquid snippets for reusable components, and a custom Web Component (`<collection-info>`) for asynchronous updates.
 
+---
+
+## Dependencies & Assets
+
+### CSS
+- `component-product-price.css`
+- `component-product-card.css`
+- `component-pagination.css`
+- `section-collection.css`
+- `component-quick-add.css` *(only when quick add is enabled)*
+
+### JavaScript
+- `section-collection.js` – houses `<collection-info>` behavior
+- `component-product-card.js`
+- `component-filters-price-range.js`
+- Optional: `component-quick-add.js`, `component-modal-opener.js`, `component-infinite-scroll.js`
+
+### Snippets & Components
+- Filter UIs: `component-filters-sidebar`, `component-filters-drawer`, `component-filters-horizontal`
+- Cards & pagination: `component-product-card`, `component-pagination`, `component-quick-add`
+- Custom element wrapper: `<collection-info>` defined in `assets/section-collection.js`
+
 ## Dynamic Styles
 
 A `<style>` block at the top generates section-specific CSS based on admin settings.  
@@ -26,24 +48,6 @@ It controls layout directions, grid columns, padding, and button colors dynamica
 {%- endstyle -%}
 ```
 Source: Dynamic styles in `sections/collection.liquid` 
-
-## Component Styles & Assets
-
-The section loads shared CSS snippets and, if **Quick Add** is enabled, its scripts:
-
-- **CSS**  
-  - `component-product-price.css`  
-  - `component-product-card.css`  
-  - `component-pagination.css`  
-  - `section-collection.css`  
-  - *(optional)* `component-quick-add.css`  
-- **JS (module)**  
-  - `section-collection.js`  
-  - `component-product-card.js`  
-  - `component-filters-price-range.js`  
-  - *(conditional)* `component-quick-add.js`, `component-modal-opener.js`, `component-infinite-scroll.js`  
-
-These assets provide layout, interactive filters, product cards, and AJAX behavior.
 
 ## Markup Structure
 

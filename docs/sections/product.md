@@ -4,6 +4,27 @@
 
 ---
 
+## Dependencies & Assets
+
+### CSS
+- `swiper7.4.1.min.css` – media carousel skin
+- `component-product-price.css`
+- `section-product.css`
+- `component-product-media-modal.css` *(only when `image_zoom` ≠ `none`)*
+
+### JavaScript
+- `section-product.js` – variant coordination, form updates, Section Rendering requests
+- `swiper7.4.1.min.js` – gallery behavior (loaded with `defer`)
+- Optional helpers based on blocks: `component-quick-add.js`, `component-modal-opener.js`, `component-infinite-scroll.js`, etc.
+
+### Snippets & Components
+- Media: `component-product-media-gallery`, `component-product-media`, `component-product-media-modal`
+- Commerce UI: `component-product-price`, `component-quick-add`, `component-modal-opener`, `component-pickup-availability`
+- Content & sharing: `component-product-share-button`, `component-complementary-products`, `component-product-card`
+- Custom element: `<product-info>` defined in `assets/section-product.js`
+
+---
+
 ## Dynamic Styles
 
 Each instance prints a scoped `<style>` block so merchants can fine-tune spacing and typography per section:
@@ -26,24 +47,6 @@ Each instance prints a scoped `<style>` block so merchants can fine-tune spacing
 ```
 
 Spacing, option typography, and layout tweaks all key off section settings so every product page can feel unique without editing theme code.
-
----
-
-## Component Styles & Assets
-
-The section registers CSS and JS assets based on configuration:
-
-- **CSS**
-  - `swiper7.4.1.min.css` (media carousel)
-  - `component-product-price.css`
-  - `section-product.css`
-  - `component-product-media-modal.css` *(when `image_zoom` ≠ `none`)*
-- **JavaScript**
-  - `section-product.js` (variant + form logic)
-  - `swiper7.4.1.min.js` (carousel, loaded with `defer`)
-  - Optional quick-add or modal helpers depending on enabled blocks
-
-This mirrors the pattern in `sections/collection.liquid`, ensuring all required assets load inline with the section.
 
 ---
 
@@ -143,15 +146,6 @@ flowchart TD
 - `inventory`: Thresholds for low-stock messaging.
 - `variant_picker`: Picker style (dropdown, pills) and swatch settings.
 - `buy_buttons`: Enable dynamic checkout, Shop Pay, or quick buy.
-
----
-
-## Related Snippets & Assets
-
-- `component-product-media-gallery`, `component-product-media`, `component-product-media-modal`
-- `component-product-price`, `component-product-card`
-- `component-quick-add`, `component-modal-opener`, `component-pickup-availability`
-- `component-product-share-button`, `component-complementary-products`
 
 ---
 
