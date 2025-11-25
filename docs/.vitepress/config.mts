@@ -36,7 +36,8 @@ export default defineConfig({
           { text: 'Cart Drawer (Asset)', link: '/assets/component-cart-drawer' },
           { text: 'Cart Notification (Asset)', link: '/assets/component-cart-notification' },
           { text: 'Product Card (Asset)', link: '/assets/component-product-card' },
-          { text: 'Collection Section (Asset)', link: '/assets/section-collection' }
+          { text: 'Collection Section (Asset)', link: '/assets/section-collection' },
+          { text: 'Price Range (Asset)', link: '/assets/component-filters-price-range' }
         ]
       }
     ],
