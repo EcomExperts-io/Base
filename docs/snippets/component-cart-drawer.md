@@ -2,8 +2,6 @@
 
 `snippets/component-cart-drawer.liquid` renders the slide-out cart drawer with line items, totals, cart note, and checkout actions. It pairs Alpine.js state (`cartOpen`) with the `<cart-drawer>` custom element and wires Liquid Ajax Cart bindings for real-time updates.
 
-**Source:** [`snippets/component-cart-drawer.liquid`](../../snippets/component-cart-drawer.liquid)
-
 ---
 
 ## What It Does
