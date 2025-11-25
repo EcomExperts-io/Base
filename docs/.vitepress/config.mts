@@ -15,13 +15,20 @@ export default defineConfig({
       {
         text: 'Sections',
         items: [
-          { text: '404', link: '/sections/404' },
+          { text: 'Header', link: '/sections/header' },
           { text: 'Account', link: '/sections/account' },
-          { text: 'Article', link: '/sections/article' },
-          { text: 'Cart', link: '/sections/cart' },
+          { text: 'Hero Banner', link: '/sections/hero' },
+          { text: 'Product', link: '/sections/product' },
+          { text: 'Featured Products', link: '/sections/featured-products' },
           { text: 'Collection', link: '/sections/collection' },
+          { text: 'Featured Collections', link: '/sections/featured-collections' },
           { text: 'Collections List', link: '/sections/collections' },
-          { text: 'Product', link: '/sections/product' }
+          { text: 'Custom Section', link: '/sections/custom-section' },
+          { text: 'Article', link: '/sections/article' },
+          { text: 'Blog', link: '/sections/blog' },
+          { text: 'Cart', link: '/sections/cart' },
+          { text: '404', link: '/sections/404' },
+          { text: 'Footer', link: '/sections/footer' },
         ]
       },
       {
@@ -39,8 +46,7 @@ export default defineConfig({
           { text: 'Cart Drawer (Asset)', link: '/assets/component-cart-drawer' },
           { text: 'Cart Notification (Asset)', link: '/assets/component-cart-notification' },
           { text: 'Product Card (Asset)', link: '/assets/component-product-card' },
-          { text: 'Collection Section (Asset)', link: '/assets/section-collection' },
-          { text: 'Price Range (Asset)', link: '/assets/component-filters-price-range' }
+          { text: 'Collection Section (Asset)', link: '/assets/section-collection' }
         ]
       }
     ],
