@@ -11,6 +11,5 @@ node_modules/
 .shopify/
 release
 *.zip
-package-lock.json
 .shopify
 .early.coverage
