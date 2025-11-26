@@ -231,7 +231,8 @@
                   {%- endfor -%}
 
                   {% if has_active_filters %}
-                    <div class="filter active-filter-item active-filter-clear-all" data-render-section-url="{{ collection.url }}">
+                    {% assign clear_filters_url = collection.url | append: '?sort_by=' | append: sort_by %}
+                    <div class="filter active-filter-item active-filter-clear-all" data-render-section-url="{{ clear_filters_url }}">
                       <span>Clear all filters</span>
                     </div>
                   {% endif %}
