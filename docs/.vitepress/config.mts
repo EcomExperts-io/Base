@@ -46,9 +46,29 @@ export default defineConfig({
       {
         text: 'Snippets',
         items: [
+          { text: 'Cart Discount', link: '/snippets/cart-discount' },
+          { text: 'Article Card', link: '/snippets/component-article-card' },
           { text: 'Cart Drawer', link: '/snippets/component-cart-drawer' },
           { text: 'Cart Notification', link: '/snippets/component-cart-notification' },
-          { text: 'Product Card', link: '/snippets/component-product-card' }
+          { text: 'Filters Drawer', link: '/snippets/component-filters-drawer' },
+          { text: 'Filters Horizontal', link: '/snippets/component-filters-horizontal' },
+          { text: 'Filters Price Range', link: '/snippets/component-filters-price-range' },
+          { text: 'Filters Sidebar', link: '/snippets/component-filters-sidebar' },
+          { text: 'Localization Form', link: '/snippets/component-localization-form' },
+          { text: 'Nav Drawer', link: '/snippets/component-nav-drawer' },
+          { text: 'Nav Dropdown', link: '/snippets/component-nav-dropdown' },
+          { text: 'Nav Megamenu', link: '/snippets/component-nav-megamenu' },
+          { text: 'Pagination', link: '/snippets/component-pagination' },
+          { text: 'Predictive Search', link: '/snippets/component-predictive-search' },
+          { text: 'Product Card', link: '/snippets/component-product-card' },
+          { text: 'Product Media Gallery', link: '/snippets/component-product-media-gallery' },
+          { text: 'Product Media Modal', link: '/snippets/component-product-media-modal' },
+          { text: 'Product Media', link: '/snippets/component-product-media' },
+          { text: 'Product Price', link: '/snippets/component-product-price' },
+          { text: 'Product Share Button', link: '/snippets/component-product-share-button' },
+          { text: 'Social Icons', link: '/snippets/component-social-icons' },
+          { text: 'CSS Variables', link: '/snippets/css-variables' },
+          { text: 'Meta Tags', link: '/snippets/meta-tags' }
         ]
       },
       {
