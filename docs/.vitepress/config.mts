@@ -17,7 +17,6 @@ export default defineConfig({
       '/sections/': [
         {
           text: 'Sections',
-          collapsed: false,
           items: [
             { text: '404', link: '/sections/404' },
             { text: 'Account', link: '/sections/account' },
@@ -51,7 +50,6 @@ export default defineConfig({
       '/snippets/': [
         {
           text: 'Snippets',
-          collapsed: false,
           items: [
             { text: 'Cart Discount', link: '/snippets/cart-discount' },
             { text: 'Article Card', link: '/snippets/component-article-card' },
@@ -82,7 +80,6 @@ export default defineConfig({
       '/assets/': [
         {
           text: 'Assets & Components',
-          collapsed: false,
           items: [
             { text: 'Card Discount', link: '/assets/card-discount' },
             { text: 'Cart Drawer', link: '/assets/component-cart-drawer' },
