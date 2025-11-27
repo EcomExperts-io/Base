@@ -1,11 +1,11 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
-    "theme_version": "0.1.0",
-    "theme_author": "Shopify",
-    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
-    "theme_support_url": "https://support.shopify.com/"
+    "theme_name": "Base",
+    "theme_version": "2.0.0",
+    "theme_author": "EcomExperts",
+    "theme_documentation_url": "https://ecomexperts-io.github.io/Base/",
+    "theme_support_url": "https://ecomexperts.io/"
   },
   {
     "name": "t:settings_schema.logo.name",
