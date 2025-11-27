@@ -5,9 +5,8 @@ export class PriceRange extends HTMLElement {
 
   connectedCallback() {
     this.rangeInputs = this.querySelectorAll('.range-input input');
+    this.numberInputs = this.querySelectorAll('.price-input input[type="number"]');
     this.rangeSlider = this.querySelector('.slider-container .price-slider');
-    this.minPriceText = this.querySelector('.min_price');
-    this.maxPriceText = this.querySelector('.max_price');
     this.currencySymbol = this.querySelector('.price-range-main').getAttribute('currency-symbol');
     this.init();
   }
@@ -25,25 +24,58 @@ export class PriceRange extends HTMLElement {
   }
 
   bindEvents() {
-    this.rangeInputs.forEach((input) => {
-      input.addEventListener('input', () => {
-        const newMin = parseInt(this.rangeInputs[0].value, 10);
-        const newMax = parseInt(this.rangeInputs[1].value, 10);
-
-        if (newMin <= newMax) {
-          this.updateUI(newMin, newMax);
-        }
-      });
+    this.rangeInputs.forEach(() => {
+      this.rangeInputs[0].addEventListener('input', (event) => this.handleInputChange('range', event));
+      this.rangeInputs[1].addEventListener('input', (event) => this.handleInputChange('range', event));
     });
+
+    this.numberInputs[0].addEventListener('change', (event) => this.handleInputChange('number', event));
+    this.numberInputs[1].addEventListener('change', (event) => this.handleInputChange('number', event));
+  }
+
+  handleInputChange(source, event) {
+    const minRangeVal = parseInt(this.rangeInputs[0].value, 10);
+    const maxRangeVal = parseInt(this.rangeInputs[1].value, 10);
+    const minNumberVal = parseInt(this.numberInputs[0].value, 10);
+    const maxNumberVal = parseInt(this.numberInputs[1].value, 10);
+
+    const maxAllowed = parseInt(this.rangeInputs[1].max, 10);
+    const minAllowed = parseInt(this.rangeInputs[0].min, 10);
+
+    let min = source === 'range' ? minRangeVal : minNumberVal;
+    let max = source === 'range' ? maxRangeVal : maxNumberVal;
+
+    if (isNaN(min) || isNaN(max)) return;
+
+    min = Math.max(minAllowed, Math.min(min, maxAllowed));
+    max = Math.max(minAllowed, Math.min(max, maxAllowed));
+
+    const target = event?.target;
+
+    if (target === this.rangeInputs[0] || target === this.numberInputs[0]) {
+      min = Math.min(min, max - 1);
+    } else if (target === this.rangeInputs[1] || target === this.numberInputs[1]) {
+      max = Math.max(max, min + 1);
+    }
+
+    this.updateUI(min, max);
   }
 
   updateUI(min, max) {
-    this.minPriceText.textContent = `${this.currencySymbol}${min}.00`;
-    this.maxPriceText.textContent = `${this.currencySymbol}${max}.00`;
-    this.rangeSlider.style.left = `${(min / this.rangeInputs[0].max) * 100}%`;
-    this.rangeSlider.style.right = `${100 - (max / this.rangeInputs[1].max) * 100}%`;
+    const maxRange = parseInt(this.rangeInputs[1].max, 10);
+
+    min = Math.max(0, Math.min(min, maxRange));
+    max = Math.max(0, Math.min(max, maxRange));
+
+    console.log(min, max);
+
     this.rangeInputs[0].value = min;
     this.rangeInputs[1].value = max;
+    this.numberInputs[0].value = min;
+    this.numberInputs[1].value = max;
+
+    this.rangeSlider.style.left = `${(min / maxRange) * 100}%`;
+    this.rangeSlider.style.right = `${100 - (max / maxRange) * 100}%`;
   }
 }
 

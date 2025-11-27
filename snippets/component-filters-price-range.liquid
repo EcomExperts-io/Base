@@ -7,17 +7,30 @@
 
   .price-input .price-field {
     display: flex;
-    margin-bottom: 22px;
+    align-items: center;
+    gap: 5px;
+  }
+  .price-field input{
+    width: 65px;
+  }
+  .price-field label {
+    height: 36px;
+    padding: 3px;
+    font-size: 16px;
+    border-radius: 3px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    width: 70px;
+    color: #707070;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .price-field input {
-    height: 35px;
-    font-size: 15px;
-    border-radius: 9px;
-    text-align: center;
-    border: 0px;
-    background: #e4e4e4;
-    width: 50px;
+  .price-field input,
+  .price-field span {
+    color: #707070;
   }
 
   .price-input {
@@ -26,6 +39,7 @@
     color: #555;
     display: flex;
     justify-content: space-between;
+    margin-top: 20px;
   }
 
   input::-webkit-outer-spin-button,
@@ -39,7 +53,7 @@
   }
 
   .slider-container {
-    height: 6px;
+    height: 4px;
     position: relative;
     background: #e4e4e4;
     border-radius: 5px;
@@ -64,40 +78,27 @@
     width: 100%;
     height: 4px;
     background: none;
-    top: -7px;
-    left: -2px;
+    top: 0px;
+    left: 0px;
     pointer-events: none;
     cursor: pointer;
     -webkit-appearance: none;
+    z-index: 2;
   }
 
   /* Styles for the range thumb in WebKit browsers */
   input[type='range']::-webkit-slider-thumb {
-    height: 16px;
-    width: 16px;
+    height: 10px;
+    width: 10px;
     border-radius: 50%;
     background: black;
     pointer-events: auto;
     -webkit-appearance: none;
-    border-style: solid;
-    border-color: white;
-    border-width: 1px;
   }
   .price-range-main {
-    margin-bottom: 10px;
+    padding-block: 20px;
   }
   @media screen and (max-width: 768px) {
-    .price-range-main {
-      width: 80%;
-      margin-right: 5px;
-    }
-
-    .price-range-subcontainer {
-      width: 100%;
-      left: 0;
-      padding: 0 10px;
-    }
-
     .projtitle {
       width: 100%;
       position: relative;
@@ -122,19 +123,6 @@
 <price-range>
   <div class="price-range-main" currency-symbol="{{ cart.currency.symbol }}">
     <div class="price-range-subcontainer">
-      <div class="price-input-container">
-        <div class="price-input">
-          <div class="price-field">
-            <span class="min_price">{{ cart.currency.symbol }}0</span>
-          </div>
-          <div class="price-field">
-            <span class="max_price">{{ filter.range_max | money | strip_html | escape }}</span>
-          </div>
-        </div>
-        <div class="slider-container">
-          <div class="price-slider"></div>
-        </div>
-      </div>
       <div class="range-input">
         <input
           type="range"
@@ -146,7 +134,7 @@
           {%- else -%}
             value="0"
           {%- endif -%}
-          step="any"
+          step="1"
           name="{{ filter.min_value.param_name }}"
           data-render-section
         >
@@ -160,10 +148,55 @@
           {%- else -%}
             value="{{ filter.range_max | divided_by: 100 }}"
           {%- endif -%}
-          step="any"
+          step="1"
           name="{{ filter.max_value.param_name }}"
           data-render-section
         >
+      </div>
+      <div class="price-input-container">
+        <div class="slider-container">
+          <div class="price-slider"></div>
+        </div>
+        <div class="price-input">
+          <div class="price-field">
+            <span>From</span>
+            <label>
+              <span class="currency-symbol">{{ cart.currency.symbol }}</span>
+              <input
+                type="number"
+                class="min-number"
+                min="0"
+                max="{{ filter.range_max | divided_by: 100 }}"
+                {%- if filter.min_value.value -%}
+                  value="{{ filter.min_value.value | divided_by: 100 }}"
+                {%- else -%}
+                  value="0"
+                {%- endif -%}
+                step="1"
+                data-render-section
+              >
+            </label>
+          </div>
+          <div class="price-field">
+            <span>To</span>
+            <label>
+              <span class="currency-symbol">{{ cart.currency.symbol }}</span>
+              <input
+                type="number"
+                class="max-number"
+                min="0"
+                max="{{ filter.range_max | divided_by: 100 }}"
+                {%- if filter.max_value.value -%}
+                  value="{{ filter.max_value.value | divided_by: 100 }}"
+                {%- else -%}
+                  value="{{ filter.range_max | divided_by: 100 }}"
+                {%- endif -%}
+                step="1"
+                data-render-section
+              >
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </div>
