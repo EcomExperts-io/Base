@@ -7,11 +7,14 @@ hero:
   tagline: "A developer-first Shopify theme prioritizing clean code and maintainability."
   actions:
     - theme: brand
-      text: Get Started
+      text: Sections
       link: /sections/product
-    - theme: alt
-      text: View Snippets
+    - theme: brand
+      text: Snippets
       link: /snippets/component-product-card
+    - theme: brand
+      text: Assets
+      link: /assets/component-product-card
 
 features:
   - title: Clean Architecture
