@@ -51,8 +51,8 @@ export default defineConfig({
         {
           text: 'Snippets',
           items: [
-            { text: 'Cart Discount', link: '/snippets/cart-discount' },
             { text: 'Article Card', link: '/snippets/component-article-card' },
+            { text: 'Cart Discount', link: '/snippets/component-cart-discount' },
             { text: 'Cart Drawer', link: '/snippets/component-cart-drawer' },
             { text: 'Cart Notification', link: '/snippets/component-cart-notification' },
             { text: 'Filters Drawer', link: '/snippets/component-filters-drawer' },
@@ -81,7 +81,7 @@ export default defineConfig({
         {
           text: 'Assets & Components',
           items: [
-            { text: 'Card Discount', link: '/assets/card-discount' },
+            { text: 'Cart Discount', link: '/assets/component-cart-discount' },
             { text: 'Cart Drawer', link: '/assets/component-cart-drawer' },
             { text: 'Cart Notification', link: '/assets/component-cart-notification' },
             { text: 'Product Card', link: '/assets/component-product-card' },
