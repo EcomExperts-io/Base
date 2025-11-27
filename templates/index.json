@@ -188,12 +188,20 @@
         "selling_point_3",
         "selling_point_4"
       ],
+    },
+    "promo_banner_example": {
+      "type": "promo-banner",
+      "settings": {
+        "title": "Promo Banner Title",
+        "description": "Promo Banner Description"
+      }
     }
   },
   "order": [
     "hero_1",
     "featured_collections_hhETJ9",
     "featured_products_example",
-    "selling_points_example"
+    "selling_points_example",
+    "promo_banner_example"
   ]
 }
