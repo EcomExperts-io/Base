@@ -38,18 +38,19 @@ export class PriceRange extends HTMLElement {
 
 ### constructor()
 
-```1:4:assets/component-filters-price-range.js
+```javascript
 export class PriceRange extends HTMLElement {
   constructor() {
     super();
   }
+}
 ```
 
 Initializes the custom element by calling `super()` to establish HTMLElement behavior. No additional setup is performed here.
 
 ### connectedCallback()
 
-```6:13:assets/component-filters-price-range.js
+```javascript
   connectedCallback() {
     this.rangeInputs = this.querySelectorAll('.range-input input');
     this.rangeSlider = this.querySelector('.slider-container .price-slider');
@@ -71,7 +72,7 @@ Initializes the custom element by calling `super()` to establish HTMLElement beh
 
 ### init()
 
-```15:25:assets/component-filters-price-range.js
+```javascript
   init() {
     const urlParams = new URLSearchParams(window.location.search);
     const urlMin = urlParams.get('filter.v.price.gte');
@@ -98,7 +99,7 @@ Initializes the custom element by calling `super()` to establish HTMLElement beh
 
 ### bindEvents()
 
-```27:38:assets/component-filters-price-range.js
+```javascript
   bindEvents() {
     this.rangeInputs.forEach((input) => {
       input.addEventListener('input', () => {

@@ -78,7 +78,7 @@ export class SellingPlansWidget extends HTMLElement {
 
 ### connectedCallback()
 
-```6:13:assets/component-selling-plans.js
+```javascript
   connectedCallback() {
     this.enablePerformanceObserver();
     this.appendSellingPlanInputs();
@@ -99,7 +99,7 @@ export class SellingPlansWidget extends HTMLElement {
 
 ### appendSellingPlanInputs()
 
-```59:63:assets/component-selling-plans.js
+```javascript
   appendSellingPlanInputs() {
     this.addToCartForms.forEach((addToCartForm) => {
       addToCartForm.appendChild(this.sellingPlanInput.cloneNode());
@@ -113,7 +113,7 @@ export class SellingPlansWidget extends HTMLElement {
 
 ### handleVariantChange()
 
-```89:93:assets/component-selling-plans.js
+```javascript
   handleVariantChange() {
     this.handleSellingPlanFormVisibility();
     this.updateSellingPlanInputsValues();
@@ -128,7 +128,7 @@ export class SellingPlansWidget extends HTMLElement {
 
 ### handleSellingPlanFormVisibility()
 
-```80:87:assets/component-selling-plans.js
+```javascript
   handleSellingPlanFormVisibility() {
     const sellingPlanFormForSelectedVariant = this.rootElement.querySelector(`div[data-variant-id="${this.variantIdInput.value}"]`);
     const sellingPlanFormsForUnselectedVariants = this.rootElement.querySelectorAll(
@@ -146,7 +146,7 @@ export class SellingPlansWidget extends HTMLElement {
 
 ### updatePrice()
 
-```158:168:assets/component-selling-plans.js
+```javascript
   updatePrice() {
     if (!this.selectedPurchaseOptionComparedAtPrice || this.selectedPurchaseOptionComparedAtPrice === this.selectedPurchaseOptionPrice) {
       this.showRegularPrice();
@@ -167,7 +167,7 @@ export class SellingPlansWidget extends HTMLElement {
 
 ### enablePerformanceObserver()
 
-```225:242:assets/component-selling-plans.js
+```javascript
   enablePerformanceObserver() {
     const performanceObserver = new PerformanceObserver((list) => {
       list.getEntries().forEach((entry) => {
@@ -195,7 +195,7 @@ export class SellingPlansWidget extends HTMLElement {
 
 ## Custom Element Definition
 
-```245:247:assets/component-selling-plans.js
+```javascript
 if (!customElements.get('selling-plans-widget')) {
   customElements.define('selling-plans-widget', SellingPlansWidget);
 }

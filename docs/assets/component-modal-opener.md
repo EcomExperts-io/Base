@@ -31,7 +31,7 @@ export class ModalOpener extends HTMLElement {
 
 ### constructor()
 
-```7:20:assets/component-modal-opener.js
+```javascript
 export class ModalOpener extends HTMLElement {
   constructor() {
     super();
@@ -61,7 +61,7 @@ export class ModalOpener extends HTMLElement {
 
 ## Custom Element Definition
 
-```23:25:assets/component-modal-opener.js
+```javascript
 if (!customElements.get('modal-opener')) {
   customElements.define('modal-opener', ModalOpener);
 }

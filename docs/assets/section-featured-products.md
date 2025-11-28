@@ -43,7 +43,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### constructor()
 
-```1:10:assets/section-featured-products.js
+```javascript
 export class FeaturedProducts extends HTMLElement {
   constructor() {
     super();
@@ -54,6 +54,7 @@ export class FeaturedProducts extends HTMLElement {
     this.onSectionLoad = this.onSectionLoad.bind(this);
     this.onSectionUnload = this.onSectionUnload.bind(this);
   }
+}
 ```
 
 **Initialization:**
@@ -63,7 +64,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### connectedCallback()
 
-```12:16:assets/section-featured-products.js
+```javascript
   connectedCallback() {
     this.init();
     document.addEventListener('shopify:section:load', this.onSectionLoad);
@@ -78,7 +79,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### disconnectedCallback()
 
-```18:22:assets/section-featured-products.js
+```javascript
   disconnectedCallback() {
     this.destroy();
     document.removeEventListener('shopify:section:load', this.onSectionLoad);
@@ -92,7 +93,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### init()
 
-```24:48:assets/section-featured-products.js
+```javascript
   init() {
     if (window.Swiper && this.sectionId) {
       const selector = `#featured-products-${this.sectionId}`;
@@ -132,7 +133,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### destroy()
 
-```50:55:assets/section-featured-products.js
+```javascript
   destroy() {
     if (this.swiper) {
       this.swiper.destroy(true, true);
@@ -147,7 +148,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### onSectionLoad(e)
 
-```57:62:assets/section-featured-products.js
+```javascript
   onSectionLoad(e) {
     if (e.detail && e.detail.sectionId === this.sectionId) {
       this.destroy();
@@ -162,7 +163,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### onSectionUnload(e)
 
-```64:68:assets/section-featured-products.js
+```javascript
   onSectionUnload(e) {
     if (e.detail && e.detail.sectionId === this.sectionId) {
       this.destroy();
@@ -176,7 +177,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ## Custom Element Definition
 
-```71:73:assets/section-featured-products.js
+```javascript
 if (!customElements.get('featured-products')) {
   customElements.define('featured-products', FeaturedProducts);
 }

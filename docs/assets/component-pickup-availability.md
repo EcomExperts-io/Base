@@ -71,7 +71,7 @@ export class PickupAvailabilityDrawer extends HTMLElement {
 
 ### PickupAvailability.constructor()
 
-```1:10:assets/component-pickup-availability.js
+```javascript
 export class PickupAvailability extends HTMLElement {
   constructor() {
     super();
@@ -82,6 +82,7 @@ export class PickupAvailability extends HTMLElement {
     this.onClickRefreshList = this.onClickRefreshList.bind(this);
     this.fetchAvailability(this.dataset.variantId);
   }
+}
 ```
 
 **Behavior:**
@@ -91,7 +92,7 @@ export class PickupAvailability extends HTMLElement {
 
 ### PickupAvailability.fetchAvailability(variantId)
 
-```12:34:assets/component-pickup-availability.js
+```javascript
   fetchAvailability(variantId) {
     if (!variantId) return;
 
@@ -125,7 +126,7 @@ export class PickupAvailability extends HTMLElement {
 
 ### PickupAvailability.update(variant)
 
-```40:47:assets/component-pickup-availability.js
+```javascript
   update(variant) {
     if (variant?.available) {
       this.fetchAvailability(variant.id);
@@ -142,7 +143,7 @@ export class PickupAvailability extends HTMLElement {
 
 ### PickupAvailability.renderPreview(sectionInnerHTML)
 
-```56:79:assets/component-pickup-availability.js
+```javascript
   renderPreview(sectionInnerHTML) {
     const drawer = document.querySelector('pickup-availability-drawer');
     // if (drawer) drawer.remove();
@@ -178,7 +179,7 @@ export class PickupAvailability extends HTMLElement {
 
 ### PickupAvailabilityDrawer.show(focusElement)
 
-```118:123:assets/component-pickup-availability.js
+```javascript
   show(focusElement) {
     this.focusElement = focusElement;
     this.setAttribute('open', '');
@@ -195,13 +196,13 @@ export class PickupAvailability extends HTMLElement {
 
 ## Custom Element Definitions
 
-```82:84:assets/component-pickup-availability.js
+```javascript
 if (!customElements.get('pickup-availability')) {
   customElements.define('pickup-availability', PickupAvailability);
 }
 ```
 
-```126:128:assets/component-pickup-availability.js
+```javascript
 if (!customElements.get('pickup-availability-drawer')) {
   customElements.define('pickup-availability-drawer', PickupAvailabilityDrawer);
 }

@@ -35,13 +35,14 @@ export class ProductRecommendations extends HTMLElement {
 
 ### constructor()
 
-```1:6:assets/product-recommendations.js
+```javascript
 export class ProductRecommendations extends HTMLElement {
   constructor() {
     super();
     this.handleIntersection = this.handleIntersection.bind(this);
     this.observer = null;
   }
+}
 ```
 
 **Initialization:**
@@ -50,7 +51,7 @@ export class ProductRecommendations extends HTMLElement {
 
 ### connectedCallback()
 
-```8:14:assets/product-recommendations.js
+```javascript
   connectedCallback() {
     this.observer = new IntersectionObserver(this.handleIntersection, {
       rootMargin: '0px 0px 200px 0px'
@@ -66,7 +67,7 @@ export class ProductRecommendations extends HTMLElement {
 
 ### handleIntersection(entries, observer)
 
-```16:37:assets/product-recommendations.js
+```javascript
   handleIntersection(entries, observer) {
     if (!entries[0].isIntersecting) return;
 
@@ -103,7 +104,7 @@ export class ProductRecommendations extends HTMLElement {
 
 ## Custom Element Definition
 
-```40:42:assets/product-recommendations.js
+```javascript
 if (!customElements.get('product-recommendations')) {
   customElements.define('product-recommendations', ProductRecommendations);
 }

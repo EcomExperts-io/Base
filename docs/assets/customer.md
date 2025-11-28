@@ -45,7 +45,7 @@ class CustomerAddresses {
 
 ### constructor()
 
-```15:21:assets/customer.js
+```javascript
 class CustomerAddresses {
   constructor() {
     this.elements = this._getElements();
@@ -53,6 +53,7 @@ class CustomerAddresses {
     this._setupCountries();
     this._setupEventListeners();
   }
+}
 ```
 
 **Behavior:**
@@ -63,7 +64,7 @@ class CustomerAddresses {
 
 ### _getElements()
 
-```23:35:assets/customer.js
+```javascript
   _getElements() {
     const container = document.querySelector(selectors.customerAddresses);
     return container
@@ -89,7 +90,7 @@ class CustomerAddresses {
 
 ### _setupCountries()
 
-```37:51:assets/customer.js
+```javascript
   _setupCountries() {
     if (Shopify && Shopify.CountryProvinceSelector) {
       // eslint-disable-next-line no-new
@@ -114,7 +115,7 @@ class CustomerAddresses {
 
 ### _handleDeleteButtonClick()
 
-```77:84:assets/customer.js
+```javascript
   _handleDeleteButtonClick = ({ currentTarget }) => {
     // eslint-disable-next-line no-alert
     if (confirm(currentTarget.getAttribute(attributes.confirmMessage))) {

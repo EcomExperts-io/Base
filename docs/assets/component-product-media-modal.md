@@ -38,7 +38,7 @@ export class ProductMediaModal extends HTMLElement {
 
 ### constructor()
 
-```1:16:assets/component-product-media-modal.js
+```javascript
 export class ProductMediaModal extends HTMLElement {
   constructor() {
     super();
@@ -55,6 +55,7 @@ export class ProductMediaModal extends HTMLElement {
       if (event.pointerType === 'mouse') this.hideModal();
     });
   }
+}
 ```
 
 **Initialization:**
@@ -67,7 +68,7 @@ export class ProductMediaModal extends HTMLElement {
 
 ### showModal(opener)
 
-```18:23:assets/component-product-media-modal.js
+```javascript
   showModal(opener) {
     this.openedBy = opener;
     document.body.classList.add('overflow-hidden');
@@ -84,7 +85,7 @@ export class ProductMediaModal extends HTMLElement {
 
 ### showActiveMedia()
 
-```30:39:assets/component-product-media-modal.js
+```javascript
   showActiveMedia() {
     this.querySelectorAll(
       `[data-media-id]:not([data-media-id="${this.openedBy.getAttribute('data-media-id')}"])`
@@ -105,7 +106,7 @@ export class ProductMediaModal extends HTMLElement {
 
 ### hideModal()
 
-```25:28:assets/component-product-media-modal.js
+```javascript
   hideModal() {
     document.body.classList.remove('overflow-hidden');
     this.removeAttribute('open');
@@ -118,7 +119,7 @@ export class ProductMediaModal extends HTMLElement {
 
 ## Custom Element Definition
 
-```42:44:assets/component-product-media-modal.js
+```javascript
 if (!customElements.get('product-media-modal')) {
   customElements.define('product-media-modal', ProductMediaModal);
 }

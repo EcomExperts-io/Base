@@ -60,7 +60,7 @@ export class ProductInfo extends HTMLElement {
 
 ### constructor()
 
-```1:7:assets/section-product.js
+```javascript
 export class ProductInfo extends HTMLElement {
   abortController = undefined;
   swiper = undefined;
@@ -68,6 +68,7 @@ export class ProductInfo extends HTMLElement {
   constructor() {
     super();
   }
+}
 ```
 
 Initializes the custom element and sets up instance properties:
@@ -76,7 +77,7 @@ Initializes the custom element and sets up instance properties:
 
 ### connectedCallback()
 
-```17:22:assets/section-product.js
+```javascript
   connectedCallback() {
     this.setupEventListeners();
     if (typeof Swiper !== 'undefined') {
@@ -92,7 +93,7 @@ Initializes the custom element and sets up instance properties:
 
 ### setupEventListeners()
 
-```9:15:assets/section-product.js
+```javascript
   setupEventListeners() {
     this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
     this.quantitySelector.addEventListener('change', this.onQuantitySelectorEvent.bind(this));
@@ -110,7 +111,7 @@ Initializes the custom element and sets up instance properties:
 
 ### initSwiper()
 
-```24:72:assets/section-product.js
+```javascript
   initSwiper() {
     const thumbnailGalleryEl = this.querySelector('.product-media-gallery__thumbnails');
     if (thumbnailGalleryEl) {
@@ -171,7 +172,7 @@ Initializes the custom element and sets up instance properties:
 
 ### onVariantChange(e)
 
-```101:105:assets/section-product.js
+```javascript
   onVariantChange(e) {
     const productUrlChanged = e.target?.dataset?.productUrl ? (e.target?.dataset?.productUrl !== this.dataset.url) : false;
     const productUrl = e.target?.dataset?.productUrl || this.dataset.url;
@@ -186,7 +187,7 @@ Initializes the custom element and sets up instance properties:
 
 ### onQuantitySelectorEvent(e)
 
-```107:124:assets/section-product.js
+```javascript
   onQuantitySelectorEvent(e) {
     const quantityInput = this.quantitySelector.querySelector('input[type="number"]');
     let currentValue = parseInt(quantityInput.value);
@@ -214,7 +215,7 @@ Initializes the custom element and sets up instance properties:
 
 ### updateMedia(variantFeaturedMediaId)
 
-```126:133:assets/section-product.js
+```javascript
   updateMedia(variantFeaturedMediaId) {
     if (!variantFeaturedMediaId) return;
     const mediaSlide = this.querySelector(`.swiper-slide[data-media-id="${variantFeaturedMediaId}"]`);
@@ -232,7 +233,7 @@ Initializes the custom element and sets up instance properties:
 
 ### updateURL(variantId)
 
-```135:145:assets/section-product.js
+```javascript
   updateURL(variantId) {
     // this.querySelector('share-button')?.updateUrl(
     //   `${window.shopUrl}${url}${variantId ? `?variant=${variantId}` : ''}`
@@ -253,7 +254,7 @@ Initializes the custom element and sets up instance properties:
 
 ### renderSection(productUrlChanged, productUrl)
 
-```164:206:assets/section-product.js
+```javascript
   renderSection(productUrlChanged, productUrl) {
     this.abortController?.abort();
     this.abortController = new AbortController();
@@ -310,7 +311,7 @@ Initializes the custom element and sets up instance properties:
 
 ## Custom Element Definition
 
-```209:211:assets/section-product.js
+```javascript
 if (!customElements.get('product-info')) {
   customElements.define('product-info', ProductInfo);
 }

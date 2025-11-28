@@ -33,7 +33,7 @@ export class InfiniteScroll extends HTMLElement {
 
 ### constructor()
 
-```1:16:assets/component-infinite-scroll.js
+```javascript
 export class InfiniteScroll extends HTMLElement {
   constructor() {
     super();
@@ -50,6 +50,7 @@ export class InfiniteScroll extends HTMLElement {
 
     this.observer.observe(this);
   }
+}
 ```
 
 **DOM References:**
@@ -66,7 +67,7 @@ export class InfiniteScroll extends HTMLElement {
 
 ### loadNextPage()
 
-```18:55:assets/component-infinite-scroll.js
+```javascript
   async loadNextPage() {
     this.observer.disconnect();
 
@@ -127,7 +128,7 @@ export class InfiniteScroll extends HTMLElement {
 
 ## Custom Element Definition
 
-```58:60:assets/component-infinite-scroll.js
+```javascript
 if (!customElements.get("infinite-scroll")) {
   customElements.define("infinite-scroll", InfiniteScroll);
 }
