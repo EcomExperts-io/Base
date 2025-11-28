@@ -59,6 +59,25 @@ export class CartDiscountForm extends HTMLElement {
       .filter(Boolean);
   }
 
+  getCartDiscountCodes(cart) {
+    const codes = (cart.cart_level_discount_applications || [])
+      .filter(app => app.type === 'discount_code')
+      .map(app => app.title);
+
+    (cart.items || []).forEach(item => {
+      if (item.discounts) {
+        item.discounts.forEach(d => d.title && codes.push(d.title));
+      }
+      if (item.line_level_discount_allocations) {
+        item.line_level_discount_allocations.forEach(a => {
+          if (a.discount_application?.title) codes.push(a.discount_application.title);
+        });
+      }
+    });
+
+    return [...new Set(codes)];
+  }
+
   createPill(code) {
     const li = document.createElement('li');
     li.className = 'cart-discount__pill';
@@ -84,21 +103,18 @@ export class CartDiscountForm extends HTMLElement {
   updatePills(cart) {
     if (!this.codesList) return;
 
-    const discountCodes = (cart.cart_level_discount_applications || [])
-      .filter(app => app.type === 'discount_code')
-      .map(app => app.title);
-
+    const allDiscountCodes = this.getCartDiscountCodes(cart);
     const currentCodes = this.getExistingCodes();
     const currentPills = Array.from(this.codesList.querySelectorAll('.cart-discount__pill'));
 
     currentPills.forEach(pill => {
       const code = pill.dataset.discountCode;
-      if (!discountCodes.some(c => c.toUpperCase() === code.toUpperCase())) {
+      if (!allDiscountCodes.some(c => c.toUpperCase() === code.toUpperCase())) {
         pill.remove();
       }
     });
 
-    discountCodes.forEach(code => {
+    allDiscountCodes.forEach(code => {
       if (!currentCodes.some(c => c.toUpperCase() === code.toUpperCase())) {
         this.codesList.appendChild(this.createPill(code));
       }
@@ -127,16 +143,22 @@ export class CartDiscountForm extends HTMLElement {
       await this.applyDiscount(allCodes);
 
       const cart = await fetch(`${window.Shopify.routes.root}cart.js`).then(r => r.json());
+      const cartCodes = this.getCartDiscountCodes(cart);
+      const isApplied = cartCodes.some(c => c.toUpperCase() === code.toUpperCase());
 
-      this.input.value = '';
-      this.updatePills(cart);
+      if (isApplied) {
+        this.input.value = '';
+        this.updatePills(cart);
 
-      if (window.liquidAjaxCart?.update) {
-        window.liquidAjaxCart.update({}, {});
+        if (window.liquidAjaxCart?.update) {
+          window.liquidAjaxCart.update({}, {});
+        }
+      } else {
+        this.showError('That discount code is not valid.');
       }
     } catch (err) {
       console.error(err);
-      this.showError('That discount code is not valid.');
+      this.showError('Something went wrong while applying the code.');
     } finally {
       this.setLoading(false);
     }
