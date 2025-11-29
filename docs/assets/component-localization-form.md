@@ -33,7 +33,7 @@ export class LocalizationForm extends HTMLElement {
 
 ### constructor()
 
-```1:9:assets/component-localization-form.js
+```javascript
 export class LocalizationForm extends HTMLElement {
   constructor() {
     super();
@@ -43,6 +43,7 @@ export class LocalizationForm extends HTMLElement {
 
     this.querySelectorAll('a').forEach((item) => item.addEventListener('click', this.onItemClick.bind(this)));
   }
+}
 ```
 
 **Initialization:**
@@ -52,7 +53,7 @@ export class LocalizationForm extends HTMLElement {
 
 ### onItemClick(event)
 
-```11:16:assets/component-localization-form.js
+```javascript
   onItemClick(event) {
     event.preventDefault();
     const form = this.querySelector('form');
@@ -69,7 +70,7 @@ export class LocalizationForm extends HTMLElement {
 
 ## Custom Element Definition
 
-```19:21:assets/component-localization-form.js
+```javascript
 if (!customElements.get('localization-form')) {
   customElements.define('localization-form', LocalizationForm);
 }

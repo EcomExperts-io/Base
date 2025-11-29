@@ -44,13 +44,14 @@ export class ProductMediaMagnifier extends HTMLElement {
 
 ### constructor()
 
-```1:6:assets/component-product-media-magnify.js
+```javascript
 export class ProductMediaMagnifier extends HTMLElement {
   constructor() {
     super();
     this.zoomRatio = 2;
     this.overlay = null;
   }
+}
 ```
 
 **Initialization:**
@@ -59,7 +60,7 @@ export class ProductMediaMagnifier extends HTMLElement {
 
 ### connectedCallback()
 
-```66:72:assets/component-product-media-magnify.js
+```javascript
   connectedCallback() {
     const image = this.querySelector('img');
     image.onclick = (event) => {
@@ -75,7 +76,7 @@ export class ProductMediaMagnifier extends HTMLElement {
 
 ### magnify(image, event)
 
-```53:64:assets/component-product-media-magnify.js
+```javascript
   magnify(image, event) {
     const overlay = this.createOverlay(image);
 
@@ -99,7 +100,7 @@ export class ProductMediaMagnifier extends HTMLElement {
 
 ### createOverlay(image)
 
-```8:24:assets/component-product-media-magnify.js
+```javascript
   createOverlay(image) {
     const overlayImage = document.createElement('img');
     overlayImage.setAttribute('src', `${image.src}`);
@@ -128,7 +129,7 @@ export class ProductMediaMagnifier extends HTMLElement {
 
 ### moveWithHover(image, event)
 
-```39:51:assets/component-product-media-magnify.js
+```javascript
   moveWithHover(image, event) {
     // calculate mouse position
     const ratio = image.height / image.width;
@@ -153,7 +154,7 @@ export class ProductMediaMagnifier extends HTMLElement {
 
 ### prepareOverlay(container, image)
 
-```26:31:assets/component-product-media-magnify.js
+```javascript
   prepareOverlay(container, image) {
     container.setAttribute('class', 'image-magnify-full-size');
     container.setAttribute('aria-hidden', 'true');
@@ -170,7 +171,7 @@ export class ProductMediaMagnifier extends HTMLElement {
 
 ## Custom Element Definition
 
-```76:78:assets/component-product-media-magnify.js
+```javascript
 if (!customElements.get('product-media-magnify')) {
   customElements.define('product-media-magnify', ProductMediaMagnifier);
 }

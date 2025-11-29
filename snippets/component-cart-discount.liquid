@@ -1,0 +1,70 @@
+<cart-discount-form>
+  <div class="cart-discount">
+    <form id="cart-discount-form" class="cart-discount__form">
+      <input
+        id="discount-code-input"
+        name="discount_code"
+        type="text"
+        class="cart-discount__input"
+        placeholder="{{ 'cart.discount_code' | t }}"
+        required
+      >
+      <button type="submit" class="cart-discount__button">
+        {{ 'cart.apply' | t }}
+      </button>
+    </form>
+
+    <div class="cart-discount__error" style="display: none;" role="alert">
+      <span class="svg-wrapper">
+        {{- 'icon-error.svg' | inline_asset_content -}}
+      </span>
+      <p class="cart-discount__error-text"></p>
+    </div>
+
+    <ul class="cart-discount__codes">
+      {%- for discount_application in cart.cart_level_discount_applications -%}
+        {%- if discount_application.type == 'discount_code' -%}
+          <li
+            class="cart-discount__pill"
+            data-discount-code="{{ discount_application.title | escape }}"
+          >
+            <p class="cart-discount__pill-code">
+              {{ discount_application.title | escape }}
+            </p>
+            <button
+              type="button"
+              class="cart-discount__pill-remove"
+              aria-label="{{ 'cart.remove_discount' | t: default: 'Remove discount' }} {{ discount_application.title | escape }}"
+            >
+              {{- 'icon-close.svg' | inline_asset_content -}}
+            </button>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+      
+      {%- for item in cart.items -%}
+        {%- if item.discounts.size > 0 -%}
+          {%- for discount in item.discounts -%}
+            {%- if discount.title -%}
+              <li
+                class="cart-discount__pill"
+                data-discount-code="{{ discount.title | escape }}"
+              >
+                <p class="cart-discount__pill-code">
+                  {{ discount.title | escape }}
+                </p>
+                <button
+                  type="button"
+                  class="cart-discount__pill-remove"
+                  aria-label="{{ 'cart.remove_discount' | t: default: 'Remove discount' }} {{ discount.title | escape }}"
+                >
+                  {{- 'icon-close.svg' | inline_asset_content -}}
+                </button>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+</cart-discount-form>

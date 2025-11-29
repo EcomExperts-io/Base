@@ -120,7 +120,7 @@ This ensures compatibility with other scripts and hot-reloading scenarios .
 
 On the server, a Liquid snippet injects the `<product-card>` wrapper:
 
-```liquid-html
+```liquid
 <product-card class="product-card" data-product-id="{{ card_product.id }}">
   <!-- Card markup with .color-swatch spans and data-variant-image -->
 </product-card>
@@ -134,7 +134,7 @@ This snippet lives in `snippets/component-product-card.liquid`, linking the Java
 
 1. **Render** a product card in Liquid:
 
-```liquid-html
+```liquid
    {% render 'component-product-card',
      card_product: product,
      enable_swatches: true,

@@ -3,22 +3,14 @@ export class FeaturedProducts extends HTMLElement {
     super();
     this.swiper = null;
     this.sectionId = this.getAttribute('data-section-id');
-
-    // Store bound methods so add/removeEventListener match
-    this.onSectionLoad = this.onSectionLoad.bind(this);
-    this.onSectionUnload = this.onSectionUnload.bind(this);
   }
 
   connectedCallback() {
     this.init();
-    document.addEventListener('shopify:section:load', this.onSectionLoad);
-    document.addEventListener('shopify:section:unload', this.onSectionUnload);
   }
 
   disconnectedCallback() {
     this.destroy();
-    document.removeEventListener('shopify:section:load', this.onSectionLoad);
-    document.removeEventListener('shopify:section:unload', this.onSectionUnload);
   }
 
   init() {
@@ -54,18 +46,6 @@ export class FeaturedProducts extends HTMLElement {
     }
   }
 
-  onSectionLoad(e) {
-    if (e.detail && e.detail.sectionId === this.sectionId) {
-      this.destroy();
-      this.init();
-    }
-  }
-
-  onSectionUnload(e) {
-    if (e.detail && e.detail.sectionId === this.sectionId) {
-      this.destroy();
-    }
-  }
 }
 
 if (!customElements.get('featured-products')) {

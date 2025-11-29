@@ -51,7 +51,7 @@ export class QuickAdd extends HTMLElement {
 
 ### constructor()
 
-```1:9:assets/component-quick-add.js
+```javascript
 export class QuickAdd extends HTMLElement {
   constructor() {
     super();
@@ -61,6 +61,7 @@ export class QuickAdd extends HTMLElement {
     this.bindEvents();
     this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
   }
+}
 ```
 
 **Initialization:**
@@ -71,7 +72,7 @@ export class QuickAdd extends HTMLElement {
 
 ### setupModal()
 
-```31:35:assets/component-quick-add.js
+```javascript
   setupModal() {
     this.modal = this.querySelector('[role="dialog"]');
     this.modalContent = this.querySelector('[id^="QuickAddInfo-"]');
@@ -86,7 +87,7 @@ export class QuickAdd extends HTMLElement {
 
 ### show(opener)
 
-```48:82:assets/component-quick-add.js
+```javascript
   show(opener) {
     this.openedBy = opener;
 
@@ -137,7 +138,7 @@ export class QuickAdd extends HTMLElement {
 
 ### preprocessContent(element)
 
-```90:99:assets/component-quick-add.js
+```javascript
   preprocessContent(element) {
     const uniqueSectionId = `${element.dataset.section}-modal-${Date.now()}`;
     element.innerHTML = element.innerHTML.replaceAll(element.dataset.section, uniqueSectionId);
@@ -158,7 +159,7 @@ export class QuickAdd extends HTMLElement {
 
 ### setContent(html)
 
-```101:112:assets/component-quick-add.js
+```javascript
   setContent(html) {
     this.modalContent.innerHTML = html;
     // Reinject scripts
@@ -180,7 +181,7 @@ export class QuickAdd extends HTMLElement {
 
 ### onCartRequestEnd(event)
 
-```19:29:assets/component-quick-add.js
+```javascript
   onCartRequestEnd(event) {
     const { requestState } = event.detail || {};
     if (requestState?.requestType === 'add' && requestState?.responseData?.ok) {
@@ -202,7 +203,7 @@ export class QuickAdd extends HTMLElement {
 
 ## Custom Element Definition
 
-```116:118:assets/component-quick-add.js
+```javascript
 if (!customElements.get('quick-add-modal')) {
   customElements.define('quick-add-modal', QuickAdd);
 }

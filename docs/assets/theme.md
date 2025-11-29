@@ -42,7 +42,7 @@ debouncedSearch('abc'); // Only this call executes after 300ms
 
 ## Implementation
 
-```11:17:assets/theme.js
+```javascript
 export function debounce(fn, wait) {
   let timeout;
   return (...args) => {

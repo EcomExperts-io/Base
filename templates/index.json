@@ -149,11 +149,51 @@
         "product_info_text_color": "#111111",
         "stars_color": "#000000"
       }
+    },
+    "selling_points_example": {
+      "type": "selling-points",
+      "blocks": {
+        "selling_point_1": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        },
+        "selling_point_2": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        },
+        "selling_point_3": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        },
+        "selling_point_4": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        }
+      },
+      "block_order": [
+        "selling_point_1",
+        "selling_point_2",
+        "selling_point_3",
+        "selling_point_4"
+      ],
     }
   },
   "order": [
     "hero_1",
     "featured_collections_hhETJ9",
-    "featured_products_example"
+    "featured_products_example",
+    "selling_points_example"
   ]
 }

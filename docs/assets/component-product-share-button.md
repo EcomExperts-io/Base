@@ -45,13 +45,14 @@ export class ShareButton extends HTMLElement {
 
 ### constructor()
 
-```1:6:assets/component-product-share-button.js
+```javascript
 export class ShareButton extends HTMLElement {
   constructor() {
     super();
     this.urlToShare = this.getUrlToShare();
     this.initShareButton();
   }
+}
 ```
 
 **Initialization:**
@@ -60,7 +61,7 @@ export class ShareButton extends HTMLElement {
 
 ### getUrlToShare()
 
-```8:11:assets/component-product-share-button.js
+```javascript
   getUrlToShare() {
     const urlInput = this.querySelector('input');
     return urlInput?.value || document.location.href;
@@ -73,7 +74,7 @@ export class ShareButton extends HTMLElement {
 
 ### initShareButton()
 
-```13:19:assets/component-product-share-button.js
+```javascript
   initShareButton() {
     if (navigator.share) {
       this.setupNativeShare();
@@ -89,7 +90,7 @@ export class ShareButton extends HTMLElement {
 
 ### setupNativeShare()
 
-```21:36:assets/component-product-share-button.js
+```javascript
   setupNativeShare() {
     const detailsElement = this.querySelector('details');
     const button = this.querySelector('button');
@@ -116,7 +117,7 @@ export class ShareButton extends HTMLElement {
 
 ### setupFallbackShare()
 
-```38:66:assets/component-product-share-button.js
+```javascript
   setupFallbackShare() {
     const detailsElement = this.querySelector('details');
     const copyButton = this.querySelector('.share-button__copy');
@@ -156,7 +157,7 @@ export class ShareButton extends HTMLElement {
 
 ### copyToClipboard()
 
-```68:76:assets/component-product-share-button.js
+```javascript
   copyToClipboard(urlInput, successMessage, closeButton) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(this.urlToShare).then(() => this.showSuccessMessage(successMessage, closeButton));
@@ -175,7 +176,7 @@ export class ShareButton extends HTMLElement {
 
 ## Custom Element Definition
 
-```93:95:assets/component-product-share-button.js
+```javascript
 if (!customElements.get('share-button')) {
   customElements.define('share-button', ShareButton);
 }

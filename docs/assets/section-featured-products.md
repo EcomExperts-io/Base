@@ -22,8 +22,6 @@ export class FeaturedProducts extends HTMLElement {
   disconnectedCallback()
   init()
   destroy()
-  onSectionLoad(e)
-  onSectionUnload(e)
 }
 ```
 
@@ -36,24 +34,19 @@ export class FeaturedProducts extends HTMLElement {
 | `disconnectedCallback()` | Lifecycle hook that destroys Swiper and removes event listeners |
 | `init()` | Initializes Swiper.js carousel with responsive configuration |
 | `destroy()` | Destroys the Swiper instance and cleans up resources |
-| `onSectionLoad(e)` | Handles Shopify section load events in theme editor |
-| `onSectionUnload(e)` | Handles Shopify section unload events in theme editor |
 
 ## Method Details
 
 ### constructor()
 
-```1:10:assets/section-featured-products.js
+```javascript
 export class FeaturedProducts extends HTMLElement {
   constructor() {
     super();
     this.swiper = null;
     this.sectionId = this.getAttribute('data-section-id');
-
-    // Store bound methods so add/removeEventListener match
-    this.onSectionLoad = this.onSectionLoad.bind(this);
-    this.onSectionUnload = this.onSectionUnload.bind(this);
   }
+}
 ```
 
 **Initialization:**
@@ -63,36 +56,29 @@ export class FeaturedProducts extends HTMLElement {
 
 ### connectedCallback()
 
-```12:16:assets/section-featured-products.js
+```javascript
   connectedCallback() {
     this.init();
-    document.addEventListener('shopify:section:load', this.onSectionLoad);
-    document.addEventListener('shopify:section:unload', this.onSectionUnload);
   }
 ```
 
 **Behavior:**
 1. Initializes the Swiper carousel
-2. Listens for Shopify section load events (theme editor)
-3. Listens for Shopify section unload events (theme editor)
 
 ### disconnectedCallback()
 
-```18:22:assets/section-featured-products.js
+```javascript
   disconnectedCallback() {
     this.destroy();
-    document.removeEventListener('shopify:section:load', this.onSectionLoad);
-    document.removeEventListener('shopify:section:unload', this.onSectionUnload);
   }
 ```
 
 **Behavior:**
 - Destroys Swiper instance to prevent memory leaks
-- Removes all event listeners for proper cleanup
 
 ### init()
 
-```24:48:assets/section-featured-products.js
+```javascript
   init() {
     if (window.Swiper && this.sectionId) {
       const selector = `#featured-products-${this.sectionId}`;
@@ -132,7 +118,7 @@ export class FeaturedProducts extends HTMLElement {
 
 ### destroy()
 
-```50:55:assets/section-featured-products.js
+```javascript
   destroy() {
     if (this.swiper) {
       this.swiper.destroy(true, true);
@@ -145,38 +131,10 @@ export class FeaturedProducts extends HTMLElement {
 - Destroys Swiper instance with full cleanup (removes all listeners and DOM modifications)
 - Resets swiper reference to null
 
-### onSectionLoad(e)
-
-```57:62:assets/section-featured-products.js
-  onSectionLoad(e) {
-    if (e.detail && e.detail.sectionId === this.sectionId) {
-      this.destroy();
-      this.init();
-    }
-  }
-```
-
-**Behavior:**
-- Triggered when Shopify theme editor loads a section
-- Destroys existing Swiper and re-initializes to ensure fresh state
-
-### onSectionUnload(e)
-
-```64:68:assets/section-featured-products.js
-  onSectionUnload(e) {
-    if (e.detail && e.detail.sectionId === this.sectionId) {
-      this.destroy();
-    }
-  }
-```
-
-**Behavior:**
-- Triggered when Shopify theme editor unloads a section
-- Destroys Swiper instance to prevent memory leaks
 
 ## Custom Element Definition
 
-```71:73:assets/section-featured-products.js
+```javascript
 if (!customElements.get('featured-products')) {
   customElements.define('featured-products', FeaturedProducts);
 }

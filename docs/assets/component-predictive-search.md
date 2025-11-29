@@ -53,7 +53,7 @@ export class PredictiveSearch extends HTMLElement {
 
 ### constructor()
 
-```3:17:assets/component-predictive-search.js
+```javascript
 export class PredictiveSearch extends HTMLElement {
   constructor() {
     super();
@@ -69,6 +69,7 @@ export class PredictiveSearch extends HTMLElement {
     this.handleClickOutside = this.handleClickOutside.bind(this);
     document.addEventListener('click', this.handleClickOutside);
   }
+}
 ```
 
 **Initialization:**
@@ -82,7 +83,7 @@ export class PredictiveSearch extends HTMLElement {
 
 ### onChange(e)
 
-```19:35:assets/component-predictive-search.js
+```javascript
   onChange(e) {
     console.log(e);
     const newSearchTerm = this.input.value.trim();
@@ -110,7 +111,7 @@ export class PredictiveSearch extends HTMLElement {
 
 ### getSearchResults(searchTerm)
 
-```37:58:assets/component-predictive-search.js
+```javascript
   getSearchResults(searchTerm) {
     fetch(`/search/suggest?q=${encodeURIComponent(searchTerm)}&section_id=predictive-results`, {
       signal: this.abortController.signal,
@@ -143,7 +144,7 @@ export class PredictiveSearch extends HTMLElement {
 
 ### updateResults(resultsMarkup)
 
-```60:63:assets/component-predictive-search.js
+```javascript
   updateResults(resultsMarkup) {
     this.predictiveSearchResults.innerHTML = resultsMarkup;
     this.open();
@@ -156,7 +157,7 @@ export class PredictiveSearch extends HTMLElement {
 
 ### handleClickOutside(event)
 
-```82:87:assets/component-predictive-search.js
+```javascript
   handleClickOutside(event) {
     // Check if the click is outside the predictive search component
     if (this.isOpen && !this.contains(event.target)) {
@@ -171,7 +172,7 @@ export class PredictiveSearch extends HTMLElement {
 
 ## Custom Element Definition
 
-```99:101:assets/component-predictive-search.js
+```javascript
 if (!customElements.get('predictive-search')) {
   customElements.define('predictive-search', PredictiveSearch);
 }

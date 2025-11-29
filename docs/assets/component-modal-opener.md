@@ -31,7 +31,7 @@ export class ModalOpener extends HTMLElement {
 
 ### constructor()
 
-```7:20:assets/component-modal-opener.js
+```javascript
 export class ModalOpener extends HTMLElement {
   constructor() {
     super();
@@ -61,7 +61,7 @@ export class ModalOpener extends HTMLElement {
 
 ## Custom Element Definition
 
-```23:25:assets/component-modal-opener.js
+```javascript
 if (!customElements.get('modal-opener')) {
   customElements.define('modal-opener', ModalOpener);
 }
@@ -85,40 +85,6 @@ Ensures the element is registered only once across bundles or hot reload session
 </quick-add-modal>
 ```
 
-### Product Monogram Popup
-
-```liquid
-<modal-opener data-modal="#MonogramModal-{{ product.id }}">
-  <button>
-    Add monogram
-  </button>
-</modal-opener>
-
-<div id="MonogramModal-{{ product.id }}" class="modal">
-  <!-- Modal content -->
-</div>
-```
-
-### Custom Modal
-
-```liquid
-<modal-opener data-modal="#CustomModal">
-  <button class="btn">Open Modal</button>
-</modal-opener>
-
-<div id="CustomModal" class="custom-modal">
-  <button class="close">Close</button>
-  <!-- Modal content -->
-</div>
-
-<script>
-  // Custom modal must implement show() method
-  document.querySelector('#CustomModal').show = function(opener) {
-    this.setAttribute('open', '');
-    document.body.classList.add('overflow-hidden');
-  };
-</script>
-```
 
 ## Implementation Notes
 

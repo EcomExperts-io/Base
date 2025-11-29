@@ -110,6 +110,10 @@
   font-size: 15px;
 }
 
+.cart-item__details .cart-discounts li{
+  justify-content: flex-start;
+}
+
 .cart-item__heading a {
   line-height: 1.3;
   display: block;
@@ -322,6 +326,7 @@ span.cart-total__label {
 .cart-discounts li {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .cart-discounts svg.icon-discount {
@@ -616,7 +621,6 @@ h2.cart__empty-text {
   }
 }
 
-/* Cart Discount Styles */
 .cart-discount {
   width: 100%;
 }
@@ -651,6 +655,12 @@ h2.cart__empty-text {
   color: rgb(var(--color-button-text));
   cursor: pointer;
   white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.cart-discount__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .cart-discount__codes {
@@ -677,6 +687,12 @@ h2.cart__empty-text {
   font-size: 1.4rem;
   font-weight: 500;
   text-transform: uppercase;
+  transition: opacity 0.3s;
+}
+
+.cart-discount__pill--removing {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .cart-discount__pill-code {

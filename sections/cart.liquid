@@ -168,7 +168,7 @@
         {%- endif -%}
 
         <div class="cart-actions">
-          {% render 'cart-discount', section_id: section.id %}
+          {% render 'component-cart-discount', section_id: section.id %}
           
           <div class="cart-charges" data-ajax-cart-section>
             {% if cart.cart_level_discount_applications.size > 0 %}
@@ -205,7 +205,7 @@
   {% endif %}
 </div>
 
-<script src="{{ 'cart-discount.js' | asset_url }}" type="module" fetchpriority="low"></script>
+<script src="{{ 'component-cart-discount.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
 
 {% schema %}
