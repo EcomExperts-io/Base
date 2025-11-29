@@ -26,7 +26,7 @@
         "button_border_color": "#838383",
         "button_background_color": "#ffffff",
         "enable_filtering": true,
-        "filter_type": "vertical",
+        "filter_type": "drawer",
         "collapse_filters": true,
         "show_filter_count": true,
         "enable_sorting": true,
