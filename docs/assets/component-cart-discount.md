@@ -182,48 +182,6 @@ Handles remove button clicks using event delegation:
 
 ---
 
-## Shopify API Reference
-
-### Apply Discounts
-
-```api
-{
-  "method": "POST",
-  "endpoint": "/cart/update.js",
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "body": {
-    "discount": "CODE1,CODE2"
-  }
-}
-```
-
-### Remove All Discounts
-
-```api
-{
-  "method": "POST",
-  "endpoint": "/cart/update.js",
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "body": {
-    "discount": ""
-  }
-}
-```
-
-### Get Cart State
-
-```api
-{
-  "method": "GET",
-  "endpoint": "/cart.js"
-}
-```
-
----
 
 ## Custom Element Definition
 

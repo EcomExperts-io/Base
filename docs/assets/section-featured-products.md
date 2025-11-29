@@ -22,8 +22,6 @@ export class FeaturedProducts extends HTMLElement {
   disconnectedCallback()
   init()
   destroy()
-  onSectionLoad(e)
-  onSectionUnload(e)
 }
 ```
 
@@ -36,8 +34,6 @@ export class FeaturedProducts extends HTMLElement {
 | `disconnectedCallback()` | Lifecycle hook that destroys Swiper and removes event listeners |
 | `init()` | Initializes Swiper.js carousel with responsive configuration |
 | `destroy()` | Destroys the Swiper instance and cleans up resources |
-| `onSectionLoad(e)` | Handles Shopify section load events in theme editor |
-| `onSectionUnload(e)` | Handles Shopify section unload events in theme editor |
 
 ## Method Details
 
@@ -49,10 +45,6 @@ export class FeaturedProducts extends HTMLElement {
     super();
     this.swiper = null;
     this.sectionId = this.getAttribute('data-section-id');
-
-    // Store bound methods so add/removeEventListener match
-    this.onSectionLoad = this.onSectionLoad.bind(this);
-    this.onSectionUnload = this.onSectionUnload.bind(this);
   }
 }
 ```
@@ -67,29 +59,22 @@ export class FeaturedProducts extends HTMLElement {
 ```javascript
   connectedCallback() {
     this.init();
-    document.addEventListener('shopify:section:load', this.onSectionLoad);
-    document.addEventListener('shopify:section:unload', this.onSectionUnload);
   }
 ```
 
 **Behavior:**
 1. Initializes the Swiper carousel
-2. Listens for Shopify section load events (theme editor)
-3. Listens for Shopify section unload events (theme editor)
 
 ### disconnectedCallback()
 
 ```javascript
   disconnectedCallback() {
     this.destroy();
-    document.removeEventListener('shopify:section:load', this.onSectionLoad);
-    document.removeEventListener('shopify:section:unload', this.onSectionUnload);
   }
 ```
 
 **Behavior:**
 - Destroys Swiper instance to prevent memory leaks
-- Removes all event listeners for proper cleanup
 
 ### init()
 
@@ -146,34 +131,6 @@ export class FeaturedProducts extends HTMLElement {
 - Destroys Swiper instance with full cleanup (removes all listeners and DOM modifications)
 - Resets swiper reference to null
 
-### onSectionLoad(e)
-
-```javascript
-  onSectionLoad(e) {
-    if (e.detail && e.detail.sectionId === this.sectionId) {
-      this.destroy();
-      this.init();
-    }
-  }
-```
-
-**Behavior:**
-- Triggered when Shopify theme editor loads a section
-- Destroys existing Swiper and re-initializes to ensure fresh state
-
-### onSectionUnload(e)
-
-```javascript
-  onSectionUnload(e) {
-    if (e.detail && e.detail.sectionId === this.sectionId) {
-      this.destroy();
-    }
-  }
-```
-
-**Behavior:**
-- Triggered when Shopify theme editor unloads a section
-- Destroys Swiper instance to prevent memory leaks
 
 ## Custom Element Definition
 
