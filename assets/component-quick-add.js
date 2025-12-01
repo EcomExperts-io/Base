@@ -3,13 +3,15 @@ export class QuickAdd extends HTMLElement {
     super();
     this.modal = null;
     this.modalContent = null;
-    this.setupModal();
-    this.bindEvents();
     this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
   }
 
   connectedCallback() {
-    document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    if (!this.modal) { 
+      this.setupModal();
+      this.bindEvents();
+      document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    }
   }
 
   disconnectedCallback() {
@@ -23,7 +25,9 @@ export class QuickAdd extends HTMLElement {
 
       document.querySelectorAll('quick-add-modal').forEach((modal) => {
         modal.removeAttribute('open');
-        modal.modalContent.innerHTML = '';
+        if (modal.modalContent) {
+          modal.modalContent.innerHTML = '';
+        }
       });
     }
   }
@@ -84,7 +88,9 @@ export class QuickAdd extends HTMLElement {
   hide() {
     document.body.classList.remove('overflow-hidden');
     this.removeAttribute('open');
-    this.modalContent.innerHTML = '';
+    if (this.modalContent) {
+      this.modalContent.innerHTML = '';
+    }
   }
 
   preprocessContent(element) {

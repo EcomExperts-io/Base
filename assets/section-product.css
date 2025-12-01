@@ -86,7 +86,8 @@ product-info {
 .product__media-wrapper.media-contain .swiper-slide img,
 .product__media-wrapper.media-contain .swiper-slide video,
 .product__media-wrapper.media-contain .swiper-slide iframe {
-  object-fit: contain;
+  object-fit: cover;
+  object-position: top;
 }
 
 .product__info-wrapper {
@@ -795,8 +796,8 @@ shopify-buy-it-now-button .shopify-payment-button__button {
   }
 
   .product-media-gallery__thumbnails .swiper-slide {
-    width: 90px;
-    height: 90px;
+    width: 60px;
+    height: 60px;
   }
 
   .product-media-gallery__nav {
