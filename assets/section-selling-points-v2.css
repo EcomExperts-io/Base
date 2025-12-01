@@ -1,0 +1,188 @@
+/* sections/selling-points-v2.liquid */
+
+/* Base Styles */
+.selling-points-v2__container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.selling-points-v2__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  align-items: stretch;
+}
+
+.selling-points-v2__item {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.selling-points-v2__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 7rem 2rem;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid #1C1A19;
+  border-left: none;
+  flex-grow: 1;
+}
+
+.selling-points-v2__content--link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.selling-points-v2__content--link:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.selling-points-v2__title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+}
+
+.selling-points-v2__description {
+  font-size: 1.6rem;
+  font-weight: 300;
+  line-height: 1.2;
+  max-width: 100%;
+  margin-bottom: 1.6rem;
+}
+
+.selling-points-v2__icon-wrapper {
+  flex-shrink: 0;
+}
+
+.selling-points-v2__icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Swiper Pagination */
+.selling-points-v2-section .swiper-pagination-bullets,
+.selling-points-v2-section .swiper-pagination-horizontal {
+  left: 50%;
+  bottom: 45px;
+}
+
+.selling-points-v2__pagination {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 10;
+}
+
+.selling-points-v2__pagination .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+  border: 1px solid #1C1A19;
+  border-radius: 50%;
+  opacity: 1;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.selling-points-v2__pagination .swiper-pagination-bullet-active {
+  background-color: #D4A574;
+}
+
+/* Desktop (750px+) */
+@media screen and (min-width: 750px) {
+  .selling-points-v2__item:first-child .selling-points-v2__content {
+    border-left: 1px solid #1C1A19;
+  }
+
+  .selling-points-v2__container {
+    overflow: visible;
+  }
+
+  .selling-points-v2__grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    transform: none !important;
+  }
+
+  .selling-points-v2__container.swiper,
+  .selling-points-v2__container.swiper-initialized {
+    overflow: visible !important;
+  }
+
+  .selling-points-v2__grid.swiper-wrapper {
+    display: grid !important;
+    transform: none !important;
+  }
+
+  .selling-points-v2__item.swiper-slide {
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  .selling-points-v2__pagination {
+    display: none !important;
+  }
+}
+
+/* Mobile (max-width: 749px) */
+@media screen and (max-width: 749px) {
+  .selling-points-v2__container--slider {
+    position: relative;
+    padding: 0 0 5rem;
+    border: 1px solid #1C1A19;
+    background-color: #FFFFFF;
+  }
+
+  .selling-points-v2__container--slider .selling-points-v2__grid {
+    display: flex;
+  }
+
+  .selling-points-v2__container--slider .selling-points-v2__item {
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .selling-points-v2__container--slider .selling-points-v2__content {
+    border: none;
+    background-color: transparent;
+    padding: 5rem 2rem 2.5rem;
+  }
+
+  .selling-points-v2__container--slider .selling-points-v2__title {
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+  }
+
+  .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__item {
+    border-bottom: 1px solid #1C1A19;
+  }
+
+  .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__item:last-child {
+    border-bottom: none;
+  }
+}
