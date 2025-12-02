@@ -103,6 +103,8 @@ export class QuickAdd extends HTMLElement {
     element.dataset.updateUrl = 'false';
     element.querySelector('pickup-availability')?.remove();
     element.querySelector('script[src*="component-pickup-availability.js"]')?.remove();
+    element.querySelector('product-media-modal')?.remove();
+    element.querySelector('script[src*="component-product-media-modal.js"]')?.remove();
     element.querySelector('product-recommendations')?.remove();
     element.querySelector('script[src*="product-recommendations.js"]')?.remove();
   }
