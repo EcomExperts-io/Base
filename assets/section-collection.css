@@ -271,7 +271,8 @@ body.collection .shopify-section.section .page-width {
   position: relative;
   font-size: 14px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  gap: 8px;
   word-break: break-word;
   cursor: pointer;
   line-height: 1;
