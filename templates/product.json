@@ -134,7 +134,7 @@
         "media_position": "left",
         "media_layout": "thumbnail",
         "mobile_media_layout": "thumbnail",
-        "image_zoom": "hover",
+        "image_zoom": "lightbox",
         "enable_video_looping": true,
         "padding_top": 36,
         "padding_bottom": 100,
