@@ -23,6 +23,7 @@ export class ProductInfo extends HTMLElement {
 
   initSwiper() {
     const thumbnailGalleryEl = this.querySelector('.product-media-gallery__thumbnails');
+    const thumbnailWrapperEl = this.querySelector('.product-media-gallery__thumbnails-wrapper');
     if (thumbnailGalleryEl) {
 
       const mainGalleryEl = this.querySelector('.product-media-gallery__main');
@@ -31,26 +32,21 @@ export class ProductInfo extends HTMLElement {
           spaceBetween: 0,
           thumbs: {
             swiper: new Swiper(thumbnailGalleryEl, {
-              spaceBetween: 0,
-              slidesPerView: 5,
+              spaceBetween: 12,
+              slidesPerView: 'auto',
               freeMode: true,
               watchSlidesProgress: true,
+              slideToClickedSlide: true,
               navigation: {
-                prevEl: thumbnailGalleryEl.querySelector('.swiper-button-prev'),
-                nextEl: thumbnailGalleryEl.querySelector('.swiper-button-next'),
+                prevEl: thumbnailWrapperEl?.querySelector('.swiper-button-prev') || thumbnailGalleryEl.querySelector('.swiper-button-prev'),
+                nextEl: thumbnailWrapperEl?.querySelector('.swiper-button-next') || thumbnailGalleryEl.querySelector('.swiper-button-next'),
               },
               breakpoints: {
-                600: {
-                  slidesPerView: 6,
-                  spaceBetween: 0,
-                },
                 768: {
-                  slidesPerView: 5,
-                  spaceBetween: 0,
+                  spaceBetween: 14,
                 },
                 1024: {
-                  slidesPerView: 6,
-                  spaceBetween: 0,
+                  spaceBetween: 16,
                 }
               }
             }),
