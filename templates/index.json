@@ -188,13 +188,73 @@
         "selling_point_3",
         "selling_point_4"
       ],
-      "settings": {}
+      "settings": {
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "background_color": "#ffffff",
+        "text_color": "#000000",
+        "title_color": "#000000",
+        "icon_size": 60
+      }
+    },
+    "selling_points_v2_6NgzaK": {
+      "type": "selling-points-v2",
+      "blocks": {
+        "selling_point_FiGVm7": {
+          "type": "selling_point",
+          "settings": {
+            "title": "15% OFF FIRST ORDER",
+            "description": "Subscribe to our mailing list for 15% off your first order",
+            "link_url": "shopify://collections/spring"
+          }
+        },
+        "selling_point_LKeBYR": {
+          "type": "selling_point",
+          "settings": {
+            "title": "INSTANT REFUNDS & EXCHANGES",
+            "description": "Get your new items or refund sent out straight away on UK & EU orders",
+            "link_url": "shopify://collections/luxury-pret"
+          }
+        },
+        "selling_point_YAEXV8": {
+          "type": "selling_point",
+          "settings": {
+            "title": "FREE WORLDWIDE DELIVERY",
+            "description": "Free worldwide delivery on all orders over £70",
+            "link_url": ""
+          }
+        },
+        "selling_point_Y6iWMM": {
+          "type": "selling_point",
+          "settings": {
+            "title": "45 DAY RETURNS",
+            "description": "We now offer an extended\nreturns policy for\ninternational customers",
+            "link_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "selling_point_FiGVm7",
+        "selling_point_LKeBYR",
+        "selling_point_YAEXV8",
+        "selling_point_Y6iWMM"
+      ],
+      "name": "Selling Points V2",
+      "settings": {
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "background_color": "#fefefe",
+        "text_color": "#000000",
+        "title_color": "#000000",
+        "enable_mobile_slider": true
+      }
     }
   },
   "order": [
     "hero_1",
     "featured_collections_hhETJ9",
     "featured_products_example",
-    "selling_points_example"
+    "selling_points_example",
+    "selling_points_v2_6NgzaK"
   ]
 }

@@ -28,11 +28,11 @@ export class ProductInfo extends HTMLElement {
       const mainGalleryEl = this.querySelector('.product-media-gallery__main');
       if (mainGalleryEl) {
         this.swiper = new Swiper(mainGalleryEl, {
-          spaceBetween: 10,
+          spaceBetween: 0,
           thumbs: {
             swiper: new Swiper(thumbnailGalleryEl, {
-              spaceBetween: 10,
-              slidesPerView: 4,
+              spaceBetween: 0,
+              slidesPerView: 5,
               freeMode: true,
               watchSlidesProgress: true,
               navigation: {
@@ -40,13 +40,17 @@ export class ProductInfo extends HTMLElement {
                 nextEl: thumbnailGalleryEl.querySelector('.swiper-button-next'),
               },
               breakpoints: {
+                600: {
+                  slidesPerView: 6,
+                  spaceBetween: 0,
+                },
                 768: {
                   slidesPerView: 5,
-                  spaceBetween: 12,
+                  spaceBetween: 0,
                 },
                 1024: {
                   slidesPerView: 6,
-                  spaceBetween: 15,
+                  spaceBetween: 0,
                 }
               }
             }),

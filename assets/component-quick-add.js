@@ -9,11 +9,17 @@ export class QuickAdd extends HTMLElement {
   }
 
   connectedCallback() {
-    document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    if (!this.initialized) {
+      this.initialized = true;
+      document.body.appendChild(this);
+      document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    }
   }
 
   disconnectedCallback() {
-    document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    if (this.initialized) {
+      document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    }
   }
 
   onCartRequestEnd(event) {
@@ -23,7 +29,9 @@ export class QuickAdd extends HTMLElement {
 
       document.querySelectorAll('quick-add-modal').forEach((modal) => {
         modal.removeAttribute('open');
-        modal.modalContent.innerHTML = '';
+        if (modal.modalContent) {
+          modal.modalContent.innerHTML = '';
+        }
       });
     }
   }
@@ -31,7 +39,6 @@ export class QuickAdd extends HTMLElement {
   setupModal() {
     this.modal = this.querySelector('[role="dialog"]');
     this.modalContent = this.querySelector('[id^="QuickAddInfo-"]');
-    document.body.appendChild(this);
   }
 
   bindEvents() {
@@ -84,7 +91,9 @@ export class QuickAdd extends HTMLElement {
   hide() {
     document.body.classList.remove('overflow-hidden');
     this.removeAttribute('open');
-    this.modalContent.innerHTML = '';
+    if (this.modalContent) {
+      this.modalContent.innerHTML = '';
+    }
   }
 
   preprocessContent(element) {
@@ -94,6 +103,8 @@ export class QuickAdd extends HTMLElement {
     element.dataset.updateUrl = 'false';
     element.querySelector('pickup-availability')?.remove();
     element.querySelector('script[src*="component-pickup-availability.js"]')?.remove();
+    element.querySelector('product-media-modal')?.remove();
+    element.querySelector('script[src*="component-product-media-modal.js"]')?.remove();
     element.querySelector('product-recommendations')?.remove();
     element.querySelector('script[src*="product-recommendations.js"]')?.remove();
   }

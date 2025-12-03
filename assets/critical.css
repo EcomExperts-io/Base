@@ -52,10 +52,6 @@ body {
   position: relative;
 }
 
-/* Ensure consistent spacing and proper stacking context */
-#MainContent {
-  isolation: isolate;
-}
 
 /**
  * Skip Navigation Link

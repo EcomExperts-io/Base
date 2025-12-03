@@ -54,15 +54,43 @@
 
   .filters__show-more {
     background: white;
-    border: 1px solid;
-    padding: 10px 5px;
+    border: none;
+    padding: 10px 0px;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 10px;
     outline: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .filters__show-more:hover {
-    outline: 1px solid black;
+  .filters__show-more span.icon-plus svg,
+  .filters__show-more span.icon-minus svg {
+    width: 15px;
+    height: 15px;
+  }
+  .icon-filter-rounded {
+    height: 16px;
+    width: 16px;
+    border-radius: 5px;
+    border: 1px solid rgba(var(--color-foreground), 0.5);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-filter-rounded svg {
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .facet-checkbox input:checked ~ .icon-filter-rounded svg {
+    opacity: 1;
+  }
+  .filter-label {
+    padding-top: 2px;
   }
 {%- endstyle -%}
 
@@ -133,11 +161,11 @@
                       disabled
                     {% endif -%}
                   >
-                  {{- 'icon-square.svg' | inline_asset_content -}}
-                  <div class="svg-wrapper">
+                  {% comment %} {{- 'icon-square.svg' | inline_asset_content -}} {% endcomment %}
+                  <span class="icon-filter-rounded">
                     {{- 'icon-checkmark.svg' | inline_asset_content -}}
-                  </div>
-                  {{- v.label }} {% if show_filter_count %} ({{ v.count }}){% endif %}
+                  </span>
+                  <span class="filter-label">{{- v.label }} {% if show_filter_count %} ({{ v.count }}){% endif %}</span>
                 </label>
               {% endfor %}
             {% endif %}
@@ -146,9 +174,10 @@
                 type="button"
                 class="filters__show-more"
                 x-on:click="showMore = !showMore"
-                x-text="showMore ? 'Show less' : 'Show more'"
               >
-                Show more
+                <span class="icon-plus" x-show="!showMore">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+                <span class="icon-minus" x-show="showMore">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+                <span x-text="showMore ? 'Show less' : 'Show more'">Show more</span>
               </button>
             {%- endif %}
           </div>

@@ -165,6 +165,16 @@ quick-add-modal .product-media-container.constrain-height {
   --viewport-offset: calc((var(--modal-height-offset) + var(--modal-padding) + 0.1rem) * 2);
 }
 
+quick-add-modal .product:not(.product--no-media) .product__info-wrapper {
+  padding-bottom: 2rem;
+}
+
+quick-add-modal .product-media-modal[open] {
+  visibility: hidden;
+  opacity: 0;
+  z-index: -1;
+}
+
 [processing] .loading__spinner {
   display: block !important;
 }
@@ -206,7 +216,11 @@ quick-add-modal .product-media-container.constrain-height {
     margin-top: var(--modal-height-offset);
     width: 80%;
     max-height: calc(100% - var(--modal-height-offset) * 2);
-    overflow-y: auto;
+    overflow: hidden;
+  }
+
+  .quick-add-modal__content-info {
+    max-height: calc(100vh - var(--modal-height-offset) * 2);
   }
 
   quick-add-modal .quick-add-modal__toggle {
@@ -223,6 +237,7 @@ quick-add-modal .product-media-container.constrain-height {
   quick-add-modal .product:not(.product--no-media) .product__info-wrapper {
     padding-top: 2rem;
     padding-left: 4rem;
+    padding-bottom: 2rem;
     max-width: 54%;
     width: calc(54% - var(--page-margin) / 2);
   }

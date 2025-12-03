@@ -199,9 +199,25 @@
     font-size: 16px;
   }
 
-  .filter__values-wrapper .facet-checkbox .svg-wrapper {
-    top: 11px;
-    transform: translate(0px, 10px);
+  .filter__values-wrapper .facet-checkbox .icon-filter-rounded {
+    height: 15px;
+    width: 15px;
+    border-radius: 5px;
+    border: 1px solid rgba(var(--color-foreground), 0.5);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .filter__values-wrapper .facet-checkbox .icon-filter-rounded svg {
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .filter__values-wrapper .facet-checkbox input:checked ~ .icon-filter-rounded svg {
+    opacity: 1;
   }
 
   .mobile-facets__footer {
@@ -410,12 +426,14 @@
                             disabled
                           {% endif -%}
                         >
-                        {{- 'icon-square.svg' | inline_asset_content -}}
-                        <div class="svg-wrapper">
+                        {% comment %} {{- 'icon-square.svg' | inline_asset_content -}} {% endcomment %}
+                        <span class="icon-filter-rounded">
                           {{- 'icon-checkmark.svg' | inline_asset_content -}}
-                        </div>
-                        {{- v.label }}
+                        </span>
+                        <span class="filter-label">
+                          {{- v.label }}
                         {% if show_filter_count != blank %} ({{ v.count }}){% endif %}
+                        </span>
                       </label>
                     {%- endfor -%}
                   {% endif %}
