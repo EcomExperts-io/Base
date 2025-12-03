@@ -21,6 +21,12 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: white;
+    transition: transform 0.3s ease;
   }
 
   .drawer-main-wrapper:not(.drawer-active) .drawer-overlay {
@@ -32,7 +38,7 @@
   }
 
   .drawer-main-wrapper:not(.drawer-active) .drawer__wrapper {
-    transform: translate(100%, 0px);
+    transform: translate(-100%, 0px);
   }
 
   .drawer__facet-button-trigger {
@@ -63,9 +69,8 @@
   .child-facets__header-wrapper {
     border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
     padding: 15px 25px;
-    text-align: center;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     position: relative;
     z-index: 2;
     background: white;
@@ -149,6 +154,35 @@
     overflow-y: auto;
     min-height: 0;
     padding-bottom: 50px;
+  }
+
+  .see-items-button {
+    position: fixed;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    width: 90%;
+    background: #000;
+    color: #fff;
+    border: none;
+    margin: 0 auto;
+    border-radius: 8px;
+    padding: 12px 0px;
+    cursor: pointer;
+  }
+
+  #active-filters-count-{{ section_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #active-filters-count-{{ section_id }} span {
+    font-size: 1.3rem;
+    font-weight: 500;
+    background: rgb(0,0,0, 0.1);
+    border-radius: 20px;
+    padding: 3px 6px;
   }
 
   .facets__values-drawer {
@@ -254,7 +288,11 @@
 
   @media screen and (max-width: 768px) {
     .drawer-main-wrapper .mobile-facets__heading {
-      font-size: 14px;
+      font-size: 2.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .drawer-main-wrapper .mobile-facets__count {
       font-size: 13px;
@@ -275,7 +313,22 @@
   }
 {%- endstyle -%}
 
-{% assign show_more_number = 10 %}
+{% liquid
+  assign show_more_number = 10
+  assign active_filters_count = 0
+  
+  for f in results.filters
+    if f.type == 'price_range'
+      if f.min_value.value and f.min_value.value != blank
+        assign active_filters_count = active_filters_count | plus: 1
+      elsif f.max_value.value and f.max_value.value != blank
+        assign active_filters_count = active_filters_count | plus: 1
+      endif
+    else
+      assign active_filters_count = active_filters_count | plus: f.active_values.size
+    endif
+  endfor
+%}
 <div
   x-data="{ open: false }"
   class="drawer-main-wrapper color-{{ color_scheme | default: 'scheme-1' }} {% unless enable_filtering %}large-up-hide{% endunless %}"
@@ -320,6 +373,11 @@
             {%- elsif enable_sorting -%}
               {{ 'products.facets.sort_button' | t }}
             {%- endif -%}
+            <span id="active-filters-count-{{ section_id }}">
+              {% if active_filters_count > 0 %}
+                <span>{{ active_filters_count }}</span>
+              {% endif %}
+            </span>
           </h2>
           <h2 class="mobile-facets__heading small-hide">
             {%- if enable_filtering -%}
@@ -328,7 +386,7 @@
               {{ 'products.facets.sort_button' | t }}
             {%- endif -%}
           </h2>
-          <div class="drawer__count-wrapper">
+          <div class="drawer__count-wrapper hidden">
             <p class="mobile-facets__count" id="drawer-results-count-{{ section_id }}">
               {% if context == 'collection' %}
                 {%- if results.products_count == results.all_products_count -%}
@@ -452,6 +510,10 @@
             </div>
           </div>
         {%- endif -%}
+
+        <button type="button" id="see-items-button-{{ section_id }}" class="see-items-button" @click="open = !open">
+          See {{ results.products_count }} items
+        </button>
       </div>
     </form>
   </div>

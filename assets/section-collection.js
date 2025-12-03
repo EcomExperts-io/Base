@@ -90,6 +90,8 @@ export class CollectionInfo extends HTMLElement {
         this.updateSourceFromDestination(html, `product-grid-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `results-count-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `drawer-results-count-${this.dataset.section}`);
+        this.updateSourceFromDestination(html, `see-items-button-${this.dataset.section}`);
+        this.updateSourceFromDestination(html, `active-filters-count-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `active-filter-group-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `sort-by-drawer-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `sort-by-${this.dataset.section}`);
