@@ -18,6 +18,9 @@
   .filters-drawer {
     width: calc(100% - 50px);
     max-width: 370px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   .drawer-main-wrapper:not(.drawer-active) .drawer-overlay {
@@ -54,6 +57,7 @@
 
   .facets__header-drawer {
     position: relative;
+    flex-shrink: 0;
   }
 
   .child-facets__header-wrapper {
@@ -62,9 +66,9 @@
     text-align: center;
     display: flex;
     justify-content: center;
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 2;
+    background: white;
   }
 
   .mobile-facets__heading {
@@ -108,6 +112,13 @@
     right: -2px;
   }
 
+  .filters__drawer-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
   .drawer__child-facets-wrapper,
   .drawer__child-sorting-wrapper {
     padding: 30px 25px 15px 25px;
@@ -115,88 +126,44 @@
 
   .drawer__child-sorting-wrapper {
     padding-top: 15px;
+    flex-shrink: 0;
   }
 
   .mobile-facets__block {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 17px 0px;
-    cursor: pointer;
-  }
-
-  .mobile-facets__block span {
     font-size: 16px;
     letter-spacing: 0.6px;
+    font-weight: 500;
+    padding: 17px 0px 12px 0px;
+    border-top: 1px solid rgba(var(--color-foreground), 0.1);
   }
 
-  .mobile-facets__block .svg-wrapper {
-    width: 15px;
-    height: 15px;
+  .single-facet__link:first-child .mobile-facets__block {
+    border-top: none;
   }
 
   .drawer__facets-wrapper {
     width: 100%;
-    height: 100%;
+    flex: 1;
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
+    min-height: 0;
     padding-bottom: 50px;
   }
 
   .facets__values-drawer {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    transform: translate(100%);
-    background: white;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.3s ease;
-    z-index: 10;
-    overflow-y: hidden;
-  }
-
-  .facets__values-drawer.child-drawer-active {
-    transform: translate(0px);
-  }
-
-  .mobile-facets__close-button {
-    padding: 12px 26px;
-    padding-bottom: 20px;
-    border: 0px;
-    background: none;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin-top: 20px;
-    cursor: pointer;
-  }
-
-  .mobile-facets__close-button span {
-    margin-left: 10px;
-    font-size: 16px;
-    letter-spacing: 0.8px;
-  }
-
-  .mobile-facets__close-button .svg-wrapper {
-    transform: rotate(180deg);
+    padding-bottom: 10px;
   }
 
   .filter__values-wrapper {
-    padding: 10px 26px;
-    padding-top: 0px;
-    overflow-y: scroll;
-    height: 100%;
-    max-height: calc(100% - 200px);
-    display: block;
-    padding-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
   }
 
   .filter__values-wrapper .facet-checkbox {
-    padding: 17px 0px;
-    font-size: 16px;
+    padding: 14px 0px;
+    font-size: 15px;
   }
 
   .filter__values-wrapper .facet-checkbox .icon-filter-rounded {
@@ -218,6 +185,25 @@
 
   .filter__values-wrapper .facet-checkbox input:checked ~ .icon-filter-rounded svg {
     opacity: 1;
+  }
+
+  .filters__show-more {
+    background: white;
+    border: none;
+    padding: 10px 0px;
+    cursor: pointer;
+    margin-top: 10px;
+    outline: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+  }
+
+  .filters__show-more span.icon-plus svg,
+  .filters__show-more span.icon-minus svg {
+    width: 15px;
+    height: 15px;
   }
 
   .mobile-facets__footer {
@@ -276,24 +262,20 @@
     .drawer-main-wrapper .mobile-facets__block span {
       font-size: 15px;
     }
-    .drawer-main-wrapper .mobile-facets__close-button span {
-      font-size: 15px;
-    }
-    .drawer-main-wrapper .mobile-facets__arrow .svg-wrapper {
-      width: 15px;
-    }
     .drawer-main-wrapper .facet-filters__sort {
       font-size: 12px;
     }
     .drawer-main-wrapper .filter__values-wrapper .facet-checkbox {
-      font-size: 15px;
+      font-size: 14px;
+      padding: 12px 0px;
     }
-    .drawer-main-wrapper .mobile-facets__close-button .svg-wrapper {
-      width: 15px;
+    .drawer-main-wrapper .mobile-facets__block {
+      font-size: 15px;
     }
   }
 {%- endstyle -%}
 
+{% assign show_more_number = 10 %}
 <div
   x-data="{ open: false }"
   class="drawer-main-wrapper color-{{ color_scheme | default: 'scheme-1' }} {% unless enable_filtering %}large-up-hide{% endunless %}"
@@ -372,38 +354,23 @@
       </div>
     </div>
     <form id="filters-form-drawer" class="filters__drawer-form">
-      <div class="drawer__facets-wrapper" x-data="{ openFilter: $persist(true).as('openFilter') }">
+      <div class="drawer__facets-wrapper">
         <div class="drawer__child-facets-wrapper">
           {%- for f in results.filters -%}
             <div
               id="Details-{{ f.param_name | escape }}-{{ section_id }}-Drawer"
               class="single-facet__link js-filter"
             >
-              <div
-                class="mobile-facets__block"
-                @click="openFilter = openFilter === {{ forloop.index }} ? null : {{ forloop.index }}"
-              >
+              <div class="mobile-facets__block">
                 <span>{{ f.label }}</span>
-                <span class="mobile-facets__arrow">
-                  <div class="svg-wrapper">
-                    {{ 'icon-arrow.svg' | inline_asset_content }}
-                  </div>
-                </span>
               </div>
-              <div class="facets__values-drawer" :class="{ 'child-drawer-active': openFilter === {{ forloop.index }} }">
-                <button
-                  type="button"
-                  class="mobile-facets__close-button"
-                  @click.stop="openFilter = null"
-                >
-                  <div class="svg-wrapper">
-                    {{ 'icon-arrow.svg' | inline_asset_content }}
-                  </div>
-                  <span>{{ f.label }}</span>
-                </button>
+              <div
+                class="facets__values-drawer"
+                x-data="{ showMore : $persist(false).as('sm-drawer-{{ f.param_name }}') }"
+              >
                 <div class="filter__values-wrapper">
                   {% if f.type == 'price_range' %}
-                    {% render 'component-filters-price-range', filter: f, id_prefix: 'Filter-' %}
+                    {% render 'component-filters-price-range', filter: f, id_prefix: 'Filter-Drawer-' %}
                   {% else %}
                     {%- for v in f.values -%}
                       {%- assign input_id = 'Filter-Drawer-'
@@ -412,7 +379,13 @@
                         | append: '-'
                         | append: forloop.index
                       -%}
-                      <label class="facet-checkbox">
+                      <label
+                        class="facet-checkbox"
+                        {% if forloop.index > show_more_number %}
+                          x-show="showMore"
+                          x-transition
+                        {% endif %}
+                      >
                         <input
                           id="{{ input_id }}"
                           type="checkbox"
@@ -426,7 +399,6 @@
                             disabled
                           {% endif -%}
                         >
-                        {% comment %} {{- 'icon-square.svg' | inline_asset_content -}} {% endcomment %}
                         <span class="icon-filter-rounded">
                           {{- 'icon-checkmark.svg' | inline_asset_content -}}
                         </span>
@@ -437,6 +409,17 @@
                       </label>
                     {%- endfor -%}
                   {% endif %}
+                  {%- if f.type != 'price_range' and f.values.size > show_more_number -%}
+                    <button
+                      type="button"
+                      class="filters__show-more"
+                      x-on:click="showMore = !showMore"
+                    >
+                      <span class="icon-plus" x-show="!showMore">{{ 'icon-plus.svg' | inline_asset_content }}</span>
+                      <span class="icon-minus" x-show="showMore">{{ 'icon-minus.svg' | inline_asset_content }}</span>
+                      <span x-text="showMore ? 'Show less' : 'Show more'">Show more</span>
+                    </button>
+                  {%- endif %}
                 </div>
               </div>
             </div>
