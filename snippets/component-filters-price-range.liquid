@@ -33,6 +33,16 @@
     color: #707070;
   }
 
+  .price-field input, .price-field span {
+    border: none;
+    box-shadow: none;
+  }
+
+  .price-field input:focus, .price-field span:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
   .price-input {
     width: 100%;
     font-size: 14px;
@@ -94,7 +104,27 @@
     background: black;
     pointer-events: auto;
     -webkit-appearance: none;
+    cursor: pointer;
   }
+
+  /* Styles for the range thumb in Firefox */
+  input[type='range']::-moz-range-thumb {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background: black;
+    pointer-events: auto;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Styles for the range track in Firefox */
+  input[type='range']::-moz-range-track {
+    height: 4px;
+    background: transparent;
+    border: none;
+  }
+
   .price-range-main {
     padding-block: 20px;
   }

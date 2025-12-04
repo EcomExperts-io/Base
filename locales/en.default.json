@@ -277,7 +277,7 @@
     "facets": {
       "filter_button": "Filter",
       "sort_button": "Sort",
-      "filter_and_sort": "Filter & sort",
+      "filter_and_sort": "Filter & Sort",
       "sort_by_label": "Sort by:",
       "results_count": "{{ count }} products",
       "results_count_of": "{{ count }} of {{ total }}",

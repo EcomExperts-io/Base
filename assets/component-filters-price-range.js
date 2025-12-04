@@ -67,8 +67,6 @@ export class PriceRange extends HTMLElement {
     min = Math.max(0, Math.min(min, maxRange));
     max = Math.max(0, Math.min(max, maxRange));
 
-    console.log(min, max);
-
     this.rangeInputs[0].value = min;
     this.rangeInputs[1].value = max;
     this.numberInputs[0].value = min;

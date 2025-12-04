@@ -174,26 +174,28 @@
       </div>
     </div>
 
-    <div class="swiper product-media-gallery__thumbnails">
-      <div class="swiper-wrapper">
-        {% assign media_index = 0 %}
-        {% if selected_variant.featured_image != null %}
-          <div class="swiper-slide" data-media-id="{{ selected_variant.featured_media.id }}">
-            {% render 'component-product-media', media: selected_variant.featured_media, loop: video_looping %}
-          </div>
-          {% assign media_index = media_index | plus: 1 %}
-        {% endif %}
-        {% for media in product_media %}
-          {% unless selected_variant.featured_media.id == media.id %}
-            <div class="swiper-slide" data-media-id="{{ media.id }}">
-              {% render 'component-product-media', media: media, loop: video_looping %}
+    <div class="product-media-gallery__thumbnails-wrapper">
+      <div class="swiper-button-prev product-media-gallery__nav product-media-gallery__nav--prev"></div>
+      <div class="swiper product-media-gallery__thumbnails">
+        <div class="swiper-wrapper">
+          {% assign media_index = 0 %}
+          {% if selected_variant.featured_image != null %}
+            <div class="swiper-slide" data-media-id="{{ selected_variant.featured_media.id }}">
+              {% render 'component-product-media', media: selected_variant.featured_media, loop: video_looping %}
             </div>
             {% assign media_index = media_index | plus: 1 %}
-          {% endunless %}
-        {% endfor %}
+          {% endif %}
+          {% for media in product_media %}
+            {% unless selected_variant.featured_media.id == media.id %}
+              <div class="swiper-slide" data-media-id="{{ media.id }}">
+                {% render 'component-product-media', media: media, loop: video_looping %}
+              </div>
+              {% assign media_index = media_index | plus: 1 %}
+            {% endunless %}
+          {% endfor %}
+        </div>
       </div>
-      <div class="swiper-button-prev product-media-gallery__nav product-media-gallery__nav--prev">&nbsp;</div>
-      <div class="swiper-button-next product-media-gallery__nav product-media-gallery__nav--next">&nbsp;</div>
+      <div class="swiper-button-next product-media-gallery__nav product-media-gallery__nav--next"></div>
     </div>
   {%- endif -%}
 
@@ -280,9 +282,9 @@
           {% endunless %}
         {% endfor %}
       </div>
-      <div class="swiper-pagination product-media-gallery__pagination">&nbsp;</div>
-      <div class="swiper-button-prev product-media-gallery__nav product-media-gallery__nav--prev">&nbsp;</div>
-      <div class="swiper-button-next product-media-gallery__nav product-media-gallery__nav--next">&nbsp;</div>
+      <div class="swiper-pagination product-media-gallery__pagination"></div>
+      <div class="swiper-button-prev product-media-gallery__nav product-media-gallery__nav--prev"></div>
+      <div class="swiper-button-next product-media-gallery__nav product-media-gallery__nav--next"></div>
       {%- if is_zoom != 'none' -%}
         <div class="product__media-icon {% if is_zoom == 'hover' %}hover-zoom-enabled{% endif %}">
           <span class="lightbox-icon">
