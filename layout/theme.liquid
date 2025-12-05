@@ -24,6 +24,40 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
+    <style>
+      .first-visit-overlay {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        font: 16px/1.4 system-ui, sans-serif;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 250ms ease;
+        z-index: 9999;
+      }
+
+      .first-visit-overlay[data-hidden='true'],
+      .first-visit-returning .first-visit-overlay {
+        opacity: 0;
+        visibility: hidden;
+      }
+    </style>
+
+    <script>
+      (() => {
+        try {
+          if (sessionStorage.getItem('firstVisitSeen')) {
+            document.documentElement.classList.add('first-visit-returning');
+          }
+        } catch (_error) {
+          document.documentElement.classList.add('first-visit-returning');
+        }
+      })();
+    </script>
+
 
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
@@ -59,7 +93,11 @@
     <a class="skip-to-content-link visually-hidden" href="#MainContent">
       Skip to content
     </a>
-    
+
+    <div class="first-visit-overlay" id="FirstVisitOverlay">
+      <p>{{ 'general.first_visit_overlay.message' | t }}</p>
+    </div>
+
     {% sections 'header-group' %}
 
     <main id="MainContent" class="content-for-layout" tabindex="-1">
@@ -71,5 +109,46 @@
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'component-predictive-search.js' | asset_url }}" type="module"></script>
     {%- endif -%}
+
+    <script>
+      (() => {
+        const STORAGE_KEY = 'firstVisitSeen';
+        const overlay = document.getElementById('FirstVisitOverlay');
+        const root = document.documentElement;
+
+        if (!overlay) return;
+
+        let hasSeen = false;
+
+        try {
+          hasSeen = Boolean(sessionStorage.getItem(STORAGE_KEY));
+        } catch (_error) {
+          overlay.setAttribute('data-hidden', 'true');
+          overlay.remove();
+          return;
+        }
+
+        const hideOverlay = () => {
+          overlay.setAttribute('data-hidden', 'true');
+          sessionStorage.setItem(STORAGE_KEY, '1');
+          root.classList.add('first-visit-returning');
+          setTimeout(() => overlay.remove(), 250);
+        };
+
+        if (hasSeen) {
+          root.classList.add('first-visit-returning');
+          overlay.remove();
+          return;
+        }
+
+        window.addEventListener(
+          'load',
+          () => {
+            setTimeout(hideOverlay, 600);
+          },
+          { once: true }
+        );
+      })();
+    </script>
   </body>
 </html>
