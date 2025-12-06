@@ -251,6 +251,17 @@
         "info": "t:settings_schema.first_visit_overlay.settings.hide_delay.info"
       },
       {
+        "type": "range",
+        "id": "first_visit_overlay_fade_duration",
+        "min": 200,
+        "max": 6000,
+        "step": 100,
+        "default": 4000,
+        "unit": "ms",
+        "label": "t:settings_schema.first_visit_overlay.settings.fade_duration.label",
+        "info": "t:settings_schema.first_visit_overlay.settings.fade_duration.info"
+      },
+      {
         "type": "text",
         "id": "first_visit_overlay_storage_key",
         "label": "t:settings_schema.first_visit_overlay.settings.storage_key.label",

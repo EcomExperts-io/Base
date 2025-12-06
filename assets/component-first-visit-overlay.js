@@ -1,11 +1,13 @@
 const STORAGE_KEY_FALLBACK = 'firstVisitSeen';
-const TRANSITION_BUFFER = 4600;
+const FADE_DURATION_FALLBACK = 4000;
+const BUFFER_OFFSET = 600;
 
 class FirstVisitOverlay extends HTMLElement {
   constructor() {
     super();
     this.hideDelay = Number(this.dataset.hideDelay || '600');
     this.storageKey = this.dataset.storageKey || STORAGE_KEY_FALLBACK;
+    this.fadeDuration = Number(this.dataset.fadeDuration || FADE_DURATION_FALLBACK);
     this._handleLoad = this._handleLoad.bind(this);
   }
 
@@ -43,7 +45,7 @@ class FirstVisitOverlay extends HTMLElement {
 
     window.setTimeout(() => {
       this.remove();
-    }, TRANSITION_BUFFER);
+    }, this.fadeDuration + BUFFER_OFFSET);
   }
 }
 

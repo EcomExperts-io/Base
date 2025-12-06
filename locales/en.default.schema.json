@@ -881,6 +881,10 @@
           "label": "Hide delay (ms)",
           "info": "Add a short delay after the load event before fading the overlay out."
         },
+        "fade_duration": {
+          "label": "Fade duration (ms)",
+          "info": "Control how long it takes for the overlay to fully fade away."
+        },
         "storage_key": {
           "label": "Session storage key",
           "info": "Use a unique key if you need to reset or run multiple overlays."

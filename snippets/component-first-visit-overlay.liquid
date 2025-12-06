@@ -1,11 +1,14 @@
 {% liquid
   assign overlay_hide_delay = settings.first_visit_overlay_hide_delay | default: 600
   assign overlay_storage_key = settings.first_visit_overlay_storage_key | default: 'firstVisitSeen'
+  assign overlay_fade_duration = settings.first_visit_overlay_fade_duration | default: 4000
 %}
 <first-visit-overlay
   class="first-visit-overlay"
   data-storage-key="{{ overlay_storage_key | escape }}"
   data-hide-delay="{{ overlay_hide_delay }}"
+  data-fade-duration="{{ overlay_fade_duration }}"
+  style="--first-visit-overlay-fade-duration: {{ overlay_fade_duration }}ms;"
 >
   <p role="status" aria-live="polite">
     {{ 'general.first_visit_overlay.message' | t }}

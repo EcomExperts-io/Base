@@ -270,9 +270,9 @@ first-visit-overlay,
   visibility: visible;
   transform: scale(1);
   transition:
-    opacity 4000ms ease,
-    transform 4000ms ease,
-    visibility 0s linear 4000ms;
+    opacity var(--first-visit-overlay-fade-duration, 4000ms) ease,
+    transform var(--first-visit-overlay-fade-duration, 4000ms) ease,
+    visibility 0s linear var(--first-visit-overlay-fade-duration, 4000ms);
   z-index: 9999;
 }
 
