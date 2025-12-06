@@ -4,7 +4,6 @@
 <script>
   (() => {
     const storageKey = {{ splash_storage_key | json }};
-
     if (!storageKey) return;
 
     try {
@@ -12,6 +11,7 @@
         document.documentElement.classList.add('splash-screen-returning');
       }
     } catch (_error) {
+      console.error('Error checking splash screen', _error);
       document.documentElement.classList.add('splash-screen-returning');
     }
   })();
