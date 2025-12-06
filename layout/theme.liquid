@@ -24,6 +24,10 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
+    {%- if settings.splash_screen_enabled -%}
+      {% render 'component-splash-screen-head' %}
+    {%- endif -%}
+
 
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
@@ -59,7 +63,11 @@
     <a class="skip-to-content-link visually-hidden" href="#MainContent">
       Skip to content
     </a>
-    
+
+    {%- if settings.splash_screen_enabled -%}
+      {% render 'component-splash-screen' %}
+    {%- endif -%}
+
     {% sections 'header-group' %}
 
     <main id="MainContent" class="content-for-layout" tabindex="-1">
@@ -70,6 +78,10 @@
 
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'component-predictive-search.js' | asset_url }}" type="module"></script>
+    {%- endif -%}
+
+    {%- if settings.splash_screen_enabled -%}
+      <script src="{{ 'component-splash-screen.js' | asset_url }}" type="module"></script>
     {%- endif -%}
   </body>
 </html>

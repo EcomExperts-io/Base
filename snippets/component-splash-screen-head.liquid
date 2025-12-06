@@ -1,0 +1,19 @@
+{% liquid
+  assign splash_storage_key = settings.splash_screen_storage_key | default: 'splashScreenSeen'
+%}
+<script>
+  (() => {
+    const storageKey = {{ splash_storage_key | json }};
+
+    if (!storageKey) return;
+
+    try {
+      if (sessionStorage.getItem(storageKey)) {
+        document.documentElement.classList.add('splash-screen-returning');
+      }
+    } catch (_error) {
+      document.documentElement.classList.add('splash-screen-returning');
+    }
+  })();
+</script>
+

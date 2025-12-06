@@ -230,6 +230,47 @@
     ]
   },
   {
+    "name": "t:settings_schema.splash_screen.name",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "splash_screen_enabled",
+        "default": false,
+        "label": "t:settings_schema.splash_screen.settings.enabled.label",
+        "info": "t:settings_schema.splash_screen.settings.enabled.info"
+      },
+      {
+        "type": "range",
+        "id": "splash_screen_hide_delay",
+        "min": 200,
+        "max": 5000,
+        "step": 50,
+        "default": 600,
+        "unit": "ms",
+        "label": "t:settings_schema.splash_screen.settings.hide_delay.label",
+        "info": "t:settings_schema.splash_screen.settings.hide_delay.info"
+      },
+      {
+        "type": "range",
+        "id": "splash_screen_fade_duration",
+        "min": 200,
+        "max": 6000,
+        "step": 100,
+        "default": 4000,
+        "unit": "ms",
+        "label": "t:settings_schema.splash_screen.settings.fade_duration.label",
+        "info": "t:settings_schema.splash_screen.settings.fade_duration.info"
+      },
+      {
+        "type": "text",
+        "id": "splash_screen_storage_key",
+        "label": "t:settings_schema.splash_screen.settings.storage_key.label",
+        "info": "t:settings_schema.splash_screen.settings.storage_key.info",
+        "default": "splashScreenSeen"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.brand_information.name",
     "settings": [
       {

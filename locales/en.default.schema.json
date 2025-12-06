@@ -869,8 +869,28 @@
           "info": "Display the product price in results"
         }
       }
-    }
-    ,
+    },
+    "splash_screen": {
+      "name": "Splash Screen",
+      "settings": { 
+        "enabled": {
+          "label": "Enable Splash Screen",
+          "info": "Show a splash screen during the first page view in each browser session."
+        },
+        "hide_delay": {
+          "label": "Hide delay (ms)",
+          "info": "Add a short delay after the load event before fading the splash screen out."
+        },
+        "fade_duration": {
+          "label": "Fade duration (ms)",
+          "info": "Control how long it takes for the splash screen to fully fade away."
+        },
+        "storage_key": {
+          "label": "Session storage key",
+          "info": "Use a unique key if you need to reset the splash screen."
+        }
+      }
+    },
     "brand_information": {
       "name": "Brand information",
       "settings": {

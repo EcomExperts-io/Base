@@ -257,6 +257,47 @@ p:empty {
   z-index: 19;
 }
 
+splash-screen,
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 16px/1.4 system-ui, sans-serif;
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  transition:
+    opacity var(--splash-screen-fade-duration, 4000ms) ease,
+    transform var(--splash-screen-fade-duration, 4000ms) ease,
+    visibility 0s linear var(--splash-screen-fade-duration, 4000ms);
+  z-index: 9999;
+}
+
+splash-screen[data-hidden='true'],
+.splash-screen-returning splash-screen {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  splash-screen,
+  .splash-screen {
+    transition:
+      opacity 200ms linear,
+      visibility 0s linear 200ms;
+  }
+
+  splash-screen[data-hidden='true'],
+  .splash-screen-returning splash-screen {
+    transform: none;
+  }
+}
+
 @media screen and (min-width: 769px) {
   body {
     font-size: 1.6rem;
