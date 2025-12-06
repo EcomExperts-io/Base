@@ -870,7 +870,7 @@
         }
       }
     },
-    "first_visit_overlay": {
+    "splash_screen": {
       "name": "Splash Screen",
       "settings": { 
         "enabled": {

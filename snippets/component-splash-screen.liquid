@@ -1,0 +1,17 @@
+{% liquid
+  assign splash_hide_delay = settings.splash_screen_hide_delay | default: 600
+  assign splash_storage_key = settings.splash_screen_storage_key | default: 'splashScreenSeen'
+  assign splash_fade_duration = settings.splash_screen_fade_duration | default: 4000
+%}
+<splash-screen
+  class="splash-screen"
+  data-storage-key="{{ splash_storage_key | escape }}"
+  data-hide-delay="{{ splash_hide_delay }}"
+  data-fade-duration="{{ splash_fade_duration }}"
+  style="--splash-screen-fade-duration: {{ splash_fade_duration }}ms;"
+>
+  <p role="status" aria-live="polite">
+    {{ 'general.splash_screen.message' | t }}
+  </p>
+</splash-screen>
+

@@ -1,8 +1,8 @@
-const STORAGE_KEY_FALLBACK = 'firstVisitSeen';
+const STORAGE_KEY_FALLBACK = 'splashScreenSeen';
 const FADE_DURATION_FALLBACK = 4000;
 const BUFFER_OFFSET = 600;
 
-class FirstVisitOverlay extends HTMLElement {
+class SplashScreen extends HTMLElement {
   constructor() {
     super();
     this.hideDelay = Number(this.dataset.hideDelay || '600');
@@ -14,7 +14,7 @@ class FirstVisitOverlay extends HTMLElement {
   connectedCallback() {
     this.root = document.documentElement;
 
-    if (this.root.classList.contains('first-visit-returning')) {
+    if (this.root.classList.contains('splash-screen-returning')) {
       this.remove();
       return;
     }
@@ -35,13 +35,13 @@ class FirstVisitOverlay extends HTMLElement {
   }
 
   _handleLoad() {
-    window.setTimeout(() => this._hideOverlay(), this.hideDelay);
+    window.setTimeout(() => this._hideSplash(), this.hideDelay);
   }
 
-  _hideOverlay() {
+  _hideSplash() {
     this.setAttribute('data-hidden', 'true');
     this._markSeen();
-    this.root.classList.add('first-visit-returning');
+    this.root.classList.add('splash-screen-returning');
 
     window.setTimeout(() => {
       this.remove();
@@ -49,7 +49,7 @@ class FirstVisitOverlay extends HTMLElement {
   }
 }
 
-if (!customElements.get('first-visit-overlay')) {
-  customElements.define('first-visit-overlay', FirstVisitOverlay);
+if (!customElements.get('splash-screen')) {
+  customElements.define('splash-screen', SplashScreen);
 }
 

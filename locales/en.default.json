@@ -202,7 +202,7 @@
   },
   "general": {
     "continue_shopping": "Continue shopping",
-    "first_visit_overlay": {
+    "splash_screen": {
       "message": "Loading the site for the first time…"
     },
     "cart": {

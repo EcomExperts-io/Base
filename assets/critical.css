@@ -257,8 +257,8 @@ p:empty {
   z-index: 19;
 }
 
-first-visit-overlay,
-.first-visit-overlay {
+splash-screen,
+.splash-screen {
   position: fixed;
   inset: 0;
   display: grid;
@@ -270,14 +270,14 @@ first-visit-overlay,
   visibility: visible;
   transform: scale(1);
   transition:
-    opacity var(--first-visit-overlay-fade-duration, 4000ms) ease,
-    transform var(--first-visit-overlay-fade-duration, 4000ms) ease,
-    visibility 0s linear var(--first-visit-overlay-fade-duration, 4000ms);
+    opacity var(--splash-screen-fade-duration, 4000ms) ease,
+    transform var(--splash-screen-fade-duration, 4000ms) ease,
+    visibility 0s linear var(--splash-screen-fade-duration, 4000ms);
   z-index: 9999;
 }
 
-first-visit-overlay[data-hidden='true'],
-.first-visit-returning first-visit-overlay {
+splash-screen[data-hidden='true'],
+.splash-screen-returning splash-screen {
   opacity: 0;
   visibility: hidden;
   transform: scale(1.02);
@@ -285,15 +285,15 @@ first-visit-overlay[data-hidden='true'],
 }
 
 @media (prefers-reduced-motion: reduce) {
-  first-visit-overlay,
-  .first-visit-overlay {
+  splash-screen,
+  .splash-screen {
     transition:
       opacity 200ms linear,
       visibility 0s linear 200ms;
   }
 
-  first-visit-overlay[data-hidden='true'],
-  .first-visit-returning first-visit-overlay {
+  splash-screen[data-hidden='true'],
+  .splash-screen-returning splash-screen {
     transform: none;
   }
 }

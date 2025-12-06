@@ -24,8 +24,8 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
-    {%- if settings.first_visit_overlay_enabled -%}
-      {% render 'component-first-visit-overlay-head' %}
+    {%- if settings.splash_screen_enabled -%}
+      {% render 'component-splash-screen-head' %}
     {%- endif -%}
 
 
@@ -64,8 +64,8 @@
       Skip to content
     </a>
 
-    {%- if settings.first_visit_overlay_enabled -%}
-      {% render 'component-first-visit-overlay' %}
+    {%- if settings.splash_screen_enabled -%}
+      {% render 'component-splash-screen' %}
     {%- endif -%}
 
     {% sections 'header-group' %}
@@ -80,8 +80,8 @@
       <script src="{{ 'component-predictive-search.js' | asset_url }}" type="module"></script>
     {%- endif -%}
 
-    {%- if settings.first_visit_overlay_enabled -%}
-      <script src="{{ 'component-first-visit-overlay.js' | asset_url }}" type="module"></script>
+    {%- if settings.splash_screen_enabled -%}
+      <script src="{{ 'component-splash-screen.js' | asset_url }}" type="module"></script>
     {%- endif -%}
   </body>
 </html>
