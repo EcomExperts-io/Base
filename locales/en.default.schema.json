@@ -871,23 +871,23 @@
       }
     },
     "first_visit_overlay": {
-      "name": "First-visit overlay",
-      "settings": {
+      "name": "Splash Screen",
+      "settings": { 
         "enabled": {
-          "label": "Enable first-visit overlay",
-          "info": "Show a loading overlay during the first page view in each browser session."
+          "label": "Enable Splash Screen",
+          "info": "Show a splash screen during the first page view in each browser session."
         },
         "hide_delay": {
           "label": "Hide delay (ms)",
-          "info": "Add a short delay after the load event before fading the overlay out."
+          "info": "Add a short delay after the load event before fading the splash screen out."
         },
         "fade_duration": {
           "label": "Fade duration (ms)",
-          "info": "Control how long it takes for the overlay to fully fade away."
+          "info": "Control how long it takes for the splash screen to fully fade away."
         },
         "storage_key": {
           "label": "Session storage key",
-          "info": "Use a unique key if you need to reset or run multiple overlays."
+          "info": "Use a unique key if you need to reset the splash screen."
         }
       }
     },
