@@ -257,6 +257,27 @@ p:empty {
   z-index: 19;
 }
 
+first-visit-overlay,
+.first-visit-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 16px/1.4 system-ui, sans-serif;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 250ms ease;
+  z-index: 9999;
+}
+
+first-visit-overlay[data-hidden='true'],
+.first-visit-returning first-visit-overlay {
+  opacity: 0;
+  visibility: hidden;
+}
+
 @media screen and (min-width: 769px) {
   body {
     font-size: 1.6rem;

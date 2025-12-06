@@ -1,0 +1,12 @@
+<script>
+  (() => {
+    try {
+      if (sessionStorage.getItem('firstVisitSeen')) {
+        document.documentElement.classList.add('first-visit-returning');
+      }
+    } catch (_error) {
+      document.documentElement.classList.add('first-visit-returning');
+    }
+  })();
+</script>
+

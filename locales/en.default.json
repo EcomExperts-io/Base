@@ -202,6 +202,9 @@
   },
   "general": {
     "continue_shopping": "Continue shopping",
+    "first_visit_overlay": {
+      "message": "Loading the site for the first time…"
+    },
     "cart": {
       "item_added": "Item added to cart",
       "view_empty_cart": "View cart"
