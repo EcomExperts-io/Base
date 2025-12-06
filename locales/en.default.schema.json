@@ -869,8 +869,24 @@
           "info": "Display the product price in results"
         }
       }
-    }
-    ,
+    },
+    "first_visit_overlay": {
+      "name": "First-visit overlay",
+      "settings": {
+        "enabled": {
+          "label": "Enable first-visit overlay",
+          "info": "Show a loading overlay during the first page view in each browser session."
+        },
+        "hide_delay": {
+          "label": "Hide delay (ms)",
+          "info": "Add a short delay after the load event before fading the overlay out."
+        },
+        "storage_key": {
+          "label": "Session storage key",
+          "info": "Use a unique key if you need to reset or run multiple overlays."
+        }
+      }
+    },
     "brand_information": {
       "name": "Brand information",
       "settings": {

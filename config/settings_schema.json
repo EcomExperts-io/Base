@@ -230,6 +230,36 @@
     ]
   },
   {
+    "name": "t:settings_schema.first_visit_overlay.name",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "first_visit_overlay_enabled",
+        "default": false,
+        "label": "t:settings_schema.first_visit_overlay.settings.enabled.label",
+        "info": "t:settings_schema.first_visit_overlay.settings.enabled.info"
+      },
+      {
+        "type": "range",
+        "id": "first_visit_overlay_hide_delay",
+        "min": 200,
+        "max": 5000,
+        "step": 50,
+        "default": 600,
+        "unit": "ms",
+        "label": "t:settings_schema.first_visit_overlay.settings.hide_delay.label",
+        "info": "t:settings_schema.first_visit_overlay.settings.hide_delay.info"
+      },
+      {
+        "type": "text",
+        "id": "first_visit_overlay_storage_key",
+        "label": "t:settings_schema.first_visit_overlay.settings.storage_key.label",
+        "info": "t:settings_schema.first_visit_overlay.settings.storage_key.info",
+        "default": "firstVisitSeen"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.brand_information.name",
     "settings": [
       {

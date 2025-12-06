@@ -1,7 +1,11 @@
+{% liquid
+  assign overlay_hide_delay = settings.first_visit_overlay_hide_delay | default: 600
+  assign overlay_storage_key = settings.first_visit_overlay_storage_key | default: 'firstVisitSeen'
+%}
 <first-visit-overlay
   class="first-visit-overlay"
-  data-storage-key="firstVisitSeen"
-  data-hide-delay="600"
+  data-storage-key="{{ overlay_storage_key | escape }}"
+  data-hide-delay="{{ overlay_hide_delay }}"
 >
   <p role="status" aria-live="polite">
     {{ 'general.first_visit_overlay.message' | t }}

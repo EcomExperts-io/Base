@@ -24,7 +24,9 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
-    {% render 'component-first-visit-overlay-head' %}
+    {%- if settings.first_visit_overlay_enabled -%}
+      {% render 'component-first-visit-overlay-head' %}
+    {%- endif -%}
 
 
     {% if page_description %}
@@ -62,7 +64,9 @@
       Skip to content
     </a>
 
-    {% render 'component-first-visit-overlay' %}
+    {%- if settings.first_visit_overlay_enabled -%}
+      {% render 'component-first-visit-overlay' %}
+    {%- endif -%}
 
     {% sections 'header-group' %}
 
@@ -76,6 +80,8 @@
       <script src="{{ 'component-predictive-search.js' | asset_url }}" type="module"></script>
     {%- endif -%}
 
-    <script src="{{ 'component-first-visit-overlay.js' | asset_url }}" type="module"></script>
+    {%- if settings.first_visit_overlay_enabled -%}
+      <script src="{{ 'component-first-visit-overlay.js' | asset_url }}" type="module"></script>
+    {%- endif -%}
   </body>
 </html>
