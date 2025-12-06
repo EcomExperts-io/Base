@@ -1,4 +1,5 @@
 const STORAGE_KEY_FALLBACK = 'firstVisitSeen';
+const TRANSITION_BUFFER = 4600;
 
 class FirstVisitOverlay extends HTMLElement {
   constructor() {
@@ -42,7 +43,7 @@ class FirstVisitOverlay extends HTMLElement {
 
     window.setTimeout(() => {
       this.remove();
-    }, 250);
+    }, TRANSITION_BUFFER);
   }
 }
 

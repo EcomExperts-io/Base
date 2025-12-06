@@ -268,7 +268,11 @@ first-visit-overlay,
   font: 16px/1.4 system-ui, sans-serif;
   opacity: 1;
   visibility: visible;
-  transition: opacity 250ms ease;
+  transform: scale(1);
+  transition:
+    opacity 4000ms ease,
+    transform 4000ms ease,
+    visibility 0s linear 4000ms;
   z-index: 9999;
 }
 
@@ -276,6 +280,22 @@ first-visit-overlay[data-hidden='true'],
 .first-visit-returning first-visit-overlay {
   opacity: 0;
   visibility: hidden;
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  first-visit-overlay,
+  .first-visit-overlay {
+    transition:
+      opacity 200ms linear,
+      visibility 0s linear 200ms;
+  }
+
+  first-visit-overlay[data-hidden='true'],
+  .first-visit-returning first-visit-overlay {
+    transform: none;
+  }
 }
 
 @media screen and (min-width: 769px) {
