@@ -605,6 +605,10 @@ shopify-buy-it-now-button .shopify-payment-button__button {
   width: 100%;
 }
 
+.product-media-gallery__carousel .product-media-gallery__nav {
+  display: none !important;
+}
+
 .product-media-gallery__pagination {
   margin-top: 1rem;
 }

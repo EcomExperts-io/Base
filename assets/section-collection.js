@@ -64,6 +64,14 @@ export class CollectionInfo extends HTMLElement {
     });
   };
 
+  updateDrawerButtons = (html) => {
+    const source = html.querySelector('.filters-drawer__buttons-wrapper');
+    const destination = this.querySelector('.filters-drawer__buttons-wrapper');
+    if (source && destination) {
+      destination.innerHTML = source.innerHTML;
+    }
+  };
+
   showLoadingOverlay = () => {
     this.querySelector(`#loading-overlay-${this.dataset.section}`).style.display = 'flex';
     this.querySelector(`#loading-spinner-${this.dataset.section}`).style.display = 'block';
@@ -95,6 +103,7 @@ export class CollectionInfo extends HTMLElement {
         this.updateSourceFromDestination(html, `active-filter-group-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `sort-by-drawer-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `sort-by-${this.dataset.section}`);
+        this.updateDrawerButtons(html);
         this.updateFilters(html, `js-filter`);
         this.hideLoadingOverlay();
         this.scrollToProductGrid();

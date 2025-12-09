@@ -156,19 +156,59 @@
     padding-bottom: 50px;
   }
 
-  .see-items-button {
+  .filters-drawer__buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: fixed;
     bottom: 15px;
     left: 0;
+    gap: 10px;
     right: 0;
-    width: 90%;
-    background: #000;
-    color: #fff;
-    border: none;
-    margin: 0 auto;
+    width: 100%;
+    padding: 0px 20px;
+  }
+
+  .filters-drawer__buttons-wrapper .clear-all-button {
     border-radius: 8px;
-    padding: 12px 0px;
+    padding: 16px;
     cursor: pointer;
+    border: none;
+    background: transparent;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: .075em;
+    text-underline-offset: .125em;
+    transition: text-decoration-color 0.3s ease;
+    border: 1px solid black;
+    transition: background 0.3s ease;
+    width: calc(50% - 5px);
+  }
+  
+
+  .filters-drawer__buttons-wrapper .clear-all-button:hover {
+    background: #fafafa;
+    transition: background 0.3s ease, text-decoration-color 0.3s ease;
+  }
+
+  .filters-drawer__buttons-wrapper .see-items-button {
+    background: black;
+    color: white;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    transition: opacity 0.3s ease;
+  }
+
+  .filters-drawer__buttons-wrapper .see-items-button:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .filters-drawer__buttons-wrapper:has(.clear-all-button) .see-items-button {
+    width: calc(50% - 5px);
   }
 
   #active-filters-count-{{ section_id }} {
@@ -318,15 +358,15 @@
   assign active_filters_count = 0
   
   for f in results.filters
-    if f.type == 'price_range'
-      if f.min_value.value and f.min_value.value != blank
-        assign active_filters_count = active_filters_count | plus: 1
-      elsif f.max_value.value and f.max_value.value != blank
-        assign active_filters_count = active_filters_count | plus: 1
+    unless f.param_name == 'sort_by'
+      if f.type == 'price_range'
+        if f.min_value.value > 0 or f.max_value.value < f.range_max
+          assign active_filters_count = active_filters_count | plus: 1
+        endif
+      else
+        assign active_filters_count = active_filters_count | plus: f.active_values.size
       endif
-    else
-      assign active_filters_count = active_filters_count | plus: f.active_values.size
-    endif
+    endunless
   endfor
 %}
 <div
@@ -511,9 +551,42 @@
           </div>
         {%- endif -%}
 
-        <button type="button" id="see-items-button-{{ section_id }}" class="see-items-button" @click="open = !open">
-          See {{ results.products_count }} items
-        </button>
+        {%- liquid
+          assign clear_filters_url = ''
+          if context == 'collection'
+            assign sort_by = results.sort_by | default: results.default_sort_by
+            assign clear_filters_url = results.url | append: '?sort_by=' | append: sort_by
+          elsif context == 'search'
+            assign terms = results.terms | escape
+            assign clear_filters_url = '?q=' | append: terms
+          else
+            assign sort_by = results.sort_by | default: results.default_sort_by
+            assign clear_filters_url = results.url | append: '?sort_by=' | append: sort_by
+          endif
+        -%}
+
+        <div class="filters-drawer__buttons-wrapper">
+          {% if active_filters_count > 0 %}
+            <button 
+              type="button" 
+              id="clear-all-button-{{ section_id }}" 
+              class="clear-all-button" 
+              data-render-section-url="{{ clear_filters_url }}"
+              @click="open = !open"
+            >
+              Clear all
+            </button>
+          {% endif %}
+
+          <button type="button" id="see-items-button-{{ section_id }}" class="see-items-button" @click="open = !open">
+            {% if context == 'collection' %}
+              See {{ results.products_count }} items
+            {% else %}
+              See {{ results.results_count }} items
+            {% endif %}
+          </button>
+        </div>
+
       </div>
     </form>
   </div>

@@ -187,15 +187,17 @@
                   {% liquid
                     assign has_active_filters = false
                     for f in collection.filters
-                      if f.type == 'price_range'
-                        if f.min_value.value > 0 or f.max_value.value < f.range_max
-                          assign has_active_filters = true
+                      unless f.param_name == 'sort_by'
+                        if f.type == 'price_range'
+                          if f.min_value.value > 0 or f.max_value.value < f.range_max
+                            assign has_active_filters = true
+                          endif
+                        else
+                          if f.active_values.size > 0
+                            assign has_active_filters = true
+                          endif
                         endif
-                      else
-                        if f.active_values.size > 0
-                          assign has_active_filters = true
-                        endif
-                      endif
+                      endunless
                     endfor
                   %}
 
