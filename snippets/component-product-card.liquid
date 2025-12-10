@@ -28,6 +28,23 @@
   class="product-card"
   data-product-id="{{ card_product.id }}"
 >
+  <!-- Data Layer -->
+  {%- liquid
+    assign card_variant = card_product.selected_or_first_available_variant
+    assign item_id = card_variant.sku | default: card_variant.id
+  -%}
+  <script type="application/json" data-product-item-data>
+    {
+      "item_id": {{ item_id | json }},
+      "item_name": {{ card_product.title | json }},
+      "item_brand": {{ card_product.vendor | json }},
+      "item_category": {{ card_product.type | json }},
+      "item_variant": {{ card_variant.title | json }},
+      "price": {{ card_variant.price | divided_by: 100.0 }},
+      "quantity": 1
+    }
+  </script>
+  <!-- End Data Layer -->
   <div class="product-card-child">
     <a
       href="{{ card_product.url }}"

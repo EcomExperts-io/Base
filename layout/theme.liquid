@@ -7,6 +7,9 @@
     <meta name="theme-color" content="">
     <link rel="canonical" href="{{ canonical_url }}">
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+
+    {% render 'component-gtm-head' %}
+
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
@@ -28,7 +31,6 @@
       {% render 'component-splash-screen-head' %}
     {%- endif -%}
 
-
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
     {% endif %}
@@ -42,8 +44,6 @@
     <script src="{{ 'alpinejs@3.14.8.min.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'theme.js' | asset_url }}" type="module"></script>
 
-
-
     {% comment %} liquid-ajax-cart.js.org {% endcomment %}
     <script type="application/json" data-ajax-cart-initial-state>
       {{ cart | json }}
@@ -53,16 +53,17 @@
       import '{{ "liquid-ajax-cart-v2.1.1.js" | asset_url }}';
     </script>
 
-
     {%- if settings.predictive_search_enabled -%}
       {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
   </head>
 
   <body>
-    <a class="skip-to-content-link visually-hidden" href="#MainContent">
-      Skip to content
-    </a>
+    {% render 'component-gtm-body' %}
+
+    {% render 'component-data-layer' %}
+
+    <a class="skip-to-content-link visually-hidden" href="#MainContent"> Skip to content </a>
 
     {%- if settings.splash_screen_enabled -%}
       {% render 'component-splash-screen' %}

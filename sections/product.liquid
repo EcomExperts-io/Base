@@ -68,6 +68,12 @@
 
   {% assign selected_variant = product.selected_or_first_available_variant %}
 
+  <!-- Data Layer -->
+  <script type="application/json" data-product>
+    {{ product | json }}
+  </script>
+  <!-- End Data Layer -->
+  
   <div class="page-width">
     <div class="product flex product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} {% if section.settings.constrain_to_viewport %}constrain-height{% endif %}">
       <div class="product__media-wrapper flex`__item media-{{ section.settings.media_fit }}">
