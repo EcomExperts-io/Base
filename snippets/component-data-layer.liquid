@@ -1,0 +1,48 @@
+<data-layer id="data-layer"> </data-layer>
+
+<script>
+  export class DataLayer extends HTMLElement {
+    constructor() {
+      super();
+      this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
+      this.onCartDrawerOpen = this.onCartDrawerOpen.bind(this);
+    }
+
+    connectedCallback() {
+      document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+      document.addEventListener('cart-open', this.onCartDrawerOpen);
+      document.addEventListener('slider-changed', this.onSliderChanged);
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+      document.removeEventListener('cart-open', this.onCartDrawerOpen);
+      document.removeEventListener('slider-changed', this.onSliderChanged);
+    }
+
+    onCartRequestEnd(event) {
+      const { requestState } = event.detail || {};
+      if (requestState?.requestType === 'add' && requestState?.responseData?.ok) {
+        window.dataLayer.push({
+          event: 'add_to_cart',
+        });
+      }
+    }
+
+    onCartDrawerOpen(event) {
+      window.dataLayer.push({
+        event: 'cart_open',
+      });
+    }
+
+    onSliderChanged(event) {
+      window.dataLayer.push({
+        event: 'slider_changed',
+      });
+    }
+  }
+
+  if (!customElements.get('data-layer')) {
+    customElements.define('data-layer', DataLayer);
+  }
+</script>
