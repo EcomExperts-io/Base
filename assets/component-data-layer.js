@@ -63,7 +63,7 @@ export class DataLayer extends HTMLElement {
     }
   }
 
-  formatGA4Item(productData, variantData, options = {}) {
+  formatGA4Item(productData, variantData, quantity = 1, sellingPlanId = null) {
     const item = {
       item_id: variantData.sku || variantData.id.toString(),
       item_name: productData.title,
@@ -71,15 +71,11 @@ export class DataLayer extends HTMLElement {
       item_category: productData.type,
       item_variant: variantData.title,
       price: variantData.price / 100,
-      quantity: options.quantity || 1,
+      quantity: quantity,
     };
 
-    if (options.index !== undefined) {
-      item.index = options.index;
-    }
-
-    if (options.selling_plan_id) {
-      item.selling_plan_id = options.selling_plan_id;
+    if (sellingPlanId) {
+      item.selling_plan_id = sellingPlanId;
       item.purchase_type = 'subscription';
     } else {
       item.purchase_type = 'one-time';
@@ -114,13 +110,15 @@ export class DataLayer extends HTMLElement {
     }
 
     if (window.location.pathname.includes('/collections/')) {
+      const collectionMatch = window.location.pathname.match(/\/collections\/([^\/\?#]+)/);
+      const collectionHandle = collectionMatch ? collectionMatch[1] : 'unknown';
       return {
-        id: 'collection',
+        id: `collection_${collectionHandle}`,
         name: 'Collection',
       };
     }
 
-    if (window.location.pathname === '/' || window.location.pathname === '/pages/home') {
+    if (window.location.pathname === '/') {
       return {
         id: 'homepage',
         name: 'Homepage',
@@ -131,61 +129,6 @@ export class DataLayer extends HTMLElement {
       id: 'unknown',
       name: 'Product List',
     };
-  }
-
-  getQuantity(requestBody) {
-    if (requestBody) {
-      if (requestBody instanceof FormData && requestBody.has('quantity')) {
-        return parseInt(requestBody.get('quantity'), 10);
-      }
-      if (requestBody.quantity) {
-        return parseInt(requestBody.quantity, 10);
-      }
-    }
-
-    const quantityInput = document.querySelector('input[name="quantity"]');
-    if (quantityInput && quantityInput.value) {
-      return parseInt(quantityInput.value, 10);
-    }
-
-    return 1;
-  }
-
-  getSellingPlanId(requestBody, variantId = null) {
-    // First, check requestBody (already works)
-    if (requestBody) {
-      if (requestBody instanceof FormData && requestBody.has('selling_plan')) {
-        return requestBody.get('selling_plan');
-      }
-      if (requestBody.selling_plan) {
-        return requestBody.selling_plan;
-      }
-    }
-
-    // Second, find selling plan input in the relevant form context
-    // Try to find the form that contains the variant being added
-    let form = null;
-    if (variantId) {
-      // Find form containing this variant ID
-      const variantInput = document.querySelector(`input[name="id"][value="${variantId}"]`);
-      form = variantInput?.closest('form');
-    }
-    
-    // Fallback: find form within product-info
-    if (!form) {
-      const productInfo = document.querySelector('product-info');
-      form = productInfo?.querySelector('form[action*="/cart/add"]');
-    }
-
-    // Query selling plan input within the form context
-    const sellingPlanInput = form?.querySelector('input[name="selling_plan"]') 
-      || document.querySelector('input[name="selling_plan"]');
-      
-    if (sellingPlanInput && sellingPlanInput.value) {
-      return sellingPlanInput.value;
-    }
-
-    return null;
   }
 
   // =========================================================================
@@ -206,26 +149,10 @@ export class DataLayer extends HTMLElement {
         return;
       }
 
-      const quantity = this.getQuantity(requestState.requestBody);
-      
-      // Extract variant ID from requestBody for form context
-      let variantId = null;
-      if (requestState.requestBody) {
-        if (requestState.requestBody instanceof FormData && requestState.requestBody.has('id')) {
-          variantId = requestState.requestBody.get('id');
-        } else if (requestState.requestBody.id) {
-          variantId = requestState.requestBody.id;
-        }
-      }
-      // Fallback to variantData.id
-      variantId = variantId || variantData.id;
-      
-      const sellingPlanId = this.getSellingPlanId(requestState.requestBody, variantId);
+      const quantity = requestState?.responseData?.quantity || 1;
+      const sellingPlanId = requestState?.responseData?.selling_plan_allocation?.selling_plan?.id || null;
 
-      const item = this.formatGA4Item(productData, variantData, {
-        quantity,
-        selling_plan_id: sellingPlanId,
-      });
+      const item = this.formatGA4Item(productData, variantData, quantity, sellingPlanId);
 
       this.pushToDataLayer({
         event: 'add_to_cart',
@@ -243,7 +170,7 @@ export class DataLayer extends HTMLElement {
     const variantData = this.getSelectedVariantData();
 
     if (!productData || !variantData) {
-      console.warn('DataLayer: view_item - Missing product or variant data');
+      console.error('DataLayer: view_item - Missing product or variant data');
       return;
     }
 
