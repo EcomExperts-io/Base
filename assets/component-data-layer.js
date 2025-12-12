@@ -8,7 +8,6 @@ class DataLayerUtility {
    * Push to dataLayer with ecommerce reset
    */
   static pushToDataLayer(data) {
-    window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ ecommerce: null }); // Clear previous ecommerce object
     window.dataLayer.push(data);
   }
@@ -136,12 +135,6 @@ class DataLayerSelectItem extends HTMLElement {
  */
 class DataLayerViewItem extends HTMLElement {
   connectedCallback() {
-    // Get parent data-layer element to check template
-    const parentDataLayer = this.closest('data-layer');
-    if (!parentDataLayer || parentDataLayer.dataset.template !== 'product') {
-      return;
-    }
-
     this.trackViewItem();
   }
 
@@ -390,12 +383,6 @@ class DataLayerFaqToggle extends HTMLElement {
  */
 class DataLayerError404 extends HTMLElement {
   connectedCallback() {
-    // Check if this is a 404 page
-    const parentDataLayer = this.closest('data-layer');
-    if (!parentDataLayer || parentDataLayer.dataset.template !== '404') {
-      return;
-    }
-
     this.track404();
   }
 
@@ -415,12 +402,6 @@ class DataLayerError404 extends HTMLElement {
  */
 class DataLayerOutOfStock extends HTMLElement {
   connectedCallback() {
-    // Get parent data-layer element to check template
-    const parentDataLayer = this.closest('data-layer');
-    if (!parentDataLayer || parentDataLayer.dataset.template !== 'product') {
-      return;
-    }
-
     this.trackOutOfStock();
   }
 
@@ -478,42 +459,19 @@ class DataLayerOutOfStock extends HTMLElement {
  * ============================================================================
  */
 
-// Always register parent component
-if (!customElements.get('data-layer')) {
-  customElements.define('data-layer', DataLayer);
-}
+const dataLayerComponents = {
+  'data-layer': DataLayer, // Register parent first
+  'data-layer-select-item': DataLayerSelectItem,
+  'data-layer-view-item': DataLayerViewItem,
+  'data-layer-add-to-cart': DataLayerAddToCart,
+  'data-layer-cta-click': DataLayerCtaClick,
+  'data-layer-faq-toggle': DataLayerFaqToggle,
+  'data-layer-error-404': DataLayerError404,
+  'data-layer-out-of-stock': DataLayerOutOfStock,
+};
 
-// Check if select_item component exists in DOM
-if (document.querySelector('data-layer-select-item') && !customElements.get('data-layer-select-item')) {
-  customElements.define('data-layer-select-item', DataLayerSelectItem);
-}
-
-// Check if view_item component exists in DOM
-if (document.querySelector('data-layer-view-item') && !customElements.get('data-layer-view-item')) {
-  customElements.define('data-layer-view-item', DataLayerViewItem);
-}
-
-// Check if add_to_cart component exists in DOM
-if (document.querySelector('data-layer-add-to-cart') && !customElements.get('data-layer-add-to-cart')) {
-  customElements.define('data-layer-add-to-cart', DataLayerAddToCart);
-}
-
-// Check if cta_click component exists in DOM
-if (document.querySelector('data-layer-cta-click') && !customElements.get('data-layer-cta-click')) {
-  customElements.define('data-layer-cta-click', DataLayerCtaClick);
-}
-
-// Check if faq_toggle component exists in DOM
-if (document.querySelector('data-layer-faq-toggle') && !customElements.get('data-layer-faq-toggle')) {
-  customElements.define('data-layer-faq-toggle', DataLayerFaqToggle);
-}
-
-// Check if error_404 component exists in DOM
-if (document.querySelector('data-layer-error-404') && !customElements.get('data-layer-error-404')) {
-  customElements.define('data-layer-error-404', DataLayerError404);
-}
-
-// Check if out_of_stock component exists in DOM
-if (document.querySelector('data-layer-out-of-stock') && !customElements.get('data-layer-out-of-stock')) {
-  customElements.define('data-layer-out-of-stock', DataLayerOutOfStock);
-}
+Object.entries(dataLayerComponents).forEach(([tagName, componentClass]) => {
+  if (!customElements.get(tagName)) {
+    customElements.define(tagName, componentClass);
+  }
+});
