@@ -385,5 +385,57 @@
         "default": true
       }
     ]
+  },
+  {
+    "name": "t:settings_schema.gtm.name",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:settings_schema.gtm.settings.header_container"
+      },
+      {
+        "type": "text",
+        "id": "gtm_container_id",
+        "label": "t:settings_schema.gtm.settings.container_id.label",
+        "placeholder": "GTM-XXXXXXX",
+        "info": "t:settings_schema.gtm.settings.container_id.info"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_datalayer_enabled",
+        "label": "t:settings_schema.gtm.settings.datalayer_enabled.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.datalayer_enabled.info",
+        "visible_if": "{{ settings.gtm_container_id != blank }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.gtm.settings.header_events_core"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_select_item",
+        "label": "t:settings_schema.gtm.settings.track_select_item.label",
+        "default": true,
+        "info": "t:settings_schema.gtm.settings.track_select_item.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_view_item",
+        "label": "t:settings_schema.gtm.settings.track_view_item.label",
+        "default": true,
+        "info": "t:settings_schema.gtm.settings.track_view_item.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_add_to_cart",
+        "label": "t:settings_schema.gtm.settings.track_add_to_cart.label",
+        "default": true,
+        "info": "t:settings_schema.gtm.settings.track_add_to_cart.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      }
+    ]
   }
 ]
