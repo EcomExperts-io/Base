@@ -13,7 +13,7 @@
     "type_body_font": "roboto_condensed_n4",
     "max_page_width": 1600,
     "min_page_margin": 60,
-    "cart_type": "notification",
+    "cart_type": "drawer",
     "predictive_search_enabled": true,
     "predictive_search_show_vendor": true,
     "predictive_search_show_price": true,
@@ -33,6 +33,10 @@
     "social_pinterest_link": "facebook.com",
     "social_tumblr_link": "",
     "social_vimeo_link": "",
+    "gtm_container_id": "GTM-N84MZJF2",
+    "gtm_datalayer_enabled": true,
+    "gtm_track_view_item": true,
+    "gtm_track_add_to_cart": true,
     "content_for_index": [],
     "color_schemes": {
       "scheme-1": {
