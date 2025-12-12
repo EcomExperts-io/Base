@@ -21,15 +21,24 @@ export class CollectionInfo extends HTMLElement {
 
     const form = event.target.closest('form') || document.querySelector('#filters-form') || document.querySelector('#filters-form-drawer');
     const formData = new FormData(form);
-    let searchParams = new URLSearchParams(formData).toString();
+    const searchParams = new URLSearchParams(formData);
     const existingParams = new URLSearchParams(window.location.search);
     const qValue = existingParams.get('q');
-    
-    if (qValue) {
-      searchParams = `q=${encodeURIComponent(qValue)}&${searchParams}`;
+
+    const priceMin = searchParams.get('filter.v.price.gte');
+    const priceMax = searchParams.get('filter.v.price.lte');
+    const actualMaxPrice = form.querySelector('.max-range')?.getAttribute('max');
+
+    const isMinAtDefault = priceMin === '0' || !priceMin;
+    const isMaxAtDefault = !actualMaxPrice || priceMax === actualMaxPrice || !priceMax;
+
+    if (isMinAtDefault && isMaxAtDefault) {
+      searchParams.delete('filter.v.price.gte');
+      searchParams.delete('filter.v.price.lte');
     }
 
-    this.fetchSection(searchParams);
+    const finalParams = qValue ? `q=${encodeURIComponent(qValue)}&${searchParams}` : searchParams.toString();
+    this.fetchSection(finalParams);
   };
 
   get form() {

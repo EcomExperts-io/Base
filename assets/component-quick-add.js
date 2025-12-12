@@ -55,11 +55,8 @@ export class QuickAdd extends HTMLElement {
   show(opener) {
     this.openedBy = opener;
 
-    // Only set aria-disabled and show spinner if it's a quick-add operation
-    // with a loading spinner element
-    if (opener && opener.querySelector('.loading__spinner')) {
+    if (opener && opener.getAttribute('data-product-url')) {
       opener.setAttribute('aria-disabled', true);
-      opener.querySelector('.loading__spinner').classList.remove('hidden');
 
       fetch(opener.getAttribute('data-product-url'))
         .then(response => response.text())
@@ -67,6 +64,11 @@ export class QuickAdd extends HTMLElement {
           const productElement = new DOMParser()
             .parseFromString(responseText, 'text/html')
             .querySelector('product-info');
+
+          if (!productElement) {
+            console.error('Product info not found in response');
+            return;
+          }
 
           this.preprocessContent(productElement);
           this.setContent(productElement.outerHTML);
@@ -77,9 +79,11 @@ export class QuickAdd extends HTMLElement {
           if (window.Shopify?.PaymentButton) Shopify.PaymentButton.init();
           if (window.ProductModel) window.ProductModel.loadShopifyXR();
         })
+        .catch(error => {
+          console.error('Error loading product:', error);
+        })
         .finally(() => {
           opener.removeAttribute('aria-disabled');
-          opener.querySelector('.loading__spinner').classList.add('hidden');
         });
     } else {
       // For other modals (like monogram popup) that don't need fetch

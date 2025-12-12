@@ -345,6 +345,103 @@ h2.card-heading.product-grid-heading, .card__heading {
   text-overflow: ellipsis;
 }
 
+/* Quick Add Icon Button */
+.card-media {
+  position: relative;
+}
+
+.quick-add__icon-wrapper {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.quick-add__icon-wrapper form {
+  margin: 0;
+}
+
+.quick-add__icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 22px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.quick-add__icon-button:hover {
+  padding-right: 16px;
+}
+
+.quick-add__icon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.quick-add__icon-button:disabled:hover {
+  background-color: #fff;
+  padding: 0 12px;
+}
+
+.quick-add__icon-button[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.add-to-cart-text {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg-wrapper.add-to-cart-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.svg-wrapper.add-to-cart-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #121212;
+  transition: color 0.3s ease;
+}
+
+.add-to-cart-text__content {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  color: #121212;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.quick-add__icon-button:hover .add-to-cart-text__content {
+  max-width: 50px;
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   .product-card.card--standard .card-media-child {
     width: 100%;
@@ -361,5 +458,39 @@ h2.card-heading.product-grid-heading, .card__heading {
   
   .card-pricing {
     font-size: 1.5rem;
+  }
+
+  .quick-add__icon-wrapper {
+    bottom: 8px;
+    right: 8px;
+  }
+
+  .quick-add__icon-button {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 20px;
+  }
+
+  .quick-add__icon-button:hover {
+    padding-right: 10px;
+  }
+
+  .svg-wrapper.add-to-cart-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .svg-wrapper.add-to-cart-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .is-visually-hidden-mobile {
+    display: none !important;
+  }
+
+  .add-to-cart-text {
+    gap: 0;
   }
 }
