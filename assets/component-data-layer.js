@@ -270,6 +270,210 @@ class DataLayerAddToCart extends HTMLElement {
 
 /**
  * ============================================================================
+ * EVENT COMPONENT: CTA CLICK
+ * ============================================================================
+ */
+class DataLayerCtaClick extends HTMLElement {
+  constructor() {
+    super();
+    this.onButtonClick = this.onButtonClick.bind(this);
+  }
+
+  connectedCallback() {
+    document.addEventListener('click', this.onButtonClick);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('click', this.onButtonClick);
+  }
+
+  onButtonClick(event) {
+    // Find the clicked button or link styled as button
+    const button = event.target.closest('button, a.button, .button, [class*="button"]');
+    if (!button) {
+      return;
+    }
+
+    // Skip product-related buttons (handled by other components)
+    if (
+      button.closest('product-card') ||
+      button.closest('.quick-add') ||
+      button.closest('form[action*="/cart"]') ||
+      button.closest('ajax-cart-product-form') ||
+      button.type === 'submit'
+    ) {
+      return;
+    }
+
+    // Get button text and URL
+    const linkText = button.textContent?.trim();
+    const linkUrl = button.href || window.location.href;
+    const ctaLocation = this.getCtaLocation(button);
+
+    DataLayerUtility.pushToDataLayer({
+      event: 'cta_click',
+      link_text: linkText,
+      link_url: linkUrl,
+      cta_location: ctaLocation,
+    });
+  }
+
+  getCtaLocation(button) {
+    // Try to find section or container context
+    const section = button.closest('section, [data-section-type]');
+    if (section) {
+      const sectionId = section.id || section.dataset.sectionId || 'unknown-section';
+      return sectionId;
+    }
+
+    // Check for common locations
+    if (button.closest('header')) {
+      return 'header';
+    }
+    if (button.closest('footer')) {
+      return 'footer';
+    }
+    if (button.closest('.hero')) {
+      return 'hero';
+    }
+    if (button.closest('.banner')) {
+      return 'banner';
+    }
+
+    return 'unidentified-cta-location';
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: FAQ TOGGLE
+ * ============================================================================
+ */
+class DataLayerFaqToggle extends HTMLElement {
+  constructor() {
+    super();
+    this.onSummaryClick = this.onSummaryClick.bind(this);
+  }
+
+  connectedCallback() {
+    document.addEventListener('click', this.onSummaryClick, true);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('click', this.onSummaryClick, true);
+  }
+
+  onSummaryClick(event) {
+    const summary = event.target.closest('summary');
+    if (!summary) {
+      return;
+    }
+
+    const details = summary.parentElement;
+    if (!details || details.tagName !== 'DETAILS') {
+      return;
+    }
+
+    const faqQuestion = summary.textContent?.trim() || 'FAQ';
+
+    DataLayerUtility.pushToDataLayer({
+      event: 'faq_toggle',
+      faq_question: faqQuestion,
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: ERROR 404
+ * ============================================================================
+ */
+class DataLayerError404 extends HTMLElement {
+  connectedCallback() {
+    // Check if this is a 404 page
+    const parentDataLayer = this.closest('data-layer');
+    if (!parentDataLayer || parentDataLayer.dataset.template !== '404') {
+      return;
+    }
+
+    this.track404();
+  }
+
+  track404() {
+    DataLayerUtility.pushToDataLayer({
+      event: 'error_404',
+      page_referrer: document.referrer || 'direct',
+      page_location: window.location.href,
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: OUT OF STOCK VIEW
+ * ============================================================================
+ */
+class DataLayerOutOfStock extends HTMLElement {
+  connectedCallback() {
+    // Get parent data-layer element to check template
+    const parentDataLayer = this.closest('data-layer');
+    if (!parentDataLayer || parentDataLayer.dataset.template !== 'product') {
+      return;
+    }
+
+    this.trackOutOfStock();
+  }
+
+  trackOutOfStock() {
+    const productData = this.getProductData();
+    const variantData = this.getSelectedVariantData();
+
+    if (!productData || !variantData) {
+      return;
+    }
+
+    if (variantData.available) {
+      return;
+    }
+
+    DataLayerUtility.pushToDataLayer({
+      event: 'out_of_stock_view',
+      item_id: variantData.sku || variantData.id.toString(),
+      item_name: productData.title,
+    });
+  }
+
+  getProductData() {
+    const productElement = document.querySelector('[data-product]');
+    if (!productElement) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(productElement.innerHTML);
+    } catch (e) {
+      console.error('DataLayer: Failed to parse product data', e);
+      return null;
+    }
+  }
+
+  getSelectedVariantData() {
+    const variantElement = document.querySelector('[data-selected-variant]');
+    if (!variantElement) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(variantElement.innerHTML);
+    } catch (e) {
+      console.error('DataLayer: Failed to parse variant data', e);
+      return null;
+    }
+  }
+}
+
+/**
+ * ============================================================================
  * COMPONENT REGISTRATION
  * ============================================================================
  */
@@ -292,4 +496,24 @@ if (document.querySelector('data-layer-view-item') && !customElements.get('data-
 // Check if add_to_cart component exists in DOM
 if (document.querySelector('data-layer-add-to-cart') && !customElements.get('data-layer-add-to-cart')) {
   customElements.define('data-layer-add-to-cart', DataLayerAddToCart);
+}
+
+// Check if cta_click component exists in DOM
+if (document.querySelector('data-layer-cta-click') && !customElements.get('data-layer-cta-click')) {
+  customElements.define('data-layer-cta-click', DataLayerCtaClick);
+}
+
+// Check if faq_toggle component exists in DOM
+if (document.querySelector('data-layer-faq-toggle') && !customElements.get('data-layer-faq-toggle')) {
+  customElements.define('data-layer-faq-toggle', DataLayerFaqToggle);
+}
+
+// Check if error_404 component exists in DOM
+if (document.querySelector('data-layer-error-404') && !customElements.get('data-layer-error-404')) {
+  customElements.define('data-layer-error-404', DataLayerError404);
+}
+
+// Check if out_of_stock component exists in DOM
+if (document.querySelector('data-layer-out-of-stock') && !customElements.get('data-layer-out-of-stock')) {
+  customElements.define('data-layer-out-of-stock', DataLayerOutOfStock);
 }

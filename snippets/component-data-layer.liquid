@@ -15,6 +15,24 @@
     {%- if settings.gtm_track_add_to_cart -%}
       <data-layer-add-to-cart></data-layer-add-to-cart>
     {%- endif -%}
+
+    {%- comment %} USER ENGAGEMENT EVENTS {%- endcomment %}
+    {%- if settings.gtm_track_cta_click -%}
+      <data-layer-cta-click></data-layer-cta-click>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_faq_toggle -%}
+      <data-layer-faq-toggle></data-layer-faq-toggle>
+    {%- endif -%}
+
+    {%- comment %} SYSTEM & STATUS EVENTS {%- endcomment %}
+    {%- if settings.gtm_track_error_404 -%}
+      <data-layer-error-404></data-layer-error-404>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_out_of_stock -%}
+      <data-layer-out-of-stock></data-layer-out-of-stock>
+    {%- endif -%}
   </data-layer>
 
   <script src="{{ 'component-data-layer.js' | asset_url }}" type="module"></script>

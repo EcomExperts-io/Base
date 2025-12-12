@@ -1293,6 +1293,24 @@
         "track_add_to_cart": {
           "label": "Track Add to Cart",
           "info": "Track when products are added to cart"
+        },
+        "header_events_engagement": "User Engagement Events",
+        "track_cta_click": {
+          "label": "Track CTA Clicks",
+          "info": "Track generic button clicks (Shop Now, Learn More, etc.)"
+        },
+        "track_faq_toggle": {
+          "label": "Track FAQ Interactions",
+          "info": "Track collapsible tab open/close on product pages"
+        },
+        "header_events_system": "System & Status Events",
+        "track_error_404": {
+          "label": "Track 404 Errors",
+          "info": "Track when users land on 404 error pages"
+        },
+        "track_out_of_stock": {
+          "label": "Track Out of Stock Views",
+          "info": "Track when users view unavailable product variants"
         }
       }
     }

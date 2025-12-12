@@ -435,6 +435,48 @@
         "default": true,
         "info": "t:settings_schema.gtm.settings.track_add_to_cart.info",
         "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.gtm.settings.header_events_engagement",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_cta_click",
+        "label": "t:settings_schema.gtm.settings.track_cta_click.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_cta_click.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_faq_toggle",
+        "label": "t:settings_schema.gtm.settings.track_faq_toggle.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_faq_toggle.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.gtm.settings.header_events_system",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_error_404",
+        "label": "t:settings_schema.gtm.settings.track_error_404.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_error_404.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_out_of_stock",
+        "label": "t:settings_schema.gtm.settings.track_out_of_stock.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_out_of_stock.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
       }
     ]
   }

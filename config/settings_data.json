@@ -37,6 +37,10 @@
     "gtm_datalayer_enabled": true,
     "gtm_track_view_item": true,
     "gtm_track_add_to_cart": true,
+    "gtm_track_cta_click": true,
+    "gtm_track_faq_toggle": true,
+    "gtm_track_error_404": true,
+    "gtm_track_out_of_stock": true,
     "content_for_index": [],
     "color_schemes": {
       "scheme-1": {
