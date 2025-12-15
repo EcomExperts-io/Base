@@ -477,6 +477,96 @@
         "default": false,
         "info": "t:settings_schema.gtm.settings.track_out_of_stock.info",
         "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_view_item_list",
+        "label": "t:settings_schema.gtm.settings.track_view_item_list.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_view_item_list.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_view_cart",
+        "label": "t:settings_schema.gtm.settings.track_view_cart.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_view_cart.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_remove_from_cart",
+        "label": "t:settings_schema.gtm.settings.track_remove_from_cart.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_remove_from_cart.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.gtm.settings.header_events_cart_operations",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_update_cart",
+        "label": "t:settings_schema.gtm.settings.track_update_cart.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_update_cart.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_search",
+        "label": "t:settings_schema.gtm.settings.track_search.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_search.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_product_option",
+        "label": "t:settings_schema.gtm.settings.track_product_option.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_product_option.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_select_content",
+        "label": "t:settings_schema.gtm.settings.track_select_content.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_select_content.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_carousel",
+        "label": "t:settings_schema.gtm.settings.track_carousel.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_carousel.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings_schema.gtm.settings.header_events_marketing",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_login",
+        "label": "t:settings_schema.gtm.settings.track_login.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_login.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "gtm_track_sign_up",
+        "label": "t:settings_schema.gtm.settings.track_sign_up.label",
+        "default": false,
+        "info": "t:settings_schema.gtm.settings.track_sign_up.info",
+        "visible_if": "{{ settings.gtm_datalayer_enabled == true }}"
       }
     ]
   }

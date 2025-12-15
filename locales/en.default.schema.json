@@ -1311,6 +1311,48 @@
         "track_out_of_stock": {
           "label": "Track Out of Stock Views",
           "info": "Track when users view unavailable product variants"
+        },
+        "track_view_item_list": {
+          "label": "Track Product List Views",
+          "info": "Track when product lists become 25% visible in viewport"
+        },
+        "track_view_cart": {
+          "label": "Track Cart Views",
+          "info": "Track when cart drawer opens or cart page loads"
+        },
+        "track_remove_from_cart": {
+          "label": "Track Remove from Cart",
+          "info": "Track when items are removed from the cart"
+        },
+        "header_events_cart_operations": "Cart Operations",
+        "track_update_cart": {
+          "label": "Track Cart Quantity Updates",
+          "info": "Track when users increase or decrease item quantities in cart"
+        },
+        "track_search": {
+          "label": "Track Search Queries",
+          "info": "Track when users submit search queries"
+        },
+        "track_product_option": {
+          "label": "Track Product Option Changes",
+          "info": "Track when users change product variants (size, color, etc.)"
+        },
+        "track_select_content": {
+          "label": "Track Content Selections",
+          "info": "Track filter selections, tab clicks, and content interactions"
+        },
+        "track_carousel": {
+          "label": "Track Carousel Interactions",
+          "info": "Track when users click slider navigation arrows"
+        },
+        "header_events_marketing": "Marketing & Leads",
+        "track_login": {
+          "label": "Track User Login",
+          "info": "Track when users successfully log into their account"
+        },
+        "track_sign_up": {
+          "label": "Track Account Creation",
+          "info": "Track when users create a new account (homepage only)"
         }
       }
     }

@@ -7,12 +7,25 @@
       <data-layer-select-item></data-layer-select-item>
     {%- endif -%}
 
-    {%- if settings.gtm_track_view_item -%}
+    {%- if settings.gtm_track_view_item and template.name == 'product' -%}
       <data-layer-view-item></data-layer-view-item>
     {%- endif -%}
 
-    {%- if settings.gtm_track_add_to_cart and template.name == 'product' -%}
+    {%- if settings.gtm_track_add_to_cart -%}
       <data-layer-add-to-cart></data-layer-add-to-cart>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_view_cart -%}
+      <data-layer-view-cart></data-layer-view-cart>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_remove_from_cart -%}
+      <data-layer-remove-from-cart></data-layer-remove-from-cart>
+    {%- endif -%}
+
+    {%- comment %} CART OPERATIONS {%- endcomment %}
+    {%- if settings.gtm_track_update_cart -%}
+      <data-layer-update-cart></data-layer-update-cart>
     {%- endif -%}
 
     {%- comment %} USER ENGAGEMENT EVENTS {%- endcomment %}
@@ -22,6 +35,14 @@
 
     {%- if settings.gtm_track_faq_toggle -%}
       <data-layer-faq-toggle></data-layer-faq-toggle>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_search -%}
+      <data-layer-search></data-layer-search>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_carousel -%}
+      <data-layer-carousel></data-layer-carousel>
     {%- endif -%}
 
     {%- comment %} SYSTEM & STATUS EVENTS {%- endcomment %}

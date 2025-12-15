@@ -11,6 +11,40 @@ class DataLayerUtility {
     window.dataLayer.push({ ecommerce: null }); // Clear previous ecommerce object
     window.dataLayer.push(data);
   }
+
+  /**
+   * Get product data from DOM
+   */
+  static getProductData() {
+    const productElement = document.querySelector('[data-product]');
+    if (!productElement) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(productElement.innerHTML);
+    } catch (e) {
+      console.error('DataLayer: Failed to parse product data', e);
+      return null;
+    }
+  }
+
+  /**
+   * Get selected variant data from DOM
+   */
+  static getSelectedVariantData() {
+    const variantElement = document.querySelector('[data-selected-variant]');
+    if (!variantElement) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(variantElement.innerHTML);
+    } catch (e) {
+      console.error('DataLayer: Failed to parse variant data', e);
+      return null;
+    }
+  }
 }
 
 /**
@@ -138,56 +172,37 @@ class DataLayerViewItem extends HTMLElement {
     this.trackViewItem();
   }
 
-  getProductData() {
-    const productElement = document.querySelector('[data-product]');
-    if (!productElement) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(productElement.innerHTML);
-    } catch (e) {
-      console.error('DataLayer: Failed to parse product data', e);
-      return null;
-    }
-  }
-
-  getSelectedVariantData() {
-    const variantElement = document.querySelector('[data-selected-variant]');
-    if (!variantElement) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(variantElement.innerHTML);
-    } catch (e) {
-      console.error('DataLayer: Failed to parse variant data', e);
-      return null;
-    }
-  }
-
-  formatGA4ViewItem(productData, variantData) {
-    return {
+  formatGA4Item(productData, variantData, quantity = 1, sellingPlanId = null) {
+    const item = {
       item_id: variantData.sku || variantData.id.toString(),
       item_name: productData.title,
       item_brand: productData.vendor,
       item_category: productData.type,
       item_variant: variantData.title,
       price: variantData.price / 100,
-      quantity: 1,
+      quantity: quantity,
     };
+
+    if (sellingPlanId) {
+      item.selling_plan_id = sellingPlanId;
+      item.purchase_type = 'subscription';
+    } else {
+      item.purchase_type = 'one-time';
+    }
+
+    return item;
   }
 
   trackViewItem() {
-    const productData = this.getProductData();
-    const variantData = this.getSelectedVariantData();
+    const productData = DataLayerUtility.getProductData();
+    const variantData = DataLayerUtility.getSelectedVariantData();
 
     if (!productData || !variantData) {
       console.error('DataLayer: view_item - Missing product or variant data');
       return;
     }
 
-    const item = this.formatGA4ViewItem(productData, variantData);
+    const item = this.formatGA4Item(productData, variantData, 1);
 
     DataLayerUtility.pushToDataLayer({
       event: 'view_item',
@@ -287,12 +302,18 @@ class DataLayerCtaClick extends HTMLElement {
       return;
     }
 
+    // Skip carousel navigation buttons (handled by carousel component)
+    if (button.classList.contains('swiper-button-next') || button.classList.contains('swiper-button-prev') || button.closest('.swiper')) {
+      return;
+    }
+
     // Skip product-related buttons (handled by other components)
     if (
       button.closest('product-card') ||
       button.closest('.quick-add') ||
       button.closest('form[action*="/cart"]') ||
       button.closest('ajax-cart-product-form') ||
+      button.closest('ajax-cart-quantity') ||
       button.type === 'submit'
     ) {
       return;
@@ -406,8 +427,8 @@ class DataLayerOutOfStock extends HTMLElement {
   }
 
   trackOutOfStock() {
-    const productData = this.getProductData();
-    const variantData = this.getSelectedVariantData();
+    const productData = DataLayerUtility.getProductData();
+    const variantData = DataLayerUtility.getSelectedVariantData();
 
     if (!productData || !variantData) {
       return;
@@ -423,32 +444,325 @@ class DataLayerOutOfStock extends HTMLElement {
       item_name: productData.title,
     });
   }
+}
 
-  getProductData() {
-    const productElement = document.querySelector('[data-product]');
-    if (!productElement) {
-      return null;
+/**
+ * ============================================================================
+ * EVENT COMPONENT: VIEW CART
+ * ============================================================================
+ */
+class DataLayerViewCart extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    // Track cart page loads
+    if (window.location.pathname.includes('/cart')) {
+      this.trackViewCart();
     }
 
-    try {
-      return JSON.parse(productElement.innerHTML);
-    } catch (e) {
-      console.error('DataLayer: Failed to parse product data', e);
-      return null;
+    // Listen for clicks on cart icon/button
+    this.setupCartIconListener();
+  }
+
+  setupCartIconListener() {
+    document.addEventListener('click', (event) => {
+      const cartTrigger = event.target.closest('#header-cart-bubble, [data-cart-trigger], .cart-trigger');
+      if (cartTrigger) {
+        setTimeout(() => {
+          this.trackViewCart();
+        }, 100);
+      }
+    });
+  }
+
+  formatCartItems(cartState) {
+    if (!cartState?.items) {
+      return [];
+    }
+
+    return cartState.items.map((item) => ({
+      item_id: item.sku || item.id.toString(),
+      item_name: item.product_title,
+      item_brand: item.vendor,
+      item_category: item.product_type,
+      item_variant: item.variant_title,
+      price: item.price / 100,
+      quantity: item.quantity,
+    }));
+  }
+
+  trackViewCart() {
+    const cartState = window.liquidAjaxCart?.cart;
+
+    if (!cartState || !cartState.items || cartState.item_count === 0) {
+      return;
+    }
+
+    const items = this.formatCartItems(cartState);
+    const cartValue = cartState.total_price / 100;
+
+    DataLayerUtility.pushToDataLayer({
+      event: 'view_cart',
+      ecommerce: {
+        currency: window.Shopify?.currency?.active || 'USD',
+        value: cartValue,
+        items: items,
+      },
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: REMOVE FROM CART
+ * ============================================================================
+ */
+class DataLayerRemoveFromCart extends HTMLElement {
+  constructor() {
+    super();
+    this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
+  }
+
+  connectedCallback() {
+    document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+  }
+
+  onCartRequestEnd(event) {
+    const { requestState } = event.detail || {};
+
+    // Only track change requests that result in removals
+    if (requestState?.requestType !== 'change' || !requestState?.responseData?.ok) {
+      return;
+    }
+
+    const removedItems = requestState.responseData.body?.items_removed;
+    const currentCartItems = requestState.responseData.body?.items;
+
+    // Only proceed if there are items removed
+    if (!removedItems || removedItems.length === 0) {
+      return;
+    }
+
+    // Filter to only items that are COMPLETELY removed (not in the current cart)
+    const completelyRemovedItems = removedItems.filter((removedItem) => {
+      // Check if this item still exists in the cart
+      const stillInCart = currentCartItems?.some(
+        (cartItem) => cartItem.variant_id === removedItem.variant_id || cartItem.key === removedItem.view_key,
+      );
+      // Only include if NOT still in cart (completely removed)
+      return !stillInCart;
+    });
+
+    if (completelyRemovedItems.length > 0) {
+      this.trackRemoveFromCart(completelyRemovedItems);
     }
   }
 
-  getSelectedVariantData() {
-    const variantElement = document.querySelector('[data-selected-variant]');
-    if (!variantElement) {
-      return null;
+  trackRemoveFromCart(removedItems) {
+    let totalRemovedValue = 0;
+    const itemsForGA4 = removedItems.map((item) => {
+      const itemPrice = parseFloat(item.price) || 0;
+      totalRemovedValue += itemPrice * item.quantity;
+
+      return {
+        item_id: item.sku || item.variant_id?.toString(),
+        item_name: item.product_title,
+        item_variant: item.variant_title,
+        item_brand: item.vendor,
+        price: itemPrice,
+        quantity: item.quantity,
+        item_category: item.product_type,
+      };
+    });
+
+    DataLayerUtility.pushToDataLayer({
+      event: 'remove_from_cart',
+      ecommerce: {
+        currency: window.Shopify?.currency?.active || 'USD',
+        value: totalRemovedValue,
+        items: itemsForGA4,
+      },
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: UPDATE CART
+ * ============================================================================
+ */
+class DataLayerUpdateCart extends HTMLElement {
+  constructor() {
+    super();
+    this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
+    this.cartStateBeforeUpdate = null;
+  }
+
+  connectedCallback() {
+    document.addEventListener('liquid-ajax-cart:request-start', (event) => {
+      const { requestState } = event.detail || {};
+      if (requestState?.requestType === 'change') {
+        this.cartStateBeforeUpdate = window.liquidAjaxCart?.cart;
+      }
+    });
+
+    document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+  }
+
+  onCartRequestEnd(event) {
+    const { requestState } = event.detail || {};
+
+    // Only track change requests
+    if (requestState?.requestType !== 'change' || !requestState?.responseData?.ok) {
+      return;
     }
 
-    try {
-      return JSON.parse(variantElement.innerHTML);
-    } catch (e) {
-      console.error('DataLayer: Failed to parse variant data', e);
-      return null;
+    // Get updated items from response
+    const updatedItems = requestState.responseData.body?.items;
+
+    // If there are no updated items or the previous cart state is not available, return
+    if (!updatedItems || !this.cartStateBeforeUpdate?.items) {
+      return;
+    }
+
+    // Compare previous cart state with current state to find quantity changes
+    updatedItems.forEach((currentItem) => {
+      const previousItem = this.cartStateBeforeUpdate.items.find(
+        (prev) => prev.key === currentItem.key || prev.variant_id === currentItem.variant_id,
+      );
+
+      // If item exists in previous state and quantity changed
+      if (previousItem && previousItem.quantity !== currentItem.quantity) {
+        DataLayerUtility.pushToDataLayer({
+          event: 'update_cart',
+          item_id: currentItem.sku || currentItem.variant_id?.toString(),
+          item_name: currentItem.product_title,
+          previous_quantity: previousItem.quantity,
+          new_quantity: currentItem.quantity,
+        });
+      }
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: SEARCH
+ * ============================================================================
+ */
+class DataLayerSearch extends HTMLElement {
+  constructor() {
+    super();
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
+  }
+
+  connectedCallback() {
+    // Track search form submissions
+    document.addEventListener('submit', this.onSearchSubmit);
+
+    // Track search page loads with query parameter
+    if (window.location.pathname.includes('/search')) {
+      this.trackSearchFromUrl();
+    }
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('submit', this.onSearchSubmit);
+  }
+
+  onSearchSubmit(event) {
+    const form = event.target;
+
+    // Check if it's a search form
+    if (!form.action?.includes('/search') && !form.querySelector('input[name="q"]') && !form.classList.contains('search')) {
+      return;
+    }
+
+    const searchInput = form.querySelector('input[name="q"], input[type="search"]');
+    if (!searchInput) {
+      return;
+    }
+
+    const searchTerm = searchInput.value?.trim();
+    if (searchTerm) {
+      this.trackSearch(searchTerm);
+    }
+  }
+
+  trackSearchFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('q');
+
+    if (searchTerm) {
+      this.trackSearch(searchTerm);
+    }
+  }
+
+  trackSearch(searchTerm) {
+    DataLayerUtility.pushToDataLayer({
+      event: 'search',
+      search_term: searchTerm,
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: CAROUSEL INTERACTION
+ * ============================================================================
+ */
+class DataLayerCarousel extends HTMLElement {
+  constructor() {
+    super();
+    this.onCarouselClick = this.onCarouselClick.bind(this);
+  }
+
+  connectedCallback() {
+    document.addEventListener('click', this.onCarouselClick);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('click', this.onCarouselClick);
+  }
+
+  onCarouselClick(event) {
+    // Support Swiper's div[role="button"] navigation buttons
+    const button = event.target.closest('div[role="button"]');
+    if (!button) {
+      return;
+    }
+
+    // Check for Swiper navigation buttons
+    const isSwiperNext = button.classList.contains('swiper-button-next');
+    const isSwiperPrev = button.classList.contains('swiper-button-prev');
+
+    if (!isSwiperNext && !isSwiperPrev) {
+      return;
+    }
+
+    // Check if button is inside a swiper container
+    const swiperContainer = button.closest('.swiper');
+
+    if (swiperContainer) {
+      const carouselId = swiperContainer.id || swiperContainer.dataset.carouselId || 'swiper';
+      const slideDirection = isSwiperPrev ? 'previous' : 'next';
+
+      DataLayerUtility.pushToDataLayer({
+        event: 'carousel_interaction',
+        interaction_type: 'arrow_click',
+        slide_direction: slideDirection,
+        carousel_id: carouselId,
+      });
     }
   }
 }
@@ -461,11 +775,20 @@ class DataLayerOutOfStock extends HTMLElement {
 
 const dataLayerComponents = {
   'data-layer': DataLayer, // Register parent first
+  // Core E-commerce Events
   'data-layer-select-item': DataLayerSelectItem,
   'data-layer-view-item': DataLayerViewItem,
   'data-layer-add-to-cart': DataLayerAddToCart,
+  'data-layer-view-cart': DataLayerViewCart,
+  'data-layer-remove-from-cart': DataLayerRemoveFromCart,
+  // Cart Operations
+  'data-layer-update-cart': DataLayerUpdateCart,
+  // User Engagement Events
   'data-layer-cta-click': DataLayerCtaClick,
   'data-layer-faq-toggle': DataLayerFaqToggle,
+  'data-layer-search': DataLayerSearch,
+  'data-layer-carousel': DataLayerCarousel,
+  // System & Status Events
   'data-layer-error-404': DataLayerError404,
   'data-layer-out-of-stock': DataLayerOutOfStock,
 };
