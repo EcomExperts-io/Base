@@ -41,6 +41,16 @@
     "gtm_track_faq_toggle": true,
     "gtm_track_error_404": true,
     "gtm_track_out_of_stock": true,
+    "gtm_track_view_item_list": true,
+    "gtm_track_view_cart": true,
+    "gtm_track_remove_from_cart": true,
+    "gtm_track_update_cart": true,
+    "gtm_track_search": true,
+    "gtm_track_product_option": true,
+    "gtm_track_select_content": true,
+    "gtm_track_carousel": true,
+    "gtm_track_login": true,
+    "gtm_track_sign_up": true,
     "content_for_index": [],
     "color_schemes": {
       "scheme-1": {

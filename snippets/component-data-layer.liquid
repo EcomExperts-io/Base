@@ -41,6 +41,10 @@
       <data-layer-search></data-layer-search>
     {%- endif -%}
 
+    {%- if settings.gtm_track_product_option and template.name == 'product' -%}
+      <data-layer-product-option></data-layer-product-option>
+    {%- endif -%}
+
     {%- if settings.gtm_track_carousel -%}
       <data-layer-carousel></data-layer-carousel>
     {%- endif -%}

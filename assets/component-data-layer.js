@@ -314,7 +314,9 @@ class DataLayerCtaClick extends HTMLElement {
       button.closest('form[action*="/cart"]') ||
       button.closest('ajax-cart-product-form') ||
       button.closest('ajax-cart-quantity') ||
-      button.type === 'submit'
+      button.type === 'submit' ||
+      button.href.includes('/cart') ||
+      button.href.includes('/checkout')
     ) {
       return;
     }
@@ -454,27 +456,22 @@ class DataLayerOutOfStock extends HTMLElement {
 class DataLayerViewCart extends HTMLElement {
   constructor() {
     super();
+    this.onCartClick = this.onCartClick.bind(this);
   }
 
   connectedCallback() {
-    // Track cart page loads
-    if (window.location.pathname.includes('/cart')) {
-      this.trackViewCart();
-    }
-
-    // Listen for clicks on cart icon/button
-    this.setupCartIconListener();
+    document.addEventListener('click', this.onCartClick);
   }
 
-  setupCartIconListener() {
-    document.addEventListener('click', (event) => {
-      const cartTrigger = event.target.closest('#header-cart-bubble, [data-cart-trigger], .cart-trigger');
-      if (cartTrigger) {
-        setTimeout(() => {
-          this.trackViewCart();
-        }, 100);
-      }
-    });
+  disconnectedCallback() {
+    document.removeEventListener('click', this.onCartClick);
+  }
+
+  onCartClick(event) {
+    const cartTrigger = event.target.closest('#header-cart-bubble, [data-cart-trigger], .cart-trigger');
+    if (cartTrigger) {
+      setTimeout(this.trackViewCart.bind(this), 100);
+    }
   }
 
   formatCartItems(cartState) {
@@ -657,6 +654,74 @@ class DataLayerUpdateCart extends HTMLElement {
 
 /**
  * ============================================================================
+ * EVENT COMPONENT: PRODUCT OPTION SELECTED
+ * ============================================================================
+ */
+class DataLayerProductOption extends HTMLElement {
+  constructor() {
+    super();
+    this.onOptionChange = this.onOptionChange.bind(this);
+  }
+
+  connectedCallback() {
+    document.addEventListener('change', this.onOptionChange);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('change', this.onOptionChange);
+  }
+
+  onOptionChange(event) {
+    // Check if change event is from variant-selector
+    const variantSelector = event.target.closest('variant-selector');
+    if (!variantSelector) {
+      return;
+    }
+
+    // Determine picker type and extract option data
+    const pickerType = variantSelector.dataset.pickerType;
+    let optionName, optionValue;
+
+    if (pickerType === 'button') {
+      // Extract from radio input
+      const input = event.target;
+      if (input.type !== 'radio' || !input.checked) {
+        return;
+      }
+
+      const fieldset = input.closest('fieldset');
+      const legend = fieldset?.querySelector('legend');
+      optionName = legend?.textContent?.trim() || '';
+      optionValue = input.value;
+    }
+
+    if (!optionName || !optionValue) {
+      return;
+    }
+
+    // Get product context
+    const productData = DataLayerUtility.getProductData();
+    const variantData = DataLayerUtility.getSelectedVariantData();
+
+    if (!productData) {
+      return;
+    }
+
+    // Push to data layer
+    DataLayerUtility.pushToDataLayer({
+      event: 'product_option_selected',
+      option_name: optionName,
+      option_value: optionValue,
+      product_id: productData.id?.toString(),
+      product_name: productData.title,
+      variant_id: variantData?.id?.toString() || '',
+      variant_sku: variantData?.sku || '',
+    });
+  }
+}
+
+/**
+ * ============================================================================
  * EVENT COMPONENT: SEARCH
  * ============================================================================
  */
@@ -788,6 +853,7 @@ const dataLayerComponents = {
   'data-layer-faq-toggle': DataLayerFaqToggle,
   'data-layer-search': DataLayerSearch,
   'data-layer-carousel': DataLayerCarousel,
+  'data-layer-product-option': DataLayerProductOption,
   // System & Status Events
   'data-layer-error-404': DataLayerError404,
   'data-layer-out-of-stock': DataLayerOutOfStock,
