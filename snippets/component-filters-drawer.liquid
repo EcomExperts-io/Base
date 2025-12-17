@@ -316,7 +316,7 @@
 {% liquid
   assign show_more_number = 10
   assign active_filters_count = 0
-  
+
   for f in results.filters
     if f.type == 'price_range'
       if f.min_value.value and f.min_value.value != blank
@@ -392,10 +392,7 @@
                 {%- if results.products_count == results.all_products_count -%}
                   {{ 'products.facets.results_count' | t: count: results.products_count }}
                 {% else %}
-                  {{
-                    'products.facets.results_count_of'
-                    | t: count: results.products_count, total: results.all_products_count
-                  }}
+                  {{ 'products.facets.results_count_of' | t: count: results.products_count, total: results.all_products_count }}
                 {% endif %}
               {% else %}
                 {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
@@ -431,12 +428,7 @@
                     {% render 'component-filters-price-range', filter: f, id_prefix: 'Filter-Drawer-' %}
                   {% else %}
                     {%- for v in f.values -%}
-                      {%- assign input_id = 'Filter-Drawer-'
-                        | append: f.param_name
-                        | escape
-                        | append: '-'
-                        | append: forloop.index
-                      -%}
+                      {%- assign input_id = 'Filter-Drawer-' | append: f.param_name | escape | append: '-' | append: forloop.index -%}
                       <label
                         class="facet-checkbox"
                         {% if forloop.index > show_more_number %}
@@ -450,6 +442,9 @@
                           name="{{ v.param_name }}"
                           value="{{ v.value }}"
                           data-render-section="filters-form-drawer"
+                          data-track-content-type="filter"
+                          data-track-item-id="{{ f.param_name | escape }}_{{ v.value | handleize }}"
+                          data-track-item-name="{{ f.label | escape }}: {{ v.label | escape }}"
                           {% if v.active %}
                             checked
                           {% endif -%}
@@ -462,7 +457,7 @@
                         </span>
                         <span class="filter-label">
                           {{- v.label }}
-                        {% if show_filter_count != blank %} ({{ v.count }}){% endif %}
+                          {% if show_filter_count != blank %} ({{ v.count }}){% endif %}
                         </span>
                       </label>
                     {%- endfor -%}
@@ -495,10 +490,13 @@
                 name="sort_by"
                 id="SortBy"
                 class="facet-filters__sort"
+                data-track-content-type="sort"
               >
                 {%- for option in results.sort_options -%}
                   <option
                     value="{{ option.value | escape }}"
+                    data-track-item-id="{{ option.value | handleize }}"
+                    data-track-item-name="{{ option.name | escape }}"
                     {% if option.value == sort_by %}
                       selected="selected"
                     {% endif %}

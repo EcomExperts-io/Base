@@ -45,6 +45,58 @@ class DataLayerUtility {
       return null;
     }
   }
+
+  /**
+   * Get list context from section element or URL
+   */
+  static getListContext(element) {
+    const section = element.closest('section, [data-section-type], [data-item-list-id]');
+
+    if (section) {
+      // Prefer explicit data attributes
+      if (section.dataset.itemListId && section.dataset.itemListName) {
+        return {
+          id: section.dataset.itemListId,
+          name: section.dataset.itemListName,
+        };
+      }
+
+      // Fallback to section-based detection
+      const sectionId = section.id || section.dataset.sectionId || 'unknown';
+      const sectionType = section.dataset.sectionType || section.className.match(/section-([^\s]+)/)?.[1] || 'product_list';
+
+      return {
+        id: sectionId,
+        name: sectionType
+          .replace(/_/g, ' ')
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, (l) => l.toUpperCase()),
+      };
+    }
+
+    // Check if on collection page
+    if (window.location.pathname.includes('/collections/')) {
+      const collectionMatch = window.location.pathname.match(/\/collections\/([^\/\?#]+)/);
+      const collectionHandle = collectionMatch ? collectionMatch[1] : 'unknown';
+      return {
+        id: `collection_${collectionHandle}`,
+        name: 'Collection',
+      };
+    }
+
+    // Check for homepage
+    if (window.location.pathname === '/') {
+      return {
+        id: 'homepage',
+        name: 'Homepage',
+      };
+    }
+
+    return {
+      id: 'unknown',
+      name: 'Product List',
+    };
+  }
 }
 
 /**
@@ -78,50 +130,6 @@ class DataLayerSelectItem extends HTMLElement {
     document.removeEventListener('click', this.onProductClick);
   }
 
-  getListContext(element) {
-    const section = element.closest('section, [data-section-type], [data-item-list-id]');
-    if (section) {
-      if (section.dataset.itemListId && section.dataset.itemListName) {
-        return {
-          id: section.dataset.itemListId,
-          name: section.dataset.itemListName,
-        };
-      }
-
-      const sectionId = section.id || section.dataset.sectionId || 'unknown';
-      const sectionType = section.dataset.sectionType || section.className.match(/section-([^\s]+)/)?.[1] || 'product_list';
-
-      return {
-        id: sectionId,
-        name: sectionType
-          .replace(/_/g, ' ')
-          .replace(/-/g, ' ')
-          .replace(/\b\w/g, (l) => l.toUpperCase()),
-      };
-    }
-
-    if (window.location.pathname.includes('/collections/')) {
-      const collectionMatch = window.location.pathname.match(/\/collections\/([^\/\?#]+)/);
-      const collectionHandle = collectionMatch ? collectionMatch[1] : 'unknown';
-      return {
-        id: `collection_${collectionHandle}`,
-        name: 'Collection',
-      };
-    }
-
-    if (window.location.pathname === '/') {
-      return {
-        id: 'homepage',
-        name: 'Homepage',
-      };
-    }
-
-    return {
-      id: 'unknown',
-      name: 'Product List',
-    };
-  }
-
   onProductClick(event) {
     const productCard = event.target.closest('product-card, .product-card');
     if (!productCard) {
@@ -146,7 +154,7 @@ class DataLayerSelectItem extends HTMLElement {
 
     try {
       const itemData = JSON.parse(dataElement.innerHTML);
-      const listContext = this.getListContext(productCard);
+      const listContext = DataLayerUtility.getListContext(productCard);
 
       DataLayerUtility.pushToDataLayer({
         event: 'select_item',
@@ -159,6 +167,172 @@ class DataLayerSelectItem extends HTMLElement {
     } catch (e) {
       console.error('DataLayer: Failed to parse product item data', e);
     }
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: VIEW ITEM LIST
+ * ============================================================================
+ */
+class DataLayerViewItemList extends HTMLElement {
+  constructor() {
+    super();
+    this.observer = null;
+    this.mutationObserver = null;
+
+    // Define selectors in one place to prevent mismatch bugs
+    this.listSelectors = ['.product-grid', 'ul.grid', '[data-product-list]'];
+  }
+
+  connectedCallback() {
+    this.initializeObserver();
+    this.observeProductLists();
+    this.setupMutationObserver();
+  }
+
+  disconnectedCallback() {
+    // Disconnect IntersectionObserver
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+
+    // Disconnect MutationObserver
+    if (this.mutationObserver) {
+      this.mutationObserver.disconnect();
+      this.mutationObserver = null;
+    }
+  }
+
+  initializeObserver() {
+    // Check if IntersectionObserver is supported
+    if (!('IntersectionObserver' in window)) {
+      return;
+    }
+
+    // Create IntersectionObserver with 10% threshold
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Check if element is intersecting and hasn't been tracked yet
+          if (entry.isIntersecting && !entry.target.hasAttribute('data-gtm-list-viewed')) {
+            // Mark as viewed to prevent duplicate tracking
+            entry.target.setAttribute('data-gtm-list-viewed', 'true');
+
+            // Track the view_item_list event
+            this.trackViewItemList(entry.target);
+
+            // Stop observing this element
+            this.observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of the list is visible
+        rootMargin: '0px',
+      },
+    );
+  }
+
+  observeProductLists() {
+    if (!this.observer) {
+      return;
+    }
+
+    // Select all potential product list containers
+    const productLists = document.querySelectorAll(this.listSelectors.join(', '));
+
+    productLists.forEach((list) => {
+      // Only observe if list has products and hasn't been observed yet
+      const hasProducts = list.querySelectorAll('[data-product-item-data]').length > 0;
+      const notYetObserved = !list.hasAttribute('data-gtm-observer-attached');
+
+      if (hasProducts && notYetObserved) {
+        list.setAttribute('data-gtm-observer-attached', 'true');
+        this.observer.observe(list);
+      }
+    });
+  }
+
+  setupMutationObserver() {
+    // Check if MutationObserver is supported
+    if (!('MutationObserver' in window)) {
+      return;
+    }
+
+    // Create MutationObserver to watch for dynamically loaded content
+    this.mutationObserver = new MutationObserver((mutations) => {
+      let shouldReobserve = false;
+
+      mutations.forEach((mutation) => {
+        // Check if new nodes were added
+        if (mutation.addedNodes.length > 0) {
+          mutation.addedNodes.forEach((node) => {
+            // Check if the added node is an element and contains product lists
+            if (node.nodeType === 1) {
+              // Check if the added node matches any of the list selectors
+              const isMatch = this.listSelectors.some((selector) => node.matches(selector) || node.querySelector(selector));
+
+              // If the added node matches any of the list selectors, re-observe the product lists
+              if (isMatch) {
+                shouldReobserve = true;
+              }
+            }
+          });
+        }
+      });
+
+      // Re-scan for product lists if new content was added
+      if (shouldReobserve) {
+        this.observeProductLists();
+      }
+    });
+
+    const targetNode = document.getElementById('MainContent') || document.body;
+
+    // Start observing the document for changes
+    this.mutationObserver.observe(targetNode, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  getProductListItems(listElement) {
+    const productCards = listElement.querySelectorAll('[data-product-item-data]');
+    return Array.from(productCards)
+      .map((card) => {
+        try {
+          return JSON.parse(card.innerHTML);
+        } catch (e) {
+          console.error('DataLayer: Failed to parse product item', e);
+          return null;
+        }
+      })
+      .filter(Boolean);
+  }
+
+  trackViewItemList(listElement) {
+    const listContext = DataLayerUtility.getListContext(listElement);
+
+    // Get all product items in the list
+    const items = this.getProductListItems(listElement);
+
+    if (items.length === 0) {
+      console.error('DataLayer: view_item_list - No valid product data found');
+      return;
+    }
+
+    // Push to dataLayer
+    DataLayerUtility.pushToDataLayer({
+      event: 'view_item_list',
+      ecommerce: {
+        currency: window.Shopify?.currency?.active || 'USD',
+        item_list_id: listContext.id,
+        item_list_name: listContext.name,
+        items: items,
+      },
+    });
   }
 }
 
@@ -834,6 +1008,231 @@ class DataLayerCarousel extends HTMLElement {
 
 /**
  * ============================================================================
+ * EVENT COMPONENT: SELECT CONTENT
+ * ============================================================================
+ */
+class DataLayerSelectContent extends HTMLElement {
+  constructor() {
+    super();
+    this.onClick = this.onClick.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+
+  connectedCallback() {
+    document.addEventListener('click', this.onClick);
+    document.addEventListener('change', this.onChange);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('click', this.onClick);
+    document.removeEventListener('change', this.onChange);
+  }
+
+  onClick(event) {
+    // Find element with data-track-content-type
+    const element = event.target.closest('[data-track-content-type]');
+    if (!element) {
+      return;
+    }
+
+    // Skip select elements (handled by onChange)
+    if (element.tagName === 'SELECT') {
+      return;
+    }
+
+    // Extract content_type and item_id from data attributes
+    const contentType = element.dataset.trackContentType;
+    const itemId = element.dataset.trackItemId;
+    const itemName = element.dataset.trackItemName || element.textContent?.trim();
+
+    // Validate required attributes
+    if (!contentType || !itemId) {
+      console.warn('DataLayer: select_content - Missing required data attributes');
+      return;
+    }
+
+    // Push to dataLayer
+    DataLayerUtility.pushToDataLayer({
+      event: 'select_content',
+      content_type: contentType,
+      item_id: itemId,
+      item_name: itemName,
+    });
+  }
+
+  onChange(event) {
+    // Handle change events on select elements with data-track-content-type="sort"
+    const select = event.target.closest('select[data-track-content-type="sort"]');
+    if (!select) {
+      return;
+    }
+
+    const selectedOption = select.options[select.selectedIndex];
+    const itemId = selectedOption.dataset.trackItemId || select.value;
+    const itemName = selectedOption.dataset.trackItemName || selectedOption.textContent?.trim();
+
+    // Validate required attributes
+    if (!itemId) {
+      console.warn('DataLayer: select_content - Missing required data attributes on sort select');
+      return;
+    }
+
+    // Push to dataLayer
+    DataLayerUtility.pushToDataLayer({
+      event: 'select_content',
+      content_type: 'sort',
+      item_id: itemId,
+      item_name: itemName,
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: LOGIN
+ * ============================================================================
+ */
+class DataLayerLogin extends HTMLElement {
+  constructor() {
+    super();
+    this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
+  }
+
+  connectedCallback() {
+    this.checkForRecentLogin();
+
+    const loginForm = document.querySelector('form[action*="/account/login"]');
+    if (loginForm) {
+      loginForm.addEventListener('submit', this.handleLoginSubmit);
+    }
+  }
+
+  disconnectedCallback() {
+    const loginForm = document.querySelector('form[action*="/account/login"]');
+    if (loginForm) {
+      loginForm.removeEventListener('submit', this.handleLoginSubmit);
+    }
+  }
+
+  handleLoginSubmit(event) {
+    const loginForm = event.target;
+
+    if (!loginForm.action?.includes('/account/login') || !loginForm.querySelector('input[name="customer[email]"]')) {
+      return;
+    }
+
+    const emailInput = loginForm.querySelector('#CustomerEmail');
+    const email = emailInput ? emailInput.value : '';
+
+    try {
+      sessionStorage.setItem('login_provider', 'email');
+      sessionStorage.setItem('login_email', email);
+      sessionStorage.setItem('login_timestamp', new Date().toISOString());
+      sessionStorage.setItem('just_logged_in', 'true');
+    } catch (error) {
+      console.error('DataLayer: Failed to set login tracking flags', error);
+    }
+  }
+
+  checkForRecentLogin() {
+    // Check sessionStorage for just_logged_in flag
+    const justLoggedIn = sessionStorage.getItem('just_logged_in');
+    const loginProvider = sessionStorage.getItem('login_provider') || 'email';
+    const loginEmail = sessionStorage.getItem('login_email');
+
+    if (justLoggedIn === 'true') {
+      this.handleSuccessfulLogin(loginProvider, loginEmail);
+
+      // Clear flags after tracking
+      sessionStorage.removeItem('just_logged_in');
+      sessionStorage.removeItem('login_timestamp');
+      sessionStorage.removeItem('login_provider');
+      sessionStorage.removeItem('login_email');
+    }
+  }
+
+  handleSuccessfulLogin(loginProvider, loginEmail) {
+    DataLayerUtility.pushToDataLayer({
+      event: 'login',
+      method: loginProvider || 'email',
+      customer_email: loginEmail,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT COMPONENT: SIGN UP
+ * ============================================================================
+ */
+class DataLayerSignUp extends HTMLElement {
+  constructor() {
+    super();
+    this.handleSignupSubmit = this.handleSignupSubmit.bind(this);
+  }
+
+  connectedCallback() {
+    document.addEventListener('submit', this.handleSignupSubmit);
+    this.checkForRecentSignup();
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('submit', this.handleSignupSubmit);
+  }
+
+  handleSignupSubmit(event) {
+    const form = event.target;
+
+    if (!form.action?.includes('/account') || !form.querySelector('input[name="customer[email]"]')) {
+      return;
+    }
+
+    const firstNameInput = form.querySelector('#RegisterForm-FirstName');
+    const emailInput = form.querySelector('#RegisterForm-email');
+
+    const firstName = firstNameInput ? firstNameInput.value : '';
+    const email = emailInput ? emailInput.value : '';
+
+    if (!email) {
+      return;
+    }
+
+    sessionStorage.setItem('just_signed_up', 'true');
+    sessionStorage.setItem('signup_email', email);
+    sessionStorage.setItem('signup_first_name', firstName);
+  }
+
+  checkForRecentSignup() {
+    const justSignedUp = sessionStorage.getItem('just_signed_up');
+    const signupEmail = sessionStorage.getItem('signup_email');
+    const signupFirstName = sessionStorage.getItem('signup_first_name');
+
+    if (justSignedUp === 'true') {
+      this.handleSuccessfulSignup(signupEmail, signupFirstName);
+
+      // Clear flags after tracking
+      sessionStorage.removeItem('just_signed_up');
+      sessionStorage.removeItem('signup_timestamp');
+      sessionStorage.removeItem('signup_email');
+      sessionStorage.removeItem('signup_first_name');
+    }
+  }
+
+  handleSuccessfulSignup(signupEmail, signupFirstName) {
+    DataLayerUtility.pushToDataLayer({
+      event: 'sign_up',
+      method: 'email',
+      customer_id: window.customer?.id,
+      customer_email: window.customer?.email || signupEmail,
+      customer_name: window.customer?.name || signupFirstName,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+
+/**
+ * ============================================================================
  * COMPONENT REGISTRATION
  * ============================================================================
  */
@@ -843,6 +1242,7 @@ const dataLayerComponents = {
   // Core E-commerce Events
   'data-layer-select-item': DataLayerSelectItem,
   'data-layer-view-item': DataLayerViewItem,
+  'data-layer-view-item-list': DataLayerViewItemList,
   'data-layer-add-to-cart': DataLayerAddToCart,
   'data-layer-view-cart': DataLayerViewCart,
   'data-layer-remove-from-cart': DataLayerRemoveFromCart,
@@ -852,8 +1252,12 @@ const dataLayerComponents = {
   'data-layer-cta-click': DataLayerCtaClick,
   'data-layer-faq-toggle': DataLayerFaqToggle,
   'data-layer-search': DataLayerSearch,
+  'data-layer-select-content': DataLayerSelectContent,
   'data-layer-carousel': DataLayerCarousel,
   'data-layer-product-option': DataLayerProductOption,
+  // Authentication Events
+  'data-layer-login': DataLayerLogin,
+  'data-layer-sign-up': DataLayerSignUp,
   // System & Status Events
   'data-layer-error-404': DataLayerError404,
   'data-layer-out-of-stock': DataLayerOutOfStock,
