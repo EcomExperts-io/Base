@@ -735,6 +735,7 @@ shopify-buy-it-now-button .shopify-payment-button__button {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .product-media-gallery__nav:hover {

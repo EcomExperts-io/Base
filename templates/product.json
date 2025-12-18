@@ -142,9 +142,31 @@
         "variant_label_font_size": 13,
         "variant_label_font_weight": "300"
       }
+    },
+    "relative_products_nWjQjY": {
+      "type": "related-products",
+      "name": "Related products",
+      "settings": {
+        "heading": "You may also like",
+        "heading_size": "h1",
+        "layout_style": "carousel",
+        "products_to_show": 6,
+        "columns_desktop": 4,
+        "image_ratio": "adapt",
+        "show_vendor": false,
+        "enable_quick_add": "standard",
+        "enable_swatches": true,
+        "swatch_trigger": "Color",
+        "swatch_type": "image",
+        "color_scheme": "",
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "relative_products_nWjQjY"
   ]
 }
