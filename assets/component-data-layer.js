@@ -470,6 +470,11 @@ class DataLayerCtaClick extends HTMLElement {
   }
 
   onButtonClick(event) {
+    // Skip form inputs (radio, checkbox, input, select, etc.)
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || event.target.tagName === 'TEXTAREA') {
+      return;
+    }
+
     // Find the clicked button or link styled as button
     const button = event.target.closest('button, a.button, .button, [class*="button"]');
     if (!button) {
@@ -489,8 +494,8 @@ class DataLayerCtaClick extends HTMLElement {
       button.closest('ajax-cart-product-form') ||
       button.closest('ajax-cart-quantity') ||
       button.type === 'submit' ||
-      button.href.includes('/cart') ||
-      button.href.includes('/checkout')
+      (button.href && button.href.includes('/cart')) ||
+      (button.href && button.href.includes('/checkout'))
     ) {
       return;
     }
@@ -908,11 +913,6 @@ class DataLayerSearch extends HTMLElement {
   connectedCallback() {
     // Track search form submissions
     document.addEventListener('submit', this.onSearchSubmit);
-
-    // Track search page loads with query parameter
-    if (window.location.pathname.includes('/search')) {
-      this.trackSearchFromUrl();
-    }
   }
 
   disconnectedCallback() {
@@ -934,24 +934,11 @@ class DataLayerSearch extends HTMLElement {
 
     const searchTerm = searchInput.value?.trim();
     if (searchTerm) {
-      this.trackSearch(searchTerm);
+      DataLayerUtility.pushToDataLayer({
+        event: 'search',
+        search_term: searchTerm,
+      });
     }
-  }
-
-  trackSearchFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchTerm = urlParams.get('q');
-
-    if (searchTerm) {
-      this.trackSearch(searchTerm);
-    }
-  }
-
-  trackSearch(searchTerm) {
-    DataLayerUtility.pushToDataLayer({
-      event: 'search',
-      search_term: searchTerm,
-    });
   }
 }
 
