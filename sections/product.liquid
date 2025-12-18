@@ -529,13 +529,13 @@
                 {% endif %}
               </div>
             {%- when 'complementary' -%}
+              <h2 class="complementary-products-heading">{{ block.settings.heading }}</h2>
               <product-recommendations
                 {{ block.shopify_attributes }}
                 class="product-recommendations"
                 data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ block.settings.products_to_show }}&intent=complementary"
               >
                 {% if recommendations.performed and recommendations.products_count > 0 %}
-                  <h2 class="complementary-products-heading">{{ block.settings.heading }}</h2>
                   {%- for product in recommendations.products limit: block.settings.products_to_show -%}
                     <li>
                       {% render 'component-product-card',

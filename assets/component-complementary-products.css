@@ -1,26 +1,26 @@
 .product-recommendations {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
 }
 
 .complementary-products-heading {
   margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .product-recommendations .product-card-child {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .product-recommendations .card-media {
-  max-width: 20%;
+  width: 100%;
+  max-width: 100%;
 }
 
 .product-recommendations .card-heading {
