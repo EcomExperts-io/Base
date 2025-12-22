@@ -12,9 +12,10 @@
     "hero_1": {
       "type": "hero",
       "settings": {
+        "color_scheme": "scheme-3",
         "background_type": "image",
         "video_background_url": "",
-        "overlay_color": "#d9d9d9",
+        "overlay_color": "#e8e1e1",
         "overlay_opacity": 30,
         "content_alignment": "center",
         "vertical_alignment": "center",
@@ -23,6 +24,8 @@
         "subheading": "Sub Header Here",
         "button_text": "Shop Now",
         "button_link": "shopify://collections/cam-plans",
+        "button_background_color": "#ffffff",
+        "button_text_color": "#000000",
         "show_endorsement": false,
         "endorsement_name": ""
       }
@@ -75,12 +78,12 @@
       ],
       "name": "Featured Collections",
       "settings": {
+        "color_scheme": "",
         "heading": "Find the perfect fit for your game",
         "subheading": "Browse through our collections",
         "heading_alignment": "center",
         "style": "style2",
         "grid_gap": 25,
-        "text_color": "#000000",
         "hide_shop_now": true
       }
     },
@@ -133,6 +136,7 @@
         "product_card_QizrFh"
       ],
       "settings": {
+        "color_scheme": "",
         "heading": "Best Sellers",
         "subheading": "",
         "view_all_text": "View All",
@@ -142,7 +146,7 @@
         "button_background_color": "#2e2e2e",
         "button_text_color": "#ffffff",
         "product_content_alignment": "center",
-        "review_content_alignment": "center",
+        "review_content_alignment": "center"
       }
     },
     "selling_points_example": {
@@ -184,11 +188,9 @@
         "selling_point_4"
       ],
       "settings": {
+        "color_scheme": "",
         "padding_top": 40,
         "padding_bottom": 40,
-        "background_color": "#ffffff",
-        "text_color": "#000000",
-        "title_color": "#000000",
         "icon_size": 60
       }
     },
@@ -236,11 +238,9 @@
       ],
       "name": "Selling Points V2",
       "settings": {
+        "color_scheme": "",
         "padding_top": 40,
         "padding_bottom": 40,
-        "background_color": "#fefefe",
-        "text_color": "#000000",
-        "title_color": "#000000",
         "enable_mobile_slider": true
       }
     }
