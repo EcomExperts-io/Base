@@ -9,13 +9,13 @@
 {{ 'component-product-price.css' | asset_url | stylesheet_tag }}
 
 {% style %}
-  #shopify-section-{{ section.id }} {
+  .section-{{ section.id }}-padding {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
     padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
   }
 
   @media screen and (min-width: 750px) {
-    #shopify-section-{{ section.id }} {
+    .section-{{ section.id }}-padding {
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
@@ -186,7 +186,7 @@
   assign layout_style = section.settings.layout_style | default: 'grid'
 -%}
 
-<div class="color-{{ section.settings.color_scheme }} gradient">
+<div class="color-{{ section.settings.color_scheme }} gradient section-{{ section.id }}-padding">
   {% if layout_style == 'carousel' %}
     <related-products-carousel data-section-id="{{ section.id }}">
       <product-recommendations

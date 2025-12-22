@@ -49,7 +49,8 @@
   }
 </style>
 
-<div class="template-404 page-width">
+<div class="color-{{ section.settings.color_scheme }}">
+  <div class="template-404 page-width">
   <p>
     {{ 'templates.404.subtext' | t }}
   </p>
@@ -59,4 +60,19 @@
   <a href="{{ routes.all_products_collection_url }}" class="button">
     {{ 'general.continue_shopping' | t }}
   </a>
+  </div>
 </div>
+
+{% schema %}
+{
+  "name": "404",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

@@ -13,8 +13,9 @@
   id="cart-main"
   class="color-{{ section.settings.color_scheme }}"
 >
-  {%- if cart.item_count > 0 -%}
-    <div class="cart__wrapper">
+  <div class="page-width">
+    {%- if cart.item_count > 0 -%}
+      <div class="cart__wrapper">
       <div class="cart-header">
         <h2>Your cart ({{ cart.item_count }})</h2>
         <a href="{{ routes.all_products_collection_url }}"> Continue shopping </a>
@@ -194,15 +195,16 @@
           {% endform %}
         </div>
       </div>
-    </div>
-  {%- else -%}
-    <div class="cart__warnings">
-      <h1 class="cart__empty-text">Your cart is empty</h1>
-      <a href="{{ routes.all_products_collection_url }}" class="button"> Continue shopping </a>
-      <h2>Have an account?</h2>
-      <p class="cart__login-paragraph"><a href="{{ routes.account_login_url }}">Log in</a> to check out faster.</p>
-    </div>
-  {% endif %}
+      </div>
+    {%- else -%}
+      <div class="cart__warnings">
+        <h1 class="cart__empty-text">Your cart is empty</h1>
+        <a href="{{ routes.all_products_collection_url }}" class="button"> Continue shopping </a>
+        <h2>Have an account?</h2>
+        <p class="cart__login-paragraph"><a href="{{ routes.account_login_url }}">Log in</a> to check out faster.</p>
+      </div>
+    {% endif %}
+  </div>
 </div>
 
 <script src="{{ 'component-cart-discount.js' | asset_url }}" type="module" fetchpriority="low"></script>

@@ -18,7 +18,8 @@
   {%- assign hide_shop_login_button = true -%}
 {%- endif -%}
 
-<div class="customer login section-{{ section.id }}-padding">
+<div class="color-{{ section.settings.color_scheme }}">
+  <div class="customer login section-{{ section.id }}-padding page-width">
   <h1 id="recover" tabindex="-1">
     {{ 'customer.recover_password.title' | t }}
   </h1>
@@ -167,12 +168,19 @@
       {%- endform -%}
     </div>
   {%- endif -%}
+  </div>
 </div>
 
 {% schema %}
 {
   "name": "t:sections.main-login.name",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "checkbox",
       "id": "enable_shop_login_button",

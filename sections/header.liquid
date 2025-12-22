@@ -320,7 +320,9 @@
 >
   <header
     {% if section.settings.menu_position == 'center' %}
-      class="header-menu-position-center"
+      class="header-menu-position-center page-width"
+    {% else %}
+      class="page-width"
     {% endif %}
     id="main-header"
     x-data="{ searchOpen: false, searchTerm: '{{ search.terms | escape }}' }"

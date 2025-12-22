@@ -17,8 +17,6 @@
   assign button_text_color = section.settings.button_text_color
   assign product_content_alignment = section.settings.product_content_alignment
   assign review_content_alignment = section.settings.review_content_alignment
-  assign product_info_text_color = section.settings.product_info_text_color
-  assign stars_color = section.settings.stars_color
 -%}
 
 <style>
@@ -27,13 +25,13 @@
     --button-text-color: {{ button_text_color }};
     --product-content-alignment: {{ product_content_alignment }};
     --review-content-alignment: {{ review_content_alignment }};
-    --stars-color: {{ stars_color }};
   }
 </style>
 
 {%- if products_to_show > 0 -%}
-  <featured-products data-section-id="{{ section.id }}" class="featured-products-section" style="position: relative;">
-    <div class="page-width featured-products-content">
+  <div class="color-{{ section.settings.color_scheme }} featured-products-section">
+    <featured-products data-section-id="{{ section.id }}" style="position: relative;">
+      <div class="page-width featured-products-content">
       <div class="featured-products__header">
         <div class="featured-products__titles featured-products__titles--{{ heading_alignment }}">
           {%- if heading != blank -%}
@@ -106,17 +104,17 @@
                     {% comment %} Placeholder for reviews/ratings {% endcomment %}
                     <div class="product-card__reviews product-card__reviews--{{ review_content_alignment }}">
                       <span class="visually-hidden">Rating:</span>
-                      <span class="product-card__stars" style="color: {{ stars_color | default: '#FFD700' }}"
+                      <span class="product-card__stars"
                         >★★★★☆</span
                       >
                       <a href="#reviews" class="product-card__review-link">
                         <span class="product-card__review-count">10 Reviews</span>
                       </a>
                     </div>
-                    <h3 class="product-card__title" style="color: {{ product_info_text_color | default: '#111111' }}">
+                    <h3 class="product-card__title">
                       {{ product.title | default: 'Product Title' }}
                     </h3>
-                    <div class="product-card__price" style="color: {{ product_info_text_color | default: '#111111' }}">
+                    <div class="product-card__price">
                       {%- if product.price -%}
                         {%- if product.compare_at_price > product.price -%}
                           <s class="price__compare-at">{{ product.compare_at_price | money }}</s>
@@ -145,8 +143,9 @@
           </a>
         </div>
       {%- endif -%}
-    </div>
-  </featured-products>
+      </div>
+    </featured-products>
+  </div>
 {%- endif -%}
 
 {% schema %}
@@ -155,6 +154,12 @@
   "tag": "section",
   "class": "featured-products",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -255,18 +260,6 @@
         }
       ],
       "default": "left"
-    },
-    {
-      "type": "color",
-      "id": "product_info_text_color",
-      "label": "Product Info Text Color",
-      "default": "#111111"
-    },
-    {
-      "type": "color",
-      "id": "stars_color",
-      "label": "Stars Color",
-      "default": "#FFD700"
     }
   ],
   "blocks": [

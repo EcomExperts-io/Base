@@ -486,11 +486,6 @@ ul.footer-block__details-content a.link.link--text.list-menu__item.list-menu__it
   text-decoration: auto;
 }
 
-.footer__content-top.page-width {
-  max-width: 100%;
-  padding: 30px;
-}
-
 .footer-block.grid__item .footer__list-social {
   justify-content: flex-start;
   list-style: none;

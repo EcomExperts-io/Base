@@ -18,14 +18,11 @@
         "overlay_opacity": 30,
         "content_alignment": "center",
         "vertical_alignment": "center",
-        "text_color": "#000000",
         "stars_text": "",
         "heading": "Main Banner Title Here",
         "subheading": "Sub Header Here",
         "button_text": "Shop Now",
         "button_link": "shopify://collections/cam-plans",
-        "button_color": "#000000",
-        "button_text_color": "#ffffff",
         "show_endorsement": false,
         "endorsement_name": ""
       }
@@ -146,8 +143,6 @@
         "button_text_color": "#ffffff",
         "product_content_alignment": "center",
         "review_content_alignment": "center",
-        "product_info_text_color": "#111111",
-        "stars_color": "#000000"
       }
     },
     "selling_points_example": {

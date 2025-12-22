@@ -19,12 +19,14 @@
   }
 {%- endstyle -%}
 
-<div class="page-width page-width--narrow section-{{ section.id }}-padding">
+<div class="color-{{ section.settings.color_scheme }}">
+  <div class="page-width page-width--narrow section-{{ section.id }}-padding">
   <h1 class="main-page-title page-title">
     {{ page.title | escape }}
   </h1>
   <div class="rte">
     {{ page.content }}
+  </div>
   </div>
 </div>
 
@@ -34,6 +36,12 @@
   "tag": "section",
   "class": "section",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "range",
       "id": "max_page_width_narrow",

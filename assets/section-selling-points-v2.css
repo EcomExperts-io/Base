@@ -1,5 +1,16 @@
 /* sections/selling-points-v2.liquid */
 
+/* Section Wrapper */
+.selling-points-v2-section {
+  display: block;
+  width: 100%;
+}
+
+/* Apply color scheme background to the custom element */
+selling-points-v2[class*="color-"] {
+  background-color: rgb(var(--color-background));
+}
+
 /* Base Styles */
 .selling-points-v2__container {
   width: 100%;
@@ -147,11 +158,11 @@
 
 /* Mobile (max-width: 749px) */
 @media screen and (max-width: 749px) {
+  /* Slider mode - border around container */
   .selling-points-v2__container--slider {
     position: relative;
     padding: 0 0 5rem;
-    border: 1px solid #1C1A19;
-    background-color: #FFFFFF;
+    border: 1px solid rgb(var(--color-foreground));
   }
 
   .selling-points-v2__container--slider .selling-points-v2__grid {
@@ -174,15 +185,17 @@
     line-height: 1.1;
   }
 
+  /* Non-slider mode - stacked cards with proper borders */
   .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__grid {
     grid-template-columns: 1fr;
   }
 
-  .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__item {
-    border-bottom: 1px solid #1C1A19;
+  .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__content {
+    border: 1px solid rgb(var(--color-foreground));
+    border-top: none;
   }
 
-  .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__item:last-child {
-    border-bottom: none;
+  .selling-points-v2__container:not(.selling-points-v2__container--slider) .selling-points-v2__item:first-child .selling-points-v2__content {
+    border-top: 1px solid rgb(var(--color-foreground));
   }
 }

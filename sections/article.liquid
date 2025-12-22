@@ -41,7 +41,8 @@
   }
 {%- endstyle -%}
 
-<article class="article-template section-{{ section.id }}-padding">
+<div class="color-{{ section.settings.color_scheme }}">
+  <article class="article-template section-{{ section.id }}-padding">
   {%- for block in section.blocks -%}
     {%- case block.type -%}
       {%- when '@app' -%}
@@ -328,7 +329,8 @@
       </div>
     </div>
   {%- endif -%}
-</article>
+  </article>
+</div>
 
 <script src="{{ "component-product-share-button.js" | asset_url }}" type="module"></script>
 
@@ -342,6 +344,12 @@
   "tag": "section",
   "class": "section",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "select",
       "id": "back_button_alignment",

@@ -4,8 +4,8 @@
 .selling-points-section {
   padding-top: var(--promo-banner-padding-top, 40px);
   padding-bottom: var(--promo-banner-padding-bottom, 40px);
-  background-color: var(--promo-banner-background-color, #FFFFFF);
-  color: var(--promo-banner-text-color, #000000);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
 }
 
 /* Styling for the grid */
@@ -39,7 +39,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f5; /* Placeholder background */
+  background-color: rgb(var(--color-foreground));
 }
 
 .selling-points__icon-placeholder .placeholder-svg {
@@ -52,14 +52,12 @@
 .selling-points__title {
   margin: 0;
   font-weight: 600;
-  color: var(--selling-points-title-color, #000000);
   font-size: 1.8rem; /* Example font size */
   margin-bottom: 0.5rem;
 }
 
 .selling-points__description {
   margin: 0;
-  color: var(--selling-points-text-color, #000000);
   font-size: 1.4rem; /* Example font size */
   max-width: 100%;
 }

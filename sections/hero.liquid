@@ -15,6 +15,7 @@
   assign subheading = section.settings.subheading
   assign button_text = section.settings.button_text
   assign button_link = section.settings.button_link
+  assign button_background_color = section.settings.button_background_color
   assign button_text_color = section.settings.button_text_color
 
   assign show_endorsement = section.settings.show_endorsement
@@ -23,25 +24,22 @@
 
   assign content_alignment = section.settings.content_alignment
   assign vertical_alignment = section.settings.vertical_alignment
-  assign button_color = section.settings.button_color
 -%}
 
 {{ 'section-hero.css' | asset_url | stylesheet_tag }}
 
 <style>
   #{{ section_id }} {
-    --hero-text-color: {{ section.settings.text_color }};
     --hero-overlay-color: {{ section.settings.overlay_color }};
     --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
     --hero-content-alignment: {{ content_alignment }};
     --hero-vertical-alignment: {{ vertical_alignment }};
-    --hero-button-color: {{ button_color }};
-    --hero-button-text-color: {{ button_text_color }};
-    /* Add more variables here if needed for other settings */
+    --hero-button-background: {{ button_background_color }};
+    --hero-button-text: {{ button_text_color }};
   }
 </style>
 
-<div id="{{ section_id }}" class="hero-banner hero-banner-section">
+<div id="{{ section_id }}" class="color-{{ section.settings.color_scheme }} hero-banner hero-banner-section">
   <div class="hero-banner__background">
     {% if background_type == 'video' %}
       {% if video_background_hosted != blank %}
@@ -129,6 +127,12 @@
   "class": "section-hero-banner",
   "settings": [
     {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
       "type": "header",
       "content": "Background Settings"
     },
@@ -201,12 +205,6 @@
       "default": "bottom"
     },
     {
-      "type": "color",
-      "id": "text_color",
-      "label": "Text Color",
-      "default": "#FFFFFF"
-    },
-    {
       "type": "text",
       "id": "stars_text",
       "label": "Rating Text",
@@ -237,7 +235,7 @@
     },
     {
       "type": "color",
-      "id": "button_color",
+      "id": "button_background_color",
       "label": "Button Background Color",
       "default": "#FFFFFF"
     },

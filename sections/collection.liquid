@@ -72,13 +72,14 @@
   <script src="{{ 'component-modal-opener.js' | asset_url }}" type="module"></script>
 {%- endif -%}
 
-<div class="color-{{ section.settings.color_scheme }} page-width collection-page__wrapper">
-  <div class="collection-hero color-{{ section.settings.color_scheme }}">
-    <div class="collection-hero__text-wrapper">
-      <h1 class="collection-hero__title">{{ collection.title }}</h1>
+<div class="color-{{ section.settings.color_scheme }} collection-page__wrapper">
+  <div class="page-width">
+    <div class="collection-hero">
+      <div class="collection-hero__text-wrapper">
+        <h1 class="collection-hero__title">{{ collection.title }}</h1>
+      </div>
     </div>
-  </div>
-  <div class="collection-info-wrapper section-{{ section.id }}-padding">
+    <div class="collection-info-wrapper section-{{ section.id }}-padding">
     <collection-info
       data-section="{{ section.id }}"
     >
@@ -280,6 +281,7 @@
         {%- endpaginate -%}
       </div>
     </collection-info>
+    </div>
   </div>
 </div>
 <script src="{{ 'section-collection.js' | asset_url }}" type="module"></script>

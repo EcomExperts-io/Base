@@ -20,11 +20,10 @@
 -%}
 
 <div
-  class="promo-banner-section"
+  class="color-{{ section.settings.color_scheme }} promo-banner-section"
   style="
     --promo-banner-padding-top: {{ padding_top }}px;
     --promo-banner-padding-bottom: {{ padding_bottom }}px;
-    --promo-banner-background-color: {{ background_color }};
     --promo-banner-text-color: {{ text_color }};
     --promo-banner-image-placement: {{ image_placement }};
     --promo-banner-image-width: {{ image_width }}px;
@@ -89,6 +88,12 @@
   "tag": "section",
   "class": "promo-banner",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "header",
       "content": "Image Settings"
@@ -174,12 +179,6 @@
     {
       "type": "header",
       "content": "Color Settings"
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Background Color",
-      "default": "#FFFFFF"
     },
     {
       "type": "color",
