@@ -118,6 +118,10 @@ quick-add-modal .product__media-icon {
   display: none;
 }
 
+quick-add-modal .complementary-products-heading {
+  display: none;
+}
+
 quick-add-modal .slider.slider--mobile {
   overflow: visible;
 }

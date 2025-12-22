@@ -30,7 +30,6 @@
 .product-recommendations .card-heading a {
   font-size: calc(var(--font-heading-scale) * 1.3rem);
   text-decoration: none;
-  color: #121212;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -38,7 +37,6 @@
 
 .product-recommendations .price-item {
   font-size: calc(var(--font-heading-scale) * 1.3rem);
-  color: #121212BF;
 }
 
 .product-recommendations .quick-add__submit {

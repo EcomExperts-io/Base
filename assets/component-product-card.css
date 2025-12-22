@@ -32,8 +32,8 @@ h2.card-heading.product-grid-heading, .card__heading {
 }
 
 .card-heading a, .card__heading a {
+  color: rgb(var(--color-foreground));
   text-decoration: none;
-  color: #121212;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -156,13 +156,11 @@ h2.card-heading.product-grid-heading, .card__heading {
 .price--on-sale .price__sale {
   font-size: 1.6rem;
   font-weight: 400;
-  color: #121212;
 }
 
 .product-card {
   position: relative;
   text-align: left;
-  background: #FFFFFF;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;

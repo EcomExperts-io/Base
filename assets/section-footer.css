@@ -1,7 +1,6 @@
 /* Base Styles */
 .footer {
   border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
-  color: rgb(92, 95, 98);
 }
 
 .footer:not(.color-scheme-1) {
@@ -82,7 +81,6 @@
   margin-bottom: 1.5rem;
   margin-top: 0;
   font-size: 2rem;
-  color: rgb(32, 34, 35);
 }
 
 .footer__list-social:empty,
@@ -168,13 +166,13 @@
 
 .footer-block__details-content .list-menu__item--link,
 .copyright__content a {
-  color: #5c5f62;
   text-decoration: none;
   text-transform: none;
 }
 
 .footer-block__details-content .list-menu__item--link {
   font-size: 15px;
+  color: rgba(var(--color-foreground), 0.75);
 }
 
 .footer-block__details-content .list-menu__item--active {
@@ -199,9 +197,7 @@
 }
 
 li.list-social__item a {
-  background: #2E2E2E;
   border-radius: 50px;
-  color: white;
 }
 
 .footer-block__image-wrapper {

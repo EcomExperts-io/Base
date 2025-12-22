@@ -48,24 +48,12 @@ The section uses extensive inline styles with dynamic values. Key dynamic CSS in
 .header-logo {
   height: {{ settings.logo_height | append: 'px' }};
 }
-
-#main-header nav ul,
-#main-header nav ul li,
-#main-header nav ul li a {
-  color: {{ section.settings.menu_text_color }};
-}
-
-[data-cart-count] {
-  background: {{ section.settings.cart_count_color }};
-}
 ```
 
 - **Position**: Sticky or relative based on `sticky_header_type` setting.
 - **Grid layout**: Changes based on `logo_position` (middle-center/top-center vs others).
 - **Padding**: Top and bottom padding from section settings (0–36px, default 20px).
 - **Logo height**: Controlled by theme setting `settings.logo_height`.
-- **Menu text color**: Applied via `menu_text_color` setting.
-- **Cart count color**: Background color for cart badge via `cart_count_color` setting.
 - **Mobile padding**: Responsive padding calculated as `padding_top / 1.5` and `padding_bottom / 1.5`.
 
 ---
@@ -349,18 +337,6 @@ function updateHeaderHeight() {
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 20
-    },
-    {
-      "type": "color",
-      "id": "menu_text_color",
-      "label": "Menu text color",
-      "default": "#000"
-    },
-    {
-      "type": "color",
-      "id": "cart_count_color",
-      "label": "Cart count color",
-      "default": "#2E2E2E"
     }
   ],
   "blocks": [
@@ -390,8 +366,6 @@ function updateHeaderHeight() {
 | `margin_bottom` | range (px) | 0 | Bottom margin (0–100px, step 4) |
 | `padding_top` | range (px) | 20 | Top padding (0–36px, step 4) |
 | `padding_bottom` | range (px) | 20 | Bottom padding (0–36px, step 4) |
-| `menu_text_color` | color | #000 | Menu link text color |
-| `cart_count_color` | color | #2E2E2E | Cart badge background color |
 
 ### Blocks
 

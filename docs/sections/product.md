@@ -32,7 +32,6 @@ Dynamic styles are generated via an inline `{% style %}` block:
   }
 
   .option__label {
-    color: {{ section.settings.variant_label_color }};
     font-size: {{ section.settings.variant_label_font_size }}px;
     font-weight: {{ section.settings.variant_label_font_weight }};
   }
@@ -41,19 +40,16 @@ Dynamic styles are generated via an inline `{% style %}` block:
     {% case block.type %}
       {% when 'title' %}
         .product__title h1 {
-          color: {{ block.settings.title_color }};
           font-size: {{ block.settings.title_font_size }}px;
           font-weight: {{ block.settings.title_font_weight }};
         }
       {% when 'description' %}
         .product__description {
-          color: {{ block.settings.description_color }};
           font-size: {{ block.settings.description_font_size }}px;
           font-weight: {{ block.settings.description_font_weight }};
         }
       {% when 'price' %}
         .price-item {
-          color: {{ block.settings.price_color }};
           font-size: {{ block.settings.price_font_size }}px;
           font-weight: {{ block.settings.price_font_weight }};
         }

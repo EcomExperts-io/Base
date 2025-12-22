@@ -129,7 +129,6 @@
   margin-top: 6px;
   font-weight: 400;
   font-size: 1.8rem;
-  color: #262626;
 }
 
 .cart-item__options {
@@ -272,7 +271,6 @@ ajax-cart-quantity svg {
 
 small.cart-total__small {
   font-size: 1.6rem;
-  color: #5D5D5D;
 }
 
 .cart-note textarea {
@@ -301,7 +299,6 @@ ul.cart-discounts {
   margin: 0 0 10px;
   font-size: 1.6rem;
   letter-spacing: 0.03em;
-  color: #838383;
 }
 
 .cart-total {
@@ -315,7 +312,6 @@ ul.cart-discounts {
 
 span.cart-total__label {
   font-weight: 400;
-  color: #5D5D5D;
 }
 
 .cart-charges {

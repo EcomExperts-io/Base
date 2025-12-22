@@ -15,7 +15,6 @@
         "title_bpmXVj": {
           "type": "title",
           "settings": {
-            "title_color": "#000000",
             "title_font_size": 32,
             "title_font_weight": "500"
           }
@@ -75,7 +74,6 @@
         "description_RxGjaP": {
           "type": "description",
           "settings": {
-            "description_color": "#000000",
             "description_font_size": 16,
             "description_font_weight": "500"
           }

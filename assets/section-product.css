@@ -284,15 +284,6 @@ product-info .product__info-wrapper form>*:last-child {
   letter-spacing: 1px;
 }
 
-shopify-buy-it-now-button .shopify-payment-button__button {
-  background: black;
-  color: white;
-}
-
-.shopify-payment-button__button--unbranded:hover:not([disabled]) {
-  background: black;
-}
-
 .shopify-payment-button {
   margin-top: 12px;
 }
