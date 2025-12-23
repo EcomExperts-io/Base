@@ -35,7 +35,7 @@
         <div class="logos__track">
           {%- for block in section.blocks -%}
             {%- assign logo = block.settings.logo -%}
-            <div class="logos__item" {{ block.shopify_attributes }}>
+            <div class="logos__item {% if logo == blank %}blank{% endif %}" {{ block.shopify_attributes }}>
               {%- if logo != blank -%}
                 <img
                   srcset="
@@ -53,16 +53,14 @@
                   class="logos__image"
                 >
               {%- else -%}
-                <div class="logos__placeholder">
                   {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                </div>
               {%- endif -%}
             </div>
           {%- endfor -%}
           {%- comment -%} Duplicate logos for seamless loop {%- endcomment -%}
           {%- for block in section.blocks -%}
             {%- assign logo = block.settings.logo -%}
-            <div class="logos__item" aria-hidden="true">
+            <div class="logos__item {% if logo == blank %}blank{% endif %}" aria-hidden="true">
               {%- if logo != blank -%}
                 <img
                   srcset="
@@ -80,9 +78,7 @@
                   class="logos__image"
                 >
               {%- else -%}
-                <div class="logos__placeholder">
                   {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                </div>
               {%- endif -%}
             </div>
           {%- endfor -%}
