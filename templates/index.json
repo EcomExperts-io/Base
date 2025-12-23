@@ -188,7 +188,7 @@
         "selling_point_4"
       ],
       "settings": {
-        "color_scheme": "",
+        "color_scheme": "scheme-1",
         "padding_top": 40,
         "padding_bottom": 40,
         "icon_size": 60
@@ -243,6 +243,51 @@
         "padding_bottom": 40,
         "enable_mobile_slider": true
       }
+    },
+    "logos_example": {
+      "type": "logos",
+      "settings": {
+        "color_scheme": ""
+      },
+      "blocks": {
+        "logo_1": {
+          "type": "logo"
+        },
+        "logo_2": {
+          "type": "logo"
+        },
+        "logo_3": {
+          "type": "logo"
+        },
+        "logo_4": {
+          "type": "logo"
+        },
+        "logo_5": {
+          "type": "logo"
+        },
+        "logo_6": {
+          "type": "logo"
+        }
+      },
+      "block_order": [
+        "logo_1",
+        "logo_2",
+        "logo_3",
+        "logo_4",
+        "logo_5",
+        "logo_6"
+      ]
+    },
+    "promo_banner_example": {
+      "type": "promo-banner",
+      "settings": {
+        "color_scheme": "",
+        "product": "alex-twill-pant-navy",
+        "image_placement": "row",
+        "image_position": "top",
+        "button_background_color": "#000000",
+        "button_text_color": "#FFFFFF"
+      }
     }
   },
   "order": [
@@ -250,6 +295,8 @@
     "featured_collections_hhETJ9",
     "featured_products_example",
     "selling_points_example",
-    "selling_points_v2_6NgzaK"
+    "selling_points_v2_6NgzaK",
+    "logos_example",
+    "promo_banner_example"
   ]
 }

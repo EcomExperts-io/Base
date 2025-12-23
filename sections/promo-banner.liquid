@@ -1,86 +1,105 @@
-{% comment %} /sections/selling-points.liquid {% endcomment %}
+{% comment %} /sections/promo-banner.liquid {% endcomment %}
 
 {{ 'section-promo-banner.css' | asset_url | stylesheet_tag }}
 
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .section-{{ section.id }}-icon-size {
+    --selling-points-icon-size: {{ section.settings.icon_size }}px;
+  }
+{%- endstyle -%}
+
 {%- liquid
-  assign padding_top = section.settings.padding_top
-  assign padding_bottom = section.settings.padding_bottom
-  assign background_color = section.settings.background_color
-  assign text_color = section.settings.text_color
   assign image_placement = section.settings.image_placement
+  assign image_height = section.settings.image_height
+  assign image_fit = section.settings.image_fit
+  assign image_position = section.settings.image_position
   assign button_background_color = section.settings.button_background_color
   assign button_text_color = section.settings.button_text_color
-  assign image_width = section.settings.image_width
-  assign image = section.settings.image
-  assign title = section.settings.title
-  assign description = section.settings.description
-  assign price = section.settings.price
-  assign button_text = section.settings.button_text
-  assign button_link = section.settings.button_link
+  assign product = section.settings.product
+  assign custom_image = section.settings.custom_image
 -%}
 
-<div
-  class="color-{{ section.settings.color_scheme }} promo-banner-section"
-  style="
-    --promo-banner-padding-top: {{ padding_top }}px;
-    --promo-banner-padding-bottom: {{ padding_bottom }}px;
-    --promo-banner-text-color: {{ text_color }};
-    --promo-banner-image-placement: {{ image_placement }};
-    --promo-banner-image-width: {{ image_width }}px;
-    --promo-banner-button-color: {{ button_background_color }};
-    --promo-banner-button-text-color: {{ button_text_color }};
-  "
->
-  <div class="page-width">
-    <div class="promo-banner__container">
-      <div class="promo-banner__content">
-        {%- if title != blank -%}
-          <h3 class="promo-banner__title">{{ title | escape }}</h3>
-        {%- endif -%}
+{%- if product != blank -%}
+  {%- liquid
+    assign product_title = product.title
+    assign product_description = product.description | strip_html | truncatewords: 20
+    assign product_price = product.price_min | money
+    assign product_url = product.url
+    assign product_image = custom_image | default: product.featured_image
+  -%}
 
-        {%- if description != blank -%}
-          <p class="promo-banner__description">
-            {{ description | escape }}
-          </p>
-        {%- endif -%}
+  <div
+    class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+    style="
+      --promo-banner-image-placement: {{ image_placement }};
+      --promo-banner-image-height: {{ image_height }}px;
+      --promo-banner-image-fit: {{ image_fit }};
+      --promo-banner-image-position: {{ image_position }};
+      --promo-banner-button-color: {{ button_background_color }};
+      --promo-banner-button-text-color: {{ button_text_color }};
+    "
+  >
+    <div class="page-width">
+      <div class="promo-banner__container">
+        <div class="promo-banner__content">
+          {%- if product_title != blank -%}
+            <h3 class="promo-banner__title">{{ product_title | escape }}</h3>
+          {%- endif -%}
 
-        {%- if price != blank -%}
-          <p class="promo-banner__price">{{ price | escape }}</p>
-        {%- endif -%}
+          {%- if product_description != blank -%}
+            <p class="promo-banner__description">{{ product_description }}</p>
+          {%- endif -%}
 
-        {% if button_text != blank and button_link != blank %}
-          <a href="{{ button_link }}" class="promo-banner_button-link">
-            <button class="promo-banner__button">{{ button_text | escape }}</button>
-          </a>
-        {% endif %}
-      </div>
+          {%- if product_price != blank -%}
+            <div class="promo-banner__price">{{ product_price }}</div>
+          {%- endif -%}
 
-      <div class="promo-banner__image-wrapper">
-        {%- if image != blank -%}
-          <img
-            srcset="
-              {%- if image.width >= 50 -%}{{ image | image_url: width: 50 }} 50w,{%- endif -%}
-              {%- if image.width >= 100 -%}{{ image | image_url: width: 100 }} 100w,{%- endif -%}
-              {%- if image.width >= 150 -%}{{ image | image_url: width: 150 }} 150w,{%- endif -%}
-              {{ image | image_url }} {{ image.width }}w
-            "
-            src="{{ image | image_url: width: 100 }}"
-            sizes="{{ image_width }}px"
-            alt="{{ image.alt | escape }}"
-            loading="lazy"
-            width="{{ image.width }}"
-            height="{{ image.height }}"
-            class="promo-banner__image"
-          >
-        {%- else -%}
-          <div class="promo-banner__image-placeholder">
-            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-          </div>
-        {%- endif -%}
+          {%- if product_url != blank -%}
+            <a href="{{ product_url }}" class="promo-banner__button-link">
+              <span class="promo-banner__button">SHOP NOW</span>
+            </a>
+          {%- endif -%}
+        </div>
+
+        <div class="promo-banner__image-wrapper">
+          {%- if product_image != blank -%}
+            <img
+              srcset="
+                {%- if product_image.width >= 300 -%}{{ product_image | image_url: width: 300 }} 300w,{%- endif -%}
+                {%- if product_image.width >= 600 -%}{{ product_image | image_url: width: 600 }} 600w,{%- endif -%}
+                {%- if product_image.width >= 900 -%}{{ product_image | image_url: width: 900 }} 900w,{%- endif -%}
+                {{ product_image | image_url }} {{ product_image.width }}w
+              "
+              src="{{ product_image | image_url: width: 600 }}"
+              sizes="(min-width: 750px) 50vw, 100vw"
+              alt="{{ product_image.alt | default: product_title | escape }}"
+              loading="lazy"
+              width="{{ product_image.width }}"
+              height="{{ product_image.height }}"
+              class="promo-banner__image"
+            >
+          {%- else -%}
+            <div class="promo-banner__image-placeholder">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {%- endif -%}
+        </div>
       </div>
     </div>
   </div>
-</div>
+{%- endif -%}
 
 {% schema %}
 {
@@ -89,6 +108,10 @@
   "class": "promo-banner",
   "settings": [
     {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
@@ -96,65 +119,69 @@
     },
     {
       "type": "header",
+      "content": "Product Settings"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "Select a product to display its title, price, and link to product page"
+    },
+    {
+      "type": "header",
       "content": "Image Settings"
     },
     {
       "type": "image_picker",
-      "id": "image",
-      "label": "Image"
-    },
-    {
-      "type": "range",
-      "id": "image_width",
-      "label": "Image Width",
-      "min": 40,
-      "max": 120,
-      "step": 10,
-      "unit": "px",
-      "default": 60
+      "id": "custom_image",
+      "label": "Custom Image",
+      "info": "Optional: Override the product's featured image with a custom image"
     },
     {
       "type": "select",
       "id": "image_placement",
-      "label": "Image Placement",
+      "label": "Image Placement (Desktop)",
       "options": [
         { "value": "row", "label": "Right" },
         { "value": "row-reverse", "label": "Left" }
       ],
-      "default": "row"
+      "default": "row",
+      "info": "On mobile, image will always appear below the content"
     },
     {
-      "type": "text",
-      "id": "title",
-      "label": "Title",
-      "default": "Promo Banner Title"
+      "type": "range",
+      "id": "image_height",
+      "label": "Image Height",
+      "unit": "px",
+      "min": 400,
+      "max": 800,
+      "step": 50,
+      "default": 500,
     },
     {
-      "type": "textarea",
-      "id": "description",
-      "label": "Description",
-      "default": "Promo Banner Description"
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "options": [
+        {"label": "Cover", "value": "cover"},
+        {"label": "Contain", "value": "contain"},
+      ],
+      "default": "cover"
     },
     {
-      "type": "text",
-      "id": "price",
-      "label": "Price",
-      "default": "$100"
-    },
-    {
-      "type": "text",
-      "id": "button_text",
-      "label": "Button Text",
-      "default": "Shop Now"
-    },
-    {
-      "type": "url",
-      "id": "button_link",
-      "label": "Button Link"
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position",
+      "options": [
+        {"label": "Top", "value": "top"},
+        {"label": "Center", "value": "center"},
+        {"label": "Bottom", "value": "bottom"},
+      ],
+      "default": "center"
     },
     {
       "type": "header",
-      "content": "Layout Settings"
+      "content": "Spacing Settings"
     },
     {
       "type": "range",
@@ -164,7 +191,7 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "default": 0
+      "default": 40
     },
     {
       "type": "range",
@@ -174,21 +201,15 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "default": 0
+      "default": 40
     },
     {
       "type": "header",
-      "content": "Color Settings"
+      "content": "Button Settings"
     },
     {
       "type": "color",
-      "id": "text_color",
-      "label": "Text Color",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "button__background_color",
+      "id": "button_background_color",
       "label": "Button Background Color",
       "default": "#000000"
     },

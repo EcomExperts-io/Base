@@ -44,7 +44,7 @@ selling-points-v2[class*="color-"] {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  border: 1px solid #1C1A19;
+  border: 1px solid rgba(var(--color-foreground), 1);
   border-left: none;
   flex-grow: 1;
 }
@@ -67,6 +67,7 @@ selling-points-v2[class*="color-"] {
   letter-spacing: 1.2px;
   text-transform: uppercase;
   margin: 0 0 1rem;
+  color: rgba(var(--color-foreground), 1);
 }
 
 .selling-points-v2__description {
@@ -109,7 +110,7 @@ selling-points-v2[class*="color-"] {
   width: 8px;
   height: 8px;
   background: transparent;
-  border: 1px solid #1C1A19;
+  border: 1px solid rgb(var(--color-foreground), 1);
   border-radius: 50%;
   opacity: 1;
   margin: 0;
@@ -123,7 +124,7 @@ selling-points-v2[class*="color-"] {
 /* Desktop (750px+) */
 @media screen and (min-width: 750px) {
   .selling-points-v2__item:first-child .selling-points-v2__content {
-    border-left: 1px solid #1C1A19;
+    border-left: 1px solid rgb(var(--color-foreground));
   }
 
   .selling-points-v2__container {
