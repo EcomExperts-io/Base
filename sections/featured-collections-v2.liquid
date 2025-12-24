@@ -76,6 +76,7 @@
         {% for block in section.blocks %}
           {% assign current_collection = block.settings.collection %}
           <div
+            {{ block.shopify_attributes }}
             id="swiper-{{ block.id }}"
             data-product-grid-gap="{{ product_grid_gap }}"
             data-products-on-desktop="{{ products_on_desktop }}"
