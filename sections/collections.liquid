@@ -1,45 +1,74 @@
-<h1 class="collections__heading">{{ 'collections.title' | t }}</h1>
+{% style %}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
 
-<div
-  class="collections"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
->
-  {% for collection in collections %}
-    <a class="collection-card" href="{{ collection.url }}">
-      {% if collection.featured_image %}
-        <div class="collection-card__image">
-          {{ collection.featured_image | image_url: width: 600, height: 600, crop: 'center' | image_tag }}
-        </div>
-      {% endif %}
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
 
-      <div class="collection-card__content">
-        <span>{{ collection.title }} </span>
-        <span class="collection-card__arrow">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+<div class="color-{{ section.settings.color_scheme }} collections-section section-{{ section.id }}-padding">
+  <div class="page-width">
+    <h1 class="collections__heading">{{ 'collections.title' | t }}</h1>
 
-        {% if collection.description %}
-          <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
-        {% endif %}
-      </div>
-    </a>
-  {% endfor %}
+    <div
+      class="collections"
+      style="--grid-gap: {{ section.settings.grid_gap }}px"
+    >
+      {% for collection in collections %}
+        <a class="collection-card" href="{{ collection.url }}">
+          {% if collection.featured_image %}
+            <div class="collection-card__image">
+              {{ collection.featured_image | image_url: width: 600, height: 600, crop: 'center' | image_tag }}
+            </div>
+          {% endif %}
+
+          <div class="collection-card__content">
+            <span>{{ collection.title }} </span>
+            <span class="collection-card__arrow">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+
+            {% if collection.description %}
+              <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 
 {% stylesheet %}
+  .collections-section {
+    display: block;
+    width: 100%;
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+  }
+
   .collections__heading {
     font-size: 4rem;
     padding: 4rem 0;
+    color: rgb(var(--color-foreground));
   }
+
   .collections {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--grid-gap);
   }
+
   .collection-card {
     display: flex;
     flex-direction: column;
     width: 100%;
     text-decoration: none;
   }
+
   .collection-card__image {
     display: block;
     position: relative;
@@ -47,11 +76,13 @@
     width: 100%;
     height: auto;
   }
+
   .collection-card__image::before {
     content: '';
     display: block;
     padding-bottom: 100%;
   }
+
   .collection-card__image > img {
     width: 100%;
     height: 100%;
@@ -61,13 +92,15 @@
     object-fit: cover;
     object-position: center;
   }
+
   .collection-card__content {
     padding: 1.7rem 0;
     display: flex;
   }
+
   .collection-card__content span {
     font-size: 1.6rem;
-    color: #121212;
+    color: rgb(var(--color-foreground));
   }
 
   .collection-card__arrow {
@@ -78,14 +111,13 @@
     width: 2rem;
     height: 2rem;
   }
+
   @media screen and (max-width: 768px) {
     .collections__heading {
       font-size: 3rem;
-      margin: 0 10px;
     }
     .collections {
       grid-template-columns: repeat(2, 1fr);
-      padding: 0 10px;
       gap: 4px;
     }
   }
@@ -96,6 +128,12 @@
   "name": "t:general.collections_grid",
   "settings": [
     {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
       "type": "range",
       "id": "grid_gap",
       "label": "t:labels.grid_gap",
@@ -104,6 +142,30 @@
       "step": 5,
       "unit": "px",
       "default": 10
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
     }
   ],
   "presets": [{ "name": "t:general.collections_grid" }]
