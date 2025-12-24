@@ -418,6 +418,7 @@ h2.cart__empty-text {
 #cart-main {
   padding-block: 5rem;
   max-width: 1280px;
+  margin-inline: auto;
 }
 
 #cart-main .cart-header,
