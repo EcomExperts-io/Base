@@ -1,4 +1,4 @@
-.product-recommendations {
+.product-recommendations-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
@@ -9,7 +9,7 @@
   margin-top: 1.5rem;
 }
 
-.product-recommendations .product-card-child {
+.product-recommendations-list .product-card-child {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -18,16 +18,16 @@
   gap: 1rem;
 }
 
-.product-recommendations .card-media {
+.product-recommendations-list .card-media {
   width: 100%;
   max-width: 100%;
 }
 
-.product-recommendations .card-heading {
+.product-recommendations-list .card-heading {
   padding: 0;
 }
 
-.product-recommendations .card-heading a {
+.product-recommendations-list .card-heading a {
   font-size: calc(var(--font-heading-scale) * 1.3rem);
   text-decoration: none;
   display: block;
@@ -35,11 +35,11 @@
   text-overflow: ellipsis;
 }
 
-.product-recommendations .price-item {
+.product-recommendations-list .price-item {
   font-size: calc(var(--font-heading-scale) * 1.3rem);
 }
 
-.product-recommendations .quick-add__submit {
+.product-recommendations-list .quick-add__submit {
   font-size: calc(var(--font-heading-scale) * 1.3rem);
   color: #121212;
   background: none;

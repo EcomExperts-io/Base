@@ -153,7 +153,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     min-height: 0;
-    padding-bottom: 50px;
+    padding-bottom: 65px;
   }
 
   .filters-drawer__buttons-wrapper {
@@ -167,6 +167,7 @@
     right: 0;
     width: 100%;
     padding: 0px 20px;
+    z-index: 111;
   }
 
   .filters-drawer__buttons-wrapper .clear-all-button {
@@ -174,7 +175,7 @@
     padding: 16px;
     cursor: pointer;
     border: none;
-    background: transparent;
+    background: #fafafa;
     text-decoration: underline;
     text-decoration-color: transparent;
     text-decoration-thickness: .075em;
@@ -565,7 +566,7 @@
           endif
         -%}
 
-        <div class="filters-drawer__buttons-wrapper">
+        <div id="filters-drawer-buttons-wrapper-id" class="filters-drawer__buttons-wrapper">
           {% if active_filters_count > 0 %}
             <button 
               type="button" 

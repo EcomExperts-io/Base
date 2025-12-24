@@ -528,15 +528,16 @@
                 {% endif %}
               </div>
             {%- when 'complementary' -%}
-              <h2 class="complementary-products-heading">{{ block.settings.heading }}</h2>
               <product-recommendations
                 {{ block.shopify_attributes }}
-                class="product-recommendations"
+                class="product-recommendations-container"
                 data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ block.settings.products_to_show }}&intent=complementary"
               >
-                {% if recommendations.performed and recommendations.products_count > 0 %}
+              {% if recommendations.performed and recommendations.products_count > 0 %}
+                <h2 class="complementary-products-heading">{{ block.settings.heading }}</h2>
+                <div class="product-recommendations-list">
                   {%- for product in recommendations.products limit: block.settings.products_to_show -%}
-                    <li>
+                    <div class="product-recommendations-item">
                       {% render 'component-product-card',
                         card_product: product,
                         show_vendor: block.settings.show_vendor,
@@ -548,9 +549,10 @@
                         button_text_color: block.settings.button_text_color,
                         button_border_color: block.settings.button_border_color
                       %}
-                    </li>
+                    </div>
                   {%- endfor -%}
-                {% endif %}
+                </div>
+              {% endif %}
               </product-recommendations>
           {%- endcase -%}
         {%- endfor -%}

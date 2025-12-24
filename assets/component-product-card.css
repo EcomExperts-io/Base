@@ -471,7 +471,12 @@ h2.card-heading.product-grid-heading, .card__heading {
     font-size: 1.5rem;
   }
 
+  .product-card:hover .quick-add__icon-wrapper {
+    display: none;
+  }
+
   .quick-add__icon-wrapper {
+    display: none;
     bottom: 8px;
     right: 8px;
   }
