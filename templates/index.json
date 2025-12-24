@@ -87,6 +87,62 @@
         "hide_shop_now": true
       }
     },
+    "featured_collections_v2_example": {
+      "type": "featured-collections-v2",
+      "blocks": {
+        "collection_card_3ccame": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "T-Shirts"
+          }
+        },
+        "collection_card_BRp9XN": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Shorts"
+          }
+        },
+        "collection_card_jbyADA": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Hats"
+          }
+        },
+        "collection_card_LVn8DN": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Jackets"
+          }
+        },
+        "collection_card_nCgcp7": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Accessories"
+          }
+        }
+      },
+      "block_order": [
+        "collection_card_3ccame",
+        "collection_card_BRp9XN",
+        "collection_card_jbyADA",
+        "collection_card_LVn8DN",
+        "collection_card_nCgcp7"
+      ],
+      "name": "Featured Collections V2",
+      "settings": {
+        "color_scheme": "",
+        "heading": "Best Sellers",
+        "heading_alignment": "center",
+        "style": "style2",
+        "grid_gap": 25,
+        "hide_shop_now": true
+      }
+    },
     "featured_products_example": {
       "type": "featured-products",
       "blocks": {
@@ -247,7 +303,8 @@
     "logos_example": {
       "type": "logos",
       "settings": {
-        "color_scheme": ""
+        "color_scheme": "",
+        "logo_height": 120,
       },
       "blocks": {
         "logo_1": {
@@ -293,6 +350,7 @@
   "order": [
     "hero_1",
     "featured_collections_hhETJ9",
+    "featured_collections_v2_example",
     "featured_products_example",
     "selling_points_example",
     "selling_points_v2_6NgzaK",
