@@ -1,0 +1,212 @@
+{% comment %} /sections/blogs.liquid {% endcomment %}
+
+{{ 'section-blogs.css' | asset_url | stylesheet_tag }}
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{%- liquid
+  assign blocks_to_show = section.blocks.size
+  assign heading_text = section.settings.heading_text
+  assign navigation_link_text = section.settings.navigation_link_text
+  assign navigation_link_url = section.settings.navigation_link_url
+-%}
+{%- if blocks_to_show > 0 -%}
+  <div
+    class="blogs-section section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+  >
+    <div class="page-width">
+      {%- if heading_text != blank or navigation_link_text != blank -%}
+        <div class="blogs-section__navigation">
+          {%- if heading_text != blank -%}
+            <h2 class="blogs-section__heading">{{ heading_text | escape }}</h2>
+          {%- endif -%}
+          {%- if navigation_link_text != blank -%}
+            <a href="{{ navigation_link_url | default: '#' }}" class="blogs-section__nav-link">
+              {{ navigation_link_text | escape }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="blogs-section__grid">
+        {%- for block in section.blocks -%}
+          {%- assign image = block.settings.image -%}
+          {%- assign title = block.settings.title -%}
+          {%- assign description = block.settings.description -%}
+          {%- assign read_more_text = block.settings.read_more_text -%}
+          {%- assign article_url = block.settings.article_url -%}
+
+          <article class="blogs-section__article" {{ block.shopify_attributes }}>
+            {%- if image != blank -%}
+              <div class="blogs-section__image-wrapper">
+                <img
+                  srcset="
+                    {%- if image.width >= 165 -%}{{ image | image_url: width: 165 }} 165w,{%- endif -%}
+                    {%- if image.width >= 360 -%}{{ image | image_url: width: 360 }} 360w,{%- endif -%}
+                    {%- if image.width >= 533 -%}{{ image | image_url: width: 533 }} 533w,{%- endif -%}
+                    {%- if image.width >= 720 -%}{{ image | image_url: width: 720 }} 720w,{%- endif -%}
+                    {%- if image.width >= 1000 -%}{{ image | image_url: width: 1000 }} 1000w,{%- endif -%}
+                    {{ image | image_url }} {{ image.width }}w
+                  "
+                  src="{{ image | image_url: width: 533 }}"
+                  sizes="(min-width: 769px) 33vw, 100vw"
+                  alt="{{ image.alt | escape }}"
+                  loading="lazy"
+                  width="{{ image.width }}"
+                  height="{{ image.height }}"
+                  class="blogs-section__image"
+                >
+              </div>
+            {%- else -%}
+              <div class="blogs-section__image-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+            <div class="blogs-section__content">
+              {%- if title != blank -%}
+                <p class="blogs-section__article-title">
+                  {{ title | escape }}
+                </p>
+              {%- endif -%}
+              {%- if description != blank -%}
+                <p class="blogs-section__description">
+                  {{ description | escape }}
+                </p>
+              {%- endif -%}
+              {%- if read_more_text != blank -%}
+                <a href="{{ article_url | default: '#' }}" class="blogs-section__read-more">
+                  {{ read_more_text | escape }}
+                </a>
+              {%- endif -%}
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Blogs",
+  "tag": "section",
+  "class": "blogs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "VIEW LOOKBOOKS"
+    },
+    {
+      "type": "text",
+      "id": "navigation_link_text",
+      "label": "Navigation Link Text",
+      "default": "VIEW LOOKBOOK"
+    },
+    {
+      "type": "url",
+      "id": "navigation_link_url",
+      "label": "Navigation Link URL"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "blog_article",
+      "name": "Blog Article",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "AUTUMN ADDITIONS"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "The story continues."
+        },
+        {
+          "type": "text",
+          "id": "read_more_text",
+          "label": "Read More Text",
+          "default": "READ MORE"
+        },
+        {
+          "type": "url",
+          "id": "article_url",
+          "label": "Article URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blogs",
+      "blocks": [
+        {
+          "type": "blog_article",
+          "settings": {
+            "title": "AUTUMN ADDITIONS",
+            "description": "The story continues."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
