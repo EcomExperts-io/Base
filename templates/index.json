@@ -365,6 +365,37 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "shop_by_category_example": {
+      "type": "shop-by-category",
+      "blocks": {
+        "collection_1": {
+          "type": "collection",
+        },
+        "collection_2": {
+          "type": "collection",
+        },
+        "collection_3": {
+          "type": "collection",
+        },
+        "collection_4": {
+          "type": "collection",
+        },
+        "collection_5": {
+          "type": "collection",
+        },
+        "collection_6": {
+          "type": "collection",
+        },
+      },
+      "block_order": [
+        "collection_1",
+        "collection_2",
+        "collection_3",
+        "collection_4",
+        "collection_5",
+        "collection_6",
+      ]
     }
   },
   "order": [
@@ -375,6 +406,7 @@
     "selling_points_example",
     "selling_points_v2_6NgzaK",
     "logos_example",
-    "promo_banner_example"
+    "promo_banner_example",
+    "shop_by_category_example"
   ]
 }
