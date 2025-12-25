@@ -357,7 +357,7 @@
       "type": "promo-banner",
       "settings": {
         "color_scheme": "scheme-1",
-        "product": "alex-twill-pant-navy",
+        "product": "",
         "image_placement": "row",
         "image_height": 500,
         "image_fit": "cover",

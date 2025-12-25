@@ -31,7 +31,6 @@
   assign custom_image = section.settings.custom_image
 -%}
 
-{%- if product != blank -%}
   {%- liquid
     assign product_title = product.title
     assign product_description = product.description | strip_html | truncatewords: 20
@@ -56,24 +55,34 @@
         <div class="promo-banner__content">
           {%- if product_title != blank -%}
             <h3 class="promo-banner__title">{{ product_title | escape }}</h3>
+            {% else %}
+            <h3 class="promo-banner__title">Promo Product's Title</h3>
           {%- endif -%}
 
           {%- if product_description != blank -%}
             <p class="promo-banner__description">{{ product_description }}</p>
+            {% else %}
+            <p class="promo-banner__description">Promo Product's Description</p>
           {%- endif -%}
 
           {%- if product_price != blank -%}
             <div class="promo-banner__price">{{ product_price }}</div>
+            {% else %}
+            <div class="promo-banner__price">$69.00</div>
           {%- endif -%}
 
           {%- if product_url != blank -%}
             <a href="{{ product_url }}" class="promo-banner__button-link">
               <span class="promo-banner__button">SHOP NOW</span>
             </a>
+            {% else %}
+            <a href="{{ product_url }}" class="promo-banner__button-link">
+              <span class="promo-banner__button">SHOP NOW</span>
+            </a>
           {%- endif -%}
         </div>
 
-        <div class="promo-banner__image-wrapper">
+        <div class="promo-banner__image-wrapper {% if product_image == blank %}blank{% endif %}">
           {%- if product_image != blank -%}
             <img
               srcset="
@@ -91,15 +100,12 @@
               class="promo-banner__image"
             >
           {%- else -%}
-            <div class="promo-banner__image-placeholder">
               {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-            </div>
           {%- endif -%}
         </div>
       </div>
     </div>
   </div>
-{%- endif -%}
 
 {% schema %}
 {
@@ -115,7 +121,7 @@
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
-      "default": "scheme-5"
+      "default": "scheme-1"
     },
     {
       "type": "header",

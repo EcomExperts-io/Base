@@ -74,30 +74,19 @@
   min-width: 0;
   width: 100%;
   overflow: hidden;
+  max-height: var(--promo-banner-image-height);
+}
+
+.promo-banner__image-wrapper.blank {
+  background-color: #f5f5f5; /* Placeholder Background */
 }
 
 .promo-banner__image {
-  max-height: var(--promo-banner-image-height);
   width: 100%;
   height: 100%;
   object-fit: var(--promo-banner-image-fit);
   display: block;
   object-position: var(--promo-banner-image-position);
-}
-
-.promo-banner__image-placeholder {
-  width: 100%;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5; /* Placeholder Background */
-}
-
-.promo-banner__image-placeholder .placeholder-svg {
-  width: 100%;
-  height: 100%;
-  opacity: 0.3;
 }
 
 /* Desktop (750px+) - Layout */
