@@ -138,9 +138,18 @@
         "color_scheme": "",
         "heading": "Best Sellers",
         "heading_alignment": "center",
-        "style": "style2",
-        "grid_gap": 25,
-        "hide_shop_now": true
+        "total_products_limit": 6,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "enable_swatches": true,
+        "swatch_type": "color",
+        "swatch_trigger": "Color",
+        "product_grid_gap": 16,
+        "products_on_desktop": 4,
+        "products_on_mobile": 2,
+        "padding_top": 80,
+        "padding_bottom": 60
       }
     },
     "featured_products_example": {
@@ -302,28 +311,30 @@
     },
     "logos_example": {
       "type": "logos",
-      "settings": {
-        "color_scheme": "",
-        "logo_height": 120,
-      },
       "blocks": {
         "logo_1": {
-          "type": "logo"
+          "type": "logo",
+          "settings": {}
         },
         "logo_2": {
-          "type": "logo"
+          "type": "logo",
+          "settings": {}
         },
         "logo_3": {
-          "type": "logo"
+          "type": "logo",
+          "settings": {}
         },
         "logo_4": {
-          "type": "logo"
+          "type": "logo",
+          "settings": {}
         },
         "logo_5": {
-          "type": "logo"
+          "type": "logo",
+          "settings": {}
         },
         "logo_6": {
-          "type": "logo"
+          "type": "logo",
+          "settings": {}
         }
       },
       "block_order": [
@@ -333,17 +344,26 @@
         "logo_4",
         "logo_5",
         "logo_6"
-      ]
+      ],
+      "settings": {
+        "color_scheme": "",
+        "animation_duration": 30,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "logo_height": 120
+      }
     },
     "promo_banner_example": {
       "type": "promo-banner",
       "settings": {
-        "color_scheme": "",
+        "color_scheme": "scheme-1",
         "product": "alex-twill-pant-navy",
         "image_placement": "row",
+        "image_height": 500,
+        "image_fit": "cover",
         "image_position": "top",
-        "button_background_color": "#000000",
-        "button_text_color": "#FFFFFF"
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     }
   },
