@@ -1,6 +1,6 @@
 {% comment %}
-Announcement Bar Section
-- Displays a customizable announcement message with an optional link and emoji.
+  Announcement Bar Section
+  - Displays a customizable announcement message with an optional link and emoji.
 {% endcomment %}
 
 {% style %}
@@ -160,24 +160,26 @@ Announcement Bar Section
   <section class="announcement-bar-section">
     <div
       class="announcement-bar"
-      x-data="{
-        idx: 0,
-        total: {{ section.blocks.size }},
-        interval: null,
-        startAutoScroll() {
-          if (this.total > 1) {
-            this.interval = setInterval(() => {
-              this.idx = (this.idx + 1) % this.total;
-            }, ({{ section.settings.auto_rotate_interval | default: 4 }} * 1000));
-          }
-        },
-        stopAutoScroll() {
-          if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
+      x-data="
+        {
+          idx: 0,
+          total: {{ section.blocks.size }},
+          interval: null,
+          startAutoScroll() {
+            if (this.total > 1) {
+              this.interval = setInterval(() => {
+                this.idx = (this.idx + 1) % this.total;
+              }, ({{ section.settings.auto_rotate_interval | default: 4 }} * 1000));
+            }
+          },
+          stopAutoScroll() {
+            if (this.interval) {
+              clearInterval(this.interval);
+              this.interval = null;
+            }
           }
         }
-      }"
+      "
       x-init="startAutoScroll()"
       @mouseenter="stopAutoScroll()"
       @mouseleave="startAutoScroll()"
@@ -202,6 +204,7 @@ Announcement Bar Section
         <div class="announcement-bar__message">
           {% for block in section.blocks %}
             <div
+              {{ block.shopify_attributes }}
               x-show="idx === {{ forloop.index0 }}"
               x-transition:fade.300ms
               {% unless forloop.first %}
