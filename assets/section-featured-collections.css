@@ -29,9 +29,7 @@
 
 .featured-collections__grid {
   margin: 0;
-  /* Remove default grid margin if any */
   padding: 0;
-  /* Remove default grid padding if any */
   gap: 25px;
   display: flex;
 }
@@ -164,7 +162,6 @@
     display: flex;
     flex-direction: column;
     gap: 2.2rem;
-    padding: 0 16px;
   }
 
   .featured-collections__card.grid__item {

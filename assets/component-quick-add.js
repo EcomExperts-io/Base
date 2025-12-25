@@ -6,6 +6,7 @@ export class QuickAdd extends HTMLElement {
     this.setupModal();
     this.bindEvents();
     this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
+    this.setupAjaxCartButtons();
   }
 
   connectedCallback() {
@@ -14,6 +15,26 @@ export class QuickAdd extends HTMLElement {
       document.body.appendChild(this);
       document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
     }
+  }
+
+  setupAjaxCartButtons() {
+    document.addEventListener('submit', (event) => {
+      const form = event.target.closest('ajax-cart-product-form');
+      if (!form) return;
+
+      const button = form.querySelector('.quick-add__icon-button');
+      if (button) this.toggleSpinner(button, true);
+    });
+  }
+
+  toggleSpinner(button, show) {
+    const spinner = button.querySelector('.add-to-cart-icon-spinner');
+    const icon = button.querySelector('.add-to-cart-icon');
+    const text = button.querySelector('.add-to-cart-text__content');
+    
+    spinner?.classList.toggle('hidden', !show);
+    icon?.classList.toggle('hidden', show);
+    text?.classList.toggle('hidden', show);
   }
 
   disconnectedCallback() {
@@ -33,7 +54,15 @@ export class QuickAdd extends HTMLElement {
           modal.modalContent.innerHTML = '';
         }
       });
+
+      this.resetAllSpinners();
     }
+  }
+
+  resetAllSpinners() {
+    document.querySelectorAll('.quick-add__icon-button').forEach((button) => {
+      this.toggleSpinner(button, false);
+    });
   }
 
   setupModal() {
@@ -75,6 +104,8 @@ export class QuickAdd extends HTMLElement {
 
           document.body.classList.add('overflow-hidden');
           this.setAttribute('open', '');
+
+          this.resetAllSpinners();
 
           if (window.Shopify?.PaymentButton) Shopify.PaymentButton.init();
           if (window.ProductModel) window.ProductModel.loadShopifyXR();

@@ -17,10 +17,6 @@
   text-align: center;
 }
 
-.drawer__wrapper .cart-header {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
 .cart__wrapper .cart-header {
   border-bottom: .1rem solid rgba(var(--color-foreground), .2);
 }

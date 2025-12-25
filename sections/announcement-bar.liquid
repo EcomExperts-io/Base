@@ -25,6 +25,7 @@
     align-items: center;
     gap: 2rem;
     position: relative;
+    height: 3.5rem;
   }
 
   .announcement-bar__arrow {
@@ -242,6 +243,12 @@
     </div>
   </section>
 {% endif %}
+
+<script>
+  const announcementBar = document.querySelector('.announcement-bar__content');
+  const announcementBarHeight = announcementBar.offsetHeight;
+  document.documentElement.style.setProperty('--announcement-bar-height', `${announcementBarHeight}px`);
+</script>
 
 {% schema %}
 {
