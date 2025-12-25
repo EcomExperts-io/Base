@@ -13,7 +13,7 @@
       "type": "collection",
       "settings": {
         "products_per_page": 32,
-        "columns_desktop": 4,
+        "columns_desktop": 5,
         "color_scheme": "",
         "show_vendor": true,
         "show_rating": false,
