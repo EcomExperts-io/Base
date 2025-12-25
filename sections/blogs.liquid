@@ -40,56 +40,65 @@
 
       <div class="blogs-section__grid">
         {%- for block in section.blocks -%}
-          {%- assign image = block.settings.image -%}
-          {%- assign title = block.settings.title -%}
-          {%- assign description = block.settings.description -%}
-          {%- assign read_more_text = block.settings.read_more_text -%}
-          {%- assign article_url = block.settings.article_url -%}
+          {%- assign article = block.settings.blog -%}
+          {%- assign override_image = block.settings.image -%}
 
-          <article class="blogs-section__article" {{ block.shopify_attributes }}>
-            {%- if image != blank -%}
-              <div class="blogs-section__image-wrapper">
-                <img
-                  srcset="
-                    {%- if image.width >= 165 -%}{{ image | image_url: width: 165 }} 165w,{%- endif -%}
-                    {%- if image.width >= 360 -%}{{ image | image_url: width: 360 }} 360w,{%- endif -%}
-                    {%- if image.width >= 533 -%}{{ image | image_url: width: 533 }} 533w,{%- endif -%}
-                    {%- if image.width >= 720 -%}{{ image | image_url: width: 720 }} 720w,{%- endif -%}
-                    {%- if image.width >= 1000 -%}{{ image | image_url: width: 1000 }} 1000w,{%- endif -%}
-                    {{ image | image_url }} {{ image.width }}w
-                  "
-                  src="{{ image | image_url: width: 533 }}"
-                  sizes="(min-width: 769px) 33vw, 100vw"
-                  alt="{{ image.alt | escape }}"
-                  loading="lazy"
-                  width="{{ image.width }}"
-                  height="{{ image.height }}"
-                  class="blogs-section__image"
-                >
+          {%- if article != blank -%}
+            {%- liquid
+              assign display_image = override_image
+              if display_image == blank
+                assign display_image = article.image
+              endif
+
+              assign article_title = article.title
+              assign article_description = article.summary
+              if article_description == blank
+                assign article_description = article.content | strip_html | truncatewords: 30
+              endif
+              assign article_url = article.url
+            -%}
+
+            <article class="blogs-section__article" {{ block.shopify_attributes }}>
+              {%- if display_image != blank -%}
+                <div class="blogs-section__image-wrapper">
+                  <img
+                    srcset="
+                      {%- if display_image.width >= 165 -%}{{ display_image | image_url: width: 165 }} 165w,{%- endif -%}
+                      {%- if display_image.width >= 360 -%}{{ display_image | image_url: width: 360 }} 360w,{%- endif -%}
+                      {%- if display_image.width >= 533 -%}{{ display_image | image_url: width: 533 }} 533w,{%- endif -%}
+                      {%- if display_image.width >= 720 -%}{{ display_image | image_url: width: 720 }} 720w,{%- endif -%}
+                      {%- if display_image.width >= 1000 -%}{{ display_image | image_url: width: 1000 }} 1000w,{%- endif -%}
+                      {{ display_image | image_url }} {{ display_image.width }}w
+                    "
+                    src="{{ display_image | image_url: width: 533 }}"
+                    sizes="(min-width: 769px) 33vw, 100vw"
+                    alt="{{ display_image.alt | default: article_title | escape }}"
+                    loading="lazy"
+                    width="{{ display_image.width }}"
+                    height="{{ display_image.height }}"
+                    class="blogs-section__image"
+                  >
+                </div>
+              {%- else -%}
+                <div class="blogs-section__image-placeholder">
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {%- endif -%}
+              <div class="blogs-section__content">
+                {%- if article_title != blank -%}
+                  <p class="blogs-section__article-title">
+                    {{ article_title | escape }}
+                  </p>
+                {%- endif -%}
+                {%- if article_description != blank -%}
+                  <p class="blogs-section__description">
+                    {{ article_description | escape }}
+                  </p>
+                {%- endif -%}
+                <a href="{{ article_url }}" class="blogs-section__read-more"> READ MORE </a>
               </div>
-            {%- else -%}
-              <div class="blogs-section__image-placeholder">
-                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-              </div>
-            {%- endif -%}
-            <div class="blogs-section__content">
-              {%- if title != blank -%}
-                <p class="blogs-section__article-title">
-                  {{ title | escape }}
-                </p>
-              {%- endif -%}
-              {%- if description != blank -%}
-                <p class="blogs-section__description">
-                  {{ description | escape }}
-                </p>
-              {%- endif -%}
-              {%- if read_more_text != blank -%}
-                <a href="{{ article_url | default: '#' }}" class="blogs-section__read-more">
-                  {{ read_more_text | escape }}
-                </a>
-              {%- endif -%}
-            </div>
-          </article>
+            </article>
+          {%- endif -%}
         {%- endfor -%}
       </div>
     </div>
@@ -164,48 +173,22 @@
       "name": "Blog Article",
       "settings": [
         {
+          "type": "article",
+          "id": "blog",
+          "label": "Article"
+        },
+        {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "default": "AUTUMN ADDITIONS"
-        },
-        {
-          "type": "textarea",
-          "id": "description",
-          "label": "Description",
-          "default": "The story continues."
-        },
-        {
-          "type": "text",
-          "id": "read_more_text",
-          "label": "Read More Text",
-          "default": "READ MORE"
-        },
-        {
-          "type": "url",
-          "id": "article_url",
-          "label": "Article URL"
+          "label": "Image",
+          "info": "Optional: Override the article's featured image"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Blogs",
-      "blocks": [
-        {
-          "type": "blog_article",
-          "settings": {
-            "title": "AUTUMN ADDITIONS",
-            "description": "The story continues."
-          }
-        }
-      ]
+      "name": "Blogs"
     }
   ]
 }
