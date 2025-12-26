@@ -69,6 +69,7 @@
 .promo-banner__image-wrapper {
   flex: 1;
   display: flex;
+  aspect-ratio: 1;
   align-items: center;
   justify-content: center;
   min-width: 0;
@@ -105,7 +106,7 @@
 }
 
 /* Tablet (750px to 1024px) - Font Sizes */
-@media screen and (min-width: 750px) and (max-width: 1024px) {
+@media screen and (min-width: 751px) and (max-width: 1024px) {
   .promo-banner__title {
     font-size: 3.4rem;
   }
@@ -124,10 +125,11 @@
 }
 
 /* Mobile (max-width: 749px) */
-@media screen and (max-width: 749px) {
+@media screen and (max-width: 750px) {
   .promo-banner__container {
     flex-direction: column;
     gap: 2rem;
+    align-items: start;
   }
 
   .promo-banner__content {
