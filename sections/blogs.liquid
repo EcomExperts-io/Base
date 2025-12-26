@@ -53,7 +53,7 @@
               assign article_title = article.title
               assign article_description = article.summary
               if article_description == blank
-                assign article_description = article.content | strip_html | truncatewords: 30
+                assign article_description = article.content | strip_html | truncatewords: 60
               endif
               assign article_url = article.url
             -%}
