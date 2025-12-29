@@ -29,8 +29,8 @@
           {%- if heading_text != blank -%}
             <h2 class="blogs-section__heading">{{ heading_text | escape }}</h2>
           {%- endif -%}
-          {%- if navigation_link_text != blank -%}
-            <a href="{{ navigation_link_url | default: '#' }}" class="blogs-section__nav-link">
+          {%- if navigation_link_text != blank and navigation_link_url != blank -%}
+            <a href="{{ navigation_link_url }}" class="blogs-section__nav-link">
               {{ navigation_link_text | escape }}
             </a>
           {%- endif -%}
