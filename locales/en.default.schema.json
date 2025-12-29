@@ -812,6 +812,9 @@
         "button_label": {
           "label": "On primary button"
         },
+        "secondary_button_background": {
+          "label": "Secondary button"
+        },
         "secondary_button_label": {
           "label": "On secondary button"
         },
