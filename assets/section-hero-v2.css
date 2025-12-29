@@ -28,6 +28,7 @@
   left: 0;
   padding: 5%;
   max-width: 50%;
+  z-index: 3;
 }
 
 .hero-v2__heading {
@@ -156,26 +157,6 @@
   width: 100%;
   height: 100%;
   transform: rotate(-45deg);
-}
-
-.hero-v2__endorsement {
-  position: absolute;
-  bottom: 5%;
-  right: 5%;
-  z-index: 3;
-  text-align: left;
-  color: rgb(var(--color-foreground));
-}
-
-.hero-v2__endorsement-name {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 0.4rem;
-}
-
-.hero-v2__endorsement-signature img {
-  max-width: 120px;
-  max-height: 120px;
 }
 
 .hero-v2__content--h-left {

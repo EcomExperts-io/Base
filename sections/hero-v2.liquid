@@ -52,7 +52,7 @@
             <p class="hero-v2__description">{{ description | escape }}</p>
           {% endif %}
 
-          {% if button_text != blank %}
+          {% if button_text != blank and button_link != blank %}
             <a href="{{ button_link }}" class="hero-v2__button">
               {{ button_text | escape }}
             </a>
@@ -112,21 +112,6 @@
             {% endif %}
           {% endif %}
         </div>
-        {% if section.settings.show_endorsement %}
-          <div class="hero-v2__endorsement">
-            {% if section.settings.endorsement_name != blank %}
-              <div class="hero-v2__endorsement-name">
-                {{ section.settings.endorsement_name | escape }}
-              </div>
-            {% endif %}
-
-            {% if section.settings.endorsement_signature_image != blank %}
-              <div class="hero-v2__endorsement-signature">
-                {{ section.settings.endorsement_signature_image | image_url: width: 200 | image_tag: loading: 'lazy' }}
-              </div>
-            {% endif %}
-          </div>
-        {% endif %}
       </div>
       <div class="hero-v2__right">
         {%- for block in section.blocks limit: 2 -%}
@@ -137,9 +122,12 @@
 
             if custom_title != blank
               assign collection_title = custom_title
-            else
+            elsif collection != blank
               assign collection_title = collection.title
+            else
+              assign collection_title = 'Collection title'
             endif
+
             assign collection_url = collection.url | default: '#'
             if custom_image != blank
               assign collection_image = custom_image
@@ -322,22 +310,6 @@
       "unit": "px",
       "label": "Bottom padding",
       "default": 36
-    },
-    {
-      "type": "checkbox",
-      "id": "show_endorsement",
-      "label": "Show Endorsement",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "endorsement_name",
-      "label": "Endorser Name"
-    },
-    {
-      "type": "image_picker",
-      "id": "endorsement_signature_image",
-      "label": "Endorser image"
     }
   ],
   "blocks": [
