@@ -41,64 +41,69 @@
         {%- for block in section.blocks -%}
           {%- assign article = block.settings.blog -%}
           {%- assign override_image = block.settings.image -%}
-
-          {%- if article != blank -%}
-            {%- liquid
+      
+          {%- liquid
+            assign display_image = blank
+            assign article_title = 'Blog title'
+            assign article_description = 'Short blog description will appear here.'
+            assign article_url = routes.blogs_url
+      
+            if article != blank
               assign display_image = override_image
               if display_image == blank
                 assign display_image = article.image
               endif
-
+      
               assign article_title = article.title
               assign article_description = article.summary
               if article_description == blank
                 assign article_description = article.content | strip_html | truncatewords: 60
               endif
+      
               assign article_url = article.url
-            -%}
-
-            <article class="blogs-section__article" {{ block.shopify_attributes }}>
-              {%- if display_image != blank -%}
-                <div class="blogs-section__image-wrapper">
-                  <img
-                    srcset="
-                      {%- if display_image.width >= 165 -%}{{ display_image | image_url: width: 165 }} 165w,{%- endif -%}
-                      {%- if display_image.width >= 360 -%}{{ display_image | image_url: width: 360 }} 360w,{%- endif -%}
-                      {%- if display_image.width >= 533 -%}{{ display_image | image_url: width: 533 }} 533w,{%- endif -%}
-                      {%- if display_image.width >= 720 -%}{{ display_image | image_url: width: 720 }} 720w,{%- endif -%}
-                      {%- if display_image.width >= 1000 -%}{{ display_image | image_url: width: 1000 }} 1000w,{%- endif -%}
-                      {{ display_image | image_url }} {{ display_image.width }}w
-                    "
-                    src="{{ display_image | image_url: width: 533 }}"
-                    sizes="(min-width: 769px) 33vw, 100vw"
-                    alt="{{ display_image.alt | default: article_title | escape }}"
-                    loading="lazy"
-                    width="{{ display_image.width }}"
-                    height="{{ display_image.height }}"
-                    class="blogs-section__image"
-                  >
-                </div>
-              {%- else -%}
-                <div class="blogs-section__image-placeholder">
-                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                </div>
-              {%- endif -%}
-              <div class="blogs-section__content">
-                {%- if article_title != blank -%}
-                  <p class="blogs-section__article-title">
-                    {{ article_title | escape }}
-                  </p>
-                {%- endif -%}
-                {%- if article_description != blank -%}
-                  <p class="blogs-section__description">
-                    {{ article_description | escape }}
-                  </p>
-                {%- endif -%}
-                <a href="{{ article_url }}" class="blogs-section__read-more"> READ MORE </a>
+            endif
+          -%}
+      
+          <article class="blogs-section__article" {{ block.shopify_attributes }}>
+            {%- if display_image != blank -%}
+              <div class="blogs-section__image-wrapper">
+                <img
+                  srcset="
+                    {%- if display_image.width >= 165 -%}{{ display_image | image_url: width: 165 }} 165w,{%- endif -%}
+                    {%- if display_image.width >= 360 -%}{{ display_image | image_url: width: 360 }} 360w,{%- endif -%}
+                    {%- if display_image.width >= 533 -%}{{ display_image | image_url: width: 533 }} 533w,{%- endif -%}
+                    {%- if display_image.width >= 720 -%}{{ display_image | image_url: width: 720 }} 720w,{%- endif -%}
+                    {%- if display_image.width >= 1000 -%}{{ display_image | image_url: width: 1000 }} 1000w,{%- endif -%}
+                    {{ display_image | image_url }} {{ display_image.width }}w
+                  "
+                  src="{{ display_image | image_url: width: 533 }}"
+                  sizes="(min-width: 769px) 33vw, 100vw"
+                  alt="{{ display_image.alt | default: article_title | escape }}"
+                  loading="lazy"
+                  width="{{ display_image.width }}"
+                  height="{{ display_image.height }}"
+                  class="blogs-section__image"
+                >
               </div>
-            </article>
-          {%- endif -%}
-        {%- endfor -%}
+            {%- else -%}
+              <div class="blogs-section__image-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+      
+            <div class="blogs-section__content">
+              <p class="blogs-section__article-title">
+                {{ article_title | escape }}
+              </p>
+              <p class="blogs-section__description">
+                {{ article_description | escape }}
+              </p>
+              <a href="{{ article_url }}" class="blogs-section__read-more">
+                READ MORE
+              </a>
+            </div>
+          </article>
+      {%- endfor -%}
       </div>
     </div>
   </div>
@@ -139,7 +144,7 @@
     {
       "type": "url",
       "id": "navigation_link_url",
-      "label": "Navigation Link URL"
+      "label": "Navigation Link URL",
     },
     {
       "type": "header",
@@ -170,6 +175,7 @@
     {
       "type": "blog_article",
       "name": "Blog Article",
+      "limit": 3,
       "settings": [
         {
           "type": "article",
@@ -187,7 +193,12 @@
   ],
   "presets": [
     {
-      "name": "Blogs"
+      "name": "Blogs",
+      "blocks": [
+        { "type": "blog_article" },
+        { "type": "blog_article" },
+        { "type": "blog_article" }
+      ]
     }
   ]
 }
