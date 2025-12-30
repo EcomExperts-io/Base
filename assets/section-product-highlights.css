@@ -125,7 +125,6 @@
   .product-highlights__media {
     order: 1;
     width: 100%;
-    aspect-ratio: 10 / 11;
   }
 
   .product-highlights__title {
