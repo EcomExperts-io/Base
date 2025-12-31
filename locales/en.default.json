@@ -274,6 +274,13 @@
           "refresh": "Refresh"
         }
       }
+    },
+    "shop_the_look": {
+      "view_all": "VIEW ALL",
+      "hotspot_label": "View product details",
+      "close_tooltip": "Close",
+      "previous": "Previous slide",
+      "next": "Next slide"
     }
   },
   "products": {
