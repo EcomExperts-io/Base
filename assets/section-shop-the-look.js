@@ -4,6 +4,8 @@
  * Initializes Swiper slider for shop the look section with image hotspots
  * and product recommendations.
  */
+import { updateProgressBar } from './component-progress-bar.js';
+
 export class ShopTheLook extends HTMLElement {
   constructor() {
     super();
@@ -135,16 +137,8 @@ export class ShopTheLook extends HTMLElement {
   }
 
   updateProgressBar() {
-    if (!this.swiper) return;
-
     const progressFill = this.querySelector('.shop-the-look__progress-fill');
-    if (!progressFill) return;
-
-    const totalSlides = this.swiper.slides.length;
-    const currentIndex = this.swiper.activeIndex;
-    const progress = ((currentIndex + 1) / totalSlides) * 100;
-
-    progressFill.style.width = `${progress}%`;
+    updateProgressBar(this.swiper, progressFill);
   }
 
   destroy() {

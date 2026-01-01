@@ -31,6 +31,12 @@
 .shop-the-look__slider {
   position: relative;
   width: 100%;
+  overflow: hidden;
+}
+
+/* Hide slides before Swiper initializes */
+.shop-the-look__slider:not(.swiper-initialized) .swiper-slide:not(:first-child) {
+  display: none;
 }
 
 .shop-the-look__slide {
