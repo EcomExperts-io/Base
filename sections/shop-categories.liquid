@@ -1,0 +1,200 @@
+{% comment %} /sections/shop-categories.liquid {% endcomment %}
+
+{{ 'section-shop-categories.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-shop-categories.js' | asset_url }}" type="module"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="shop-categories color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+  <shop-categories data-section-id="{{ section.id }}">
+    <div class="page-width">
+      <div
+        id="shop-categories-{{ section.id }}"
+        class="shop-categories__slider swiper"
+      >
+        <div class="swiper-wrapper">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'category' -%}
+              {%- liquid
+                assign collection = block.settings.collection
+                assign custom_title = block.settings.custom_title
+                assign custom_image = block.settings.custom_image
+
+                if custom_title != blank
+                  assign collection_title = custom_title
+                elsif collection != blank
+                  assign collection_title = collection.title
+                else
+                  assign collection_title = 'Collection Title'
+                endif
+
+                assign collection_url = collection.url | default: '#'
+                if custom_image != blank
+                  assign collection_image = custom_image
+                elsif collection.featured_image != blank
+                  assign collection_image = collection.featured_image
+                else
+                  assign collection_image = blank
+                endif
+              -%}
+              <div class="swiper-slide" {{ block.shopify_attributes }}>
+                <a href="{{ collection_url }}" class="shop-categories__card">
+                  <div class="shop-categories__image-wrapper">
+                    {% if collection_image != blank %}
+                      <img
+                        srcset="
+                          {%- if collection_image.width >= 400 -%}{{ collection_image | image_url: width: 400 }} 400w,{%- endif -%}
+                          {%- if collection_image.width >= 600 -%}{{ collection_image | image_url: width: 600 }} 600w,{%- endif -%}
+                          {%- if collection_image.width >= 800 -%}{{ collection_image | image_url: width: 800 }} 800w,{%- endif -%}
+                          {{ collection_image | image_url }} {{ collection_image.width }}w
+                        "
+                        src="{{ collection_image | image_url: width: 800 }}"
+                        sizes="(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw"
+                        alt="{{ collection_image.alt | default: collection_title | escape }}"
+                        loading="lazy"
+                        width="{{ collection_image.width }}"
+                        height="{{ collection_image.height }}"
+                        class="shop-categories__image"
+                      >
+                    {% else %}
+                      <div class="shop-categories__image-placeholder">
+                        {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {% endif %}
+                    <div class="shop-categories__overlay">
+                      <h3 class="shop-categories__title">
+                        {{ collection_title | escape }}
+                      </h3>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if section.blocks.size > 1 -%}
+          <div class="shop-categories__controls">
+            <div class="shop-categories__progress-bar">
+              <div class="shop-categories__progress-fill"></div>
+            </div>
+            <div class="shop-categories__navigation">
+              <button type="button" class="shop-categories__nav-button shop-categories__nav-button--prev" aria-label="Previous slide">
+                {{ 'icon-arrow-prev.svg' | inline_asset_content }}
+              </button>
+              <button type="button" class="shop-categories__nav-button shop-categories__nav-button--next" aria-label="Next slide">
+                {{ 'icon-arrow-next.svg' | inline_asset_content }}
+              </button>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </shop-categories>
+</div>
+
+{% schema %}
+{
+  "name": "Shop Categories",
+  "tag": "section",
+  "class": "section-shop-categories",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title",
+          "info": "Override collection title"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image",
+          "info": "Override collection image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop Categories",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
