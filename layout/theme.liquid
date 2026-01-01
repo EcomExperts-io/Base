@@ -28,7 +28,6 @@
       {% render 'component-splash-screen-head' %}
     {%- endif -%}
 
-
     {% if page_description %}
       <meta name="description" content="{{ page_description | escape }}">
     {% endif %}
@@ -37,12 +36,15 @@
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
+    {% comment %} Load Swiper if on collection, product, or index page {% endcomment %}
+    {% if template.name == 'collection' or template.name == 'product' or template.name == 'index' %}
+      {{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer="defer" id="swiper-script"></script>
+    {% endif %}
 
     <script src="{{ 'alpinejs-persist@3.14.8.min.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'alpinejs@3.14.8.min.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'theme.js' | asset_url }}" type="module"></script>
-
-
 
     {% comment %} liquid-ajax-cart.js.org {% endcomment %}
     <script type="application/json" data-ajax-cart-initial-state>
@@ -53,16 +55,13 @@
       import '{{ "liquid-ajax-cart-v2.1.1.js" | asset_url }}';
     </script>
 
-
     {%- if settings.predictive_search_enabled -%}
       {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
   </head>
 
   <body>
-    <a class="skip-to-content-link visually-hidden" href="#MainContent">
-      Skip to content
-    </a>
+    <a class="skip-to-content-link visually-hidden" href="#MainContent"> Skip to content </a>
 
     {%- if settings.splash_screen_enabled -%}
       {% render 'component-splash-screen' %}

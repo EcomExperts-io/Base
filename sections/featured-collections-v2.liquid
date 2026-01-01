@@ -1,12 +1,10 @@
 {% comment %} /sections/featured-collections.liquid {% endcomment %}
 
 {{ 'section-featured-collections-v2.css' | asset_url | stylesheet_tag }}
-{{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-price.css' | asset_url | stylesheet_tag }}
 
 <script src="{{ 'component-product-card.js' | asset_url }}" type="module"></script>
-<script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer></script>
 <script src="{{ 'section-featured-collections-v2.js' | asset_url }}" type="module"></script>
 
 {%- if section.settings.quick_add == 'standard' -%}

@@ -1,8 +1,6 @@
 {% comment %} /sections/featured-products.liquid {% endcomment %}
 
-{{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
 {{ 'section-featured-products.css' | asset_url | stylesheet_tag }}
-<script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
 <script src="{{ 'section-featured-products.js' | asset_url }}" type="module"></script>
 
 {%- liquid
@@ -32,117 +30,112 @@
   <div class="color-{{ section.settings.color_scheme }} featured-products-section">
     <featured-products data-section-id="{{ section.id }}" style="position: relative;">
       <div class="page-width featured-products-content">
-      <div class="featured-products__header">
-        <div class="featured-products__titles featured-products__titles--{{ heading_alignment }}">
-          {%- if heading != blank -%}
-            <h2 class="featured-products__heading">{{ heading | escape }}</h2>
-          {%- endif -%}
-          {%- if subheading != blank -%}
-            <p class="featured-products__subheading">{{ subheading | escape }}</p>
+        <div class="featured-products__header">
+          <div class="featured-products__titles featured-products__titles--{{ heading_alignment }}">
+            {%- if heading != blank -%}
+              <h2 class="featured-products__heading">{{ heading | escape }}</h2>
+            {%- endif -%}
+            {%- if subheading != blank -%}
+              <p class="featured-products__subheading">{{ subheading | escape }}</p>
+            {%- endif -%}
+          </div>
+          {%- if view_all_text != blank and view_all_url != blank and show_view_all_as_button != true -%}
+            <a href="{{ view_all_url }}" class="featured-products__view-all link underlined-link">
+              {{ view_all_text | escape }}
+            </a>
           {%- endif -%}
         </div>
-        {%- if view_all_text != blank and view_all_url != blank and show_view_all_as_button != true -%}
-          <a href="{{ view_all_url }}" class="featured-products__view-all link underlined-link">
-            {{ view_all_text | escape }}
-          </a>
-        {%- endif -%}
-      </div>
 
-      <div id="featured-products-{{ section.id }}" class="featured-products__swiper swiper">
-        <div class="featured-products__swiper-arrows">
-          <div class="swiper-button-prev featured-products__swiper-prev">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12" fill="none">
-              <path d="M14.5 6.00005L1.5 6.00005M1.5 6.00005L6.375 0.800049M1.5 6.00005L6.375 11.2" stroke="#9D9D9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="swiper-button-next featured-products__swiper-next">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12" fill="none">
-              <path d="M1.5 6.00005L14.5 6.00005M14.5 6.00005L9.625 0.800049M14.5 6.00005L9.625 11.2" stroke="#9D9D9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-        </div>
-        <div class="swiper-wrapper">
-          {%- for block in section.blocks -%}
-            {%- assign product = block.settings.product -%}
-            <div class="featured-products__card swiper-slide" {{ block.shopify_attributes }}>
-              <div class="product-card">
-                <a href="{{ product.url | default: '#' }}" class="product-card__link">
-                  <div class="product-card__image-wrapper">
-                    {%- if product.featured_media -%}
-                      {%- assign image = product.featured_media.preview_image -%}
-                      <img
-                        srcset="
-                          {%- if image.width >= 350 -%}{{ image | image_url: width: 350 }} 350w,{%- endif -%}
-                          {%- if image.width >= 550 -%}{{ image | image_url: width: 550 }} 550w,{%- endif -%}
-                          {%- if image.width >= 750 -%}{{ image | image_url: width: 750 }} 750w,{%- endif -%}
-                          {%- if image.width >= 1100 -%}{{ image | image_url: width: 1100 }} 1100w,{%- endif -%}
-                          {%- if image.width >= 1500 -%}{{ image | image_url: width: 1500 }} 1500w,{%- endif -%}
-                          {{ image | image_url }} {{ image.width }}w
-                        "
-                        src="{{ image | image_url: width: 750 }}"
-                        sizes="(min-width: 990px) calc(var(--page-width) / 4 - 2rem * 3 / 4), (min-width: 750px) calc(100vw / 2 - 2rem / 2 - 4rem), calc(100vw / 2 - 1rem / 2 - 2rem)"
-                        alt="{{ image.alt | escape }}"
-                        loading="lazy"
-                        width="264"
-                        height="317"
-                        class="product-card__image"
-                      >
-                    {%- else -%}
-                      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg product-card__image' }}
-                    {%- endif -%}
-
-                    {%- assign saved_amount = product.compare_at_price
-                      | minus: product.price
-                      | money_without_trailing_zeros
-                    -%}
-                    {%- if product.compare_at_price > product.price -%}
-                      <span class="product-card__badge">Save {{ saved_amount }}</span>
-                    {%- endif -%}
-                  </div>
-
-                  <div class="product-card__info product-card__info--{{ product_content_alignment }}">
-                    {% comment %} Placeholder for reviews/ratings {% endcomment %}
-                    <div class="product-card__reviews product-card__reviews--{{ review_content_alignment }}">
-                      <span class="visually-hidden">Rating:</span>
-                      <span class="product-card__stars"
-                        >★★★★☆</span
-                      >
-                      <a href="#reviews" class="product-card__review-link">
-                        <span class="product-card__review-count">10 Reviews</span>
-                      </a>
-                    </div>
-                    <h3 class="product-card__title">
-                      {{ product.title | default: 'Product Title' }}
-                    </h3>
-                    <div class="product-card__price">
-                      {%- if product.price -%}
-                        {%- if product.compare_at_price > product.price -%}
-                          <s class="price__compare-at">{{ product.compare_at_price | money }}</s>
-                        {%- endif -%}
-                        <span class="price__regular {% if product.compare_at_price > product.price %}price--on-sale{% endif %}">
-                          {{ product.price | money }}
-                        </span>
-                      {% else %}
-                        <span class="price__regular">
-                          {{ 20000 | money }}
-                        </span>
-                      {% endif %}
-                    </div>
-                  </div>
-                </a>
-              </div>
+        <div id="featured-products-{{ section.id }}" class="featured-products__swiper swiper">
+          <div class="featured-products__swiper-arrows">
+            <div class="swiper-button-prev featured-products__swiper-prev">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12" fill="none">
+                <path d="M14.5 6.00005L1.5 6.00005M1.5 6.00005L6.375 0.800049M1.5 6.00005L6.375 11.2" stroke="#9D9D9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
-          {%- endfor -%}
-        </div>
-      </div>
+            <div class="swiper-button-next featured-products__swiper-next">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12" fill="none">
+                <path d="M1.5 6.00005L14.5 6.00005M14.5 6.00005L9.625 0.800049M14.5 6.00005L9.625 11.2" stroke="#9D9D9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="swiper-wrapper">
+            {%- for block in section.blocks -%}
+              {%- assign product = block.settings.product -%}
+              <div class="featured-products__card swiper-slide" {{ block.shopify_attributes }}>
+                <div class="product-card">
+                  <a href="{{ product.url | default: '#' }}" class="product-card__link">
+                    <div class="product-card__image-wrapper">
+                      {%- if product.featured_media -%}
+                        {%- assign image = product.featured_media.preview_image -%}
+                        <img
+                          srcset="
+                            {%- if image.width >= 350 -%}{{ image | image_url: width: 350 }} 350w,{%- endif -%}
+                            {%- if image.width >= 550 -%}{{ image | image_url: width: 550 }} 550w,{%- endif -%}
+                            {%- if image.width >= 750 -%}{{ image | image_url: width: 750 }} 750w,{%- endif -%}
+                            {%- if image.width >= 1100 -%}{{ image | image_url: width: 1100 }} 1100w,{%- endif -%}
+                            {%- if image.width >= 1500 -%}{{ image | image_url: width: 1500 }} 1500w,{%- endif -%}
+                            {{ image | image_url }} {{ image.width }}w
+                          "
+                          src="{{ image | image_url: width: 750 }}"
+                          sizes="(min-width: 990px) calc(var(--page-width) / 4 - 2rem * 3 / 4), (min-width: 750px) calc(100vw / 2 - 2rem / 2 - 4rem), calc(100vw / 2 - 1rem / 2 - 2rem)"
+                          alt="{{ image.alt | escape }}"
+                          loading="lazy"
+                          width="264"
+                          height="317"
+                          class="product-card__image"
+                        >
+                      {%- else -%}
+                        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg product-card__image' }}
+                      {%- endif -%}
 
-      {%- if show_view_all_as_button and view_all_text != blank and view_all_url != blank -%}
-        <div class="featured-products__button-wrapper">
-          <a href="{{ view_all_url }}" class="featured-products__view-all-button button">
-            {{ view_all_text | escape }}
-          </a>
+                      {%- assign saved_amount = product.compare_at_price | minus: product.price | money_without_trailing_zeros -%}
+                      {%- if product.compare_at_price > product.price -%}
+                        <span class="product-card__badge">Save {{ saved_amount }}</span>
+                      {%- endif -%}
+                    </div>
+
+                    <div class="product-card__info product-card__info--{{ product_content_alignment }}">
+                      {% comment %} Placeholder for reviews/ratings {% endcomment %}
+                      <div class="product-card__reviews product-card__reviews--{{ review_content_alignment }}">
+                        <span class="visually-hidden">Rating:</span>
+                        <span class="product-card__stars">★★★★☆</span>
+                        <a href="#reviews" class="product-card__review-link">
+                          <span class="product-card__review-count">10 Reviews</span>
+                        </a>
+                      </div>
+                      <h3 class="product-card__title">
+                        {{ product.title | default: 'Product Title' }}
+                      </h3>
+                      <div class="product-card__price">
+                        {%- if product.price -%}
+                          {%- if product.compare_at_price > product.price -%}
+                            <s class="price__compare-at">{{ product.compare_at_price | money }}</s>
+                          {%- endif -%}
+                          <span class="price__regular {% if product.compare_at_price > product.price %}price--on-sale{% endif %}">
+                            {{ product.price | money }}
+                          </span>
+                        {% else %}
+                          <span class="price__regular">
+                            {{ 20000 | money }}
+                          </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
         </div>
-      {%- endif -%}
+
+        {%- if show_view_all_as_button and view_all_text != blank and view_all_url != blank -%}
+          <div class="featured-products__button-wrapper">
+            <a href="{{ view_all_url }}" class="featured-products__view-all-button button">
+              {{ view_all_text | escape }}
+            </a>
+          </div>
+        {%- endif -%}
       </div>
     </featured-products>
   </div>
@@ -278,7 +271,13 @@
   "presets": [
     {
       "name": "Featured Products",
-      "blocks": [{ "type": "product_card" }, { "type": "product_card" }, { "type": "product_card" },{ "type": "product_card" },{ "type": "product_card" }]
+      "blocks": [
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" },
+        { "type": "product_card" }
+      ]
     }
   ]
 }

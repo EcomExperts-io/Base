@@ -1,10 +1,5 @@
 {% comment %} /sections/shop-categories.liquid {% endcomment %}
 
-{% if template == 'collection' %}
-  {{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
-  <script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
-{% endif %}
-
 {{ 'section-shop-categories.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'section-shop-categories.js' | asset_url }}" type="module"></script>
 

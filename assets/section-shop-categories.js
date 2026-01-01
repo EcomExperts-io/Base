@@ -3,7 +3,6 @@
  * 
  * Initializes Swiper slider for shop categories section.
  */
-import { updateProgressBar } from './component-progress-bar.js';
 
 export class ShopCategories extends HTMLElement {
   constructor() {
@@ -87,7 +86,23 @@ export class ShopCategories extends HTMLElement {
 
   updateProgressBar() {
     const progressFill = this.querySelector('.shop-categories__progress-fill');
-    updateProgressBar(this.swiper, progressFill);
+    if (!this.swiper || !progressFill) return;
+
+    const totalSlides = this.swiper.slides.length;
+    if (totalSlides === 0) return;
+    
+    const slidesPerView = this.swiper.params.slidesPerView || 1;
+    const currentIndex = this.swiper.activeIndex;
+    const lastVisibleIndex = currentIndex + slidesPerView - 1;
+    const maxIndex = totalSlides - 1;
+    
+    if (lastVisibleIndex >= maxIndex) {
+      progressFill.style.width = '100%';
+    } else {
+      const progress = ((lastVisibleIndex + 1) / totalSlides) * 100;
+      console.log(progress);
+      progressFill.style.width = `${progress}%`;
+    }
   }
 
   destroy() {

@@ -338,7 +338,11 @@ featured-products {
   pointer-events: auto;
   border-radius: 100%;
   width: 42px;
+  height: 42px;
   border: 1px solid #c0bcbc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .featured-products__swiper-arrows .swiper-button-prev {

@@ -3,7 +3,6 @@
   data-section="{{ section.id }}"
   class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
 >
-  {{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
   {{ 'component-product-price.css' | asset_url | stylesheet_tag }}
   {{ 'section-product.css' | asset_url | stylesheet_tag }}
   {%- if section.settings.image_zoom != 'none' -%}
@@ -344,11 +343,7 @@
                   <summary>
                     <div class="summary__title">
                       {%- if block.settings.icon != 'none' -%}
-                        {%- assign file = block.settings.icon
-                          | replace: '_', '-'
-                          | prepend: 'icon-'
-                          | append: '.svg'
-                        -%}
+                        {%- assign file = block.settings.icon | replace: '_', '-' | prepend: 'icon-' | append: '.svg' -%}
                         <span class="svg-wrapper">{{ file | inline_asset_content }}</span>
                       {%- endif -%}
                       <h2 class="accordion__title">
@@ -376,10 +371,7 @@
                         {{- 'icon-inventory-status.svg' | inline_asset_content -}}
                       </span>
                       {%- if block.settings.show_inventory_quantity -%}
-                        {{-
-                          'products.product.inventory_low_stock_show_count'
-                          | t: quantity: selected_variant.inventory_quantity
-                        -}}
+                        {{- 'products.product.inventory_low_stock_show_count' | t: quantity: selected_variant.inventory_quantity -}}
                       {%- else -%}
                         {{- 'products.product.inventory_low_stock' | t -}}
                       {%- endif -%}
@@ -388,10 +380,7 @@
                         {{- 'icon-inventory-status.svg' | inline_asset_content -}}
                       </span>
                       {%- if block.settings.show_inventory_quantity -%}
-                        {{-
-                          'products.product.inventory_in_stock_show_count'
-                          | t: quantity: selected_variant.inventory_quantity
-                        -}}
+                        {{- 'products.product.inventory_in_stock_show_count' | t: quantity: selected_variant.inventory_quantity -}}
                       {%- else -%}
                         {{- 'products.product.inventory_in_stock' | t -}}
                       {%- endif -%}
@@ -418,9 +407,7 @@
               <script src="{{ 'component-product-share-button.js' | asset_url }}" type="module"></script>
             {%- when 'subscription' -%}
               <div class="product__subscription">
-                {%- assign current_variant = product.selected_or_first_available_variant
-                  | default: product.variants.first
-                -%}
+                {%- assign current_variant = product.selected_or_first_available_variant | default: product.variants.first -%}
                 {% if product.selling_plan_groups.size > 0 %}
                   <script src="{{ 'component-selling-plans.js' | asset_url }}" type="module"></script>
                   <selling-plans-widget data-section-id="{{ section.id }}" {{ block.shopify_attributes }}>
@@ -460,10 +447,7 @@
                                   </label>
                                 </div>
                               {% endunless %}
-                              {% assign group_ids = variant.selling_plan_allocations
-                                | map: 'selling_plan_group_id'
-                                | uniq
-                              %}
+                              {% assign group_ids = variant.selling_plan_allocations | map: 'selling_plan_group_id' | uniq %}
                               {% for group_id in group_ids %}
                                 {% liquid
                                   assign group = product | map: 'selling_plan_groups' | where: 'id', group_id | first
@@ -533,26 +517,26 @@
                 class="product-recommendations-container"
                 data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ block.settings.products_to_show }}&intent=complementary"
               >
-              {% if recommendations.performed and recommendations.products_count > 0 %}
-                <h2 class="complementary-products-heading">{{ block.settings.heading }}</h2>
-                <div class="product-recommendations-list">
-                  {%- for product in recommendations.products limit: block.settings.products_to_show -%}
-                    <div class="product-recommendations-item">
-                      {% render 'component-product-card',
-                        card_product: product,
-                        show_vendor: block.settings.show_vendor,
-                        enable_swatches: block.settings.enable_swatches,
-                        swatch_trigger: block.settings.swatch_trigger,
-                        swatch_type: block.settings.swatch_type,
-                        quick_add: block.settings.quick_add,
-                        section_id: section.id,
-                        button_text_color: block.settings.button_text_color,
-                        button_border_color: block.settings.button_border_color
-                      %}
-                    </div>
-                  {%- endfor -%}
-                </div>
-              {% endif %}
+                {% if recommendations.performed and recommendations.products_count > 0 %}
+                  <h2 class="complementary-products-heading">{{ block.settings.heading }}</h2>
+                  <div class="product-recommendations-list">
+                    {%- for product in recommendations.products limit: block.settings.products_to_show -%}
+                      <div class="product-recommendations-item">
+                        {% render 'component-product-card',
+                          card_product: product,
+                          show_vendor: block.settings.show_vendor,
+                          enable_swatches: block.settings.enable_swatches,
+                          swatch_trigger: block.settings.swatch_trigger,
+                          swatch_type: block.settings.swatch_type,
+                          quick_add: block.settings.quick_add,
+                          section_id: section.id,
+                          button_text_color: block.settings.button_text_color,
+                          button_border_color: block.settings.button_border_color
+                        %}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {% endif %}
               </product-recommendations>
           {%- endcase -%}
         {%- endfor -%}
@@ -568,7 +552,6 @@
   {%- endif -%}
 
   <script src="{{ 'section-product.js' | asset_url }}" type="module"></script>
-  <script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
 
   {%- if section.settings.image_zoom != 'none' -%}
     <script src="{{ 'component-product-media-modal.js' | asset_url }}" type="module"></script>
