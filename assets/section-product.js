@@ -11,14 +11,11 @@ export class ProductInfo extends HTMLElement {
     this.quantitySelector.addEventListener('change', this.onQuantitySelectorEvent.bind(this));
     this.quantitySelector.querySelector('button[name="plus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
     this.quantitySelector.querySelector('button[name="minus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
-    document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
   }
 
   connectedCallback() {
     this.setupEventListeners();
-    if (typeof Swiper !== 'undefined') {
-      this.initSwiper();
-    }
+    this.initSwiper();
   }
 
   initSwiper() {
