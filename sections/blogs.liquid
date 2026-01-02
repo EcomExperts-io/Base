@@ -41,29 +41,29 @@
         {%- for block in section.blocks -%}
           {%- assign article = block.settings.blog -%}
           {%- assign override_image = block.settings.image -%}
-      
+
           {%- liquid
             assign display_image = blank
             assign article_title = 'Blog title'
             assign article_description = 'Short blog description will appear here.'
             assign article_url = routes.blogs_url
-      
+
             if article != blank
               assign display_image = override_image
               if display_image == blank
                 assign display_image = article.image
               endif
-      
+
               assign article_title = article.title
               assign article_description = article.summary
               if article_description == blank
                 assign article_description = article.content | strip_html | truncatewords: 60
               endif
-      
+
               assign article_url = article.url
             endif
           -%}
-      
+
           <article class="blogs-section__article" {{ block.shopify_attributes }}>
             {%- if display_image != blank -%}
               <div class="blogs-section__image-wrapper">
@@ -90,7 +90,7 @@
                 {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
               </div>
             {%- endif -%}
-      
+
             <div class="blogs-section__content">
               <p class="blogs-section__article-title">
                 {{ article_title | escape }}
@@ -98,12 +98,10 @@
               <p class="blogs-section__description">
                 {{ article_description | escape }}
               </p>
-              <a href="{{ article_url }}" class="blogs-section__read-more">
-                READ MORE
-              </a>
+              <a href="{{ article_url }}" class="blogs-section__read-more"> READ MORE </a>
             </div>
           </article>
-      {%- endfor -%}
+        {%- endfor -%}
       </div>
     </div>
   </div>
@@ -144,7 +142,7 @@
     {
       "type": "url",
       "id": "navigation_link_url",
-      "label": "Navigation Link URL",
+      "label": "Navigation Link URL"
     },
     {
       "type": "header",
@@ -194,11 +192,7 @@
   "presets": [
     {
       "name": "Blogs",
-      "blocks": [
-        { "type": "blog_article" },
-        { "type": "blog_article" },
-        { "type": "blog_article" }
-      ]
+      "blocks": [{ "type": "blog_article" }, { "type": "blog_article" }, { "type": "blog_article" }]
     }
   ]
 }
