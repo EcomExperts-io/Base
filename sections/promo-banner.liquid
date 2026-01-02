@@ -31,81 +31,81 @@
   assign custom_image = section.settings.custom_image
 -%}
 
-  {%- liquid
-    assign product_title = product.title
-    assign product_description = product.description | strip_html | truncatewords: 20
-    assign product_price = product.price_min | money
-    assign product_url = product.url
-    assign product_image = custom_image | default: product.featured_image
-  -%}
+{%- liquid
+  assign product_title = product.title
+  assign product_description = product.description | strip_html | truncatewords: 20
+  assign product_price = product.price_min | money
+  assign product_url = product.url
+  assign product_image = custom_image | default: product.featured_image
+-%}
 
-  <div
-    class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
-    style="
-      --promo-banner-image-placement: {{ image_placement }};
-      --promo-banner-image-height: {{ image_height }}px;
-      --promo-banner-image-fit: {{ image_fit }};
-      --promo-banner-image-position: {{ image_position }};
-      --promo-banner-button-color: {{ button_background_color }};
-      --promo-banner-button-text-color: {{ button_text_color }};
-    "
-  >
-    <div class="page-width">
-      <div class="promo-banner__container">
-        <div class="promo-banner__content">
-          {%- if product_title != blank -%}
-            <h3 class="promo-banner__title">{{ product_title | escape }}</h3>
-            {% else %}
-            <h3 class="promo-banner__title">Promo Product's Title</h3>
-          {%- endif -%}
+<div
+  class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+  style="
+    --promo-banner-image-placement: {{ image_placement }};
+    --promo-banner-image-height: {{ image_height }}px;
+    --promo-banner-image-fit: {{ image_fit }};
+    --promo-banner-image-position: {{ image_position }};
+    --promo-banner-button-color: {{ button_background_color }};
+    --promo-banner-button-text-color: {{ button_text_color }};
+  "
+>
+  <div class="page-width">
+    <div class="promo-banner__container">
+      <div class="promo-banner__content">
+        {%- if product_title != blank -%}
+          <h3 class="promo-banner__title">{{ product_title | escape }}</h3>
+        {% else %}
+          <h3 class="promo-banner__title">Promo Product's Title</h3>
+        {%- endif -%}
 
-          {%- if product_description != blank -%}
-            <p class="promo-banner__description">{{ product_description }}</p>
-            {% else %}
-            <p class="promo-banner__description">Promo Product's Description</p>
-          {%- endif -%}
+        {%- if product_description != blank -%}
+          <p class="promo-banner__description">{{ product_description }}</p>
+        {% else %}
+          <p class="promo-banner__description">Promo Product's Description</p>
+        {%- endif -%}
 
-          {%- if product_price != blank -%}
-            <div class="promo-banner__price">{{ product_price }}</div>
-            {% else %}
-            <div class="promo-banner__price">$69.00</div>
-          {%- endif -%}
+        {%- if product_price != blank -%}
+          <div class="promo-banner__price">{{ product_price }}</div>
+        {% else %}
+          <div class="promo-banner__price">$69.00</div>
+        {%- endif -%}
 
-          {%- if product_url != blank -%}
-            <a href="{{ product_url }}" class="promo-banner__button-link">
-              <span class="promo-banner__button">SHOP NOW</span>
-            </a>
-            {% else %}
-            <a href="{{ product_url }}" class="promo-banner__button-link">
-              <span class="promo-banner__button">SHOP NOW</span>
-            </a>
-          {%- endif -%}
-        </div>
+        {%- if product_url != blank -%}
+          <a href="{{ product_url }}" class="promo-banner__button-link">
+            <span class="promo-banner__button">SHOP NOW</span>
+          </a>
+        {% else %}
+          <a href="{{ product_url }}" class="promo-banner__button-link">
+            <span class="promo-banner__button">SHOP NOW</span>
+          </a>
+        {%- endif -%}
+      </div>
 
-        <div class="promo-banner__image-wrapper {% if product_image == blank %}blank{% endif %}">
-          {%- if product_image != blank -%}
-            <img
-              srcset="
-                {%- if product_image.width >= 300 -%}{{ product_image | image_url: width: 300 }} 300w,{%- endif -%}
-                {%- if product_image.width >= 600 -%}{{ product_image | image_url: width: 600 }} 600w,{%- endif -%}
-                {%- if product_image.width >= 900 -%}{{ product_image | image_url: width: 900 }} 900w,{%- endif -%}
-                {{ product_image | image_url }} {{ product_image.width }}w
-              "
-              src="{{ product_image | image_url: width: 600 }}"
-              sizes="(min-width: 750px) 50vw, 100vw"
-              alt="{{ product_image.alt | default: product_title | escape }}"
-              loading="lazy"
-              width="{{ product_image.width }}"
-              height="{{ product_image.height }}"
-              class="promo-banner__image"
-            >
-          {%- else -%}
-              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-          {%- endif -%}
-        </div>
+      <div class="promo-banner__image-wrapper {% if product_image == blank %}blank{% endif %}">
+        {%- if product_image != blank -%}
+          <img
+            srcset="
+              {%- if product_image.width >= 300 -%}{{ product_image | image_url: width: 300 }} 300w,{%- endif -%}
+              {%- if product_image.width >= 600 -%}{{ product_image | image_url: width: 600 }} 600w,{%- endif -%}
+              {%- if product_image.width >= 900 -%}{{ product_image | image_url: width: 900 }} 900w,{%- endif -%}
+              {{ product_image | image_url }} {{ product_image.width }}w
+            "
+            src="{{ product_image | image_url: width: 600 }}"
+            sizes="(min-width: 750px) 50vw, 100vw"
+            alt="{{ product_image.alt | default: product_title | escape }}"
+            loading="lazy"
+            width="{{ product_image.width }}"
+            height="{{ product_image.height }}"
+            class="promo-banner__image"
+          >
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
       </div>
     </div>
   </div>
+</div>
 
 {% schema %}
 {
@@ -162,15 +162,15 @@
       "min": 400,
       "max": 800,
       "step": 50,
-      "default": 500,
+      "default": 500
     },
     {
       "type": "select",
       "id": "image_fit",
       "label": "Image Fit",
       "options": [
-        {"label": "Cover", "value": "cover"},
-        {"label": "Contain", "value": "contain"},
+        { "label": "Cover", "value": "cover" },
+        { "label": "Contain", "value": "contain" }
       ],
       "default": "cover"
     },
@@ -179,9 +179,9 @@
       "id": "image_position",
       "label": "Image Position",
       "options": [
-        {"label": "Top", "value": "top"},
-        {"label": "Center", "value": "center"},
-        {"label": "Bottom", "value": "bottom"},
+        { "label": "Top", "value": "top" },
+        { "label": "Center", "value": "center" },
+        { "label": "Bottom", "value": "bottom" }
       ],
       "default": "center"
     },
@@ -208,7 +208,7 @@
       "step": 4,
       "unit": "px",
       "default": 40
-    },
+    }
   ],
   "presets": [
     {

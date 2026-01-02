@@ -17,8 +17,9 @@ export class ShopTheLook extends HTMLElement {
   connectedCallback() {
     this.init();
     this.initHotspots();
-    setTimeout(() => { 
-      this.updateProgressBar(); }, 100);
+    setTimeout(() => {
+      this.updateProgressBar();
+    }, 100);
   }
 
   disconnectedCallback() {
@@ -141,12 +142,12 @@ export class ShopTheLook extends HTMLElement {
 
     const totalSlides = this.swiper.slides.length;
     if (totalSlides === 0) return;
-    
+
     const slidesPerView = this.swiper.params.slidesPerView || 1;
     const currentIndex = this.swiper.activeIndex;
     const lastVisibleIndex = currentIndex + slidesPerView - 1;
     const maxIndex = totalSlides - 1;
-    
+
     if (lastVisibleIndex >= maxIndex) {
       progressFill.style.width = '100%';
     } else {
