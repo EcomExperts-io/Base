@@ -371,22 +371,46 @@
       "blocks": {
         "collection_1": {
           "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
         },
         "collection_2": {
           "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
         },
         "collection_3": {
           "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
         },
         "collection_4": {
           "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
         },
         "collection_5": {
           "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
         },
         "collection_6": {
           "type": "collection",
-        },
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        }
       },
       "block_order": [
         "collection_1",
@@ -394,8 +418,166 @@
         "collection_3",
         "collection_4",
         "collection_5",
-        "collection_6",
-      ]
+        "collection_6"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "heading": "",
+        "button_type": "button",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "blogs_6DGtRD": {
+      "type": "blogs",
+      "blocks": {
+        "blog_article_xKftck": {
+          "type": "blog_article",
+          "settings": {
+            "blog": ""
+          }
+        },
+        "blog_article_jqywpf": {
+          "type": "blog_article",
+          "settings": {
+            "blog": ""
+          }
+        },
+        "blog_article_MhaqYM": {
+          "type": "blog_article",
+          "settings": {
+            "blog": ""
+          }
+        }
+      },
+      "block_order": [
+        "blog_article_xKftck",
+        "blog_article_jqywpf",
+        "blog_article_MhaqYM"
+      ],
+      "name": "Blogs",
+      "settings": {
+        "color_scheme": "",
+        "heading_text": "VIEW LOOKBOOKS",
+        "navigation_link_text": "VIEW LOOKBOOK",
+        "navigation_link_url": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "brand_story_QhMEEy": {
+      "type": "brand-story",
+      "name": "Brand Story",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "label_1": "OTHER BRANDS",
+        "label_2": "DEMO",
+        "heading": "Heading",
+        "description": "Description content will appear here."
+      }
+    },
+    "hero_v2_pVryft": {
+      "type": "hero-v2",
+      "blocks": {
+        "collection_GVMfYr": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": "",
+            "content_position": "top"
+          }
+        },
+        "collection_rkQKDL": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": "",
+            "content_position": "top"
+          }
+        }
+      },
+      "block_order": [
+        "collection_GVMfYr",
+        "collection_rkQKDL"
+      ],
+      "name": "Hero V2",
+      "settings": {
+        "color_scheme": "",
+        "background_type": "image",
+        "video_background_url": "",
+        "heading": "Main Banner Title Here",
+        "description": "Sub Header Here",
+        "button_text": "SHOP COLLECTION",
+        "button_link": "",
+        "button_type": "button",
+        "content_alignment": "left",
+        "vertical_alignment": "top",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "shop_categories_43RftD": {
+      "type": "shop-categories",
+      "blocks": {
+        "category_NN9k3W": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_Qxphmr": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_ByFNMp": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_49DaQx": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_8pn9UH": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_X4kFpF": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_NN9k3W",
+        "category_Qxphmr",
+        "category_ByFNMp",
+        "category_49DaQx",
+        "category_8pn9UH",
+        "category_X4kFpF"
+      ],
+      "name": "Shop Categories",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
@@ -407,6 +589,10 @@
     "selling_points_v2_6NgzaK",
     "logos_example",
     "promo_banner_example",
-    "shop_by_category_example"
+    "shop_by_category_example",
+    "blogs_6DGtRD",
+    "brand_story_QhMEEy",
+    "hero_v2_pVryft",
+    "shop_categories_43RftD"
   ]
 }
