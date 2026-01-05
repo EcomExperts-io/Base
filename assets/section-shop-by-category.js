@@ -20,11 +20,11 @@ class ShopByCategory extends HTMLElement {
     const collection = event.currentTarget;
     const featuredImage = collection.dataset.featuredImage;
 
-    if (!featuredImage || !this.currentFeaturedImage) 
+    if (!featuredImage || !this.currentFeaturedImage)
       return;
-    if (this.currentFeaturedImage.src.includes(featuredImage)) 
+    if (this.currentFeaturedImage.src.includes(featuredImage))
       return;
-    
+
     this.currentFeaturedImage.srcset = "";
     this.currentFeaturedImage.removeAttribute("srcset");
     this.currentFeaturedImage.src = featuredImage;
