@@ -1,0 +1,190 @@
+{% comment %} /sections/brand-story.liquid {% endcomment %}
+{{ 'section-brand-story.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section
+  id="BrandStory-{{ section.id }}"
+  class="brand-story section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+>
+  <div class="page-width">
+    <div class="brand-story__container">
+      <div class="brand-story__left">
+        <div class="brand-story__comparison-box">
+          <div class="brand-story__images-wrapper">
+            <div class="brand-story__image-item">
+              {%- if section.settings.image_1 != blank -%}
+                <div class="brand-story__image">
+                  <img
+                    srcset="
+                      {%- if section.settings.image_1.width >= 300 -%}{{ section.settings.image_1 | image_url: width: 300 }} 300w,{%- endif -%}
+                      {%- if section.settings.image_1.width >= 400 -%}{{ section.settings.image_1 | image_url: width: 400 }} 400w,{%- endif -%}
+                      {%- if section.settings.image_1.width >= 500 -%}{{ section.settings.image_1 | image_url: width: 500 }} 500w,{%- endif -%}
+                      {{ section.settings.image_1 | image_url }} {{ section.settings.image_1.width }}w
+                    "
+                    src="{{ section.settings.image_1 | image_url: width: 500 }}"
+                    sizes="(min-width: 750px) 50vw, 100vw"
+                    alt="{{ section.settings.image_1.alt | default: section.settings.label_1 | escape }}"
+                    loading="lazy"
+                    width="{{ section.settings.image_1.width }}"
+                    height="{{ section.settings.image_1.height }}"
+                  >
+                </div>
+              {%- else -%}
+                <div class="brand-story__image-placeholder">
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {%- endif -%}
+              {%- if section.settings.label_1 != blank -%}
+                <span class="brand-story__label">{{ section.settings.label_1 | escape }}</span>
+              {%- endif -%}
+            </div>
+
+            <div class="brand-story__image-item">
+              {%- if section.settings.image_2 != blank -%}
+                <div class="brand-story__image">
+                  <img
+                    srcset="
+                      {%- if section.settings.image_2.width >= 300 -%}{{ section.settings.image_2 | image_url: width: 300 }} 300w,{%- endif -%}
+                      {%- if section.settings.image_2.width >= 400 -%}{{ section.settings.image_2 | image_url: width: 400 }} 400w,{%- endif -%}
+                      {%- if section.settings.image_2.width >= 500 -%}{{ section.settings.image_2 | image_url: width: 500 }} 500w,{%- endif -%}
+                      {{ section.settings.image_2 | image_url }} {{ section.settings.image_2.width }}w
+                    "
+                    src="{{ section.settings.image_2 | image_url: width: 500 }}"
+                    sizes="(min-width: 750px) 50vw, 100vw"
+                    alt="{{ section.settings.image_2.alt | default: section.settings.label_2 | escape }}"
+                    loading="lazy"
+                    width="{{ section.settings.image_2.width }}"
+                    height="{{ section.settings.image_2.height }}"
+                  >
+                </div>
+              {%- else -%}
+                <div class="brand-story__image-placeholder">
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {%- endif -%}
+              {%- if section.settings.label_2 != blank -%}
+                <span class="brand-story__label">{{ section.settings.label_2 | escape }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-story__right">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="brand-story__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.description != blank -%}
+          <div class="brand-story__description">
+            {{ section.settings.description | escape }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Brand Story",
+  "tag": "section",
+  "class": "section-brand-story",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:sections.all.padding.padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:sections.all.padding.padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Left Side - Comparison Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1"
+    },
+    {
+      "type": "text",
+      "id": "label_1",
+      "label": "Label 1",
+      "default": "OTHER BRANDS"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image 2"
+    },
+    {
+      "type": "text",
+      "id": "label_2",
+      "label": "Label 2",
+      "default": "DEMO"
+    },
+    {
+      "type": "header",
+      "content": "Right Side - Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Description content will appear here."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Story"
+    }
+  ]
+}
+{% endschema %}

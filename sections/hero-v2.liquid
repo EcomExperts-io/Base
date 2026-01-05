@@ -1,0 +1,358 @@
+{% comment %} /sections/hero-v2.liquid {% endcomment %}
+{{ 'section-hero-v2.css' | asset_url | stylesheet_tag }}
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+  assign description = section.settings.description
+  assign button_text = section.settings.button_text
+  assign button_link = section.settings.button_link
+  assign button_type = section.settings.button_type
+  assign background_type = section.settings.background_type
+  assign main_image = section.settings.main_image
+  assign video_background_hosted = section.settings.video_background_hosted
+  assign video_background_url = section.settings.video_background_url
+  assign content_alignment = section.settings.content_alignment
+  assign vertical_alignment = section.settings.vertical_alignment
+-%}
+
+<div
+  class="hero-v2 section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+  style="
+    --button: var(--color-{{ button_type }});
+    --button-text: var(--color-{{ button_type }}-text);
+  "
+>
+  <div class="page-width">
+    <div class="hero-v2__container">
+      <div class="hero-v2__left">
+        <div
+          class="
+            hero-v2__content hero-v2__content--h-{{ content_alignment }}
+            hero-v2__content--v-{{ vertical_alignment }}
+          "
+        >
+          {% if heading != blank %}
+            <h1 class="hero-v2__heading">{{ heading | escape }}</h1>
+          {% endif %}
+
+          {% if description != blank %}
+            <p class="hero-v2__description">{{ description | escape }}</p>
+          {% endif %}
+
+          {% if button_text != blank and button_link != blank %}
+            <a href="{{ button_link }}" class="hero-v2__button">
+              {{ button_text | escape }}
+            </a>
+          {% endif %}
+        </div>
+        <div class="hero-v2__main-image">
+          {% if background_type == 'video' %}
+            {% if video_background_hosted != blank %}
+              {{ video_background_hosted | video_tag: autoplay: true, loop: true, muted: true, playsinline: true, class: 'hero-v2__image' }}
+            {% elsif video_background_url != blank %}
+              {% if video_background_url contains 'youtube.com' or video_background_url contains 'youtu.be' %}
+                {% assign video_id = video_background_url | split: 'v=' | last | split: '&' | first | split: '/' | last %}
+                <iframe
+                  src="https://www.youtube.com/embed/{{ video_id }}?autoplay=1&mute=1&loop=1&playlist={{ video_id }}&controls=0&showinfo=0&autohide=1&modestbranding=1&playsinline=1"
+                  frameborder="0"
+                  allow="autoplay; encrypted-media"
+                  allowfullscreen
+                  class="hero-v2__image"
+                ></iframe>
+              {% elsif video_background_url contains 'vimeo.com' %}
+                {% assign video_id = video_background_url | split: '/' | last %}
+                <iframe
+                  src="https://player.vimeo.com/video/{{ video_id }}?autoplay=1&loop=1&muted=1&controls=0&background=1"
+                  frameborder="0"
+                  allow="autoplay; fullscreen"
+                  allowfullscreen
+                  class="hero-v2__image"
+                ></iframe>
+              {% endif %}
+            {% else %}
+              <div class="hero-v2__image-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {% endif %}
+          {% else %}
+            {% if main_image != blank %}
+              <img
+                srcset="
+                  {%- if main_image.width >= 400 -%}{{ main_image | image_url: width: 400 }} 400w,{%- endif -%}
+                  {%- if main_image.width >= 600 -%}{{ main_image | image_url: width: 600 }} 600w,{%- endif -%}
+                  {%- if main_image.width >= 800 -%}{{ main_image | image_url: width: 800 }} 800w,{%- endif -%}
+                  {%- if main_image.width >= 1000 -%}{{ main_image | image_url: width: 1000 }} 1000w,{%- endif -%}
+                  {{ main_image | image_url }} {{ main_image.width }}w
+                "
+                src="{{ main_image | image_url: width: 1000 }}"
+                sizes="(min-width: 990px) 50vw, 100vw"
+                alt="{{ main_image.alt | default: heading | escape }}"
+                loading="eager"
+                width="{{ main_image.width }}"
+                height="{{ main_image.height }}"
+                class="hero-v2__image"
+              >
+            {% else %}
+              <div class="hero-v2__image-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+      <div class="hero-v2__right">
+        {%- for block in section.blocks limit: 2 -%}
+          {%- liquid
+            assign collection = block.settings.collection
+            assign custom_title = block.settings.custom_title
+            assign custom_image = block.settings.custom_image
+
+            if custom_title != blank
+              assign collection_title = custom_title
+            elsif collection != blank
+              assign collection_title = collection.title
+            else
+              assign collection_title = 'Collection title'
+            endif
+
+            assign collection_url = collection.url | default: '#'
+            if custom_image != blank
+              assign collection_image = custom_image
+            elsif collection.featured_image != blank
+              assign collection_image = collection.featured_image
+            else
+              assign collection_image = blank
+            endif
+            assign content_position = block.settings.content_position | default: 'top'
+          -%}
+
+          <div class="hero-v2__promo-block" {{ block.shopify_attributes }}>
+            {% if collection_image != blank %}
+              <div class="hero-v2__promo-image">
+                <img
+                  srcset="
+                    {%- if collection_image.width >= 300 -%}{{ collection_image | image_url: width: 300 }} 300w,{%- endif -%}
+                    {%- if collection_image.width >= 400 -%}{{ collection_image | image_url: width: 400 }} 400w,{%- endif -%}
+                    {%- if collection_image.width >= 500 -%}{{ collection_image | image_url: width: 500 }} 500w,{%- endif -%}
+                    {{ collection_image | image_url }} {{ collection_image.width }}w
+                  "
+                  src="{{ collection_image | image_url: width: 500 }}"
+                  sizes="(min-width: 990px) 50vw, 50vw"
+                  alt="{{ collection_image.alt | default: collection_title | escape }}"
+                  loading="lazy"
+                  width="{{ collection_image.width }}"
+                  height="{{ collection_image.height }}"
+                  class="hero-v2__promo-img"
+                >
+              </div>
+            {% else %}
+              <div class="hero-v2__promo-image">
+                <div class="hero-v2__image-placeholder">
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              </div>
+            {% endif %}
+            {% if collection_title != blank %}
+              <a href="{{ collection_url | default: '#' }}" class="hero-v2__promo-link hero-v2__promo-link--{{ content_position }}">
+                <div class="hero-v2__promo-content">
+                  <span class="hero-v2__promo-title">{{ collection_title | escape }}</span>
+                  <span class="hero-v2__promo-arrow">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+                </div>
+              </a>
+            {% endif %}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Hero V2",
+  "tag": "section",
+  "class": "section-hero-v2",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "radio",
+      "id": "background_type",
+      "label": "Background Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Image Background"
+    },
+    {
+      "type": "video",
+      "id": "video_background_hosted",
+      "label": "Hosted Video Background"
+    },
+    {
+      "type": "url",
+      "id": "video_background_url",
+      "label": "Video URL (YouTube/Vimeo)",
+      "info": "Use hosted video above for better performance and reliability."
+    },
+    {
+      "type": "header",
+      "content": "Main Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Main Banner Title Here"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Sub Header Here"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "SHOP COLLECTION"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "select",
+      "id": "button_type",
+      "label": "Button Style",
+      "options": [
+        { "value": "button", "label": "Primary" },
+        { "value": "secondary-button", "label": "Secondary" }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Text Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Text Vertical Alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title",
+          "info": "Optional: Override the collection title"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image",
+          "info": "Optional: Override the collection's featured image"
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "Text Position",
+          "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" }
+          ],
+          "default": "top"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero V2",
+      "blocks": [{ "type": "collection" }, { "type": "collection" }]
+    }
+  ]
+}
+{% endschema %}

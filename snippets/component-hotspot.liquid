@@ -1,0 +1,50 @@
+{% comment %}
+  Renders a hotspot with tooltip
+
+  Accepts:
+  - enabled: {Boolean} Whether the hotspot is enabled (required)
+  - text: {String} Tooltip content text
+  - horizontal: {Number} Horizontal position percentage (0-100)
+  - vertical: {Number} Vertical position percentage (0-100)
+  - index: {Number} Hotspot index number
+
+  Example usage:
+  {% render 'component-hotspot',
+    enabled: block.settings.hotspot_1_enabled,
+    text: block.settings.hotspot_1_text,
+    horizontal: block.settings.hotspot_1_horizontal,
+    vertical: block.settings.hotspot_1_vertical,
+    index: 1
+  %}
+{% endcomment %}
+
+{%- if enabled -%}
+  <div
+    class="shop-the-look__hotspot"
+    style="
+      left: {{ horizontal }}%;
+      top: {{ vertical }}%;
+    "
+    data-hotspot-index="{{ index }}"
+  >
+    <button
+      type="button"
+      class="shop-the-look__hotspot-trigger"
+      aria-label="View product details"
+      aria-expanded="false"
+    >
+      <span class="shop-the-look__hotspot-dot"></span>
+      <span class="shop-the-look__hotspot-pulse"></span>
+      <span class="shop-the-look__hotspot-icon">
+        {{ 'icon-plus.svg' | inline_asset_content }}
+      </span>
+    </button>
+    {%- if text != blank -%}
+      <div class="shop-the-look__hotspot-tooltip">
+        <div class="shop-the-look__hotspot-content">
+          {{ text }}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

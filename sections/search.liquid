@@ -69,8 +69,8 @@
   <script src="{{ 'component-modal-opener.js' | asset_url }}" type="module"></script>
 {%- endif -%}
 
-<div class="template-search{% unless search.performed and search.results_count > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding">
-  <div class="template-search__header color-{{ section.settings.color_scheme }} page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+<div class="color-{{ section.settings.color_scheme }} template-search{% unless search.performed and search.results_count > 0 %} template-search--empty{% endunless %} section-{{ section.id }}-padding">
+  <div class="template-search__header page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
     <h1 class="h2 center">
       {%- if search.performed -%}
         {{- 'templates.search.title' | t -}}
@@ -209,15 +209,17 @@
                     {% liquid
                       assign has_active_filters = false
                       for f in search.filters
-                        if f.type == 'price_range'
-                          if f.min_value.value > 0 or f.max_value.value < f.range_max
-                            assign has_active_filters = true
+                        unless f.param_name == 'sort_by'
+                          if f.type == 'price_range'
+                            if f.min_value.value > 0 or f.max_value.value < f.range_max
+                              assign has_active_filters = true
+                            endif
+                          else
+                            if f.active_values.size > 0
+                              assign has_active_filters = true
+                            endif
                           endif
-                        else
-                          if f.active_values.size > 0
-                            assign has_active_filters = true
-                          endif
-                        endif
+                        endunless
                       endfor
                     %}
 

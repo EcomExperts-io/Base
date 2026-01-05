@@ -80,7 +80,7 @@
     cursor: pointer;
     border: 0;
     background: transparent;
-    color: inherit;
+    color: rgba(var(--color-foreground), 0.75);
     font-size: inherit;
   }
   #main-header .menu-toggle svg {
@@ -304,16 +304,6 @@
       min-width: 160px;
     }
   }
-
-  #main-header nav ul,
-  #main-header nav ul li,
-  #main-header nav ul li a {
-    color: {{ section.settings.menu_text_color }};
-  }
-  [data-cart-count] {
-    background: {{ section.settings.cart_count_color }};
-    color: #fff;
-  }
 {% endstyle %}
 
 {% capture header_search %}
@@ -330,7 +320,9 @@
 >
   <header
     {% if section.settings.menu_position == 'center' %}
-      class="header-menu-position-center"
+      class="header-menu-position-center page-width"
+    {% else %}
+      class="page-width"
     {% endif %}
     id="main-header"
     x-data="{ searchOpen: false, searchTerm: '{{ search.terms | escape }}' }"
@@ -713,18 +705,6 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 20
-    },
-    {
-      "type": "color",
-      "id": "menu_text_color",
-      "label": "Menu text color",
-      "default": "#000"
-    },
-    {
-      "type": "color",
-      "id": "cart_count_color",
-      "label": "Cart count color",
-      "default": "#2E2E2E"
     }
   ],
   "blocks": [

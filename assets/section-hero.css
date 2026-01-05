@@ -1,12 +1,13 @@
 /* Assets/section-hero-banner.css */
 
 .hero-banner-section {
+  display: block;
+  width: 100%;
   position: relative;
-  color: var(--hero-text-color, #FFFFFF);
-  /* Use variable, provide fallback */
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
   padding: 60px 20px;
   min-height: 600px;
-  background-color: #000;
   overflow: hidden;
 }
 
@@ -103,8 +104,7 @@
   margin-bottom: 5px;
   font-weight: bold;
   line-height: 1.2;
-  color: var(--hero-text-color, #FFFFFF);
-  /* Explicitly use variable */
+  color: rgb(var(--color-foreground));
 }
 
 .hero-banner-section .hero-banner__subheading {
@@ -116,8 +116,8 @@
 .hero-banner-section .hero-banner__button {
   display: inline-block;
   padding: 10px 30px 10px 30px;
-  background-color: var(--hero-button-color, #FFFFFF);
-  color: var(--hero-button-text-color, #000000);
+  background-color: var(--hero-button-background, #FFFFFF);
+  color: var(--hero-button-text, #000000);
   text-decoration: none;
   font-weight: bold;
   transition: all 0.3s ease;
@@ -128,7 +128,7 @@
 }
 
 .hero-banner-section .hero-banner__button:hover {
-  background-color: var(--hero-button-color, #FFFFFF);
+  background-color: var(--hero-button-background, #FFFFFF);
   opacity: 0.8;
   transform: translateY(-2px);
 }
@@ -222,7 +222,7 @@
   }
 
   .hero-banner-section .hero-banner__subheading {
-    margin: unset;
+    margin: 15px;
   }
 
   .hero-banner-section .hero-banner__heading {

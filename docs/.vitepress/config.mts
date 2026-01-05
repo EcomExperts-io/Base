@@ -43,7 +43,9 @@ export default defineConfig({
             { text: 'Product', link: '/sections/product' },
             { text: 'Register', link: '/sections/register' },
             { text: 'Reset Password', link: '/sections/reset-password' },
-            { text: 'Search', link: '/sections/search' }
+            { text: 'Search', link: '/sections/search' },
+            { text: 'Selling Points', link: '/sections/selling-points' },
+            { text: 'Selling Points V2', link: '/sections/selling-points-v2' }
           ]
         }
       ],

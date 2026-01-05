@@ -1,0 +1,189 @@
+{% comment %} /sections/logos.liquid {% endcomment %}
+
+{{ 'section-logos.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign blocks_to_show = section.blocks.size
+  assign logo_height = section.settings.logo_height
+  assign animation_duration = section.settings.animation_duration
+-%}
+
+{%- if blocks_to_show > 0 -%}
+  <div
+    class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+    style="
+      --logo-height: {{ logo_height }}px;
+      --animation-duration: {{ animation_duration }}s;
+    "
+  >
+    <div class="page-width">
+      <div class="logos__container">
+        <div class="logos__track">
+          {%- for block in section.blocks -%}
+            {%- assign logo = block.settings.logo -%}
+            <div class="logos__item {% if logo == blank %}blank{% endif %}" {{ block.shopify_attributes }}>
+              {%- if logo != blank -%}
+                <img
+                  srcset="
+                    {%- if logo.width >= 50 -%}{{ logo | image_url: width: 50 }} 50w,{%- endif -%}
+                    {%- if logo.width >= 100 -%}{{ logo | image_url: width: 100 }} 100w,{%- endif -%}
+                    {%- if logo.width >= 150 -%}{{ logo | image_url: width: 150 }} 150w,{%- endif -%}
+                    {{ logo | image_url }} {{ logo.width }}w
+                  "
+                  src="{{ logo | image_url: width: 100 }}"
+                  sizes="{{ logo_height }}px"
+                  alt="{{ logo.alt | escape }}"
+                  loading="lazy"
+                  width="{{ logo.width }}"
+                  height="{{ logo.height }}"
+                  class="logos__image"
+                >
+              {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+          {%- comment -%} Duplicate logos for seamless loop {%- endcomment -%}
+          {%- for block in section.blocks -%}
+            {%- assign logo = block.settings.logo -%}
+            <div class="logos__item {% if logo == blank %}blank{% endif %}" aria-hidden="true">
+              {%- if logo != blank -%}
+                <img
+                  srcset="
+                    {%- if logo.width >= 50 -%}{{ logo | image_url: width: 50 }} 50w,{%- endif -%}
+                    {%- if logo.width >= 100 -%}{{ logo | image_url: width: 100 }} 100w,{%- endif -%}
+                    {%- if logo.width >= 150 -%}{{ logo | image_url: width: 150 }} 150w,{%- endif -%}
+                    {{ logo | image_url }} {{ logo.width }}w
+                  "
+                  src="{{ logo | image_url: width: 100 }}"
+                  sizes="{{ logo_height }}px"
+                  alt=""
+                  loading="lazy"
+                  width="{{ logo.width }}"
+                  height="{{ logo.height }}"
+                  class="logos__image"
+                >
+              {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Logos",
+  "tag": "section",
+  "class": "logos",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Animation Settings"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "label": "Animation Duration",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 30,
+      "info": "Duration for one complete scroll cycle (lower = faster)"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Logo Settings"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Logo Height",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logos",
+      "blocks": [
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" },
+        { "type": "logo" }
+      ]
+    }
+  ]
+}
+{% endschema %}

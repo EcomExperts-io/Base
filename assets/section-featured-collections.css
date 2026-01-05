@@ -1,10 +1,12 @@
 /* sections/featured-collections.liquid */
 
 .featured-collections-section {
+  display: block;
+  width: 100%;
   padding-top: 11rem;
   padding-bottom: 3rem;
-  padding-left: 0px;
-  padding-right: 0px;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
 }
 
 .featured-collections__header {
@@ -15,30 +17,19 @@
 
 .featured-collections__heading {
   margin-bottom: 0.5rem;
-  /* Adjust spacing */
   font-weight: 600;
-  /* Make heading bold */
-  color: #000;
-  /* Make heading black */
   font-size: 3.6rem;
-  /* Match featured products heading size */
-  /* Inherits h2 style */
 }
 
 .featured-collections__subheading {
   margin-top: 0;
-  /* Inherits subtitle style */
-  color: rgb(92, 95, 98);
-  /* Match hello-world description color */
   font-style: normal;
-  /* Keep normal style like hello-world */
+  opacity: 0.8;
 }
 
 .featured-collections__grid {
   margin: 0;
-  /* Remove default grid margin if any */
   padding: 0;
-  /* Remove default grid padding if any */
   gap: 25px;
   display: flex;
 }
@@ -109,27 +100,19 @@
 }
 
 .collection-card__title {
-  color: #111;
   margin-top: 0;
   margin-bottom: 0.5rem;
-  /* Space between title and link */
   text-transform: uppercase;
-  /* Inherits h3 style */
 }
 
 .collection-card__shop-now {
-  color: #ffffff;
   font-size: 0.9rem;
-  /* Smaller font size for shop now */
   text-decoration: underline;
   text-underline-offset: 0.2rem;
   display: inline-block;
-  /* Needed for link styling */
 }
 
 .collection-card__shop-now:hover {
-  color: #ffffff;
-  /* Keep white on hover */
   text-decoration-thickness: 0.15rem;
 }
 
@@ -154,7 +137,6 @@
 }
 
 .collection-card__info--below .collection-card__title {
-  color: rgb(32, 34, 35);
   margin-bottom: 0.25rem;
   text-transform: none;
   font-size: 2.4rem;
@@ -163,7 +145,7 @@
 }
 
 .collection-card__info--below .collection-card__shop-now {
-  color: #0D6EFD;
+  color: rgb(var(--color-link));
   font-size: 1rem;
   text-decoration: underline;
   text-underline-offset: 0.2rem;
@@ -180,7 +162,6 @@
     display: flex;
     flex-direction: column;
     gap: 2.2rem;
-    padding: 0 16px;
   }
 
   .featured-collections__card.grid__item {

@@ -15,7 +15,6 @@
         "title_bpmXVj": {
           "type": "title",
           "settings": {
-            "title_color": "#000000",
             "title_font_size": 32,
             "title_font_weight": "500"
           }
@@ -23,7 +22,6 @@
         "price_4XTzqR": {
           "type": "price",
           "settings": {
-            "price_color": "#000000",
             "price_font_size": 16,
             "price_font_weight": "500"
           }
@@ -75,7 +73,6 @@
         "description_RxGjaP": {
           "type": "description",
           "settings": {
-            "description_color": "#000000",
             "description_font_size": 16,
             "description_font_weight": "500"
           }
@@ -128,7 +125,7 @@
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "",
-        "media_size": "large",
+        "media_size": "medium",
         "constrain_to_viewport": false,
         "media_fit": "contain",
         "media_position": "left",
@@ -137,14 +134,179 @@
         "image_zoom": "lightbox",
         "enable_video_looping": true,
         "padding_top": 36,
-        "padding_bottom": 100,
+        "padding_bottom": 36,
         "variant_label_color": "#000000",
         "variant_label_font_size": 13,
         "variant_label_font_weight": "300"
       }
+    },
+    "product_highlights_wFf8qT": {
+      "type": "product-highlights",
+      "blocks": {
+        "feature_U7kMbf": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        },
+        "feature_YXPqjn": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        },
+        "feature_YmBfeW": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        },
+        "feature_j8diJD": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        }
+      },
+      "block_order": [
+        "feature_U7kMbf",
+        "feature_YXPqjn",
+        "feature_YmBfeW",
+        "feature_j8diJD"
+      ],
+      "name": "Product Highlights",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "title": "Product Highlights Title",
+        "description": "Product Highlights description will appear here."
+      }
+    },
+    "shop_the_look_ty6MmL": {
+      "type": "shop-the-look",
+      "blocks": {
+        "slide_MHfimi": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/image_656.png",
+            "product_1": "aliam-skirt-mud",
+            "product_2": "aliam-skirt-mud",
+            "product_3": "ally-ring-amythest",
+            "product_4": "alia-knit-trouser-1",
+            "hotspot_1_enabled": true,
+            "hotspot_1_text": "Handcrafted leather bag with adjustable strap",
+            "hotspot_1_horizontal": 30,
+            "hotspot_1_vertical": 30,
+            "hotspot_2_enabled": true,
+            "hotspot_2_text": "Premium wool blend skirt - Perfect for any occasion",
+            "hotspot_2_horizontal": 50,
+            "hotspot_2_vertical": 50,
+            "hotspot_3_enabled": true,
+            "hotspot_3_text": "Sterling silver ring with natural amethyst stone",
+            "hotspot_3_horizontal": 70,
+            "hotspot_3_vertical": 40,
+            "hotspot_4_enabled": false,
+            "hotspot_4_text": "",
+            "hotspot_4_horizontal": 60,
+            "hotspot_4_vertical": 70
+          }
+        },
+        "slide_rBT4Kg": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ocean-waves-crashing.jpg",
+            "product_1": "5-pocket-jean",
+            "product_2": "a-line-jacket-in-black",
+            "product_3": "acb-top-in-chipped-brick",
+            "product_4": "5-pocket-jean",
+            "hotspot_1_enabled": true,
+            "hotspot_1_text": "Classic 5-pocket denim with stretch comfort",
+            "hotspot_1_horizontal": 51,
+            "hotspot_1_vertical": 9,
+            "hotspot_2_enabled": true,
+            "hotspot_2_text": "Tailored A-line jacket - Versatile wardrobe essential",
+            "hotspot_2_horizontal": 56,
+            "hotspot_2_vertical": 54,
+            "hotspot_3_enabled": true,
+            "hotspot_3_text": "Soft cotton blend top in rich brick tone",
+            "hotspot_3_horizontal": 70,
+            "hotspot_3_vertical": 40,
+            "hotspot_4_enabled": false,
+            "hotspot_4_text": "",
+            "hotspot_4_horizontal": 60,
+            "hotspot_4_vertical": 70
+          }
+        },
+        "slide_NPTJgr": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/coding-on-laptop.jpg",
+            "product_1": "5-pocket-jean",
+            "product_2": "acb-top-in-chipped-brick",
+            "product_3": "adania-pant",
+            "product_4": "a-line-pocket-shift-black",
+            "hotspot_1_enabled": true,
+            "hotspot_1_text": "Comfortable everyday denim - Perfect fit guaranteed",
+            "hotspot_1_horizontal": 30,
+            "hotspot_1_vertical": 30,
+            "hotspot_2_enabled": true,
+            "hotspot_2_text": "Relaxed fit trouser with modern tailoring",
+            "hotspot_2_horizontal": 50,
+            "hotspot_2_vertical": 50,
+            "hotspot_3_enabled": true,
+            "hotspot_3_text": "Elegant shift dress with functional pockets",
+            "hotspot_3_horizontal": 70,
+            "hotspot_3_vertical": 40,
+            "hotspot_4_enabled": true,
+            "hotspot_4_text": "Breathable fabric blend - Ideal for all-day wear",
+            "hotspot_4_horizontal": 60,
+            "hotspot_4_vertical": 70
+          }
+        }
+      },
+      "block_order": [
+        "slide_MHfimi",
+        "slide_rBT4Kg",
+        "slide_NPTJgr"
+      ],
+      "name": "Shop The Look",
+      "settings": {
+        "color_scheme": "",
+        "heading": "Shop The Look",
+        "view_all_url": "",
+        "show_vendor": false,
+        "image_ratio": "adapt",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "relative_products_nWjQjY": {
+      "type": "related-products",
+      "name": "Related products",
+      "settings": {
+        "heading": "You may also like",
+        "heading_size": "h1",
+        "layout_style": "carousel",
+        "products_to_show": 6,
+        "columns_desktop": 4,
+        "image_ratio": "adapt",
+        "show_vendor": false,
+        "enable_quick_add": "standard",
+        "enable_swatches": true,
+        "swatch_trigger": "Color",
+        "swatch_type": "image",
+        "color_scheme": "",
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "product_highlights_wFf8qT",
+    "shop_the_look_ty6MmL",
+    "relative_products_nWjQjY"
   ]
 }
