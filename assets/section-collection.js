@@ -21,15 +21,14 @@ export class CollectionInfo extends HTMLElement {
 
     const form = event.target.closest('form') || document.querySelector('#filters-form') || document.querySelector('#filters-form-drawer');
     const formData = new FormData(form);
-    let searchParams = new URLSearchParams(formData).toString();
+    const searchParams = new URLSearchParams(formData);
     const existingParams = new URLSearchParams(window.location.search);
     const qValue = existingParams.get('q');
-    
-    if (qValue) {
-      searchParams = `q=${encodeURIComponent(qValue)}&${searchParams}`;
-    }
 
-    this.fetchSection(searchParams);
+    this.removeDefaultPriceFilters(searchParams, form);
+
+    const finalParams = qValue ? `q=${encodeURIComponent(qValue)}&${searchParams}` : searchParams.toString();
+    this.fetchSection(finalParams);
   };
 
   get form() {
@@ -41,6 +40,20 @@ export class CollectionInfo extends HTMLElement {
     const destination = this.querySelector(`#${id}`);
     if (source && destination) {
       destination.innerHTML = source.innerHTML;
+    }
+  };
+
+  removeDefaultPriceFilters = (searchParams, form) => {
+    const priceMin = searchParams.get('filter.v.price.gte');
+    const priceMax = searchParams.get('filter.v.price.lte');
+    const actualMaxPrice = form.querySelector('.max-range')?.getAttribute('max');
+
+    const isMinAtDefault = priceMin === '0' || !priceMin;
+    const isMaxAtDefault = !actualMaxPrice || priceMax === actualMaxPrice || !priceMax;
+
+    if (isMinAtDefault && isMaxAtDefault) {
+      searchParams.delete('filter.v.price.gte');
+      searchParams.delete('filter.v.price.lte');
     }
   };
 
@@ -90,11 +103,11 @@ export class CollectionInfo extends HTMLElement {
         this.updateSourceFromDestination(html, `product-grid-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `results-count-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `drawer-results-count-${this.dataset.section}`);
-        this.updateSourceFromDestination(html, `see-items-button-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `active-filters-count-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `active-filter-group-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `sort-by-drawer-${this.dataset.section}`);
         this.updateSourceFromDestination(html, `sort-by-${this.dataset.section}`);
+        this.updateSourceFromDestination(html, `filters-drawer-buttons-wrapper-id`);
         this.updateFilters(html, `js-filter`);
         this.hideLoadingOverlay();
         this.scrollToProductGrid();

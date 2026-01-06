@@ -14,7 +14,8 @@
   }
 {%- endstyle -%}
 
-<div class="customer account section-{{ section.id }}-padding">
+<div class="color-{{ section.settings.color_scheme }}">
+  <div class="customer account section-{{ section.id }}-padding page-width">
   <div>
     <h1 class="customer__title">{{ 'customer.account.title' | t }}</h1>
     <a href="{{ routes.account_logout_url }}">
@@ -148,12 +149,19 @@
       </a>
     </div>
   </div>
+  </div>
 </div>
 
 {% schema %}
 {
   "name": "t:sections.main-account.name",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "header",
       "content": "t:sections.all.padding.section_padding_heading"

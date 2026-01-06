@@ -1,0 +1,128 @@
+/* sections/brand-story.liquid */
+.brand-story {
+  display: block;
+  width: 100%;
+  position: relative;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+.brand-story__container {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+}
+
+.brand-story__left {
+  width: 65%;
+}
+
+.brand-story__comparison-box {
+  background-color: rgba(var(--color-foreground), 0.1);
+  border-radius: 12px;
+  padding: 3.2rem;
+}
+
+.brand-story__images-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.6rem;
+}
+
+.brand-story__image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-story__image {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.brand-story__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-story__image-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: rgba(var(--color-foreground), 0.1);
+  border-radius: 8px;
+}
+
+.brand-story__label {
+  font-size: 3.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.brand-story__right {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.brand-story__heading {
+  margin: 0;
+  font-size: 3.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+}
+
+.brand-story__description {
+  font-size: 1.6rem;
+  line-height: 1.4;
+}
+
+@media screen and (max-width: 760px) {
+  .brand-story__container {
+    flex-direction: column;
+  }
+
+  .brand-story__left {
+    width: 100%;
+  }
+
+  .brand-story__right {
+    width: 100%;
+  }
+
+  .brand-story__comparison-box {
+    padding: 1.6rem;
+  }
+
+  .brand-story__images-wrapper {
+    gap: 1.2rem;
+  }
+
+  .brand-story__image-item {
+    gap: 0.8rem;
+  }
+
+  .brand-story__heading {
+    font-size: 2.8rem;
+  }
+
+  .brand-story__description {
+    font-size: 1.4rem;
+  }
+
+  .brand-story__label {
+    font-size: 1.4rem;
+  }
+
+  .placeholder-svg {
+    width: 100%;
+    height: 100%;
+  }
+}

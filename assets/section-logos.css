@@ -1,0 +1,63 @@
+/* sections/logos.liquid */
+
+/* Base Styles */
+.logos__container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.logos__track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: fit-content;
+  animation: logos-scroll var(--animation-duration, 30s) linear infinite;
+  will-change: transform;
+}
+
+.logos__item {
+  flex: 0 0 20rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--logo-height, 48px);
+  margin-right: 10rem;
+}
+
+/* Placeholder Background */
+.logos__item.blank {
+  background-color: #f5f5f5;
+}
+
+.logos__image {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+
+/* Infinite Scroll Animation */
+@keyframes logos-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pause animation on hover for better UX */
+.logos__track:hover {
+  animation-play-state: paused;
+}
+
+/* Mobile (max-width: 749px) */
+@media screen and (max-width: 749px) {
+  .logos__track {
+    animation-duration: calc(var(--animation-duration, 30s) * 0.83);
+  }
+}
+

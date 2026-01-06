@@ -5,7 +5,6 @@ body.collection .shopify-section.section .page-width {
 }
 
 .collection-page__wrapper {
-  margin: 0;
   width: 100%;
 }
 
@@ -13,7 +12,6 @@ body.collection .shopify-section.section .page-width {
   margin: 75px 0;
   font-size: 3.6rem;
   font-weight: 600;
-  color: black;
 }
 
 .sorting-wrapper {
@@ -229,11 +227,10 @@ body.collection .shopify-section.section .page-width {
 
   .mobile-filters-drawer {
     width: 100%;
-    border: 1px solid #DDD7D7;
     width: 100%;
     max-width: 139px;
     height: 40px;
-    padding: 10px 5px 10px 5px;
+    padding: 10px 0;
   }
 
   .product-grid {

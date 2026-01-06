@@ -1,0 +1,220 @@
+{% comment %} /sections/product-details.liquid {% endcomment %}
+{{ 'section-product-details.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} product-details section-{{ section.id }}-padding">
+  <div class="page-width">
+    <div
+      class="product-details__container"
+      x-data="{ openBlock: 0 }"
+    >
+      {%- for block in section.blocks -%}
+        <div class="product-details__block" {{ block.shopify_attributes }}>
+          <div class="product-details__accordion">
+            <button
+              @click="openBlock = openBlock === {{ forloop.index0 }} ? null : {{ forloop.index0 }}"
+              class="product-details__header"
+              :aria-expanded="openBlock === {{ forloop.index0 }}"
+              type="button"
+            >
+              <h3 class="product-details__title">{{ block.settings.title | default: 'Product Details' }}</h3>
+              <span class="product-details__icon" x-show="openBlock !== {{ forloop.index0 }}">
+                {{ 'icon-plus.svg' | inline_asset_content }}
+              </span>
+              <span class="product-details__icon" x-show="openBlock === {{ forloop.index0 }}" x-cloak>
+                {{ 'icon-minus.svg' | inline_asset_content }}
+              </span>
+            </button>
+
+            <div
+              x-show="openBlock === {{ forloop.index0 }}"
+              x-transition
+              class="product-details__content"
+              x-cloak
+            >
+              <div class="product-details__content-wrapper">
+                <div class="product-details__text-column">
+                  {%- if block.settings.content != blank -%}
+                    <div class="product-details__content-text">
+                      {{ block.settings.content }}
+                    </div>
+                  {%- else -%}
+                    <div class="product-details__content-text">
+                      <p>Add key product information here, such as fit, materials, or care instructions.</p>
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                <div class="product-details__images-column">
+                  <div class="product-details__images-wrapper">
+                    {%- if block.settings.image_1 != blank -%}
+                      <div class="product-details__image">
+                        <img
+                          srcset="
+                            {%- if block.settings.image_1.width >= 200 -%}{{ block.settings.image_1 | image_url: width: 200 }} 200w,{%- endif -%}
+                            {%- if block.settings.image_1.width >= 400 -%}{{ block.settings.image_1 | image_url: width: 400 }} 400w,{%- endif -%}
+                            {%- if block.settings.image_1.width >= 600 -%}{{ block.settings.image_1 | image_url: width: 600 }} 600w,{%- endif -%}
+                            {{ block.settings.image_1 | image_url }} {{ block.settings.image_1.width }}w
+                          "
+                          src="{{ block.settings.image_1 | image_url: width: 400 }}"
+                          sizes="(min-width: 750px) 50vw, 100vw"
+                          alt="{{ block.settings.image_1.alt | default: block.settings.title | escape }}"
+                          loading="lazy"
+                          width="{{ block.settings.image_1.width }}"
+                          height="{{ block.settings.image_1.height }}"
+                        >
+                      </div>
+                    {%- else -%}
+                      <div class="product-details__image-placeholder">
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {%- endif -%}
+
+                    {%- if block.settings.image_2 != blank -%}
+                      <div class="product-details__image">
+                        <img
+                          srcset="
+                            {%- if block.settings.image_2.width >= 200 -%}{{ block.settings.image_2 | image_url: width: 200 }} 200w,{%- endif -%}
+                            {%- if block.settings.image_2.width >= 400 -%}{{ block.settings.image_2 | image_url: width: 400 }} 400w,{%- endif -%}
+                            {%- if block.settings.image_2.width >= 600 -%}{{ block.settings.image_2 | image_url: width: 600 }} 600w,{%- endif -%}
+                            {{ block.settings.image_2 | image_url }} {{ block.settings.image_2.width }}w
+                          "
+                          src="{{ block.settings.image_2 | image_url: width: 400 }}"
+                          sizes="(min-width: 750px) 50vw, 100vw"
+                          alt="{{ block.settings.image_2.alt | default: block.settings.title | escape }}"
+                          loading="lazy"
+                          width="{{ block.settings.image_2.width }}"
+                          height="{{ block.settings.image_2.height }}"
+                        >
+                      </div>
+                    {%- else -%}
+                      <div class="product-details__image-placeholder">
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Details",
+  "tag": "section",
+  "class": "product-details",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "detail",
+      "name": "Detail Block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Product Details"
+        },
+        {
+          "type": "header",
+          "content": "Text Content"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Add key product information here, such as fit, materials, or care instructions.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image 2"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Details",
+      "blocks": [
+        {
+          "type": "detail",
+          "settings": {
+            "title": "Fit & Features",
+            "content": "<p>Add key product information here, such as fit, materials, or care instructions.</p>"
+          }
+        },
+        {
+          "type": "detail",
+          "settings": {
+            "title": "Fabric & Care",
+            "content": "<p>Add key product information here, such as fit, materials, or care instructions.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

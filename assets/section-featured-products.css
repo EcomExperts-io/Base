@@ -1,8 +1,17 @@
 /* sections/featured-products.liquid */
 
 .featured-products-section {
+  display: block;
+  width: 100%;
   padding-top: 3rem;
   padding-bottom: 3rem;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+featured-products {
+  display: block;
+  width: 100%;
 }
 
 .featured-products__header {
@@ -172,7 +181,6 @@
   padding: 0 0.5rem;
   margin-top: auto;
   z-index: 2;
-  background: #fff;
 }
 
 /* Product content alignment classes */
@@ -190,23 +198,17 @@
 
 .product-card__title {
   font-size: 1.8rem;
-  /* Doubled font size */
   margin-top: 0;
   margin-bottom: 0;
   font-weight: 600;
-  color: #262626;
-  /* Assume H3 style from base.css or adjust */
 }
 
 .product-card__reviews {
   font-size: 1.5rem;
-  /* Doubled font size */
   margin-bottom: 0.25rem;
-  /* Reduced margin-bottom */
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  /* Increased gap slightly */
 }
 
 /* Review content alignment classes */
@@ -301,7 +303,6 @@
 }
 
 .featured-products__card.swiper-slide {
-  background: #fff;
   border-radius: 8px;
   box-shadow: none;
   display: flex;
@@ -337,7 +338,11 @@
   pointer-events: auto;
   border-radius: 100%;
   width: 42px;
+  height: 42px;
   border: 1px solid #c0bcbc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .featured-products__swiper-arrows .swiper-button-prev {

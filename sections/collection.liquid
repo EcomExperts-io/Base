@@ -72,8 +72,9 @@
   <script src="{{ 'component-modal-opener.js' | asset_url }}" type="module"></script>
 {%- endif -%}
 
-<div class="color-{{ section.settings.color_scheme }} page-width collection-page__wrapper">
-  <div class="collection-hero color-{{ section.settings.color_scheme }}">
+<div class="color-{{ section.settings.color_scheme }} collection-page__wrapper">
+  <div class="page-width">
+    <div class="collection-hero">
     <div class="collection-hero__text-wrapper">
       <h1 class="collection-hero__title">{{ collection.title }}</h1>
     </div>
@@ -190,15 +191,17 @@
                   {% liquid
                     assign has_active_filters = false
                     for f in collection.filters
-                      if f.type == 'price_range'
-                        if f.min_value.value > 0 or f.max_value.value < f.range_max
-                          assign has_active_filters = true
+                      unless f.param_name == 'sort_by'
+                        if f.type == 'price_range'
+                          if f.min_value.value > 0 or f.max_value.value < f.range_max
+                            assign has_active_filters = true
+                          endif
+                        else
+                          if f.active_values.size > 0
+                            assign has_active_filters = true
+                          endif
                         endif
-                      else
-                        if f.active_values.size > 0
-                          assign has_active_filters = true
-                        endif
-                      endif
+                      endunless
                     endfor
                   %}
 
@@ -288,6 +291,7 @@
         {%- endpaginate -%}
       </div>
     </collection-info>
+    </div>
   </div>
 </div>
 <script src="{{ 'section-collection.js' | asset_url }}" type="module"></script>

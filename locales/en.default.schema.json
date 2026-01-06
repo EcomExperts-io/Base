@@ -459,12 +459,7 @@
         "description": {
           "name": "Description",
           "settings": {
-            "description_color": {
-              "label": "Description color"
-            },
-            "description_font_size": {
-              "label": "Description font size"
-            },
+            "description_font_size": { "label": "Description font size" },
             "description_font_weight": {
               "label": "Description font weight",
               "options__1": {
@@ -1116,6 +1111,9 @@
         },
         "button_label": {
           "label": "On primary button"
+        },
+        "secondary_button_background": {
+          "label": "Secondary button"
         },
         "secondary_button_label": {
           "label": "On secondary button"

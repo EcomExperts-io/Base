@@ -20,7 +20,14 @@
       flex-direction: column;
       margin-top: 1px;
       overflow: hidden;
+      max-height: calc(100vh - var(--header-height) - var(--announcement-bar-height, 0px));
+      overflow-y: auto;
     }
+    
+    .header-sticky #main-header .nav-dropdown {
+      max-height: calc(100vh - var(--header-height));
+    }
+    
     #main-header .nav-dropdown {
       box-shadow: rgba(0, 0, 0, 0.1) 0 1px 3px 0, rgba(0, 0, 0, 0.06) 0 1px 2px 0;
     }
@@ -67,12 +74,12 @@
               {% if childlink.links == blank %}
                 <a
                   href="{{ childlink.url }}"
-                  class="header__menu-item"
+                  class="header__menu-item header__menu-item--child"
                   {% if childlink.current %}
                     aria-current="page"
                   {% endif %}
                 >
-                  {{ childlink.title | escape }}
+                  <span> {{ childlink.title | escape }} </span>
                 </a>
               {% else %}
                 <div
@@ -94,12 +101,12 @@
                     <li>
                       <a
                         href="{{ grandchildlink.url }}"
-                        class="header__menu-item"
+                        class="header__menu-item header__menu-item--grandchild"
                         {% if grandchildlink.current %}
                           aria-current="page"
                         {% endif %}
                       >
-                        {{ grandchildlink.title | escape }}
+                      <span> {{ grandchildlink.title | escape }} </span>
                       </a>
                     </li>
                   {%- endfor -%}

@@ -1,0 +1,193 @@
+{% comment %} /sections/product-highlights.liquid {% endcomment %}
+{{ 'section-product-highlights.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign blocks_to_show = section.blocks.size
+  assign title = section.settings.title
+  assign description = section.settings.description
+  assign image = section.settings.image
+-%}
+
+<div class="color-{{ section.settings.color_scheme }} product-highlights section-{{ section.id }}-padding">
+  <div class="page-width">
+    <div class="product-highlights__container">
+      <div class="product-highlights__content">
+        {%- if title != blank -%}
+          <h2 class="product-highlights__title">{{ title | escape }}</h2>
+        {%- endif -%}
+
+        {%- if description != blank -%}
+          <p class="product-highlights__description">{{ description | escape }}</p>
+        {%- endif -%}
+
+        {%- if blocks_to_show > 0 -%}
+          <ul class="product-highlights__features">
+            {%- for block in section.blocks -%}
+              {%- assign feature_icon = block.settings.icon -%}
+              {%- assign feature_text = block.settings.text -%}
+
+              <li class="product-highlights__feature" {{ block.shopify_attributes }}>
+                {%- if feature_icon != blank -%}
+                  <div class="product-highlights__feature-icon">
+                    <img
+                      srcset="
+                        {%- if feature_icon.width >= 50 -%}{{ feature_icon | image_url: width: 50 }} 50w,{%- endif -%}
+                        {%- if feature_icon.width >= 100 -%}{{ feature_icon | image_url: width: 100 }} 100w,{%- endif -%}
+                        {{ feature_icon | image_url }} {{ feature_icon.width }}w
+                      "
+                      src="{{ feature_icon | image_url: width: 50 }}"
+                      sizes="50px"
+                      alt="{{ feature_icon.alt | default: feature_text | escape }}"
+                      loading="lazy"
+                      width="{{ feature_icon.width }}"
+                      height="{{ feature_icon.height }}"
+                      class="product-highlights__icon"
+                    >
+                  </div>
+                {%- else -%}
+                  <div class="product-highlights__feature-icon-placeholder">
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {%- endif -%}
+
+                {%- if feature_text != blank -%}
+                  <span class="product-highlights__feature-text">{{ feature_text | escape }}</span>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+
+      <div class="product-highlights__media">
+        {%- if image != blank -%}
+          <img
+            srcset="
+              {%- if image.width >= 400 -%}{{ image | image_url: width: 400 }} 400w,{%- endif -%}
+              {%- if image.width >= 600 -%}{{ image | image_url: width: 600 }} 600w,{%- endif -%}
+              {%- if image.width >= 800 -%}{{ image | image_url: width: 800 }} 800w,{%- endif -%}
+              {%- if image.width >= 1000 -%}{{ image | image_url: width: 1000 }} 1000w,{%- endif -%}
+              {{ image | image_url }} {{ image.width }}w
+            "
+            src="{{ image | image_url: width: 800 }}"
+            sizes="(min-width: 750px) 50vw, 100vw"
+            alt="{{ image.alt | default: title | escape }}"
+            loading="lazy"
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+            class="product-highlights__image"
+          >
+        {%- else -%}
+          <div class="product-highlights__image-placeholder">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Highlights",
+  "tag": "section",
+  "class": "product-highlights",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Product Highlights Title"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Product Highlights description will appear here."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Feature text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Highlights",
+      "blocks": [{ "type": "feature" }, { "type": "feature" }, { "type": "feature" }, { "type": "feature" }]
+    }
+  ]
+}
+{% endschema %}

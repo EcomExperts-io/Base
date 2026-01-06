@@ -17,10 +17,6 @@
   text-align: center;
 }
 
-.drawer__wrapper .cart-header {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
 .cart__wrapper .cart-header {
   border-bottom: .1rem solid rgba(var(--color-foreground), .2);
 }
@@ -129,7 +125,6 @@
   margin-top: 6px;
   font-weight: 400;
   font-size: 1.8rem;
-  color: #262626;
 }
 
 .cart-item__options {
@@ -272,7 +267,6 @@ ajax-cart-quantity svg {
 
 small.cart-total__small {
   font-size: 1.6rem;
-  color: #5D5D5D;
 }
 
 .cart-note textarea {
@@ -301,7 +295,6 @@ ul.cart-discounts {
   margin: 0 0 10px;
   font-size: 1.6rem;
   letter-spacing: 0.03em;
-  color: #838383;
 }
 
 .cart-total {
@@ -315,7 +308,6 @@ ul.cart-discounts {
 
 span.cart-total__label {
   font-weight: 400;
-  color: #5D5D5D;
 }
 
 .cart-charges {
@@ -422,6 +414,7 @@ h2.cart__empty-text {
 #cart-main {
   padding-block: 5rem;
   max-width: 1280px;
+  margin-inline: auto;
 }
 
 #cart-main .cart-header,
@@ -681,9 +674,9 @@ h2.cart__empty-text {
   gap: 0.5rem;
   align-items: center;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid;
+  border-color: rgba(var(--color-foreground), 0.5);
   border-radius: 999px;
-  background: #f3f4f6;
   font-size: 1.4rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -719,6 +712,7 @@ h2.cart__empty-text {
 .cart-discount__pill-remove svg {
   width: 16px;
   height: 16px;
+  color: rgba(var(--color-foreground));
 }
 
 .cart-discount__error {

@@ -1,0 +1,357 @@
+{% comment %} /sections/featured-collections.liquid {% endcomment %}
+
+{{ 'section-featured-collections-v2.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-price.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'component-product-card.js' | asset_url }}" type="module"></script>
+<script src="{{ 'section-featured-collections-v2.js' | asset_url }}" type="module"></script>
+
+{%- if section.settings.quick_add == 'standard' -%}
+  {{ 'component-quick-add.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'component-quick-add.js' | asset_url }}" type="module"></script>
+  <script src="{{ 'component-modal-opener.js' | asset_url }}" type="module"></script>
+{%- endif -%}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+  assign collections_to_show = section.blocks.size
+  assign heading_alignment = section.settings.heading_alignment
+  assign product_grid_gap = section.settings.product_grid_gap
+  assign products_on_desktop = section.settings.products_on_desktop
+  assign products_on_mobile = section.settings.products_on_mobile
+  assign total_products_limit = section.settings.total_products_limit
+-%}
+
+{%- if collections_to_show > 0 -%}
+  <featured-collections-v2
+    data-section-id="{{ section.id }}"
+    class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+  >
+    <div class="page-width featured-collections-v2__content">
+      <div
+        class="featured-collections-v2__header"
+        style="text-align: {{ heading_alignment }};"
+      >
+        {%- if heading != blank -%}
+          <h2 class="featured-collections-v2__heading">{{ heading | escape }}</h2>
+        {%- endif -%}
+
+        <div class="featured-collections-v2__tabs">
+          {% for block in section.blocks %}
+            <input
+              hidden
+              type="radio"
+              name="collection-title-{{ section.id }}"
+              id="tab-{{ block.id }}"
+              data-target-swiper="swiper-{{ block.id }}"
+              {% if forloop.first %}
+                checked
+              {% endif %}
+            >
+            <label class="featured-collections-v2__tab-label" for="tab-{{ block.id }}">
+              {{- block.settings.custom_title -}}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="featured-collections-v2__swipers-container">
+        {% for block in section.blocks %}
+          {% assign current_collection = block.settings.collection %}
+          <div
+            {{ block.shopify_attributes }}
+            id="swiper-{{ block.id }}"
+            data-product-grid-gap="{{ product_grid_gap }}"
+            data-products-on-desktop="{{ products_on_desktop }}"
+            data-products-on-mobile="{{ products_on_mobile }}"
+            class="featured-collections-v2__swiper swiper {% unless forloop.first %}hidden{% endunless %}"
+          >
+            <div class="featured-collections-v2__swiper-arrows">
+              <div class="swiper-button-prev featured-collections-v2__swiper-prev">
+                {{ 'icon-arrow-prev.svg' | inline_asset_content }}
+              </div>
+              <div class="swiper-button-next featured-collections-v2__swiper-next">
+                {{ 'icon-arrow-next.svg' | inline_asset_content }}
+              </div>
+            </div>
+            <div data-product-grid class="swiper-wrapper">
+              {%- assign has_products = false -%}
+              {%- if current_collection != blank and current_collection.products.size > 0 -%}
+                {%- assign has_products = true -%}
+              {%- endif -%}
+
+              {%- if has_products -%}
+                {%- comment -%} 1. RENDER REAL PRODUCTS {%- endcomment -%}
+                {% for product in current_collection.products limit: total_products_limit %}
+                  <div class="swiper-slide">
+                    {% render 'component-product-card',
+                      card_product: product,
+                      show_vendor: section.settings.show_vendor,
+                      enable_swatches: section.settings.enable_swatches,
+                      swatch_trigger: section.settings.swatch_trigger,
+                      swatch_type: section.settings.swatch_type,
+                      quick_add: section.settings.quick_add,
+                      section_id: section.id,
+                      button_text_color: section.settings.button_text_color,
+                      button_border_color: section.settings.button_border_color
+                    %}
+                  </div>
+                {% endfor %}
+
+              {%- else -%}
+                {%- comment -%} 2. RENDER PLACEHOLDERS (Efficiently) {%- endcomment -%}
+                {%- for i in (1..6) -%}
+                  <div class="swiper-slide">
+                    <div class="featured-collections-v2__placeholder-card">
+                      <div class="featured-collections-v2__placeholder-card-inner">
+                        <div class="featured-collections-v2__placeholder-card-media">
+                          {%- capture current -%}{% cycle 1, 2, 3, 4, 5, 6 %}{%- endcapture -%}
+                          {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                        </div>
+                      </div>
+                      <div class="featured-collections-v2__placeholder-card-content">
+                        <h3 class="placeholder-card__heading">
+                          <a role="link" aria-disabled="true" class="full-unstyled-link">
+                            {{ block.settings.custom_title }} Product {{ i }}
+                          </a>
+                        </h3>
+                        <div class="placeholder-card__price">
+                          <span class="price-item price-item--regular"> $19.99 </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </featured-collections-v2>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Featured Collections V2",
+  "tag": "section",
+  "class": "featured-collections-v2",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find the perfect fit for your game"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "total_products_limit",
+      "label": "Total Products Limit",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "default": 6,
+      "info": "Total number of products showing under each collection"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-product-grid.settings.header__3.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_vendor.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_rating.label",
+      "info": "t:sections.main-collection-product-grid.settings.show_rating.info"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
+      "info": "t:sections.main-collection-product-grid.settings.quick_add.info",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1"
+        },
+        {
+          "value": "standard",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_2"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_swatches",
+      "default": true,
+      "label": "t:sections.main-collection-product-grid.settings.enable_swatches.label",
+      "info": "t:sections.main-collection-product-grid.settings.enable_swatches.info"
+    },
+    {
+      "type": "select",
+      "id": "swatch_type",
+      "label": "t:sections.main-collection-product-grid.settings.swatch_type.label",
+      "options": [
+        {
+          "value": "color",
+          "label": "t:sections.main-collection-product-grid.settings.swatch_type.options__1.label"
+        },
+        {
+          "value": "image",
+          "label": "t:sections.main-collection-product-grid.settings.swatch_type.options__2.label"
+        }
+      ],
+      "default": "color",
+      "info": "t:sections.main-collection-product-grid.settings.swatch_type.info"
+    },
+    {
+      "type": "text",
+      "id": "swatch_trigger",
+      "label": "Swatch trigger",
+      "default": "Color",
+      "info": "Enter the product option name to use for variant swatches (e.g. 'Color', 'Size', etc.)"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "product_grid_gap",
+      "label": "Product Grid Gap",
+      "min": 10,
+      "max": 30,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "products_on_desktop",
+      "label": "Products on Desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_on_mobile",
+      "label": "Products on Mobile",
+      "min": 2,
+      "max": 6,
+      "step": 2,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection Card",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image (optional)",
+          "info": "Overrides the collection image if set."
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title (optional)",
+          "info": "Overrides the collection title if set."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collections V2",
+      "blocks": [
+        { "type": "collection_card" },
+        { "type": "collection_card" },
+        { "type": "collection_card" },
+        { "type": "collection_card" },
+        { "type": "collection_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -6,6 +6,7 @@ export class QuickAdd extends HTMLElement {
     this.setupModal();
     this.bindEvents();
     this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
+    this.setupAjaxCartButtons();
   }
 
   connectedCallback() {
@@ -14,6 +15,26 @@ export class QuickAdd extends HTMLElement {
       document.body.appendChild(this);
       document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
     }
+  }
+
+  setupAjaxCartButtons() {
+    document.addEventListener('submit', (event) => {
+      const form = event.target.closest('ajax-cart-product-form');
+      if (!form) return;
+
+      const button = form.querySelector('.quick-add__icon-button');
+      if (button) this.toggleSpinner(button, true);
+    });
+  }
+
+  toggleSpinner(button, show) {
+    const spinner = button.querySelector('.add-to-cart-icon-spinner');
+    const icon = button.querySelector('.add-to-cart-icon');
+    const text = button.querySelector('.add-to-cart-text__content');
+    
+    spinner?.classList.toggle('hidden', !show);
+    icon?.classList.toggle('hidden', show);
+    text?.classList.toggle('hidden', show);
   }
 
   disconnectedCallback() {
@@ -33,7 +54,15 @@ export class QuickAdd extends HTMLElement {
           modal.modalContent.innerHTML = '';
         }
       });
+
+      this.resetAllSpinners();
     }
+  }
+
+  resetAllSpinners() {
+    document.querySelectorAll('.quick-add__icon-button').forEach((button) => {
+      this.toggleSpinner(button, false);
+    });
   }
 
   setupModal() {
@@ -55,11 +84,8 @@ export class QuickAdd extends HTMLElement {
   show(opener) {
     this.openedBy = opener;
 
-    // Only set aria-disabled and show spinner if it's a quick-add operation
-    // with a loading spinner element
-    if (opener && opener.querySelector('.loading__spinner')) {
+    if (opener && opener.getAttribute('data-product-url')) {
       opener.setAttribute('aria-disabled', true);
-      opener.querySelector('.loading__spinner').classList.remove('hidden');
 
       fetch(opener.getAttribute('data-product-url'))
         .then(response => response.text())
@@ -68,18 +94,27 @@ export class QuickAdd extends HTMLElement {
             .parseFromString(responseText, 'text/html')
             .querySelector('product-info');
 
+          if (!productElement) {
+            console.error('Product info not found in response');
+            return;
+          }
+
           this.preprocessContent(productElement);
           this.setContent(productElement.outerHTML);
 
           document.body.classList.add('overflow-hidden');
           this.setAttribute('open', '');
 
+          this.resetAllSpinners();
+
           if (window.Shopify?.PaymentButton) Shopify.PaymentButton.init();
           if (window.ProductModel) window.ProductModel.loadShopifyXR();
         })
+        .catch(error => {
+          console.error('Error loading product:', error);
+        })
         .finally(() => {
           opener.removeAttribute('aria-disabled');
-          opener.querySelector('.loading__spinner').classList.add('hidden');
         });
     } else {
       // For other modals (like monogram popup) that don't need fetch

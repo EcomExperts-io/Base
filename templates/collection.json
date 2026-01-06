@@ -13,7 +13,7 @@
       "type": "collection",
       "settings": {
         "products_per_page": 32,
-        "columns_desktop": 4,
+        "columns_desktop": 5,
         "color_scheme": "",
         "show_vendor": true,
         "show_rating": false,
@@ -26,7 +26,7 @@
         "button_border_color": "#838383",
         "button_background_color": "#ffffff",
         "enable_filtering": true,
-        "filter_type": "horizontal",
+        "filter_type": "drawer",
         "collapse_filters": true,
         "show_filter_count": true,
         "enable_sorting": true,

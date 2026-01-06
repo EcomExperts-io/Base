@@ -1,0 +1,199 @@
+{% comment %} /sections/blogs.liquid {% endcomment %}
+{{ 'section-blogs.css' | asset_url | stylesheet_tag }}
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+{%- liquid
+  assign blocks_to_show = section.blocks.size
+  assign heading_text = section.settings.heading_text
+  assign navigation_link_text = section.settings.navigation_link_text
+  assign navigation_link_url = section.settings.navigation_link_url
+-%}
+{%- if blocks_to_show > 0 -%}
+  <div
+    class="blogs-section section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+  >
+    <div class="page-width">
+      {%- if heading_text != blank or navigation_link_text != blank -%}
+        <div class="blogs-section__navigation">
+          {%- if heading_text != blank -%}
+            <h2 class="blogs-section__heading">{{ heading_text | escape }}</h2>
+          {%- endif -%}
+          {%- if navigation_link_text != blank and navigation_link_url != blank -%}
+            <a href="{{ navigation_link_url }}" class="blogs-section__nav-link">
+              {{ navigation_link_text | escape }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="blogs-section__grid">
+        {%- for block in section.blocks -%}
+          {%- assign article = block.settings.blog -%}
+          {%- assign override_image = block.settings.image -%}
+
+          {%- liquid
+            assign display_image = blank
+            assign article_title = 'Blog title'
+            assign article_description = 'Short blog description will appear here.'
+            assign article_url = routes.blogs_url
+
+            if article != blank
+              assign display_image = override_image
+              if display_image == blank
+                assign display_image = article.image
+              endif
+
+              assign article_title = article.title
+              assign article_description = article.summary
+              if article_description == blank
+                assign article_description = article.content | strip_html | truncatewords: 60
+              endif
+
+              assign article_url = article.url
+            endif
+          -%}
+
+          <article class="blogs-section__article" {{ block.shopify_attributes }}>
+            {%- if display_image != blank -%}
+              <div class="blogs-section__image-wrapper">
+                <img
+                  srcset="
+                    {%- if display_image.width >= 165 -%}{{ display_image | image_url: width: 165 }} 165w,{%- endif -%}
+                    {%- if display_image.width >= 360 -%}{{ display_image | image_url: width: 360 }} 360w,{%- endif -%}
+                    {%- if display_image.width >= 533 -%}{{ display_image | image_url: width: 533 }} 533w,{%- endif -%}
+                    {%- if display_image.width >= 720 -%}{{ display_image | image_url: width: 720 }} 720w,{%- endif -%}
+                    {%- if display_image.width >= 1000 -%}{{ display_image | image_url: width: 1000 }} 1000w,{%- endif -%}
+                    {{ display_image | image_url }} {{ display_image.width }}w
+                  "
+                  src="{{ display_image | image_url: width: 533 }}"
+                  sizes="(min-width: 769px) 33vw, 100vw"
+                  alt="{{ display_image.alt | default: article_title | escape }}"
+                  loading="lazy"
+                  width="{{ display_image.width }}"
+                  height="{{ display_image.height }}"
+                  class="blogs-section__image"
+                >
+              </div>
+            {%- else -%}
+              <div class="blogs-section__image-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+
+            <div class="blogs-section__content">
+              <p class="blogs-section__article-title">
+                {{ article_title | escape }}
+              </p>
+              <p class="blogs-section__description">
+                {{ article_description | escape }}
+              </p>
+              <a href="{{ article_url }}" class="blogs-section__read-more"> READ MORE </a>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Blogs",
+  "tag": "section",
+  "class": "blogs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "VIEW LOOKBOOKS"
+    },
+    {
+      "type": "text",
+      "id": "navigation_link_text",
+      "label": "Navigation Link Text",
+      "default": "VIEW LOOKBOOK"
+    },
+    {
+      "type": "url",
+      "id": "navigation_link_url",
+      "label": "Navigation Link URL"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "blog_article",
+      "name": "Blog Article",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "article",
+          "id": "blog",
+          "label": "Article"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Optional: Override the article's featured image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blogs",
+      "blocks": [{ "type": "blog_article" }, { "type": "blog_article" }, { "type": "blog_article" }]
+    }
+  ]
+}
+{% endschema %}

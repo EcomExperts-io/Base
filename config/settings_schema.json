@@ -118,6 +118,12 @@
           },
           {
             "type": "color",
+            "id": "secondary_button",
+            "label": "t:settings_schema.colors.settings.secondary_button_background.label",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color",
             "id": "secondary_button_label",
             "label": "t:settings_schema.colors.settings.secondary_button_label.label",
             "default": "#121212"

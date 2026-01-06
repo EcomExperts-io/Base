@@ -17,7 +17,8 @@
 {%- endstyle -%}
 
 {%- paginate blog.articles by 6 -%}
-  <div class="main-blog page-width section-{{ section.id }}-padding" style="--background-color: #F0F0F0;">
+  <div class="color-{{ section.settings.color_scheme }}">
+    <div class="main-blog page-width section-{{ section.id }}-padding">
     <h1 class="blog-title">
       {{ blog.title | escape }}
     </h1>
@@ -39,6 +40,7 @@
     {%- if paginate.pages > 1 -%}
       {%- render 'component-pagination', paginate: paginate -%}
     {%- endif -%}
+    </div>
   </div>
 {%- endpaginate -%}
 
@@ -48,6 +50,12 @@
   "tag": "section",
   "class": "section",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
     {
       "type": "select",
       "id": "layout",
