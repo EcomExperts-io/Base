@@ -1,9 +1,10 @@
-class BrandStoryV2 extends HTMLElement {
+export class BrandStoryV2 extends HTMLElement {
   constructor() {
     super();
     this.items = this.querySelectorAll('.brand-story-v2__item');
     this.mediaElements = this.querySelectorAll('.brand-story-v2__media');
   }
+
   connectedCallback() {
     this.items.forEach((item, index) => {
       const button = item.querySelector('.brand-story-v2__heading-button');
