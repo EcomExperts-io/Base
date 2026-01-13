@@ -59,10 +59,24 @@ class BrandStoryV2 extends HTMLElement {
     const targetItem = this.items[index];
     if (!targetItem) return;
 
+    const isAlreadyActive = targetItem.classList.contains('is-active');
     const imageUrl = targetItem.dataset.imageUrl;
 
-    if (imageUrl && this.featuredImage) {
-      this.featuredImage.src = imageUrl;
+    if (imageUrl && this.featuredImage && !isAlreadyActive) {
+      this.featuredImage.classList.remove('slide-up', 'slide-up-out');
+      this.featuredImage.classList.add('slide-up-out');
+      setTimeout(() => {
+        const handleImageLoad = () => {
+          this.featuredImage.classList.remove('slide-up-out');
+          this.featuredImage.classList.add('slide-up');
+          this.featuredImage.removeEventListener('load', handleImageLoad);
+        };
+        this.featuredImage.addEventListener('load', handleImageLoad);
+        this.featuredImage.src = imageUrl;
+        if (this.featuredImage.complete) {
+          handleImageLoad();
+        }
+      }, 300); 
     }
 
     this.items.forEach((item, i) => {
