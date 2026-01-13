@@ -2,9 +2,8 @@ class BrandStoryV2 extends HTMLElement {
   constructor() {
     super();
     this.items = this.querySelectorAll('.brand-story-v2__item');
-    this.featuredImage = this.querySelector('.brand-story-v2__featured-image');
+    this.mediaElements = this.querySelectorAll('.brand-story-v2__media');
   }
-
   connectedCallback() {
     this.items.forEach((item, index) => {
       const button = item.querySelector('.brand-story-v2__heading-button');
@@ -13,16 +12,18 @@ class BrandStoryV2 extends HTMLElement {
           e.preventDefault();
           if (window.innerWidth <= 900) {
             this.handleItemClick(index);
+          } else {
+            this.updateImage(index);
           }
         });
         item.addEventListener('mouseenter', () => {
           if (window.innerWidth > 900) {
-            this.handleItemHover(index);
+            this.updateImage(index);
           }
         });
         item.addEventListener('focus', () => {
           if (window.innerWidth > 900) {
-            this.handleItemHover(index);
+            this.updateImage(index);
           }
         });
       }
@@ -53,35 +54,12 @@ class BrandStoryV2 extends HTMLElement {
     }
   };
 
-  handleItemHover = (index) => {
-    if (window.innerWidth <= 900) return;
-
+  updateImage = (index) => {
     const targetItem = this.items[index];
     if (!targetItem) return;
 
-    const isAlreadyActive = targetItem.classList.contains('is-active');
-    const imageUrl = targetItem.dataset.imageUrl;
-
-    if (imageUrl && this.featuredImage && !isAlreadyActive) {
-      this.featuredImage.classList.remove('slide-up', 'slide-up-out');
-      this.featuredImage.classList.add('slide-up-out');
-      setTimeout(() => {
-        const handleImageLoad = () => {
-          this.featuredImage.classList.remove('slide-up-out');
-          this.featuredImage.classList.add('slide-up');
-          this.featuredImage.removeEventListener('load', handleImageLoad);
-        };
-        this.featuredImage.addEventListener('load', handleImageLoad);
-        this.featuredImage.src = imageUrl;
-        if (this.featuredImage.complete) {
-          handleImageLoad();
-        }
-      }, 300); 
-    }
-
     this.items.forEach((item, i) => {
       const button = item.querySelector('.brand-story-v2__heading-button');
-
       if (i === index) {
         item.classList.add('is-active');
         if (button) button.setAttribute('aria-expanded', 'true');
@@ -90,6 +68,37 @@ class BrandStoryV2 extends HTMLElement {
         if (button) button.setAttribute('aria-expanded', 'false');
       }
     });
+
+    const targetElement = Array.from(this.mediaElements).find(el => el.dataset.blockIndex === String(index));
+    const currentElement = Array.from(this.mediaElements).find(el => !el.classList.contains('is-hidden'));
+
+    if (currentElement === targetElement && targetElement) {
+      targetElement.classList.remove('slide-up');
+      targetElement.classList.add('slide-up-out');
+      setTimeout(() => {
+        targetElement.classList.remove('slide-up-out');
+        targetElement.classList.add('slide-up');
+      }, 300);
+      return;
+    }
+
+    this.mediaElements.forEach((el) => {
+      if (!el.classList.contains('is-hidden')) {
+        el.classList.remove('slide-up');
+        el.classList.add('slide-up-out');
+        setTimeout(() => {
+          el.classList.add('is-hidden');
+          el.classList.remove('slide-up-out');
+        }, 300);
+      }
+    });
+
+    if (targetElement) {
+      setTimeout(() => {
+        targetElement.classList.remove('is-hidden', 'slide-up-out', 'slide-up');
+        targetElement.classList.add('slide-up');
+      }, currentElement ? 300 : 0);
+    }
   };
 }
 

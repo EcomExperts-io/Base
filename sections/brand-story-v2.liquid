@@ -15,12 +15,6 @@
     }
   }
 {%- endstyle -%}
-
-{%- liquid
-  assign first_block = section.blocks.first
-  assign first_image = first_block.settings.image
--%}
-
 <brand-story-v2
   class="color-{{ section.settings.color_scheme }} brand-story-v2 section-{{ section.id }}-padding"
   data-section-id="{{ section.id }}"
@@ -63,20 +57,26 @@
 
       <div class="brand-story-v2__right">
         <div class="brand-story-v2__image-wrapper">
-          {%- if first_image != blank -%}
-            <img
-              src="{{ first_image | image_url: width: 800 }}"
-              alt="{{ first_image.alt | default: first_block.settings.heading | escape }}"
-              loading="lazy"
-              width="{{ first_image.width }}"
-              height="{{ first_image.height }}"
-              class="brand-story-v2__featured-image"
-            >
-          {%- else -%}
-            <div class="brand-story-v2__image-placeholder">
-              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-            </div>
-          {%- endif -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 800 }}"
+                alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                loading="lazy"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                class="brand-story-v2__media{% unless forloop.first %} is-hidden{% endunless %}"
+                data-block-index="{{ forloop.index0 }}"
+              >
+            {%- else -%}
+              <div
+                class="brand-story-v2__image-placeholder brand-story-v2__media{% unless forloop.first %} is-hidden{% endunless %}"
+                data-block-index="{{ forloop.index0 }}"
+              >
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
         </div>
       </div>
     </div>
