@@ -579,6 +579,51 @@
         "description": "Description content will appear here."
       }
     },
+    "brand_story_v2_JiEECc": {
+      "type": "brand-story-v2",
+      "blocks": {
+        "story_item_TRagjE": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_nkmxzJ": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_EAYxkx": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_k6jqJ7": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "story_item_TRagjE",
+        "story_item_nkmxzJ",
+        "story_item_EAYxkx",
+        "story_item_k6jqJ7"
+      ],
+      "name": "Brand Story V2",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
     "shop_the_look_V4dmwn": {
       "type": "shop-the-look",
       "blocks": {
@@ -761,52 +806,7 @@
       "name": "FAQ",
       "settings": {
         "title": "FREQUENTLY ASKED QUESTIONS",
-        "color_scheme": "scheme-4",
-        "padding_top": 40,
-        "padding_bottom": 40
-      }
-    },
-    "brand_story_v2_JiEECc": {
-      "type": "brand-story-v2",
-      "blocks": {
-        "story_item_TRagjE": {
-          "type": "story_item",
-          "settings": {
-            "heading": "Add heading here",
-            "description": "<p>Add your description here.</p>"
-          }
-        },
-        "story_item_nkmxzJ": {
-          "type": "story_item",
-          "settings": {
-            "heading": "Add heading here",
-            "description": "<p>Add your description here.</p>"
-          }
-        },
-        "story_item_EAYxkx": {
-          "type": "story_item",
-          "settings": {
-            "heading": "Add heading here",
-            "description": "<p>Add your description here.</p>"
-          }
-        },
-        "story_item_k6jqJ7": {
-          "type": "story_item",
-          "settings": {
-            "heading": "Add heading here",
-            "description": "<p>Add your description here.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "story_item_TRagjE",
-        "story_item_nkmxzJ",
-        "story_item_EAYxkx",
-        "story_item_k6jqJ7"
-      ],
-      "name": "Brand Story V2",
-      "settings": {
-        "color_scheme": "scheme-4",
+        "color_scheme": "scheme-1",
         "padding_top": 40,
         "padding_bottom": 40
       }
