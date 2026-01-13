@@ -761,7 +761,7 @@
       "name": "FAQ",
       "settings": {
         "title": "FREQUENTLY ASKED QUESTIONS",
-        "color_scheme": "",
+        "color_scheme": "scheme-4",
         "padding_top": 40,
         "padding_bottom": 40
       }
@@ -806,7 +806,7 @@
       ],
       "name": "Brand Story V2",
       "settings": {
-        "color_scheme": "",
+        "color_scheme": "scheme-4",
         "padding_top": 40,
         "padding_bottom": 40
       }
@@ -826,10 +826,10 @@
     "shop_categories_43RftD",
     "blogs_6DGtRD",
     "brand_story_QhMEEy",
+    "brand_story_v2_JiEECc",
     "shop_the_look_V4dmwn",
     "product_highlights_gUaG6E",
     "product_details_xbXmpy",
-    "faq_F6YWwR",
-    "brand_story_v2_JiEECc"
+    "faq_F6YWwR"
   ]
 }
