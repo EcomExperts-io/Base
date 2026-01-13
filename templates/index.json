@@ -765,6 +765,51 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "brand_story_v2_JiEECc": {
+      "type": "brand-story-v2",
+      "blocks": {
+        "story_item_TRagjE": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_nkmxzJ": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_EAYxkx": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_k6jqJ7": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "story_item_TRagjE",
+        "story_item_nkmxzJ",
+        "story_item_EAYxkx",
+        "story_item_k6jqJ7"
+      ],
+      "name": "Brand Story V2",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
@@ -784,6 +829,7 @@
     "shop_the_look_V4dmwn",
     "product_highlights_gUaG6E",
     "product_details_xbXmpy",
-    "faq_F6YWwR"
+    "faq_F6YWwR",
+    "brand_story_v2_JiEECc"
   ]
 }
