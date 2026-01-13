@@ -468,6 +468,52 @@
         "padding_bottom": 40
       }
     },
+    "shop_by_category_v2_bmaiWd": {
+      "type": "shop-by-category-v2",
+      "blocks": {
+        "category_card_A4PUwM": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_6mWkxD": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_BLWeYc": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_V4Fwt7": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_card_A4PUwM",
+        "category_card_6mWkxD",
+        "category_card_BLWeYc",
+        "category_card_V4Fwt7"
+      ],
+      "name": "Shop By Category V2",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "heading": "Shop By Category V2",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
     "shop_categories_43RftD": {
       "type": "shop-categories",
       "blocks": {
@@ -807,52 +853,6 @@
       "settings": {
         "title": "FREQUENTLY ASKED QUESTIONS",
         "color_scheme": "scheme-1",
-        "padding_top": 40,
-        "padding_bottom": 40
-      }
-    },
-    "shop_by_category_v2_bmaiWd": {
-      "type": "shop-by-category-v2",
-      "blocks": {
-        "category_card_A4PUwM": {
-          "type": "category_card",
-          "settings": {
-            "title": "Title",
-            "link": ""
-          }
-        },
-        "category_card_6mWkxD": {
-          "type": "category_card",
-          "settings": {
-            "title": "Title",
-            "link": ""
-          }
-        },
-        "category_card_BLWeYc": {
-          "type": "category_card",
-          "settings": {
-            "title": "Title",
-            "link": ""
-          }
-        },
-        "category_card_V4Fwt7": {
-          "type": "category_card",
-          "settings": {
-            "title": "Title",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "category_card_A4PUwM",
-        "category_card_6mWkxD",
-        "category_card_BLWeYc",
-        "category_card_V4Fwt7"
-      ],
-      "name": "Shop By Category V2",
-      "settings": {
-        "color_scheme": "",
-        "heading": "Shop By Category V2",
         "padding_top": 40,
         "padding_bottom": 40
       }
