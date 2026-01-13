@@ -766,7 +766,7 @@
       }
     },
     "faq_F6YWwR": {
-      "type": "Faq",
+      "type": "faq",
       "blocks": {
         "faq_item_BatHny": {
           "type": "faq_item",
