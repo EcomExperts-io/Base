@@ -88,10 +88,10 @@
           <div class="main-content">
             <div class="collection-filters-wrapper">
               {%- if section.settings.enable_filtering and section.settings.filter_type == 'vertical' -%}
-                {% render 'component-filters-sidebar', 
-                  results: collection, 
+                {% render 'component-filters-sidebar',
+                  results: collection,
                   collapse_filters: section.settings.collapse_filters,
-                  show_filter_count: section.settings.show_filter_count,
+                  show_filter_count: section.settings.show_filter_count
                 %}
               {% endif %}
               <div class="product-grid-container">
@@ -111,9 +111,9 @@
                   {%- endif -%}
                   {%- if section.settings.enable_filtering and section.settings.filter_type == 'horizontal' -%}
                     <div class="horizontal-filters__parent-wrapper">
-                      {% render 'component-filters-horizontal', 
+                      {% render 'component-filters-horizontal',
                         results: collection,
-                        show_filter_count: section.settings.show_filter_count,
+                        show_filter_count: section.settings.show_filter_count
                       %}
                       <div class="mobile-horizontal-filter large-up-hide">
                         {%- render 'component-filters-drawer',
@@ -157,10 +157,13 @@
                           {% endif %}
                           id="SortBy"
                           class="facet-filters__sort"
+                          data-track-content-type="sort"
                         >
                           {%- for option in collection.sort_options -%}
                             <option
                               value="{{ option.value | escape }}"
+                              data-track-item-id="{{ option.value | handleize }}"
+                              data-track-item-name="{{ option.name | escape }}"
                               {% if option.value == sort_by %}
                                 selected="selected"
                               {% endif %}
@@ -243,7 +246,12 @@
 
                 <div class="product-grid-wrapper product-grid-{{ section.id }}" id="product-grid-{{ section.id }}">
                   <div id="loading-overlay-{{ section.id }}" class="loading-overlay"></div>
-                  <div class="product-grid" {% if section.settings.enable_infinite_scroll %}data-product-grid{% endif %}>
+                  <div
+                    class="product-grid"
+                    {% if section.settings.enable_infinite_scroll %}
+                      data-product-grid
+                    {% endif %}
+                  >
                     {%- if collection.products.size == 0 -%}
                       <p>Nothing Here</p>
                     {%- else -%}
@@ -262,18 +270,20 @@
                       {%- endfor -%}
                     {%- endif -%}
                   </div>
-                {% if section.settings.enable_infinite_scroll %}
-                  <infinite-scroll style="display: flex; justify-content: center;">
-                    {%- if paginate.next -%}
-                    <a style="color: currentColor; text-decoration: none; pointer-events: none; margin-top: 30px;"
-                      href="{{ paginate.next.url }}&section_id={{ section.id }}"></a>
-                    {%- endif -%}
-                  </infinite-scroll>
-                  {%  else %}
+                  {% if section.settings.enable_infinite_scroll %}
+                    <infinite-scroll style="display: flex; justify-content: center;">
+                      {%- if paginate.next -%}
+                        <a
+                          style="color: currentColor; text-decoration: none; pointer-events: none; margin-top: 30px;"
+                          href="{{ paginate.next.url }}&section_id={{ section.id }}"
+                        ></a>
+                      {%- endif -%}
+                    </infinite-scroll>
+                  {% else %}
                     {%- if paginate.pages > 1 -%}
                       {% render 'component-pagination', paginate: paginate, anchor: '#product-grid-' | append: section.id %}
                     {%- endif -%}
-                {% endif %}
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -288,7 +298,7 @@
 <script src="{{ 'component-product-card.js' | asset_url }}" type="module"></script>
 <script src="{{ 'component-filters-price-range.js' | asset_url }}" type="module"></script>
 
-{% if section.settings.enable_infinite_scroll %}  
+{% if section.settings.enable_infinite_scroll %}
   <script src="{{ 'component-infinite-scroll.js' | asset_url }}" type="module"></script>
 {% endif %}
 

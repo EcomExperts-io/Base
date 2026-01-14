@@ -154,6 +154,9 @@
                     name="{{ v.param_name }}"
                     value="{{ v.value }}"
                     data-render-section="filters-form"
+                    data-track-content-type="filter"
+                    data-track-item-id="{{ f.param_name | escape }}_{{ v.value | handleize }}"
+                    data-track-item-name="{{ f.label | escape }}: {{ v.label | escape }}"
                     {% if v.active %}
                       checked
                     {% endif -%}
@@ -165,7 +168,10 @@
                   <span class="icon-filter-rounded">
                     {{- 'icon-checkmark.svg' | inline_asset_content -}}
                   </span>
-                  <span class="filter-label">{{- v.label }} {% if show_filter_count %} ({{ v.count }}){% endif %}</span>
+                  <span class="filter-label">
+                    {{- v.label }}
+                    {% if show_filter_count %} ({{ v.count }}){% endif -%}
+                  </span>
                 </label>
               {% endfor %}
             {% endif %}

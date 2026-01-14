@@ -1,0 +1,80 @@
+{%- if settings.gtm_datalayer_enabled -%}
+  <data-layer
+    id="data-layer"
+  >
+    {%- comment %} CORE E-COMMERCE EVENTS {%- endcomment %}
+    {%- if settings.gtm_track_select_item -%}
+      <data-layer-select-item></data-layer-select-item>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_view_item and template.name == 'product' -%}
+      <data-layer-view-item></data-layer-view-item>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_view_item_list -%}
+      <data-layer-view-item-list></data-layer-view-item-list>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_add_to_cart -%}
+      <data-layer-add-to-cart></data-layer-add-to-cart>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_view_cart -%}
+      <data-layer-view-cart></data-layer-view-cart>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_remove_from_cart -%}
+      <data-layer-remove-from-cart></data-layer-remove-from-cart>
+    {%- endif -%}
+
+    {%- comment %} CART OPERATIONS {%- endcomment %}
+    {%- if settings.gtm_track_update_cart -%}
+      <data-layer-update-cart></data-layer-update-cart>
+    {%- endif -%}
+
+    {%- comment %} USER ENGAGEMENT EVENTS {%- endcomment %}
+    {%- if settings.gtm_track_cta_click -%}
+      <data-layer-cta-click></data-layer-cta-click>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_faq_toggle -%}
+      <data-layer-faq-toggle></data-layer-faq-toggle>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_search -%}
+      <data-layer-search></data-layer-search>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_select_content -%}
+      <data-layer-select-content></data-layer-select-content>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_product_option and template.name == 'product' -%}
+      <data-layer-product-option></data-layer-product-option>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_carousel -%}
+      <data-layer-carousel></data-layer-carousel>
+    {%- endif -%}
+
+    {%- comment %} AUTHENTICATION EVENTS {%- endcomment %}
+    {%- if settings.gtm_track_login -%}
+      <data-layer-login></data-layer-login>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_sign_up -%}
+      <data-layer-sign-up></data-layer-sign-up>
+    {%- endif -%}
+
+    {%- comment %} SYSTEM & STATUS EVENTS {%- endcomment %}
+    {%- if settings.gtm_track_error_404 and template.name == '404' -%}
+      <data-layer-error-404></data-layer-error-404>
+    {%- endif -%}
+
+    {%- if settings.gtm_track_out_of_stock and template.name == 'product' -%}
+      <data-layer-out-of-stock></data-layer-out-of-stock>
+    {%- endif -%}
+  </data-layer>
+
+  <script src="{{ 'component-data-layer.js' | asset_url }}" type="module"></script>
+{%- endif -%}

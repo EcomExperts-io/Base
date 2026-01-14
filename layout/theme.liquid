@@ -7,6 +7,9 @@
     <meta name="theme-color" content="">
     <link rel="canonical" href="{{ canonical_url }}">
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+
+    {% render 'component-gtm-head' %}
+
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
@@ -61,6 +64,10 @@
   </head>
 
   <body>
+    {% render 'component-gtm-body' %}
+
+    {% render 'component-data-layer' %}
+
     <a class="skip-to-content-link visually-hidden" href="#MainContent"> Skip to content </a>
 
     {%- if settings.splash_screen_enabled -%}
