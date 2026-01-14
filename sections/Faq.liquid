@@ -1,0 +1,141 @@
+{% comment %} /sections/Faq.liquid {% endcomment %}
+{{ 'section-faq.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} faq-section section-{{ section.id }}-padding">
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}
+      <h2 class="faq__heading">{{ section.settings.title | escape }}</h2>
+    {%- endif -%}
+
+    <div
+      class="faq__container"
+      x-data="{ openBlock: null }"
+    >
+      {%- for block in section.blocks -%}
+        <div class="faq__block" {{ block.shopify_attributes }}>
+          <div class="faq__accordion">
+            <button
+              @click="openBlock = openBlock === {{ forloop.index0 }} ? null : {{ forloop.index0 }}"
+              class="faq__header"
+              :aria-expanded="openBlock === {{ forloop.index0 }}"
+              type="button"
+            >
+              <h3 class="faq__title">{{ block.settings.question | default: 'Question' }}</h3>
+              <span class="faq__icon" x-show="openBlock !== {{ forloop.index0 }}">
+                {{ 'icon-plus.svg' | inline_asset_content }}
+              </span>
+              <span class="faq__icon" x-show="openBlock === {{ forloop.index0 }}" x-cloak>
+                {{ 'icon-minus.svg' | inline_asset_content }}
+              </span>
+            </button>
+
+            <div
+              x-show="openBlock === {{ forloop.index0 }}"
+              x-transition
+              class="faq__content"
+              x-cloak
+            >
+              <div class="faq__content-wrapper">
+                {%- if block.settings.answer != blank -%}
+                  <div class="faq__answer">
+                    {{ block.settings.answer }}
+                  </div>
+                {%- else -%}
+                  <div class="faq__answer">
+                    <p>Add your answer here.</p>
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "class": "faq",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "FREQUENTLY ASKED QUESTIONS"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Add Question here"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Add your answer here.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [{ "type": "faq_item" }, { "type": "faq_item" }, { "type": "faq_item" }, { "type": "faq_item" }]
+    }
+  ]
+}
+{% endschema %}

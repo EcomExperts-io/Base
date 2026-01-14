@@ -1,0 +1,161 @@
+{% comment %} /sections/shop-by-category-v2.liquid {% endcomment %}
+{{ 'section-shop-by-category-v2.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+-%}
+
+<shop-by-category-v2
+  class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+>
+  <div class="page-width">
+    {%- if heading != blank -%}
+      <div class="shop-by-category-v2__header">
+        <h2 class="shop-by-category-v2__heading">{{ heading | escape }}</h2>
+      </div>
+    {%- endif -%}
+
+    <div class="shop-by-category-v2__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign block_title = block.settings.title
+          assign block_link = block.settings.link
+          assign block_image = block.settings.image_desktop
+        -%}
+
+        <div class="shop-by-category-v2__card" {{ block.shopify_attributes }}>
+          {%- if block_link != blank -%}
+            <a href="{{ block_link }}" class="shop-by-category-v2__card-link">
+          {%- endif -%}
+
+          <div class="shop-by-category-v2__card-image-wrapper">
+            {%- if block_image != blank -%}
+              <img
+                srcset="
+                  {%- if block_image.width >= 300 -%}{{ block_image | image_url: width: 300 }} 300w,{%- endif -%}
+                  {%- if block_image.width >= 600 -%}{{ block_image | image_url: width: 600 }} 600w,{%- endif -%}
+                  {%- if block_image.width >= 900 -%}{{ block_image | image_url: width: 900 }} 900w,{%- endif -%}
+                  {{ block_image | image_url }} {{ block_image.width }}w
+                "
+                src="{{ block_image | image_url: width: 600 }}"
+                sizes="(min-width: 750px) 50vw, 100vw"
+                alt="{{ block_image.alt | default: block_title | escape }}"
+                loading="lazy"
+                width="{{ block_image.width }}"
+                height="{{ block_image.height }}"
+                class="shop-by-category-v2__card-image"
+              >
+            {%- else -%}
+              <div class="shop-by-category-v2__card-image-placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- if block_title != blank -%}
+            <div class="shop-by-category-v2__card-content">
+              <h3 class="shop-by-category-v2__card-title">{{ block_title | escape }}</h3>
+              <div class="shop-by-category-v2__card-arrow">
+                {{ 'icon-arrow-next.svg' | inline_asset_content }}
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- if block_link != blank -%}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</shop-by-category-v2>
+
+{% schema %}
+{
+  "name": "Shop By Category V2",
+  "tag": "section",
+  "class": "shop-by-category-v2",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop By Category V2"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category_card",
+      "name": "Category Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Title"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop By Category V2",
+      "blocks": [{ "type": "category_card" }, { "type": "category_card" }, { "type": "category_card" }, { "type": "category_card" }]
+    }
+  ]
+}
+{% endschema %}

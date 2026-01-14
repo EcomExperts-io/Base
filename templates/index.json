@@ -468,6 +468,52 @@
         "padding_bottom": 40
       }
     },
+    "shop_by_category_v2_bmaiWd": {
+      "type": "shop-by-category-v2",
+      "blocks": {
+        "category_card_A4PUwM": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_6mWkxD": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_BLWeYc": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_V4Fwt7": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_card_A4PUwM",
+        "category_card_6mWkxD",
+        "category_card_BLWeYc",
+        "category_card_V4Fwt7"
+      ],
+      "name": "Shop By Category V2",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "heading": "Shop By Category V2",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
     "shop_categories_43RftD": {
       "type": "shop-categories",
       "blocks": {
@@ -577,6 +623,51 @@
         "label_2": "DEMO",
         "heading": "Heading",
         "description": "Description content will appear here."
+      }
+    },
+    "brand_story_v2_JiEECc": {
+      "type": "brand-story-v2",
+      "blocks": {
+        "story_item_TRagjE": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_nkmxzJ": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_EAYxkx": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_k6jqJ7": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "story_item_TRagjE",
+        "story_item_nkmxzJ",
+        "story_item_EAYxkx",
+        "story_item_k6jqJ7"
+      ],
+      "name": "Brand Story V2",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     },
     "shop_the_look_V4dmwn": {
@@ -719,6 +810,52 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "faq_F6YWwR": {
+      "type": "faq",
+      "blocks": {
+        "faq_item_BatHny": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Add Question here",
+            "answer": "<p>Add your answer here.</p>"
+          }
+        },
+        "faq_item_zyTkXj": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Add Question here",
+            "answer": "<p>Add your answer here.</p>"
+          }
+        },
+        "faq_item_ybRyND": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Add Question here",
+            "answer": "<p>Add your answer here.</p>"
+          }
+        },
+        "faq_item_YqCwMf": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Add Question here",
+            "answer": "<p>Add your answer here.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_BatHny",
+        "faq_item_zyTkXj",
+        "faq_item_ybRyND",
+        "faq_item_YqCwMf"
+      ],
+      "name": "FAQ",
+      "settings": {
+        "title": "FREQUENTLY ASKED QUESTIONS",
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
@@ -732,11 +869,14 @@
     "logos_example",
     "promo_banner_example",
     "shop_by_category_example",
+    "shop_by_category_v2_bmaiWd",
     "shop_categories_43RftD",
     "blogs_6DGtRD",
     "brand_story_QhMEEy",
+    "brand_story_v2_JiEECc",
     "shop_the_look_V4dmwn",
     "product_highlights_gUaG6E",
-    "product_details_xbXmpy"
+    "product_details_xbXmpy",
+    "faq_F6YWwR"
   ]
 }
