@@ -198,34 +198,22 @@
         "block_1": {
           "type": "product_card",
           "settings": {
-            "product": "scotland-button-up-in-navy"
+            "product": ""
           }
         },
         "block_2": {
           "type": "product_card",
           "settings": {
-            "product": "cape-dress-1"
+            "product": ""
           }
         },
         "product_card_bpd4Xd": {
           "type": "product_card",
           "settings": {
-            "product": "3-4-sleeve-kimono-dress-coral"
-          }
-        },
-        "product_card_tP6QmJ": {
-          "type": "product_card",
-          "settings": {
-            "product": "alex-twill-pant-sand"
-          }
-        },
-        "product_card_RUFfmj": {
-          "type": "product_card",
-          "settings": {
             "product": ""
           }
         },
-        "product_card_QizrFh": {
+        "product_card_tP6QmJ": {
           "type": "product_card",
           "settings": {
             "product": ""
@@ -236,9 +224,7 @@
         "block_1",
         "block_2",
         "product_card_bpd4Xd",
-        "product_card_tP6QmJ",
-        "product_card_RUFfmj",
-        "product_card_QizrFh"
+        "product_card_tP6QmJ"
       ],
       "settings": {
         "color_scheme": "",
