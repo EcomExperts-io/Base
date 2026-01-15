@@ -395,7 +395,8 @@
           "label": "Custom Column Width (Desktop)",
           "min": 10,
           "max": 100,
-          "default": 33
+          "default": 33,
+          "visible_if": "{{ block.settings.custom_column_width == true }}"
         },
         {
           "type": "range",
@@ -403,7 +404,8 @@
           "label": "Custom Column Width (Tablet)",
           "min": 10,
           "max": 100,
-          "default": 33
+          "default": 33,
+          "visible_if": "{{ block.settings.custom_column_width == true }}"
         },
         {
           "type": "range",
@@ -411,7 +413,8 @@
           "label": "Custom Column Width (Mobile)",
           "min": 10,
           "max": 100,
-          "default": 50
+          "default": 50,
+          "visible_if": "{{ block.settings.custom_column_width == true }}"
         },
         {
           "type": "image_picker",
@@ -460,7 +463,8 @@
           "label": "Title font size (desktop, px)",
           "min": 10,
           "max": 40,
-          "default": 18
+          "default": 18,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
@@ -468,19 +472,22 @@
           "label": "Title font size (mobile, px)",
           "min": 10,
           "max": 40,
-          "default": 16
+          "default": 16,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "checkbox",
           "id": "title_uppercase",
           "label": "Uppercase Title",
-          "default": false
+          "default": false,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "color",
           "id": "font_color",
           "label": "Title font color",
-          "default": "#000000"
+          "default": "#000000",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
@@ -488,7 +495,8 @@
           "label": "Description font size (desktop, px)",
           "min": 10,
           "max": 40,
-          "default": 18
+          "default": 18,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
@@ -496,13 +504,15 @@
           "label": "Description font size (mobile, px)",
           "min": 10,
           "max": 40,
-          "default": 16
+          "default": 16,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "color",
           "id": "description_font_color",
           "label": "Description font color",
-          "default": "#000000"
+          "default": "#000000",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
@@ -510,26 +520,30 @@
           "label": "Button font size (px)",
           "min": 10,
           "max": 30,
-          "default": 14
+          "default": 14,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "checkbox",
           "id": "button_uppercase",
           "label": "Uppercase Button",
           "info": "If enabled, the button text will be uppercase.",
-          "default": false
+          "default": false,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "color",
           "id": "button_bg_color",
           "label": "Button background color",
-          "default": "#000000"
+          "default": "#000000",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "color",
           "id": "button_text_color",
           "label": "Button text color",
-          "default": "#ffffff"
+          "default": "#ffffff",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
@@ -537,6 +551,7 @@
           "label": "Text on Image Top Position",
           "info": "Only applies if style is set to 'Text on Image'",
           "default": 50,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}",
           "min": 0,
           "max": 100,
           "step": 1,
@@ -550,7 +565,8 @@
             { "value": "left", "label": "Left" },
             { "value": "center", "label": "Center" },
             { "value": "right", "label": "Right" }
-          ]
+          ],
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         }
       ]
     }
@@ -637,9 +653,9 @@
       {% endcapture %}
 
       {% if b.button_link != blank %}
-        <a href="{{ b.button_link }}" class="grid-block {% if b.custom_column_width %}custom-column-width{% endif %}" style="{{ block_styles | strip }}">
+        <a href="{{ b.button_link }}" {{ block.shopify_attributes }} class="grid-block {% if b.custom_column_width %}custom-column-width{% endif %}" style="{{ block_styles | strip }}">
       {% else %}
-        <div class="grid-block {% if b.custom_column_width %}custom-column-width{% endif %}" style="{{ block_styles | strip }}">
+        <div {{ block.shopify_attributes }} class="grid-block {% if b.custom_column_width %}custom-column-width{% endif %}" style="{{ block_styles | strip }}">
       {% endif %}
 
       {% if b.image %}
@@ -652,6 +668,10 @@
             loading="lazy"
           >
         </div>
+      {% else %}
+        <div class="block-image-placeholder block-image-desktop">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
       {% endif %}
 
       {% if b.image_mobile %}
@@ -661,13 +681,19 @@
       {% endif %}
 
         <div class="block-image block-image-mobile">
-          <img
+          {% if image_mobile %}
+            <img
             src="{{ image_mobile | image_url }}"
             alt="{{ b.title | escape }}"
             width="{{ image_mobile.width }}"
             height="{{ image_mobile.height }}"
             loading="lazy"
           >
+          {% else %}
+            <div class="block-image-placeholder block-image-mobile">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% endif %}
         </div>
 
       <div class="block-content">
@@ -706,6 +732,16 @@
     padding-bottom: var(--spacing-bottom-desktop);
     background-color: var(--background-color);
     padding-inline: 20px;
+  }
+
+  #{{ section.id }} .block-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #0000000a;
+  }
+
+  #{{ section.id }} .block-image-placeholder .placeholder-svg {
+    max-width: 100%;
   }
 
   #{{ section.id }} .dynamic-grid-wrapper {
