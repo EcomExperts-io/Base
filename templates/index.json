@@ -9,7 +9,7 @@
  */
  {
   "sections": {
-    "dynamic_grid_blocks_YPA7qV": {
+    "dynamic_grid_YPA7qV": {
       "type": "dynamic-grid",
       "blocks": {
         "block_TeL4bi": {
@@ -94,7 +94,7 @@
         "button_text_color": "#ffffff"
       }
     },
-    "dynamic_grid_blocks_QQ9qPY": {
+    "dynamic_grid_QQ9qPY": {
       "type": "dynamic-grid",
       "blocks": {
         "block_6cN869": {
@@ -265,7 +265,7 @@
         "button_text_color": "#ffffff"
       }
     },
-    "dynamic_grid_blocks_a7nphg": {
+    "dynamic_grid_a7nphg": {
       "type": "dynamic-grid",
       "blocks": {
         "block_g3WQt6": {
@@ -436,7 +436,7 @@
         "button_text_color": "#000000"
       }
     },
-    "dynamic_grid_blocks_a8nz43": {
+    "dynamic_grid_a8nz43": {
       "type": "dynamic-grid",
       "blocks": {
         "block_Lqtdhf": {
@@ -549,7 +549,7 @@
         "button_text_color": "#ffffff"
       }
     },
-    "dynamic_grid_blocks_TTN7yW": {
+    "dynamic_grid_TTN7yW": {
       "type": "dynamic-grid",
       "blocks": {
         "block_4bFpQ6": {
@@ -749,7 +749,7 @@
         "button_text_color": "#ffffff"
       }
     },
-    "dynamic_grid_blocks_Cjym4W": {
+    "dynamic_grid_Cjym4W": {
       "type": "dynamic-grid",
       "blocks": {
         "block_E3TXat": {
@@ -1373,12 +1373,12 @@
     }
   },
   "order": [
-    "dynamic_grid_blocks_YPA7qV",
-    "dynamic_grid_blocks_QQ9qPY",
-    "dynamic_grid_blocks_a7nphg",
-    "dynamic_grid_blocks_a8nz43",
-    "dynamic_grid_blocks_TTN7yW",
-    "dynamic_grid_blocks_Cjym4W",
+    "dynamic_grid_YPA7qV",
+    "dynamic_grid_QQ9qPY",
+    "dynamic_grid_a7nphg",
+    "dynamic_grid_a8nz43",
+    "dynamic_grid_TTN7yW",
+    "dynamic_grid_Cjym4W",
     "shop_by_category_example",
     "shop_categories_43RftD",
     "faq_F6YWwR",
