@@ -183,9 +183,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animated-features__card-inner {
-    transition: none;
-  }
+
 
   .animated-features__heading,
   .animated-features__subheading,
