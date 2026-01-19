@@ -185,22 +185,7 @@
   }
 }
   
-@media (prefers-reduced-motion: reduce) {
-  .animated-features-v2__heading,
-  .animated-features-v2__subheading,
-  .animated-features-v2__feature,
-  .animated-features-v2__disclaimer,
-  .animated-features-v2__image-wrapper,
-  .animated-features-v2__image-label {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
 
-  .animated-features-v2__image {
-    animation: none;
-  }
-}
 
 @media screen and (max-width: 1480px) {
  
