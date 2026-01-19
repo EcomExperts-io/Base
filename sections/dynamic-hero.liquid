@@ -1,0 +1,603 @@
+{% schema %}
+{
+  "name": "Dynamic Hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile Image"
+    },
+    {
+      "type": "video",
+      "id": "desktop_video",
+      "label": "Desktop Video"
+    },
+    {
+      "type": "color",
+      "id": "hero_overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "hero_overlay_opacity",
+      "label": "Overlay Opacity (%)",
+      "min": 0,
+      "max": 100,
+      "default": 30
+    },
+    {
+      "type": "url",
+      "id": "hero_link",
+      "label": "Hero Link URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_content_desktop",
+      "label": "Hide Content on Desktop?",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_content_mobile",
+      "label": "Hide Content on Mobile?",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "hero_heading",
+      "label": "Heading Text"
+    },
+    {
+      "type": "color",
+      "id": "hero_heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "hero_heading_size_desktop",
+      "label": "Heading Font Size (Desktop, px)",
+      "min": 10,
+      "max": 80,
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "hero_heading_size_mobile",
+      "label": "Heading Font Size (Mobile, px)",
+      "min": 10,
+      "max": 80,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "hero_heading_alignment",
+      "label": "Text Alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hero_heading_alignment_mobile",
+      "label": "Text Alignment (Mobile)",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hero_heading_weight",
+      "label": "Font Weight",
+      "default": "normal",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },    
+    {
+      "type": "text",
+      "id": "hero_button_text",
+      "label": "Button Text"
+    },
+    {
+      "type": "color",
+      "id": "hero_button_bg",
+      "label": "Button Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "hero_button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "hero_button_border_color",
+      "label": "Button Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "hero_button_font_size_desktop",
+      "label": "Button Font Size Desktop (px)",
+      "min": 10,
+      "max": 40,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "hero_button_font_size_mobile",
+      "label": "Button Font Size Mobile (px)",
+      "min": 10,
+      "max": 40,
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "hero_button_bg_hover",
+      "label": "Button Hover Background",
+      "default": "#222222"
+    },
+    {
+      "type": "color",
+      "id": "hero_button_text_hover",
+      "label": "Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Content Placement"
+    },
+    {
+      "type": "range",
+      "id": "content_top",
+      "label": "Content Top Offset (%)",
+      "min": 0,
+      "max": 100,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "content_left",
+      "label": "Content Left Offset (%)",
+      "min": 0,
+      "max": 100,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "content_top_mobile",
+      "label": "Content Top Offset (Mobile, %)",
+      "min": 0,
+      "max": 100,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "content_left_mobile",
+      "label": "Content Left Offset (Mobile, %)",
+      "min": 0,
+      "max": 100,
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Rotating Text"
+    },
+    {
+      "type": "checkbox",
+      "id": "rotating_text",
+      "label": "Enable Rotating Text",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "rotating_text_text",
+      "label": "Rotating Text",
+      "default": "Shop Collection",
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "color",
+      "id": "rotating_text_color",
+      "label": "Rotating Text Color",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_top",
+      "label": "Rotating Text Top",
+      "min": 10,
+      "max": 100,
+      "default": 75,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_left",
+      "label": "Rotating Text Left",
+      "min": 0,
+      "max": 100,
+      "default": 55,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_top_mobile",
+      "label": "Rotating Text Top (Mobile)",
+      "min": 10,
+      "max": 100,
+      "default": 85,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_left_mobile",
+      "label": "Rotating Text Left (Mobile)",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_width_desktop",
+      "label": "Rotating Text Width (Desktop)",
+      "min": 10,
+      "max": 200,
+      "step": 5,
+      "default": 80,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_width_mobile",
+      "label": "Rotating Text Width (Mobile)",
+      "min": 10,
+      "max": 200,
+      "step": 5,
+      "default": 80,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_font_size_desktop",
+      "label": "Rotating Text Font Size (Desktop)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 12,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "rotating_text_font_size_mobile",
+      "label": "Rotating Text Font Size (Mobile)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 12,
+      "visible_if": "{{ section.settings.rotating_text == true }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dynamic Hero",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+{% assign mobile_img = section.settings.mobile_image | default: section.settings.desktop_image %}
+
+<div class="hero-section {{ section.id }}"
+  style="
+    --hero-heading-color: {{ section.settings.hero_heading_color }};
+    --hero-heading-size-desktop: {{ section.settings.hero_heading_size_desktop }}px;
+    --hero-heading-size-mobile: {{ section.settings.hero_heading_size_mobile }}px;
+    --hero-heading-alignment: {{ section.settings.hero_heading_alignment }};
+    --hero-heading-alignment-mobile: {{ section.settings.hero_heading_alignment_mobile }};
+    --hero-heading-weight: {{ section.settings.hero_heading_weight }};
+    --content-top: {{ section.settings.content_top }}%;
+    --content-left: {{ section.settings.content_left }}%;
+    --content-top-mobile: {{ section.settings.content_top_mobile }}%;
+    --content-left-mobile: {{ section.settings.content_left_mobile }}%;
+    --content-translate-x: -{{ section.settings.content_left }}%;
+    --content-translate-y: -{{ section.settings.content_top }}%;
+    --content-translate-x-mobile: -{{ section.settings.content_left_mobile }}%;
+    --content-translate-y-mobile: -{{ section.settings.content_top_mobile }}%;
+    --rotating-text-top: {{ section.settings.rotating_text_top }}%;
+    --rotating-text-left: {{ section.settings.rotating_text_left }}%;
+    --rotating-text-top-mobile: {{ section.settings.rotating_text_top_mobile }}%;
+    --rotating-text-left-mobile: {{ section.settings.rotating_text_left_mobile }}%;
+    --rotating-text-translate-x: -{{ section.settings.rotating_text_left }}%;
+    --rotating-text-translate-y: -{{ section.settings.rotating_text_top }}%;
+    --rotating-text-translate-x-mobile: -{{ section.settings.rotating_text_left_mobile }}%;
+    --rotating-text-translate-y-mobile: -{{ section.settings.rotating_text_top_mobile }}%;
+    --hero-overlay-color: {{ section.settings.hero_overlay_color }};
+    --hero-overlay-opacity: {{ section.settings.hero_overlay_opacity }}%;
+    --button-bg: {{ section.settings.hero_button_bg }};
+    --button-text-color: {{ section.settings.hero_button_text_color }};
+    --button-border-color: {{ section.settings.hero_button_border_color }};
+    --button-font-size-desktop: {{ section.settings.hero_button_font_size_desktop }}px;
+    --button-font-size-mobile: {{ section.settings.hero_button_font_size_mobile }}px;
+    --button-bg-hover: {{ section.settings.hero_button_bg_hover }};
+    --button-text-hover: {{ section.settings.hero_button_text_hover }};
+    --button-align: {% if section.settings.hero_heading_alignment == 'left' %}0 auto{% elsif section.settings.hero_heading_alignment == 'right' %}auto 0{% else %}auto auto{% endif %};
+    --button-align-mobile: {% if section.settings.hero_heading_alignment_mobile == 'left' %}0 auto{% elsif section.settings.hero_heading_alignment_mobile == 'right' %}auto 0{% else %}auto auto{% endif %};
+    --rotating-text-width-desktop: {{ section.settings.rotating_text_width_desktop }}px;
+    --rotating-text-width-mobile: {{ section.settings.rotating_text_width_mobile }}px;
+    --rotating-text-font-size-desktop: {{ section.settings.rotating_text_font_size_desktop }}px;
+    --rotating-text-font-size-mobile: {{ section.settings.rotating_text_font_size_mobile }}px;
+">
+  <div class="desktop-hero {% if section.settings.desktop_video %}has-video{% endif %}">
+    {% if section.settings.desktop_image %}
+      <a href="{{ section.settings.hero_link }}">
+        <img
+          src="{{ section.settings.desktop_image | image_url }}"
+          alt="{{ section.settings.desktop_image.alt | escape }}"
+          width="{{ section.settings.desktop_image.width }}"
+          height="{{ section.settings.desktop_image.height }}"
+          loading="{% if section.index == 1 %}eager{% else %}lazy{% endif %}"
+          {% if section.index == 1 %}fetchpriority="high"{% endif %}
+        >
+        {% if section.settings.desktop_video %}
+          {{ section.settings.desktop_video | video_tag: autoplay: true, loop: true, muted: true, playsinline: true }}
+        {% endif %}
+        <div class="hero-overlay"></div>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="mobile-hero">
+    {% if mobile_img %}
+      <a href="{{ section.settings.hero_link }}">
+        <img
+          src="{{ mobile_img | image_url }}"
+          alt="{{ mobile_img.alt | escape }}"
+          width="{{ mobile_img.width }}"
+          height="{{ mobile_img.height }}"
+          loading="{% if section.index == 1 %}eager{% else %}lazy{% endif %}"
+          {% if section.index == 1 %}fetchpriority="high"{% endif %}
+        >
+        <div class="hero-overlay"></div>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="hero-content {% if section.settings.hide_content_desktop %} content-hide-desktop{% endif %}{% if section.settings.hide_content_mobile %} content-hide-mobile{% endif %}">
+    <a href="{{ section.settings.hero_link }}">
+      {% if section.settings.hero_heading != blank %}
+          <h2 class="hero-heading">{{ section.settings.hero_heading }}</h2>
+      {% endif %}
+
+      {% if section.settings.hero_description != blank %}
+        <p class="hero-description">{{ section.settings.hero_description }}</p>
+      {% endif %}
+
+      {% if section.settings.hero_button_text != blank %}
+        <p class="hero-button">
+          {{ section.settings.hero_button_text }}
+        </p>
+      {% endif %}
+    </a>
+  </div>
+
+  {% if section.settings.rotating_text == true %}
+    <div class="rotating-text">
+      <a href="{{ section.settings.hero_link }}">
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <path id="circlePath"
+                  d="M50,50 m-40,0 a40,40 0 1,1 80,0 a40,40 0 1,1 -80,0"/>
+          </defs>
+      
+          <!-- Spinning circular text -->
+          <g class="spinning">
+            <text>
+              <textPath href="#circlePath">
+                {% for i in (1..2) %}
+                  &nbsp;{{ section.settings.rotating_text_text }}
+                {% endfor %}
+              </textPath>
+            </text>
+          </g>
+      
+          <!-- Arrow centered -->
+          <g class="arrow" transform="translate(50,50) scale(0.8) translate(-18,-6)">
+            <path d="M36.5303 6.53033C36.8232 6.23744 36.8232 5.76257 36.5303 5.46967L31.7574 0.696702C31.4645 0.403808 30.9896 0.403808 30.6967 0.696702C30.4038 0.989595 30.4038 1.46447 30.6967 1.75736L34.9393 6L30.6967 10.2426C30.4038 10.5355 30.4038 11.0104 30.6967 11.3033C30.9896 11.5962 31.4645 11.5962 31.7574 11.3033L36.5303 6.53033ZM0 6L-6.55671e-08 6.75L36 6.75L36 6L36 5.25L6.55671e-08 5.25L0 6Z" 
+                  fill="{{ section.settings.rotating_text_color }}"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .{{ section.id }} {
+    position: relative;
+    width: 100%;
+  }
+
+  .{{ section.id }} .desktop-hero,
+  .{{ section.id }} .mobile-hero {
+    position: relative;
+  }
+
+  .{{ section.id }} .has-video a {
+    display: flex;
+  }
+
+  .{{ section.id }} .has-video img {
+    width: 50%;
+    object-fit: cover;
+  }
+
+  .{{ section.id }} .has-video video {
+    width: 50%;
+    aspect-ratio: {{ section.settings.desktop_image.width }} / {{ section.settings.desktop_image.height }};
+    object-fit: cover;
+  }
+
+  .{{ section.id }} .hero-content {
+    position: absolute;
+    top: var(--content-top);
+    left: var(--content-left);
+    transform: translate(var(--content-translate-x), var(--content-translate-y));
+    margin: 0;
+    width: fit-content;
+    padding: 0 20px;
+  }
+  .{{ section.id }} .hero-content a {
+    text-decoration: none;
+  }
+  .{{ section.id }} .hero-heading {
+    font-size: var(--hero-heading-size-desktop);
+    text-align: var(--hero-heading-alignment);
+    font-weight: var(--hero-heading-weight);
+    line-height: 1;
+    color: var(--hero-heading-color);
+  }
+
+  .{{ section.id }} .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--hero-overlay-color);
+    opacity: var(--hero-overlay-opacity);
+  }
+
+  .{{ section.id }} .hero-button {
+    padding: 15px 25px;
+    font-size: var(--button-font-size-desktop);
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+    border: 1px solid var(--button-border-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: block;
+    width: fit-content;
+    margin-top: 20px;
+    margin-inline: var(--button-align);
+  }
+
+  .{{ section.id }} .hero-button:hover {
+    background-color: var(--button-bg-hover);
+    color: var(--button-text-hover);
+  }
+
+
+  {% if section.settings.rotating_text == true %}
+
+    .{{ section.id }} .rotating-text {
+      position: absolute;
+      top: var(--rotating-text-top);
+      left: var(--rotating-text-left);
+      transform: translate(var(--rotating-text-translate-x), var(--rotating-text-translate-y));
+      width: var(--rotating-text-width-desktop);
+    }
+    
+    .{{ section.id }} .rotating-text .spinning {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .{{ section.id }} .rotating-text .spinning {
+      animation: spin 6s linear infinite;
+      transform-origin: 50% 50%
+    }
+    
+    .{{ section.id }} .rotating-text text {
+      font-size: var(--rotating-text-font-size-desktop);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      fill: {{ section.settings.rotating_text_color }};
+      mix-blend-mode: difference;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  {% endif %}
+
+  /* Mobile */
+  @media (max-width: 767px) {
+    .{{ section.id }} .hero-heading {
+      font-size: var(--hero-heading-size-mobile);
+      text-align: var(--hero-heading-alignment-mobile);
+      line-height: 1.2;
+    }
+    .{{ section.id }} .hero-content {
+      top: var(--content-top-mobile);
+      left: var(--content-left-mobile);
+      transform: translate(var(--content-translate-x-mobile), var(--content-translate-y-mobile));
+      width: 100%;
+    }
+    .{{ section.id }} .rotating-text text {
+      font-size: var(--rotating-text-font-size-mobile);
+    }
+    .{{ section.id }} .rotating-text {
+      position: absolute;
+      top: var(--rotating-text-top-mobile);
+      left: var(--rotating-text-left-mobile);
+      transform: translate(var(--rotating-text-translate-x-mobile), var(--rotating-text-translate-y-mobile));
+      width: var(--rotating-text-width-mobile);
+    }
+    .{{ section.id }} .hero-button {
+      font-size: var(--button-font-size-mobile);
+      margin-inline: var(--button-align-mobile);
+    }
+    .{{ section.id }} .content-hide-mobile {
+      display: none;
+    }
+    .{{ section.id }} .desktop-hero {
+      display: none;
+    }
+    .{{ section.id }} .mobile-hero {
+      display: block;
+    }
+    .{{ section.id }} .hero-content br {
+      display: none;
+    }
+  }
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    .{{ section.id }} .desktop-hero {
+      display: block;
+    }
+    .{{ section.id }} .mobile-hero {
+      display: none;
+    }
+    .{{ section.id }} .content-hide-desktop {
+      display: none;
+    }
+  }
+
+  .{{ section.id }} img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>
