@@ -182,19 +182,6 @@
   padding: 1.6rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-
-
-  .animated-features__heading,
-  .animated-features__subheading,
-  .animated-features__button,
-  .animated-features__notes,
-  .animated-features__card {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
 
 @media screen and (max-width: 1480px) {
   .animated-features__heading {
