@@ -1,11 +1,16 @@
 export class AnimatedFeaturesV2 extends HTMLElement {
+  constructor() {
+    super();
+    this.observer = null;
+  }
+
   connectedCallback() {
     this.setupScrollAnimation();
   }
 
   setupScrollAnimation() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible');
 
@@ -16,30 +21,29 @@ export class AnimatedFeaturesV2 extends HTMLElement {
       });
     }, { threshold: 0.2 });
 
-    const elements = '.animated-features-v2__heading, .animated-features-v2__subheading, .animated-features-v2__feature, .animated-features-v2__disclaimer, .animated-features-v2__image-wrapper, .animated-features-v2__image-label';
-    this.querySelectorAll(elements).forEach(el => observer.observe(el));
+    const animatedElements = '.animated-features-v2__heading, .animated-features-v2__subheading, .animated-features-v2__feature, .animated-features-v2__disclaimer, .animated-features-v2__image-wrapper, .animated-features-v2__image-label';
+    this.querySelectorAll(animatedElements).forEach((element) => this.observer.observe(element));
   }
 
-  animateScrollingDigits(heading) {
-    if (heading.dataset.animated) return;
-    heading.dataset.animated = 'true';
+  animateScrollingDigits(headingElement) {
+    if (headingElement.dataset.animated) return;
+    headingElement.dataset.animated = 'true';
 
-    const text = heading.getAttribute('data-percentage');
-    const match = text.match(/(\d+)(.*)$/);
+    const percentageValue = headingElement.getAttribute('data-percentage');
+    const percentageMatch = percentageValue.match(/(\d+)(.*)$/);
 
-    if (!match) {
-      heading.textContent = text;
+    if (!percentageMatch) {
+      headingElement.textContent = percentageValue;
       return;
     }
 
-    const number = match[1];
-    const suffix = match[2];
-    const digits = number.padStart(2, '0').split('');
+    const percentageNumber = percentageMatch[1];
+    const suffix = percentageMatch[2];
+    const digits = percentageNumber.padStart(2, '0').split('');
 
-   
     const animationSpeed = parseFloat(this.dataset.animationSpeed || '1.2');
-    const digitAnimationDuration = animationSpeed * 1.5; 
-    const animationCompleteTime = digitAnimationDuration * 1000; 
+    const digitAnimationDuration = animationSpeed * 1.5;
+    const animationCompleteTime = digitAnimationDuration * 1000;
 
     let html = '<span class="animated-features-v2__counter-wrapper">';
 
@@ -57,24 +61,30 @@ export class AnimatedFeaturesV2 extends HTMLElement {
     html += `<span class="animated-features-v2__suffix">${suffix}</span>`;
     html += '</span>';
 
-    heading.innerHTML = html;
+    headingElement.innerHTML = html;
 
     setTimeout(() => {
-      const scrollers = heading.querySelectorAll('.animated-features-v2__digit-scroller');
+      const digitScrollers = headingElement.querySelectorAll('.animated-features-v2__digit-scroller');
 
-      scrollers.forEach((scroller, index) => {
+      digitScrollers.forEach((digitScroller, index) => {
         const targetDigit = digits[index];
-        const digitHeight = scroller.firstChild.offsetHeight;
+        const digitHeight = digitScroller.firstChild.offsetHeight;
         const scrollDistance = (targetDigit === '0' ? 10 : parseInt(targetDigit)) * digitHeight;
 
-        scroller.style.transitionDelay = `${index * 0.1}s`;
-        scroller.style.transform = `translateY(-${scrollDistance}px)`;
+        digitScroller.style.transitionDelay = `${index * 0.1}s`;
+        digitScroller.style.transform = `translateY(-${scrollDistance}px)`;
       });
     }, 50);
 
     setTimeout(() => {
-      heading.textContent = text;
+      headingElement.textContent = percentageValue;
     }, animationCompleteTime);
+  }
+
+  disconnectedCallback() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 }
 

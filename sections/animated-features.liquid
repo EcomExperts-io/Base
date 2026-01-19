@@ -60,149 +60,61 @@
 
       <div class="animated-features__right">
         <div class="animated-features__grid">
-          <div class="animated-features__card">
-            <div class="animated-features__card-inner">
-              <div class="animated-features__card-front">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
-                </div>
-                {%- if section.settings.image_1 != blank -%}
-                  <img
-                    src="{{ section.settings.image_1 | image_url: width: 400 }}"
-                    srcset="{{ section.settings.image_1 | image_url: width: 400 }} 1x, {{ section.settings.image_1 | image_url: width: 800 }} 2x"
-                    alt="{{ section.settings.image_1.alt | default: section.settings.label_1 | escape }}"
-                    loading="lazy"
-                    width="{{ section.settings.image_1.width }}"
-                    height="{{ section.settings.image_1.height }}"
-                    class="animated-features__image"
-                  >
-                {%- else -%}
-                  <div class="animated-features__image-placeholder">
-                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                  </div>
-                {%- endif -%}
-                {%- if section.settings.label_1 != blank -%}
-                  <div class="animated-features__label">{{ section.settings.label_1 | escape }}</div>
-                {%- endif -%}
-              </div>
-              <div class="animated-features__card-back">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
-                </div>
-                <div class="animated-features__flipped-text">
-                  {{ section.settings.flipped_text_1 | default: '<p>Add the flipped text here</p>' }}
-                </div>
-              </div>
-            </div>
-          </div>
+          {%- for i in (1..4) -%}
+            {%- if i == 1 -%}
+              {%- assign current_image = section.settings.image_1 -%}
+              {%- assign current_label = section.settings.label_1 -%}
+              {%- assign current_flipped_text = section.settings.flipped_text_1 -%}
+            {%- elsif i == 2 -%}
+              {%- assign current_image = section.settings.image_2 -%}
+              {%- assign current_label = section.settings.label_2 -%}
+              {%- assign current_flipped_text = section.settings.flipped_text_2 -%}
+            {%- elsif i == 3 -%}
+              {%- assign current_image = section.settings.image_3 -%}
+              {%- assign current_label = section.settings.label_3 -%}
+              {%- assign current_flipped_text = section.settings.flipped_text_3 -%}
+            {%- else -%}
+              {%- assign current_image = section.settings.image_4 -%}
+              {%- assign current_label = section.settings.label_4 -%}
+              {%- assign current_flipped_text = section.settings.flipped_text_4 -%}
+            {%- endif -%}
 
-          <div class="animated-features__card">
-            <div class="animated-features__card-inner">
-              <div class="animated-features__card-front">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
-                </div>
-                {%- if section.settings.image_2 != blank -%}
-                  <img
-                    src="{{ section.settings.image_2 | image_url: width: 400 }}"
-                    srcset="{{ section.settings.image_2 | image_url: width: 400 }} 1x, {{ section.settings.image_2 | image_url: width: 800 }} 2x"
-                    alt="{{ section.settings.image_2.alt | default: section.settings.label_2 | escape }}"
-                    loading="lazy"
-                    width="{{ section.settings.image_2.width }}"
-                    height="{{ section.settings.image_2.height }}"
-                    class="animated-features__image"
-                  >
-                {%- else -%}
-                  <div class="animated-features__image-placeholder">
-                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            <div class="animated-features__card" id="animated-features-card-{{ i }}">
+              <div class="animated-features__card-inner">
+                <div class="animated-features__card-front">
+                  <div class="animated-features__icon">
+                    {{ 'icon-sync.svg' | inline_asset_content }}
                   </div>
-                {%- endif -%}
-                {%- if section.settings.label_2 != blank -%}
-                  <div class="animated-features__label">{{ section.settings.label_2 | escape }}</div>
-                {%- endif -%}
-              </div>
-              <div class="animated-features__card-back">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
+                  {%- if current_image != blank -%}
+                    <img
+                      src="{{ current_image | image_url: width: 400 }}"
+                      srcset="{{ current_image | image_url: width: 400 }} 1x, {{ current_image | image_url: width: 800 }} 2x"
+                      alt="{{ current_image.alt | default: current_label | escape }}"
+                      loading="lazy"
+                      width="{{ current_image.width }}"
+                      height="{{ current_image.height }}"
+                      class="animated-features__image"
+                    >
+                  {%- else -%}
+                    <div class="animated-features__image-placeholder">
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {%- endif -%}
+                  {%- if current_label != blank -%}
+                    <div class="animated-features__label">{{ current_label | escape }}</div>
+                  {%- endif -%}
                 </div>
-                <div class="animated-features__flipped-text">
-                  {{ section.settings.flipped_text_2 | default: '<p>Add the flipped text here</p>' }}
+                <div class="animated-features__card-back">
+                  <div class="animated-features__icon">
+                    {{ 'icon-sync.svg' | inline_asset_content }}
+                  </div>
+                  <div class="animated-features__flipped-text">
+                    {{ current_flipped_text | default: '<p>Add the flipped text here</p>' }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="animated-features__card">
-            <div class="animated-features__card-inner">
-              <div class="animated-features__card-front">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
-                </div>
-                {%- if section.settings.image_3 != blank -%}
-                  <img
-                    src="{{ section.settings.image_3 | image_url: width: 400 }}"
-                    srcset="{{ section.settings.image_3 | image_url: width: 400 }} 1x, {{ section.settings.image_3 | image_url: width: 800 }} 2x"
-                    alt="{{ section.settings.image_3.alt | default: section.settings.label_3 | escape }}"
-                    loading="lazy"
-                    width="{{ section.settings.image_3.width }}"
-                    height="{{ section.settings.image_3.height }}"
-                    class="animated-features__image"
-                  >
-                {%- else -%}
-                  <div class="animated-features__image-placeholder">
-                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                  </div>
-                {%- endif -%}
-                {%- if section.settings.label_3 != blank -%}
-                  <div class="animated-features__label">{{ section.settings.label_3 | escape }}</div>
-                {%- endif -%}
-              </div>
-              <div class="animated-features__card-back">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
-                </div>
-                <div class="animated-features__flipped-text">
-                  {{ section.settings.flipped_text_3 | default: '<p>Add the flipped text here</p>' }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="animated-features__card">
-            <div class="animated-features__card-inner">
-              <div class="animated-features__card-front">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
-                </div>
-                {%- if section.settings.image_4 != blank -%}
-                  <img
-                    src="{{ section.settings.image_4 | image_url: width: 400 }}"
-                    srcset="{{ section.settings.image_4 | image_url: width: 400 }} 1x, {{ section.settings.image_4 | image_url: width: 800 }} 2x"
-                    alt="{{ section.settings.image_4.alt | default: section.settings.label_4 | escape }}"
-                    loading="lazy"
-                    width="{{ section.settings.image_4.width }}"
-                    height="{{ section.settings.image_4.height }}"
-                    class="animated-features__image"
-                  >
-                {%- else -%}
-                  <div class="animated-features__image-placeholder">
-                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                  </div>
-                {%- endif -%}
-                {%- if section.settings.label_4 != blank -%}
-                  <div class="animated-features__label">{{ section.settings.label_4 | escape }}</div>
-                {%- endif -%}
-              </div>
-              <div class="animated-features__card-back">
-                <div class="animated-features__icon">
-                  {{ 'icon-sync.svg' | inline_asset_content }}
-                </div>
-                <div class="animated-features__flipped-text">
-                  {{ section.settings.flipped_text_4 | default: '<p>Add the flipped text here</p>' }}
-                </div>
-              </div>
-            </div>
-          </div>
+          {%- endfor -%}
         </div>
       </div>
     </div>

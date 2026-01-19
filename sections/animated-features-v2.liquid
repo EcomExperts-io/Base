@@ -53,9 +53,9 @@
       </div>
 
       <div class="animated-features-v2__right">
-        {%- if section.settings.heading != blank -%}
-          <h2 class="animated-features-v2__heading" data-percentage="{{ section.settings.heading | escape }}">
-            {{ section.settings.heading | escape }}
+        {%- if section.settings.heading_percentage != blank -%}
+          <h2 class="animated-features-v2__heading" data-percentage="{{ section.settings.heading_percentage | escape }}">
+            {{ section.settings.heading_percentage | escape }}
           </h2>
         {%- endif -%}
 
@@ -64,41 +64,26 @@
         {%- endif -%}
 
         <div class="animated-features-v2__features">
-          {%- if section.settings.feature_1 != blank -%}
-            <div class="animated-features-v2__feature">
-              <div class="animated-features-v2__checkmark">
-                {{ 'icon-checkmark.svg' | inline_asset_content }}
-              </div>
-              <span class="animated-features-v2__feature-text">{{ section.settings.feature_1 | escape }}</span>
-            </div>
-          {%- endif -%}
+          {%- for i in (1..4) -%}
+            {%- if i == 1 -%}
+              {%- assign current_feature = section.settings.feature_1 -%}
+            {%- elsif i == 2 -%}
+              {%- assign current_feature = section.settings.feature_2 -%}
+            {%- elsif i == 3 -%}
+              {%- assign current_feature = section.settings.feature_3 -%}
+            {%- else -%}
+              {%- assign current_feature = section.settings.feature_4 -%}
+            {%- endif -%}
 
-          {%- if section.settings.feature_2 != blank -%}
-            <div class="animated-features-v2__feature">
-              <div class="animated-features-v2__checkmark">
-                {{ 'icon-checkmark.svg' | inline_asset_content }}
+            {%- if current_feature != blank -%}
+              <div class="animated-features-v2__feature" id="animated-features-v2-feature-{{ i }}">
+                <div class="animated-features-v2__checkmark">
+                  {{ 'icon-checkmark.svg' | inline_asset_content }}
+                </div>
+                <span class="animated-features-v2__feature-text">{{ current_feature | escape }}</span>
               </div>
-              <span class="animated-features-v2__feature-text">{{ section.settings.feature_2 | escape }}</span>
-            </div>
-          {%- endif -%}
-
-          {%- if section.settings.feature_3 != blank -%}
-            <div class="animated-features-v2__feature">
-              <div class="animated-features-v2__checkmark">
-                {{ 'icon-checkmark.svg' | inline_asset_content }}
-              </div>
-              <span class="animated-features-v2__feature-text">{{ section.settings.feature_3 | escape }}</span>
-            </div>
-          {%- endif -%}
-
-          {%- if section.settings.feature_4 != blank -%}
-            <div class="animated-features-v2__feature">
-              <div class="animated-features-v2__checkmark">
-                {{ 'icon-checkmark.svg' | inline_asset_content }}
-              </div>
-              <span class="animated-features-v2__feature-text">{{ section.settings.feature_4 | escape }}</span>
-            </div>
-          {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
         </div>
 
         {%- if section.settings.disclaimer != blank -%}
@@ -185,7 +170,7 @@
     },
     {
       "type": "text",
-      "id": "heading",
+      "id": "heading_percentage",
       "label": "Heading (Percentage)",
       "default": "70%"
     },

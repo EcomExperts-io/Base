@@ -5,12 +5,15 @@ export class AnimatedFeatures extends HTMLElement {
   }
 
   connectedCallback() {
-    const cards = this.querySelectorAll('.animated-features__card');
-    cards.forEach((card) => {
-      card.addEventListener('click', this.handleCardClick.bind(this));
-    });
-
+    this.initCardClickHandlers();
     this.initScrollAnimations();
+  }
+
+  initCardClickHandlers() {
+    const animatedCards = this.querySelectorAll('.animated-features__card');
+    animatedCards.forEach((animatedCard) => {
+      animatedCard.addEventListener('click', this.handleCardClick.bind(this));
+    });
   }
 
   initScrollAnimations() {
@@ -22,23 +25,18 @@ export class AnimatedFeatures extends HTMLElement {
       });
     }, { threshold: 0.2 });
 
-    const elements = this.querySelectorAll('[class*="animated-features__"]');
-    elements.forEach((el) => this.observer.observe(el));
+    const animatedElements = this.querySelectorAll('[class*="animated-features__"]');
+    animatedElements.forEach((element) => this.observer.observe(element));
   }
 
   handleCardClick(event) {
-    const card = event.currentTarget;
-    if (card.querySelector('.animated-features__card-back')) {
-      card.classList.toggle('is-flipped');
+    const animatedCard = event.currentTarget;
+    if (animatedCard.querySelector('.animated-features__card-back')) {
+      animatedCard.classList.toggle('is-flipped');
     }
   }
 
   disconnectedCallback() {
-    const cards = this.querySelectorAll('.animated-features__card');
-    cards.forEach((card) => {
-      card.removeEventListener('click', this.handleCardClick);
-    });
-
     if (this.observer) {
       this.observer.disconnect();
     }
