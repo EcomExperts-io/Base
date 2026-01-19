@@ -21,7 +21,7 @@
         "enable_swatches": true,
         "swatch_type": "color",
         "swatch_trigger": "Color",
-        "enable_infinite_scroll": false,
+        "enable_infinite_scroll": true,
         "button_text_color": "#838383",
         "button_border_color": "#838383",
         "button_background_color": "#ffffff",
