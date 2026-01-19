@@ -65,15 +65,8 @@
 
         <div class="animated-features-v2__features">
           {%- for i in (1..4) -%}
-            {%- if i == 1 -%}
-              {%- assign current_feature = section.settings.feature_1 -%}
-            {%- elsif i == 2 -%}
-              {%- assign current_feature = section.settings.feature_2 -%}
-            {%- elsif i == 3 -%}
-              {%- assign current_feature = section.settings.feature_3 -%}
-            {%- else -%}
-              {%- assign current_feature = section.settings.feature_4 -%}
-            {%- endif -%}
+            {%- assign feature_key = 'feature_' | append: i -%}
+            {%- assign current_feature = section.settings[feature_key] -%}
 
             {%- if current_feature != blank -%}
               <div class="animated-features-v2__feature" id="animated-features-v2-feature-{{ i }}">

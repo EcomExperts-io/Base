@@ -61,23 +61,12 @@
       <div class="animated-features__right">
         <div class="animated-features__grid">
           {%- for i in (1..4) -%}
-            {%- if i == 1 -%}
-              {%- assign current_image = section.settings.image_1 -%}
-              {%- assign current_label = section.settings.label_1 -%}
-              {%- assign current_flipped_text = section.settings.flipped_text_1 -%}
-            {%- elsif i == 2 -%}
-              {%- assign current_image = section.settings.image_2 -%}
-              {%- assign current_label = section.settings.label_2 -%}
-              {%- assign current_flipped_text = section.settings.flipped_text_2 -%}
-            {%- elsif i == 3 -%}
-              {%- assign current_image = section.settings.image_3 -%}
-              {%- assign current_label = section.settings.label_3 -%}
-              {%- assign current_flipped_text = section.settings.flipped_text_3 -%}
-            {%- else -%}
-              {%- assign current_image = section.settings.image_4 -%}
-              {%- assign current_label = section.settings.label_4 -%}
-              {%- assign current_flipped_text = section.settings.flipped_text_4 -%}
-            {%- endif -%}
+            {%- assign image_key = 'image_' | append: i -%}
+            {%- assign label_key = 'label_' | append: i -%}
+            {%- assign flipped_text_key = 'flipped_text_' | append: i -%}
+            {%- assign current_image = section.settings[image_key] -%}
+            {%- assign current_label = section.settings[label_key] -%}
+            {%- assign current_flipped_text = section.settings[flipped_text_key] -%}
 
             <div class="animated-features__card" id="animated-features-card-{{ i }}">
               <div class="animated-features__card-inner">
