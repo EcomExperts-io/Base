@@ -9,915 +9,401 @@
  */
  {
   "sections": {
-    "dynamic_grid_YPA7qV": {
-      "type": "dynamic-grid",
-      "blocks": {
-        "block_TeL4bi": {
-          "type": "block",
-          "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/Body_Teaser_Secondary_Desktop_2_x780_06cd09a1-4627-470c-9c40-eb1750d676ab.webp",
-            "image_mobile": "shopify://shop_images/Body_Teaser_Secondary_Mobile_2_800x_312a1487-c2e0-444d-935b-5af46900eac9.webp",
-            "title": "Your Perfect Match",
-            "description": "Find your shade by taking one of our shade match quizzes, created by Bobbi.",
-            "button_text": "Find Your Shade",
-            "button_link": "#",
-            "custom_styling_enabled": false,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 14,
-            "button_uppercase": false,
-            "button_bg_color": "#000000",
-            "button_text_color": "#ffffff",
-            "text_on_image_top_position": 50,
-            "text_on_image_alignment": "center"
-          }
-        }
-      },
-      "block_order": [
-        "block_TeL4bi"
-      ],
-      "name": "Dynamic Grid",
+    "hero_1": {
+      "type": "hero",
       "settings": {
-        "section_content_alignment": "center",
-        "section_content_alignment_mobile": "center",
-        "title": "",
-        "section_title_color": "#000000",
-        "section_title_font_weight": "normal",
-        "section_uppercase_title": false,
-        "section_title_font_size_desktop": 24,
-        "section_title_font_size_mobile": 20,
-        "section_description": "",
-        "section_description_color": "#000000",
-        "section_uppercase_description": false,
-        "section_description_font_size_desktop": 16,
-        "section_description_font_size_mobile": 14,
-        "button_text": "",
-        "button_url": "",
-        "section_button_font_size_desktop": 16,
-        "section_button_font_size_mobile": 14,
+        "color_scheme": "scheme-3",
+        "background_type": "image",
+        "video_background_url": "",
+        "overlay_color": "#e8e1e1",
+        "overlay_opacity": 30,
+        "content_alignment": "center",
+        "vertical_alignment": "center",
+        "stars_text": "",
+        "heading": "Main Banner Title Here",
+        "subheading": "Sub Header Here",
+        "button_text": "Shop Now",
+        "button_link": "shopify://collections/cam-plans",
         "button_background_color": "#ffffff",
-        "section_button_text_color": "#000",
-        "button_border_color": "#000",
-        "background_color": "#ffffff",
-        "spacing_top_desktop": 50,
-        "spacing_bottom_desktop": 50,
-        "spacing_top_mobile": 30,
-        "spacing_bottom_mobile": 30,
-        "style": "text-on-image",
-        "text_on_image_top_position": 15,
-        "text_on_image_alignment": "left",
-        "rows_desktop": "3",
-        "rows_tablet": "2",
-        "rows_mobile": "1",
-        "title_font_size_desktop": 32,
-        "title_font_size_mobile": 28,
-        "title_font_color": "#000000",
-        "text_decoration": true,
-        "bold_title": true,
-        "title_uppercase": false,
-        "description_font_size_desktop": 18,
-        "description_font_size_mobile": 16,
-        "description_font_color": "#000000",
-        "button_font_size": 14,
-        "button_uppercase": false,
-        "button_underline": false,
-        "button_bg_color": "#000000",
-        "button_text_color": "#ffffff"
+        "button_text_color": "#000000",
+        "show_endorsement": false,
+        "endorsement_name": ""
       }
     },
-    "dynamic_grid_QQ9qPY": {
-      "type": "dynamic-grid",
+    "hero_v2_pVryft": {
+      "type": "hero-v2",
       "blocks": {
-        "block_6cN869": {
-          "type": "block",
+        "collection_GVMfYr": {
+          "type": "collection",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/Picture_PDP_face_2_x1000.jpg_1_x1000_f14dbc67-0d15-4f7c-9c03-5fcf704b9142.webp",
-            "title": "",
-            "description": "",
-            "button_text": "Shop Face",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 95,
-            "text_on_image_alignment": "right"
+            "collection": "",
+            "custom_title": "",
+            "content_position": "top"
           }
         },
-        "block_HNTLjL": {
-          "type": "block",
+        "collection_rkQKDL": {
+          "type": "collection",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/Picture_PDP_skin_4_1_x1000.jpg_1_x1000_02007c5e-af76-48ac-bd49-e6ea72246526.webp",
-            "title": "",
-            "description": "",
-            "button_text": "Shop Body",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 95,
-            "text_on_image_alignment": "right"
-          }
-        },
-        "block_gMbGxg": {
-          "type": "block",
-          "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/Picture_PDP_eyes_3_1_x1000.jpg_1_x1000_0368dd2b-5eed-41b4-af25-593e2c8f392b.webp",
-            "title": "",
-            "description": "",
-            "button_text": "Shop Eyes",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 95,
-            "text_on_image_alignment": "right"
-          }
-        },
-        "block_3cEYMc": {
-          "type": "block",
-          "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/Picture_PDP_Lips_1_1_x1000_jpg_x1000_d3d2b26a-d8c3-4ff0-b14d-123060df7c0e.webp",
-            "title": "",
-            "description": "",
-            "button_text": "Shop Lips",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 95,
-            "text_on_image_alignment": "right"
+            "collection": "",
+            "custom_title": "",
+            "content_position": "top"
           }
         }
       },
       "block_order": [
-        "block_6cN869",
-        "block_HNTLjL",
-        "block_gMbGxg",
-        "block_3cEYMc"
+        "collection_GVMfYr",
+        "collection_rkQKDL"
       ],
-      "name": "Dynamic Grid",
+      "name": "Hero V2",
       "settings": {
-        "section_content_alignment": "left",
-        "section_content_alignment_mobile": "center",
-        "title": "Shop By Collection",
-        "section_title_color": "#000000",
-        "section_title_font_weight": "bold",
-        "section_uppercase_title": true,
-        "section_title_font_size_desktop": 24,
-        "section_title_font_size_mobile": 22,
-        "section_description": "",
-        "section_description_color": "#000000",
-        "section_uppercase_description": false,
-        "section_description_font_size_desktop": 16,
-        "section_description_font_size_mobile": 14,
-        "button_text": "",
-        "button_url": "",
-        "section_button_font_size_desktop": 16,
-        "section_button_font_size_mobile": 14,
-        "button_background_color": "#ffffff",
-        "section_button_text_color": "#000000",
-        "button_border_color": "#000000",
-        "background_color": "#ffffff",
-        "spacing_top_desktop": 50,
-        "spacing_bottom_desktop": 50,
-        "spacing_top_mobile": 30,
-        "spacing_bottom_mobile": 30,
-        "style": "text-on-image",
-        "text_on_image_top_position": 50,
-        "text_on_image_alignment": "center",
-        "rows_desktop": "4",
-        "rows_tablet": "4",
-        "rows_mobile": "2",
-        "title_font_size_desktop": 18,
-        "title_font_size_mobile": 16,
-        "title_font_color": "#000000",
-        "text_decoration": true,
-        "bold_title": false,
-        "title_uppercase": false,
-        "description_font_size_desktop": 18,
-        "description_font_size_mobile": 16,
-        "description_font_color": "#000000",
-        "button_font_size": 14,
-        "button_uppercase": false,
-        "button_underline": false,
-        "button_bg_color": "#000000",
-        "button_text_color": "#ffffff"
+        "color_scheme": "",
+        "background_type": "image",
+        "video_background_url": "",
+        "heading": "Main Banner Title Here",
+        "description": "Sub Header Here",
+        "button_text": "SHOP COLLECTION",
+        "button_link": "",
+        "button_type": "button",
+        "content_alignment": "left",
+        "vertical_alignment": "top",
+        "padding_top": 36,
+        "padding_bottom": 36
       }
     },
-    "dynamic_grid_a7nphg": {
-      "type": "dynamic-grid",
+    "featured_collections_hhETJ9": {
+      "type": "featured-collections",
       "blocks": {
-        "block_g3WQt6": {
-          "type": "block",
+        "collection_card_3ccame": {
+          "type": "collection_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/PRODUCT-ROW-PDP-01_460x_c61a8d53-4b76-439e-8120-507685edad51.webp",
-            "title": "Better Beauty",
-            "description": "The world doesn't need more beauty products. It needs better beauty products.",
-            "button_text": "Learn more",
-            "button_link": "#",
-            "custom_styling_enabled": false,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 14,
-            "button_uppercase": false,
-            "button_bg_color": "#000000",
-            "button_text_color": "#ffffff",
-            "text_on_image_top_position": 50,
-            "text_on_image_alignment": "center"
+            "collection": "",
+            "custom_title": ""
           }
         },
-        "block_mJ4tXJ": {
-          "type": "block",
+        "collection_card_BRp9XN": {
+          "type": "collection_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/PRODUCT-ROW-PDP-02_460x_6fdaa8d8-d4ac-4035-81bb-997122e292c6.webp",
-            "title": "Clean Slate",
-            "description": "No phthalates, sulfates, petrolatum, PEGs, EDTA, or BPA. Because clean beauty is a no brainer.",
-            "button_text": "Learn more",
-            "button_link": "#",
-            "custom_styling_enabled": false,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 14,
-            "button_uppercase": false,
-            "button_bg_color": "#000000",
-            "button_text_color": "#ffffff",
-            "text_on_image_top_position": 50,
-            "text_on_image_alignment": "center"
+            "collection": "",
+            "custom_title": ""
           }
         },
-        "block_TirjqT": {
-          "type": "block",
+        "collection_card_jbyADA": {
+          "type": "collection_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/value-props-1_460x_d97cfcf2-ef4f-4b24-9d4a-ad677facdfad.webp",
-            "title": "High Performance",
-            "description": "The makeup equivalent of a swiss army knife. Easy, cool, multi-purpose products.",
-            "button_text": "Learn more",
-            "button_link": "#",
-            "custom_styling_enabled": false,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 14,
-            "button_uppercase": false,
-            "button_bg_color": "#000000",
-            "button_text_color": "#ffffff",
-            "text_on_image_top_position": 50,
-            "text_on_image_alignment": "center"
+            "collection": "",
+            "custom_title": ""
           }
         },
-        "block_tVpTHb": {
-          "type": "block",
+        "collection_card_LVn8DN": {
+          "type": "collection_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/PRODUCT-ROW-PDP-04_460x_3912e008-260b-4f76-b5a0-8d629763c5b4.webp",
-            "title": "From Bobbi",
-            "description": "It began with the need to create formulas for her own kit.",
-            "button_text": "Learn more",
-            "button_link": "#",
-            "custom_styling_enabled": false,
-            "font_size_desktop": 18,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 14,
-            "button_uppercase": false,
-            "button_bg_color": "#000000",
-            "button_text_color": "#ffffff",
-            "text_on_image_top_position": 50,
-            "text_on_image_alignment": "center"
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "collection_card_nCgcp7": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
           }
         }
       },
       "block_order": [
-        "block_g3WQt6",
-        "block_mJ4tXJ",
-        "block_TirjqT",
-        "block_tVpTHb"
+        "collection_card_3ccame",
+        "collection_card_BRp9XN",
+        "collection_card_jbyADA",
+        "collection_card_LVn8DN",
+        "collection_card_nCgcp7"
       ],
-      "name": "Dynamic Grid",
+      "name": "Featured Collections",
       "settings": {
-        "section_content_alignment": "center",
-        "section_content_alignment_mobile": "center",
-        "title": "",
-        "section_title_color": "#000000",
-        "section_title_font_weight": "normal",
-        "section_uppercase_title": false,
-        "section_title_font_size_desktop": 24,
-        "section_title_font_size_mobile": 20,
-        "section_description": "",
-        "section_description_color": "#000000",
-        "section_uppercase_description": false,
-        "section_description_font_size_desktop": 16,
-        "section_description_font_size_mobile": 14,
-        "button_text": "",
-        "button_url": "",
-        "section_button_font_size_desktop": 16,
-        "section_button_font_size_mobile": 14,
-        "button_background_color": "#ffffff",
-        "section_button_text_color": "#000000",
-        "button_border_color": "#000000",
-        "background_color": "#f8f8f8",
-        "spacing_top_desktop": 50,
-        "spacing_bottom_desktop": 50,
-        "spacing_top_mobile": 30,
-        "spacing_bottom_mobile": 30,
-        "style": "text-below-image",
-        "text_on_image_top_position": 50,
-        "text_on_image_alignment": "left",
-        "rows_desktop": "4",
-        "rows_tablet": "4",
-        "rows_mobile": "2",
-        "title_font_size_desktop": 16,
-        "title_font_size_mobile": 16,
-        "title_font_color": "#000000",
-        "text_decoration": false,
-        "bold_title": true,
-        "title_uppercase": true,
-        "description_font_size_desktop": 14,
-        "description_font_size_mobile": 14,
-        "description_font_color": "#000000",
-        "button_font_size": 14,
-        "button_uppercase": false,
-        "button_underline": true,
-        "button_bg_color": "rgba(0,0,0,0)",
-        "button_text_color": "#000000"
+        "color_scheme": "",
+        "heading": "Find the perfect fit for your game",
+        "subheading": "Browse through our collections",
+        "heading_alignment": "center",
+        "style": "style2",
+        "grid_gap": 25,
+        "hide_shop_now": true
       }
     },
-    "dynamic_grid_a8nz43": {
-      "type": "dynamic-grid",
+    "featured_collections_v2_example": {
+      "type": "featured-collections-v2",
       "blocks": {
-        "block_Lqtdhf": {
-          "type": "block",
+        "collection_card_3ccame": {
+          "type": "collection_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 50,
-            "column_width_tablet": 50,
-            "column_width_mobile": 100,
-            "image": "shopify://shop_images/s-c-image-card-5.webp",
-            "title": "Cleansing Set For",
-            "description": "Sensitive Skin",
-            "button_text": "Shop Now",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 26,
-            "font_size_mobile": 26,
-            "title_uppercase": false,
-            "font_color": "#ffffff",
-            "description_font_size_desktop": 26,
-            "description_font_size_mobile": 26,
-            "description_font_color": "#ffffff",
-            "button_font_size": 14,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 50,
-            "text_on_image_alignment": "left"
+            "collection": "",
+            "custom_title": "T-Shirts"
           }
         },
-        "block_n9tT9n": {
-          "type": "block",
+        "collection_card_BRp9XN": {
+          "type": "collection_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 25,
-            "column_width_tablet": 25,
-            "column_width_mobile": 25,
-            "image": "shopify://shop_images/s-c-image-card-6.webp",
-            "title": "Pastel Bathroom",
-            "description": "Couter top",
-            "button_text": "Shop Now",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 26,
-            "font_size_mobile": 26,
-            "title_uppercase": false,
-            "font_color": "#ffffff",
-            "description_font_size_desktop": 26,
-            "description_font_size_mobile": 26,
-            "description_font_color": "#ffffff",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 50,
-            "text_on_image_alignment": "left"
+            "collection": "",
+            "custom_title": "Shorts"
+          }
+        },
+        "collection_card_jbyADA": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Hats"
+          }
+        },
+        "collection_card_LVn8DN": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Jackets"
+          }
+        },
+        "collection_card_nCgcp7": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Accessories"
           }
         }
       },
       "block_order": [
-        "block_Lqtdhf",
-        "block_n9tT9n"
+        "collection_card_3ccame",
+        "collection_card_BRp9XN",
+        "collection_card_jbyADA",
+        "collection_card_LVn8DN",
+        "collection_card_nCgcp7"
       ],
-      "name": "Dynamic Grid",
+      "name": "Featured Collections V2",
       "settings": {
-        "section_content_alignment": "left",
-        "section_content_alignment_mobile": "center",
-        "title": "",
-        "section_title_color": "#000000",
-        "section_title_font_weight": "bold",
-        "section_uppercase_title": true,
-        "section_title_font_size_desktop": 16,
-        "section_title_font_size_mobile": 16,
-        "section_description": "",
-        "section_description_color": "#000000",
-        "section_uppercase_description": false,
-        "section_description_font_size_desktop": 16,
-        "section_description_font_size_mobile": 14,
-        "button_text": "",
-        "button_url": "",
-        "section_button_font_size_desktop": 16,
-        "section_button_font_size_mobile": 14,
-        "button_background_color": "#ffffff",
-        "section_button_text_color": "#000000",
-        "button_border_color": "#000000",
-        "background_color": "#ffffff",
-        "spacing_top_desktop": 50,
-        "spacing_bottom_desktop": 50,
-        "spacing_top_mobile": 30,
-        "spacing_bottom_mobile": 30,
-        "style": "text-on-image",
-        "text_on_image_top_position": 50,
-        "text_on_image_alignment": "center",
-        "rows_desktop": "2",
-        "rows_tablet": "2",
-        "rows_mobile": "1",
-        "title_font_size_desktop": 18,
-        "title_font_size_mobile": 16,
-        "title_font_color": "#000000",
-        "text_decoration": true,
-        "bold_title": false,
-        "title_uppercase": false,
-        "description_font_size_desktop": 18,
-        "description_font_size_mobile": 16,
-        "description_font_color": "#000000",
-        "button_font_size": 14,
-        "button_uppercase": false,
-        "button_underline": false,
-        "button_bg_color": "#000000",
-        "button_text_color": "#ffffff"
+        "color_scheme": "",
+        "heading": "Best Sellers",
+        "heading_alignment": "center",
+        "total_products_limit": 6,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "enable_swatches": true,
+        "swatch_type": "color",
+        "swatch_trigger": "Color",
+        "product_grid_gap": 16,
+        "products_on_desktop": 4,
+        "products_on_mobile": 2,
+        "padding_top": 80,
+        "padding_bottom": 60
       }
     },
-    "dynamic_grid_TTN7yW": {
-      "type": "dynamic-grid",
+    "featured_products_example": {
+      "type": "featured-products",
       "blocks": {
-        "block_4bFpQ6": {
-          "type": "block",
+        "block_1": {
+          "type": "product_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 50,
-            "column_width_tablet": 50,
-            "column_width_mobile": 100,
-            "image": "shopify://shop_images/Kaleidoscope3-4thSleeveTwirlDress-svahausa-5.webp",
-            "title": "Dresses",
-            "description": "",
-            "button_text": "",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 16,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "center"
+            "product": "scotland-button-up-in-navy"
           }
         },
-        "block_DVkFwa": {
-          "type": "block",
+        "block_2": {
+          "type": "product_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 50,
-            "column_width_tablet": 50,
-            "column_width_mobile": 100,
-            "image": "shopify://shop_images/3544c438cce81b5d2708d4e46334617f251ce4e3_c0fc6d25-1ffb-4614-9ecc-bb7020037679.webp",
-            "title": "Bottoms",
-            "description": "",
-            "button_text": "",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 16,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "center"
+            "product": "cape-dress-1"
           }
         },
-        "block_9R4DLx": {
-          "type": "block",
+        "product_card_bpd4Xd": {
+          "type": "product_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 50,
-            "column_width_tablet": 50,
-            "column_width_mobile": 100,
-            "image": "shopify://shop_images/succulents-top-svahausa-7604.webp",
-            "title": "Tops + Button Downs",
-            "description": "",
-            "button_text": "",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 16,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "center"
+            "product": "3-4-sleeve-kimono-dress-coral"
           }
         },
-        "block_FjHXBg": {
-          "type": "block",
+        "product_card_tP6QmJ": {
+          "type": "product_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 50,
-            "column_width_tablet": 50,
-            "column_width_mobile": 100,
-            "image": "shopify://shop_images/arcticanimals_loungewear_family_svahausa_10.webp",
-            "title": "Kids",
-            "description": "",
-            "button_text": "",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 16,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "center"
+            "product": "alex-twill-pant-sand"
           }
         },
-        "block_hr6MCk": {
-          "type": "block",
+        "product_card_RUFfmj": {
+          "type": "product_card",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 50,
-            "column_width_tablet": 50,
-            "column_width_mobile": 100,
-            "image": "shopify://shop_images/snowflakenecklace4.webp",
-            "title": "Accessories",
-            "description": "",
-            "button_text": "",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 16,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#000000",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "center"
+            "product": ""
+          }
+        },
+        "product_card_QizrFh": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
           }
         }
       },
       "block_order": [
-        "block_4bFpQ6",
-        "block_DVkFwa",
-        "block_9R4DLx",
-        "block_FjHXBg",
-        "block_hr6MCk"
+        "block_1",
+        "block_2",
+        "product_card_bpd4Xd",
+        "product_card_tP6QmJ",
+        "product_card_RUFfmj",
+        "product_card_QizrFh"
       ],
-      "name": "Dynamic Grid",
       "settings": {
-        "section_content_alignment": "left",
-        "section_content_alignment_mobile": "center",
-        "title": "Shop by category",
-        "section_title_color": "#000000",
-        "section_title_font_weight": "bold",
-        "section_uppercase_title": true,
-        "section_title_font_size_desktop": 24,
-        "section_title_font_size_mobile": 22,
-        "section_description": "Explore styles tailored just for you.",
-        "section_description_color": "#000000",
-        "section_uppercase_description": false,
-        "section_description_font_size_desktop": 18,
-        "section_description_font_size_mobile": 16,
-        "button_text": "",
-        "button_url": "",
-        "section_button_font_size_desktop": 16,
-        "section_button_font_size_mobile": 14,
-        "button_background_color": "#ffffff",
-        "section_button_text_color": "#000000",
-        "button_border_color": "#000000",
-        "background_color": "#ffffff",
-        "spacing_top_desktop": 50,
-        "spacing_bottom_desktop": 50,
-        "spacing_top_mobile": 30,
-        "spacing_bottom_mobile": 30,
-        "style": "text-below-image",
-        "text_on_image_top_position": 50,
-        "text_on_image_alignment": "center",
-        "rows_desktop": "5",
-        "rows_tablet": "3",
-        "rows_mobile": "2",
-        "title_font_size_desktop": 18,
-        "title_font_size_mobile": 16,
-        "title_font_color": "#000000",
-        "text_decoration": false,
-        "bold_title": false,
-        "title_uppercase": false,
-        "description_font_size_desktop": 18,
-        "description_font_size_mobile": 16,
-        "description_font_color": "#000000",
-        "button_font_size": 14,
-        "button_uppercase": false,
-        "button_underline": false,
-        "button_bg_color": "#000000",
-        "button_text_color": "#ffffff"
+        "color_scheme": "",
+        "heading": "Best Sellers",
+        "subheading": "",
+        "view_all_text": "View All",
+        "view_all_url": "shopify://products/acb-top-in-chipped-brick",
+        "heading_alignment": "center",
+        "show_view_all_as_button": true,
+        "button_background_color": "#2e2e2e",
+        "button_text_color": "#ffffff",
+        "product_content_alignment": "center",
+        "review_content_alignment": "center"
       }
     },
-    "dynamic_grid_Cjym4W": {
-      "type": "dynamic-grid",
+    "selling_points_example": {
+      "type": "selling-points",
       "blocks": {
-        "block_E3TXat": {
-          "type": "block",
+        "selling_point_1": {
+          "type": "selling_point",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 50,
-            "column_width_tablet": 50,
-            "column_width_mobile": 100,
-            "image": "shopify://shop_images/JonesRoad_Eyeshadow_SmokeyGrey_04_Olesia_GTL_x1000_c6c46968-0ba1-431d-b973-14efda571467.webp",
-            "title": "Olesia’s Chic, Effortless Look",
-            "description": "",
-            "button_text": "Get The Look",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 20,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#ffffff",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "right"
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
           }
         },
-        "block_VyDnRG": {
-          "type": "block",
+        "selling_point_2": {
+          "type": "selling_point",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 25,
-            "column_width_tablet": 25,
-            "column_width_mobile": 25,
-            "image": "shopify://shop_images/Deja_x1000_1d0be971-529b-4e42-98b5-7b722293a85d.webp",
-            "title": "Deja's Simple Smokey Eye",
-            "description": "",
-            "button_text": "Get the look",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 20,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#ffffff",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "right"
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
           }
         },
-        "block_7yRmVV": {
-          "type": "block",
+        "selling_point_3": {
+          "type": "selling_point",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/JonesRoad_GetTheLook_Mollye_GTL_x1000_4da27159-caff-417f-baec-55d0460237af.webp",
-            "title": "Mollye's Monochromatic Look",
-            "description": "",
-            "button_text": "Get the look",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 20,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#ffffff",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "right"
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
           }
         },
-        "block_VcYVkN": {
-          "type": "block",
+        "selling_point_4": {
+          "type": "selling_point",
           "settings": {
-            "custom_column_width": false,
-            "column_width_desktop": 33,
-            "column_width_tablet": 33,
-            "column_width_mobile": 50,
-            "image": "shopify://shop_images/justbobbi_AdelinaSoftFocusSparkle_x1000_b5eb2a63-ea9d-4acf-b8d9-d79ae7497e90.webp",
-            "title": "Adelina’s Soft Sophistication",
-            "description": "",
-            "button_text": "Get the look",
-            "button_link": "shopify://products/the-compare-at-price-snowboard",
-            "custom_styling_enabled": true,
-            "font_size_desktop": 20,
-            "font_size_mobile": 16,
-            "title_uppercase": false,
-            "font_color": "#ffffff",
-            "description_font_size_desktop": 18,
-            "description_font_size_mobile": 16,
-            "description_font_color": "#000000",
-            "button_font_size": 12,
-            "button_uppercase": true,
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#000000",
-            "text_on_image_top_position": 90,
-            "text_on_image_alignment": "right"
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
           }
         }
       },
       "block_order": [
-        "block_E3TXat",
-        "block_VyDnRG",
-        "block_7yRmVV",
-        "block_VcYVkN"
+        "selling_point_1",
+        "selling_point_2",
+        "selling_point_3",
+        "selling_point_4"
       ],
-      "name": "Dynamic Grid",
       "settings": {
-        "section_content_alignment": "left",
-        "section_content_alignment_mobile": "center",
-        "title": "Get The Look",
-        "section_title_color": "#000000",
-        "section_title_font_weight": "bold",
-        "section_uppercase_title": true,
-        "section_title_font_size_desktop": 24,
-        "section_title_font_size_mobile": 22,
-        "section_description": "",
-        "section_description_color": "#000000",
-        "section_uppercase_description": false,
-        "section_description_font_size_desktop": 16,
-        "section_description_font_size_mobile": 14,
-        "button_text": "",
-        "button_url": "",
-        "section_button_font_size_desktop": 16,
-        "section_button_font_size_mobile": 14,
-        "button_background_color": "#ffffff",
-        "section_button_text_color": "#000000",
-        "button_border_color": "#000000",
-        "background_color": "#ffffff",
-        "spacing_top_desktop": 50,
-        "spacing_bottom_desktop": 50,
-        "spacing_top_mobile": 30,
-        "spacing_bottom_mobile": 30,
-        "style": "text-on-image",
-        "text_on_image_top_position": 50,
-        "text_on_image_alignment": "center",
-        "rows_desktop": "4",
-        "rows_tablet": "4",
-        "rows_mobile": "2",
-        "title_font_size_desktop": 18,
-        "title_font_size_mobile": 16,
-        "title_font_color": "#000000",
-        "text_decoration": true,
-        "bold_title": false,
-        "title_uppercase": false,
-        "description_font_size_desktop": 18,
-        "description_font_size_mobile": 16,
-        "description_font_color": "#000000",
-        "button_font_size": 14,
-        "button_uppercase": false,
-        "button_underline": false,
-        "button_bg_color": "#000000",
-        "button_text_color": "#ffffff"
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "icon_size": 60
+      }
+    },
+    "selling_points_v2_6NgzaK": {
+      "type": "selling-points-v2",
+      "blocks": {
+        "selling_point_FiGVm7": {
+          "type": "selling_point",
+          "settings": {
+            "title": "15% OFF FIRST ORDER",
+            "description": "Subscribe to our mailing list for 15% off your first order",
+            "link_url": "shopify://collections/spring"
+          }
+        },
+        "selling_point_LKeBYR": {
+          "type": "selling_point",
+          "settings": {
+            "title": "INSTANT REFUNDS & EXCHANGES",
+            "description": "Get your new items or refund sent out straight away on UK & EU orders",
+            "link_url": "shopify://collections/luxury-pret"
+          }
+        },
+        "selling_point_YAEXV8": {
+          "type": "selling_point",
+          "settings": {
+            "title": "FREE WORLDWIDE DELIVERY",
+            "description": "Free worldwide delivery on all orders over £70",
+            "link_url": ""
+          }
+        },
+        "selling_point_Y6iWMM": {
+          "type": "selling_point",
+          "settings": {
+            "title": "45 DAY RETURNS",
+            "description": "We now offer an extended\nreturns policy for\ninternational customers",
+            "link_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "selling_point_FiGVm7",
+        "selling_point_LKeBYR",
+        "selling_point_YAEXV8",
+        "selling_point_Y6iWMM"
+      ],
+      "name": "Selling Points V2",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "enable_mobile_slider": true
+      }
+    },
+    "logos_example": {
+      "type": "logos",
+      "blocks": {
+        "logo_1": {
+          "type": "logo",
+          "settings": {}
+        },
+        "logo_2": {
+          "type": "logo",
+          "settings": {}
+        },
+        "logo_3": {
+          "type": "logo",
+          "settings": {}
+        },
+        "logo_4": {
+          "type": "logo",
+          "settings": {}
+        },
+        "logo_5": {
+          "type": "logo",
+          "settings": {}
+        },
+        "logo_6": {
+          "type": "logo",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "logo_1",
+        "logo_2",
+        "logo_3",
+        "logo_4",
+        "logo_5",
+        "logo_6"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "animation_duration": 30,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "logo_height": 120
+      }
+    },
+    "promo_banner_example": {
+      "type": "promo-banner",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "product": "",
+        "image_placement": "row",
+        "image_height": 500,
+        "image_fit": "cover",
+        "image_position": "top",
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     },
     "shop_by_category_example": {
@@ -1373,21 +859,24 @@
     }
   },
   "order": [
-    "dynamic_grid_YPA7qV",
-    "dynamic_grid_QQ9qPY",
-    "dynamic_grid_a7nphg",
-    "dynamic_grid_a8nz43",
-    "dynamic_grid_TTN7yW",
-    "dynamic_grid_Cjym4W",
+    "hero_1",
+    "hero_v2_pVryft",
+    "featured_collections_hhETJ9",
+    "featured_collections_v2_example",
+    "featured_products_example",
+    "selling_points_example",
+    "selling_points_v2_6NgzaK",
+    "logos_example",
+    "promo_banner_example",
     "shop_by_category_example",
-    "shop_categories_43RftD",
-    "faq_F6YWwR",
-    "blogs_6DGtRD",
     "shop_by_category_v2_bmaiWd",
+    "shop_categories_43RftD",
+    "blogs_6DGtRD",
     "brand_story_QhMEEy",
     "brand_story_v2_JiEECc",
     "shop_the_look_V4dmwn",
     "product_highlights_gUaG6E",
-    "product_details_xbXmpy"
+    "product_details_xbXmpy",
+    "faq_F6YWwR"
   ]
 }
