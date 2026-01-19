@@ -1,0 +1,49 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $50",
+            "link_text": "Shop now",
+            "link_url": "/collections/all",
+            "emoji": "🚚"
+          }
+        },
+        "announcement-2": {
+          "type": "announcement",
+          "settings": {
+            "text": "New arrivals just landed",
+            "link_text": "View collection",
+            "link_url": "/collections/new-arrivals",
+            "emoji": "✨"
+          }
+        }
+      },
+      "block_order": [
+        "announcement-1",
+        "announcement-2"
+      ],
+      "settings": {
+        "show_announcement": true,
+        "background_color": "#000000",
+        "text_color": "#ffffff",
+        "auto_rotate_interval": 4
+      }
+    }
+  },
+  "order": [
+   "announcement-bar"
+  ]
+}
