@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "hero_1": {
       "type": "hero",
@@ -856,6 +856,48 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "animated_features_hd8GtU": {
+      "type": "animated-features",
+      "name": "Animated Features",
+      "settings": {
+        "color_scheme": "",
+        "animation_speed": 1.2,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "heading": "Add Heading here",
+        "subheading": "Add Subheading here",
+        "button_text": "Read more",
+        "button_link": "",
+        "button_type": "button",
+        "notes": "<p>Add the notes here</p>",
+        "flipped_text_1": "<p>Add the flipped text here</p>",
+        "label_1": "Label 1",
+        "flipped_text_2": "",
+        "label_2": "Label 2",
+        "flipped_text_3": "",
+        "label_3": "Label 3",
+        "flipped_text_4": "",
+        "label_4": "Label 4"
+      }
+    },
+    "animated_features_v2_4yNYN7": {
+      "type": "animated-features-v2",
+      "name": "Animated Features V2",
+      "settings": {
+        "color_scheme": "",
+        "animation_speed": 1.2,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "image_label": "Image Label",
+        "heading": "70%",
+        "subheading": "Write subheading here",
+        "feature_1": "Feature 1",
+        "feature_2": "Feature 2",
+        "feature_3": "Feature 3",
+        "feature_4": "Feature 4",
+        "disclaimer": "<p>Write disclaimer here</p>"
+      }
     }
   },
   "order": [
@@ -877,6 +919,8 @@
     "shop_the_look_V4dmwn",
     "product_highlights_gUaG6E",
     "product_details_xbXmpy",
-    "faq_F6YWwR"
+    "faq_F6YWwR",
+    "animated_features_hd8GtU",
+    "animated_features_v2_4yNYN7"
   ]
 }
