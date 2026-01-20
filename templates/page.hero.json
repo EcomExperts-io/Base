@@ -1,0 +1,49 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+   "hero_1": {
+      "type": "hero",
+      "settings": {
+        "color_scheme": "scheme-3",
+        "background_type": "image",
+        "video_background_url": "",
+        "overlay_color": "#e8e1e1",
+        "overlay_opacity": 30,
+        "content_alignment": "center",
+        "vertical_alignment": "center",
+        "stars_text": "",
+        "heading": "Main Banner Title Here",
+        "subheading": "Sub Header Here",
+        "button_text": "Shop Now",
+        "button_link": "shopify://collections/cam-plans",
+        "button_background_color": "#ffffff",
+        "button_text_color": "#000000",
+        "show_endorsement": false,
+        "endorsement_name": ""
+      }
+    },
+    "link_readme_hero_1_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/hero.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "hero_1",
+    "link_readme_hero_1_Ay7yfa"
+  ]
+}

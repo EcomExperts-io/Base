@@ -1,0 +1,41 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "promo_banner_example": {
+      "type": "promo-banner",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "product": "",
+        "image_placement": "row",
+        "image_height": 500,
+        "image_fit": "cover",
+        "image_position": "top",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "link_readme_promo_banner_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/promo-banner.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "promo_banner_example",
+    "link_readme_promo_banner_Ay7yfa"
+  ]
+}

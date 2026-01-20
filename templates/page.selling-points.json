@@ -1,0 +1,73 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "selling_points_example": {
+      "type": "selling-points",
+      "blocks": {
+        "selling_point_1": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        },
+        "selling_point_2": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        },
+        "selling_point_3": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        },
+        "selling_point_4": {
+          "type": "selling_point",
+          "settings": {
+            "title": "Selling Point Title",
+            "description": "Selling Point Description"
+          }
+        }
+      },
+      "block_order": [
+        "selling_point_1",
+        "selling_point_2",
+        "selling_point_3",
+        "selling_point_4"
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "icon_size": 60
+      }
+    },
+     "link_readme_selling_points_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/selling-points.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "selling_points_example",
+    "link_readme_selling_points_Ay7yfa"
+  ]
+}

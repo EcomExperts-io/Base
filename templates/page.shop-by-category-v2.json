@@ -1,0 +1,74 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "shop_by_category_v2_bmaiWd": {
+      "type": "shop-by-category-v2",
+      "blocks": {
+        "category_card_A4PUwM": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_6mWkxD": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_BLWeYc": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        },
+        "category_card_V4Fwt7": {
+          "type": "category_card",
+          "settings": {
+            "title": "Title",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_card_A4PUwM",
+        "category_card_6mWkxD",
+        "category_card_BLWeYc",
+        "category_card_V4Fwt7"
+      ],
+      "name": "Shop By Category V2",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "heading": "Shop By Category V2",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "link_readme_shop_by_category_v2_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/shop-by-category-v2.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "shop_by_category_v2_bmaiWd",
+    "link_readme_shop_by_category_v2_Ay7yfa"
+  ]
+}

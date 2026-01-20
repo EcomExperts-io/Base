@@ -1,0 +1,98 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "shop_the_look_V4dmwn": {
+      "type": "shop-the-look",
+      "blocks": {
+        "slide_crhBhB": {
+          "type": "slide",
+          "settings": {
+            "product_1": "",
+            "product_2": "",
+            "product_3": "",
+            "product_4": "",
+            "hotspot_1_enabled": false,
+            "hotspot_1_text": "",
+            "hotspot_1_horizontal": 30,
+            "hotspot_1_vertical": 30,
+            "hotspot_2_enabled": false,
+            "hotspot_2_text": "",
+            "hotspot_2_horizontal": 50,
+            "hotspot_2_vertical": 50,
+            "hotspot_3_enabled": false,
+            "hotspot_3_text": "",
+            "hotspot_3_horizontal": 70,
+            "hotspot_3_vertical": 40,
+            "hotspot_4_enabled": false,
+            "hotspot_4_text": "",
+            "hotspot_4_horizontal": 60,
+            "hotspot_4_vertical": 70
+          }
+        },
+        "slide_h7UdpK": {
+          "type": "slide",
+          "settings": {
+            "product_1": "",
+            "product_2": "",
+            "product_3": "",
+            "product_4": "",
+            "hotspot_1_enabled": false,
+            "hotspot_1_text": "",
+            "hotspot_1_horizontal": 30,
+            "hotspot_1_vertical": 30,
+            "hotspot_2_enabled": false,
+            "hotspot_2_text": "",
+            "hotspot_2_horizontal": 50,
+            "hotspot_2_vertical": 50,
+            "hotspot_3_enabled": false,
+            "hotspot_3_text": "",
+            "hotspot_3_horizontal": 70,
+            "hotspot_3_vertical": 40,
+            "hotspot_4_enabled": false,
+            "hotspot_4_text": "",
+            "hotspot_4_horizontal": 60,
+            "hotspot_4_vertical": 70
+          }
+        }
+      },
+      "block_order": [
+        "slide_crhBhB",
+        "slide_h7UdpK"
+      ],
+      "name": "Shop The Look",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36,
+        "heading": "Shop The Look",
+        "view_all_url": "",
+        "view_all_text": "VIEW ALL",
+        "show_vendor": false
+      }
+    },
+    "link_readme_shop_the_look_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/shop-the-look.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "shop_the_look_V4dmwn",
+    "link_readme_shop_the_look_Ay7yfa"
+    
+  ]
+}

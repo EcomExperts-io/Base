@@ -1,0 +1,41 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "brand_story_QhMEEy": {
+      "type": "brand-story",
+      "name": "Brand Story",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "label_1": "OTHER BRANDS",
+        "label_2": "DEMO",
+        "heading": "Heading",
+        "description": "Description content will appear here."
+      }
+    },
+    "link_readme_brand_story_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/brand-story.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "brand_story_QhMEEy",
+    "link_readme_brand_story_Ay7yfa"
+  ]
+}

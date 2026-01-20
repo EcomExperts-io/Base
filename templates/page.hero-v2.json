@@ -1,0 +1,68 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "hero_v2_pVryft": {
+      "type": "hero-v2",
+      "blocks": {
+        "collection_GVMfYr": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": "",
+            "content_position": "top"
+          }
+        },
+        "collection_rkQKDL": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "custom_title": "",
+            "content_position": "top"
+          }
+        }
+      },
+      "block_order": [
+        "collection_GVMfYr",
+        "collection_rkQKDL"
+      ],
+      "name": "Hero V2",
+      "settings": {
+        "color_scheme": "",
+        "background_type": "image",
+        "video_background_url": "",
+        "heading": "Main Banner Title Here",
+        "description": "Sub Header Here",
+        "button_text": "SHOP COLLECTION",
+        "button_link": "",
+        "button_type": "button",
+        "content_alignment": "left",
+        "vertical_alignment": "top",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "link_readme_hero_v2_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/hero-v2.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "hero_v2_pVryft",
+    "link_readme_hero_v2_Ay7yfa"
+  ]
+}

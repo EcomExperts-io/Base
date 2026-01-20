@@ -1,0 +1,78 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+   "selling_points_v2_6NgzaK": {
+      "type": "selling-points-v2",
+      "blocks": {
+        "selling_point_FiGVm7": {
+          "type": "selling_point",
+          "settings": {
+            "title": "15% OFF FIRST ORDER",
+            "description": "Subscribe to our mailing list for 15% off your first order",
+            "link_url": "shopify://collections/spring"
+          }
+        },
+        "selling_point_LKeBYR": {
+          "type": "selling_point",
+          "settings": {
+            "title": "INSTANT REFUNDS & EXCHANGES",
+            "description": "Get your new items or refund sent out straight away on UK & EU orders",
+            "link_url": "shopify://collections/luxury-pret"
+          }
+        },
+        "selling_point_YAEXV8": {
+          "type": "selling_point",
+          "settings": {
+            "title": "FREE WORLDWIDE DELIVERY",
+            "description": "Free worldwide delivery on all orders over £70",
+            "link_url": ""
+          }
+        },
+        "selling_point_Y6iWMM": {
+          "type": "selling_point",
+          "settings": {
+            "title": "45 DAY RETURNS",
+            "description": "We now offer an extended\nreturns policy for\ninternational customers",
+            "link_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "selling_point_FiGVm7",
+        "selling_point_LKeBYR",
+        "selling_point_YAEXV8",
+        "selling_point_Y6iWMM"
+      ],
+      "name": "Selling Points V2",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "enable_mobile_slider": true
+      }
+    },
+    "link_readme_selling_points_v2_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/selling-points-v2.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "selling_points_v2_6NgzaK",
+    "link_readme_selling_points_v2_Ay7yfa"
+  ]
+}

@@ -1,0 +1,89 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "shop_categories_43RftD": {
+      "type": "shop-categories",
+      "blocks": {
+        "category_NN9k3W": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_Qxphmr": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_ByFNMp": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_49DaQx": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_8pn9UH": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_X4kFpF": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_NN9k3W",
+        "category_Qxphmr",
+        "category_ByFNMp",
+        "category_49DaQx",
+        "category_8pn9UH",
+        "category_X4kFpF"
+      ],
+      "name": "Shop Categories",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+     "link_readme_shop_categories_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/shop-categories.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "shop_categories_43RftD",
+    "link_readme_shop_categories_Ay7yfa"
+  ]
+}

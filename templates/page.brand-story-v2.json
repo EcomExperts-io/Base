@@ -1,0 +1,73 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "brand_story_v2_JiEECc": {
+      "type": "brand-story-v2",
+      "blocks": {
+        "story_item_TRagjE": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_nkmxzJ": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_EAYxkx": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        },
+        "story_item_k6jqJ7": {
+          "type": "story_item",
+          "settings": {
+            "heading": "Add heading here",
+            "description": "<p>Add your description here.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "story_item_TRagjE",
+        "story_item_nkmxzJ",
+        "story_item_EAYxkx",
+        "story_item_k6jqJ7"
+      ],
+      "name": "Brand Story V2",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "link_readme_brand_story_v2_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/brand-story-v2.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "brand_story_v2_JiEECc",
+    "link_readme_brand_story_v2_Ay7yfa"
+  ]
+}

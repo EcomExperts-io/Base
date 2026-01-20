@@ -1,0 +1,46 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "animated_features_v2_4yNYN7": {
+      "type": "animated-features-v2",
+      "name": "Animated Features V2",
+      "settings": {
+        "color_scheme": "",
+        "animation_speed": 1.2,
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "image_label": "Image Label",
+        "heading_percentage": "70%",
+        "subheading": "Write subheading here",
+        "feature_1": "Feature 1",
+        "feature_2": "Feature 2",
+        "feature_3": "Feature 3",
+        "feature_4": "Feature 4",
+        "disclaimer": "<p>Write disclaimer here</p>"
+      }
+    },
+    "link_readme_animated_features_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/animated-features-v2.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "animated_features_v2_4yNYN7",
+    "link_readme_animated_features_Ay7yfa"
+  ]
+}

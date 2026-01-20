@@ -1,0 +1,71 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "product_highlights_gUaG6E": {
+      "type": "product-highlights",
+      "blocks": {
+        "feature_f8LrHp": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        },
+        "feature_R8xqLd": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        },
+        "feature_7naTQ3": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        },
+        "feature_fb6KKM": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
+          }
+        }
+      },
+      "block_order": [
+        "feature_f8LrHp",
+        "feature_R8xqLd",
+        "feature_7naTQ3",
+        "feature_fb6KKM"
+      ],
+      "name": "Product Highlights",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "title": "Product Highlights Title",
+        "description": "Product Highlights description will appear here."
+      }
+    },
+    "link_readme_product_highlights_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/product-highlights.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "product_highlights_gUaG6E",
+     "link_readme_product_highlights_Ay7yfa"
+  ]
+}

@@ -1,0 +1,93 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "featured_collections_v2_example": {
+      "type": "featured-collections-v2",
+      "blocks": {
+        "collection_card_3ccame": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "T-Shirts"
+          }
+        },
+        "collection_card_BRp9XN": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Shorts"
+          }
+        },
+        "collection_card_jbyADA": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Hats"
+          }
+        },
+        "collection_card_LVn8DN": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Jackets"
+          }
+        },
+        "collection_card_nCgcp7": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": "Accessories"
+          }
+        }
+      },
+      "block_order": [
+        "collection_card_3ccame",
+        "collection_card_BRp9XN",
+        "collection_card_jbyADA",
+        "collection_card_LVn8DN",
+        "collection_card_nCgcp7"
+      ],
+      "name": "Featured Collections V2",
+      "settings": {
+        "color_scheme": "",
+        "heading": "Best Sellers",
+        "heading_alignment": "center",
+        "total_products_limit": 6,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "enable_swatches": true,
+        "swatch_type": "color",
+        "swatch_trigger": "Color",
+        "product_grid_gap": 16,
+        "products_on_desktop": 4,
+        "products_on_mobile": 2,
+        "padding_top": 80,
+        "padding_bottom": 60
+      }
+    },
+    "link_readme_featured_collections_v2_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/featured-collections-v2.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "featured_collections_v2_example",
+    "link_readme_featured_collections_v2_Ay7yfa"
+  ]
+}

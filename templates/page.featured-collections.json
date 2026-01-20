@@ -1,0 +1,85 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "featured_collections_hhETJ9": {
+      "type": "featured-collections",
+      "blocks": {
+        "collection_card_3ccame": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "collection_card_BRp9XN": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "collection_card_jbyADA": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "collection_card_LVn8DN": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "collection_card_nCgcp7": {
+          "type": "collection_card",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        }
+      },
+      "block_order": [
+        "collection_card_3ccame",
+        "collection_card_BRp9XN",
+        "collection_card_jbyADA",
+        "collection_card_LVn8DN",
+        "collection_card_nCgcp7"
+      ],
+      "name": "Featured Collections",
+      "settings": {
+        "color_scheme": "",
+        "heading": "Find the perfect fit for your game",
+        "subheading": "Browse through our collections",
+        "heading_alignment": "center",
+        "style": "style2",
+        "grid_gap": 25,
+        "hide_shop_now": true
+      }
+    },
+    "link_readme_featured_collections_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/featured-collections.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "featured_collections_hhETJ9",
+    "link_readme_featured_collections_Ay7yfa"
+  ]
+}

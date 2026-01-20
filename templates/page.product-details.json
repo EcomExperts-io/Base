@@ -1,0 +1,57 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "product_details_xbXmpy": {
+      "type": "product-details",
+      "blocks": {
+        "detail_CH7eB8": {
+          "type": "detail",
+          "settings": {
+            "title": "Fit & Features",
+            "content": "<p>Add key product information here, such as fit, materials, or care instructions.</p>"
+          }
+        },
+        "detail_hFtM3H": {
+          "type": "detail",
+          "settings": {
+            "title": "Fabric & Care",
+            "content": "<p>Add key product information here, such as fit, materials, or care instructions.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "detail_CH7eB8",
+        "detail_hFtM3H"
+      ],
+      "name": "Product Details",
+      "settings": {
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+     "link_readme_product_details_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/product-details.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "product_details_xbXmpy",
+    "link_readme_product_details_Ay7yfa"
+  ]
+}

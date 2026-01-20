@@ -1,0 +1,65 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+   "blogs_6DGtRD": {
+      "type": "blogs",
+      "blocks": {
+        "blog_article_xKftck": {
+          "type": "blog_article",
+          "settings": {
+            "blog": ""
+          }
+        },
+        "blog_article_jqywpf": {
+          "type": "blog_article",
+          "settings": {
+            "blog": ""
+          }
+        },
+        "blog_article_MhaqYM": {
+          "type": "blog_article",
+          "settings": {
+            "blog": ""
+          }
+        }
+      },
+      "block_order": [
+        "blog_article_xKftck",
+        "blog_article_jqywpf",
+        "blog_article_MhaqYM"
+      ],
+      "name": "Blogs",
+      "settings": {
+        "color_scheme": "",
+        "heading_text": "VIEW LOOKBOOKS",
+        "navigation_link_text": "VIEW LOOKBOOK",
+        "navigation_link_url": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "link_readme_blogs_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/blogs.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "blogs_6DGtRD",
+    "link_readme_blogs_Ay7yfa"
+  ]
+}

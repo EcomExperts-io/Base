@@ -1,0 +1,91 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+ {
+  "sections": {
+    "featured_products_example": {
+      "type": "featured-products",
+      "blocks": {
+        "block_1": {
+          "type": "product_card",
+          "settings": {
+            "product": "scotland-button-up-in-navy"
+          }
+        },
+        "block_2": {
+          "type": "product_card",
+          "settings": {
+            "product": "cape-dress-1"
+          }
+        },
+        "product_card_bpd4Xd": {
+          "type": "product_card",
+          "settings": {
+            "product": "3-4-sleeve-kimono-dress-coral"
+          }
+        },
+        "product_card_tP6QmJ": {
+          "type": "product_card",
+          "settings": {
+            "product": "alex-twill-pant-sand"
+          }
+        },
+        "product_card_RUFfmj": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_card_QizrFh": {
+          "type": "product_card",
+          "settings": {
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "product_card_bpd4Xd",
+        "product_card_tP6QmJ",
+        "product_card_RUFfmj",
+        "product_card_QizrFh"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "heading": "Best Sellers",
+        "subheading": "",
+        "view_all_text": "View All",
+        "view_all_url": "shopify://products/acb-top-in-chipped-brick",
+        "heading_alignment": "center",
+        "show_view_all_as_button": true,
+        "button_background_color": "#2e2e2e",
+        "button_text_color": "#ffffff",
+        "product_content_alignment": "center",
+        "review_content_alignment": "center"
+      }
+    },
+    "link_readme_featured_products_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/featured-products.html",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "featured_products_example",
+    "link_readme_featured_products_Ay7yfa"
+
+  ]
+}
