@@ -39,8 +39,8 @@
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
-    {% comment %} Load Swiper if on collection, product, or index page {% endcomment %}
-    {% if template.name == 'collection' or template.name == 'product' or template.name == 'index' or template.name == 'search'%}
+    {% comment %} Load Swiper if on collection, product, index or page templates {% endcomment %}
+    {% if template.name == 'collection' or template.name == 'product' or template.name == 'index' or template.name == 'page'%}
       {{ 'swiper7.4.1.min.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer="defer"></script>
     {% endif %}

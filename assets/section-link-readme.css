@@ -1,0 +1,35 @@
+/* sections/link-readme.liquid */
+
+.link-readme {
+  display: block;
+  width: 100%;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+.link-readme__button {
+  background-color: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+  border: 1px solid rgb(var(--color-foreground));
+  padding: 10px 20px;
+  border-radius: 10rem;
+  text-decoration: none;
+  font-size: 16px;
+  text-align: center;
+  display: inline-block;
+  width: 10%;
+  text-wrap: nowrap;
+}
+.link-readme__container {
+  display: flex;
+  justify-content: center;
+}
+
+
+@media screen and (max-width: 989px) {
+  .link-readme__button {
+    font-size: 14px;
+    padding: 8px 16px;
+    width: 20%;
+  }
+}
