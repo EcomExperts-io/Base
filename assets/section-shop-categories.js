@@ -100,7 +100,6 @@ export class ShopCategories extends HTMLElement {
       progressFill.style.width = '100%';
     } else {
       const progress = ((lastVisibleIndex + 1) / totalSlides) * 100;
-      console.log(progress);
       progressFill.style.width = `${progress}%`;
     }
   }
