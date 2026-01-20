@@ -21,12 +21,12 @@
       flex-wrap: nowrap ;
       margin-top: 1px;
       overflow: hidden;
-      max-height: 90vh;
+      max-height: calc(100vh - var(--header-height)- var(--announcement-bar-height, 0px));
       overflow-y: auto;
     }
     
     .header-sticky #main-header .nav-dropdown {
-      max-height: 90vh;
+      max-height: calc(100vh - var(--header-height));
     }
     
     #main-header .nav-dropdown {
