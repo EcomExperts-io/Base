@@ -57,7 +57,7 @@
       "name": "Link Readme",
       "settings": {
         "button_text": "Read Me",
-        "button_link": "",
+        "button_link": "https://ecomexperts-io.github.io/Base/sections/product-highlights.html",
         "color_scheme": "",
         "padding_top": 40,
         "padding_bottom": 40
