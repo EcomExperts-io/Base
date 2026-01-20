@@ -1,0 +1,221 @@
+{% comment %} /sections/animated-features-v2.liquid {% endcomment %}
+{{ 'section-animated-features-v2.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-animated-features-v2.js' | asset_url }}" type="module"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .animated-features-v2[data-section-id="{{ section.id }}"] {
+    --animation-speed: {{ section.settings.animation_speed | default: 1.2 }}s;
+    --digit-animation-speed: {{ section.settings.animation_speed | default: 1.2 | times: 1.5 }}s;
+  }
+{%- endstyle -%}
+
+<animated-features-v2
+  class="color-{{ section.settings.color_scheme }} animated-features-v2 section-{{ section.id }}-padding"
+  data-section-id="{{ section.id }}"
+  data-animation-speed="{{ section.settings.animation_speed | default: 1.2 }}"
+>
+  <div class="page-width">
+    <div class="animated-features-v2__container">
+      <div class="animated-features-v2__left">
+        {%- if section.settings.image != blank -%}
+          <div class="animated-features-v2__image-wrapper">
+            <img
+              src="{{ section.settings.image | image_url: width: 600 }}"
+              srcset="{{ section.settings.image | image_url: width: 600 }} 1x, {{ section.settings.image | image_url: width: 1200 }} 2x"
+              alt="{{ section.settings.image.alt | default: section.settings.image_label | escape }}"
+              loading="lazy"
+              width="{{ section.settings.image.width }}"
+              height="{{ section.settings.image.height }}"
+              class="animated-features-v2__image"
+            >
+          </div>
+        {%- else -%}
+          <div class="animated-features-v2__image-placeholder">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.image_label != blank -%}
+          <div class="animated-features-v2__image-label">{{ section.settings.image_label | escape }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="animated-features-v2__right">
+        {%- if section.settings.heading_percentage != blank -%}
+          <h2 class="animated-features-v2__heading" data-percentage="{{ section.settings.heading_percentage | escape }}">
+            {{ section.settings.heading_percentage | escape }}
+          </h2>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <div class="animated-features-v2__subheading">{{ section.settings.subheading }}</div>
+        {%- endif -%}
+
+        <div class="animated-features-v2__features">
+          {%- for i in (1..4) -%}
+            {%- assign feature_key = 'feature_' | append: i -%}
+            {%- assign current_feature = section.settings[feature_key] -%}
+
+            {%- if current_feature != blank -%}
+              <div class="animated-features-v2__feature" id="animated-features-v2-feature-{{ i }}">
+                <div class="animated-features-v2__checkmark">
+                  {{ 'icon-checkmark.svg' | inline_asset_content }}
+                </div>
+                <span class="animated-features-v2__feature-text">{{ current_feature | escape }}</span>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if section.settings.disclaimer != blank -%}
+          <div class="animated-features-v2__disclaimer">{{ section.settings.disclaimer }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</animated-features-v2>
+
+{% schema %}
+{
+  "name": "Animated Features V2",
+  "tag": "section",
+  "class": "animated-features-v2",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Animation Settings"
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Animation Speed",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "info": "Controls the speed of all animations in this section"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Left Side - Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_label",
+      "label": "Image Label",
+      "default": "Image Label"
+    },
+    {
+      "type": "header",
+      "content": "Right Side - Content"
+    },
+    {
+      "type": "text",
+      "id": "heading_percentage",
+      "label": "Heading (Percentage)",
+      "default": "70%"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Write subheading here"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "text",
+      "id": "feature_1",
+      "label": "Feature 1",
+      "default": "Feature 1"
+    },
+    {
+      "type": "text",
+      "id": "feature_2",
+      "label": "Feature 2",
+      "default": "Feature 2"
+    },
+    {
+      "type": "text",
+      "id": "feature_3",
+      "label": "Feature 3",
+      "default": "Feature 3"
+    },
+    {
+      "type": "text",
+      "id": "feature_4",
+      "label": "Feature 4",
+      "default": "Feature 4"
+    },
+    {
+      "type": "header",
+      "content": "Disclaimer"
+    },
+    {
+      "type": "richtext",
+      "id": "disclaimer",
+      "label": "Disclaimer Text",
+      "default": "<p>Write disclaimer here</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Animated Features V2"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,955 @@
+{% schema %}
+{
+  "name": "Dynamic Grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Title and Description"
+    },
+    {
+      "type": "select",
+      "id": "section_content_alignment",
+      "label": "Content Alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "section_content_alignment_mobile",
+      "label": "Content Alignment (Mobile)",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "color",
+      "id": "section_title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "section_title_font_weight",
+      "label": "Title Font Weight",
+      "default": "normal",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "section_uppercase_title",
+      "label": "Uppercase Title",
+      "info": "If enabled, the title will be uppercase.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "section_title_font_size_desktop",
+      "label": "Title Font Size (Desktop)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "section_title_font_size_mobile",
+      "label": "Title Font Size (Mobile)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "textarea",
+      "id": "section_description",
+      "label": "Description"
+    },
+    {
+      "type": "color",
+      "id": "section_description_color",
+      "label": "Description Color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_uppercase_description",
+      "label": "Uppercase Description",
+      "info": "If enabled, the description will be uppercase.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "section_description_font_size_desktop",
+      "label": "Description Font Size (Desktop)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "section_description_font_size_mobile",
+      "label": "Description Font Size (Mobile)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "range",
+      "id": "section_button_font_size_desktop",
+      "label": "Button Font Size (Desktop)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "section_button_font_size_mobile",
+      "label": "Button Font Size (Mobile)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "section_button_text_color",
+      "label": "Button Text Color",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#000"
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "spacing_top_desktop",
+      "label": "Spacing Top (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "spacing_bottom_desktop",
+      "label": "Spacing Bottom (Desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "spacing_top_mobile",
+      "label": "Spacing Top (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "spacing_bottom_mobile",
+      "label": "Spacing Bottom (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Grid Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "text-below-image",
+      "options": [
+        { "value": "text-on-image", "label": "Text on Image" },
+        { "value": "text-below-image", "label": "Text below Image" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_on_image_top_position",
+      "label": "Text on Image Top Position",
+      "info": "Only applies if style is set to 'Text on Image'",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+    },
+    {
+      "type": "select",
+      "id": "text_on_image_alignment",
+      "label": "Text Alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rows_desktop",
+      "label": "Number of columns (desktop)",
+      "default": "3",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rows_tablet",
+      "label": "Number of columns (tablet)",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rows_mobile",
+      "label": "Number of columns (mobile)",
+      "default": "1",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Global Block Settings"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_desktop",
+      "label": "Title font size (desktop, px)",
+      "min": 10,
+      "max": 40,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_mobile",
+      "label": "Title font size (mobile, px)",
+      "min": 10,
+      "max": 40,
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "title_font_color",
+      "label": "Title font color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_decoration",
+      "label": "Underline title",
+      "info": "If enabled, the title will be underlined. Only applies if style is set to 'Text below Image'",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "bold_title",
+      "label": "Bold title",
+      "info": "If enabled, the title will be bold.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "title_uppercase",
+      "label": "Uppercase Title",
+      "info": "If enabled, the title will be uppercase.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "description_font_size_desktop",
+      "label": "Description font size (desktop, px)",
+      "min": 10,
+      "max": 40,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "description_font_size_mobile",
+      "label": "Description font size (mobile, px)",
+      "min": 10,
+      "max": 40,
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "description_font_color",
+      "label": "Description font color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Button font size (px)",
+      "min": 10,
+      "max": 30,
+      "default": 14
+    },
+    {
+      "type": "checkbox",
+      "id": "button_uppercase",
+      "label": "Uppercase Button",
+      "info": "If enabled, the button text will be uppercase.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "button_underline",
+      "label": "Underline Button",
+      "info": "If enabled, the button will be underlined.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "block",
+      "name": "Grid Block",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "custom_column_width",
+          "label": "Custom Column Width",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "column_width_desktop",
+          "label": "Custom Column Width (Desktop)",
+          "min": 10,
+          "max": 100,
+          "default": 33,
+          "visible_if": "{{ block.settings.custom_column_width == true }}"
+        },
+        {
+          "type": "range",
+          "id": "column_width_tablet",
+          "label": "Custom Column Width (Tablet)",
+          "min": 10,
+          "max": 100,
+          "default": 33,
+          "visible_if": "{{ block.settings.custom_column_width == true }}"
+        },
+        {
+          "type": "range",
+          "id": "column_width_mobile",
+          "label": "Custom Column Width (Mobile)",
+          "min": 10,
+          "max": 100,
+          "default": 50,
+          "visible_if": "{{ block.settings.custom_column_width == true }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Image (Mobile)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Custom Styling",
+          "info": "Enable and configure custom styles for this block. If disabled, global section styles will be used."
+        },
+        {
+          "type": "checkbox",
+          "id": "custom_styling_enabled",
+          "label": "Apply Custom Styling to this block",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "font_size_desktop",
+          "label": "Title font size (desktop, px)",
+          "min": 10,
+          "max": 40,
+          "default": 18,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "range",
+          "id": "font_size_mobile",
+          "label": "Title font size (mobile, px)",
+          "min": 10,
+          "max": 40,
+          "default": 16,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "title_uppercase",
+          "label": "Uppercase Title",
+          "default": false,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "color",
+          "id": "font_color",
+          "label": "Title font color",
+          "default": "#000000",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "range",
+          "id": "description_font_size_desktop",
+          "label": "Description font size (desktop, px)",
+          "min": 10,
+          "max": 40,
+          "default": 18,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "range",
+          "id": "description_font_size_mobile",
+          "label": "Description font size (mobile, px)",
+          "min": 10,
+          "max": 40,
+          "default": 16,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "color",
+          "id": "description_font_color",
+          "label": "Description font color",
+          "default": "#000000",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "range",
+          "id": "button_font_size",
+          "label": "Button font size (px)",
+          "min": 10,
+          "max": 30,
+          "default": 14,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_uppercase",
+          "label": "Uppercase Button",
+          "info": "If enabled, the button text will be uppercase.",
+          "default": false,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Button background color",
+          "default": "#000000",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Button text color",
+          "default": "#ffffff",
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        },
+        {
+          "type": "range",
+          "id": "text_on_image_top_position",
+          "label": "Text on Image Top Position",
+          "info": "Only applies if style is set to 'Text on Image'",
+          "default": 50,
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+        },
+        {
+          "type": "select",
+          "id": "text_on_image_alignment",
+          "label": "Text Alignment",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Dynamic Grid",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<div id="{{ section.id }}" class="dynamic-grid-section"
+  style="
+    --background-color: {{ section.settings.background_color }};
+    --spacing-top-desktop: {{ section.settings.spacing_top_desktop }}px;
+    --spacing-top-mobile: {{ section.settings.spacing_top_mobile }}px;
+    --spacing-bottom-desktop: {{ section.settings.spacing_bottom_desktop }}px;
+    --spacing-bottom-mobile: {{ section.settings.spacing_bottom_mobile }}px;
+    --section-title-font-weight: {% if section.settings.section_title_font_weight == 'bold' %}bold{% else %}normal{% endif %};
+    --section-title-color: {{ section.settings.section_title_color }};
+    --section-description-color: {{ section.settings.section_description_color }};
+    --section-title-font-size-desktop: {{ section.settings.section_title_font_size_desktop }}px;
+    --section-title-font-size-mobile: {{ section.settings.section_title_font_size_mobile }}px;
+    --section-description-font-size-desktop: {{ section.settings.section_description_font_size_desktop }}px;
+    --section-description-font-size-mobile: {{ section.settings.section_description_font_size_mobile }}px;
+    --section-title-transform: {% if section.settings.section_uppercase_title %}uppercase{% else %}initial{% endif %};
+    --section-description-transform: {% if section.settings.section_uppercase_description %}uppercase{% else %}initial{% endif %};
+    --section-content-alignment: {% if section.settings.section_content_alignment == 'left' %}left{% elsif section.settings.section_content_alignment == 'right' %}right{% else %}center{% endif %};
+    --section-content-alignment-mobile: {% if section.settings.section_content_alignment_mobile == 'left' %}left{% elsif section.settings.section_content_alignment_mobile == 'right' %}right{% else %}center{% endif %};
+    --section-button-background: {{ section.settings.button_background_color }};
+    --section-button-color: {{ section.settings.section_button_text_color }};
+    --section-border-color: {{ section.settings.button_border_color }};
+    --section-button-font-size-desktop: {{ section.settings.section_button_font_size_desktop }};
+    --section-button-font-size-mobile: {{ section.settings.section_button_font_size_mobile }};
+    "
+>
+  {% if section.settings.title != blank %}
+    <h2 class="dynamic-grid-section-title">
+      {{ section.settings.title }}
+    </h2>
+  {% endif %}
+  {% if section.settings.section_description != blank %}
+    <div class="dynamic-grid-section-description">
+      {{ section.settings.section_description }}
+    </div>
+  {% endif %}
+  <div
+    class="dynamic-grid-wrapper {% if section.settings.style == 'text-on-image' %}text-on-image{% endif %}"
+    style="
+      --cols-desktop: {{ section.settings.rows_desktop }};
+      --cols-tablet: {{ section.settings.rows_tablet }};
+      --cols-mobile: {{ section.settings.rows_mobile }};
+    "
+  >
+    {% for block in section.blocks %}
+      {% assign b = block.settings %}
+      {% assign apply_custom = b.custom_styling_enabled %}
+      {% capture block_styles %}
+        --title-font-size-desktop: {% if apply_custom %}{{ b.font_size_desktop }}px{% else %}{{ section.settings.title_font_size_desktop }}px{% endif %};
+        --title-font-size-mobile: {% if apply_custom %}{{ b.font_size_mobile }}px{% else %}{{ section.settings.title_font_size_mobile }}px{% endif %};
+        --title-font-color: {% if apply_custom %}{{ b.font_color }}{% else %}{{ section.settings.title_font_color }}{% endif %};
+        --title-font-transform: {% if apply_custom %}{% if b.title_uppercase %}uppercase{% else %}initial{% endif %}{% else %}{% if section.settings.title_uppercase %}uppercase{% else %}initial{% endif %}{% endif %};
+        --description-font-size-desktop: {% if apply_custom %}{{ b.description_font_size_desktop }}px{% else %}{{ section.settings.description_font_size_desktop }}px{% endif %};
+        --description-font-size-mobile: {% if apply_custom %}{{ b.description_font_size_mobile }}px{% else %}{{ section.settings.description_font_size_mobile }}px{% endif %};
+        --description-font-color: {% if apply_custom %}{{ b.description_font_color }}{% else %}{{ section.settings.description_font_color }}{% endif %};
+        --button-font-size: {% if apply_custom %}{{ b.button_font_size }}px{% else %}{{ section.settings.button_font_size }}px{% endif %};
+        --button-font-transform: {% if apply_custom %}{% if b.button_uppercase %}uppercase{% else %}initial{% endif %}{% else %}{% if section.settings.button_uppercase %}uppercase{% else %}initial{% endif %}{% endif %};
+        --button-bg-color: {% if apply_custom %}{{ b.button_bg_color }}{% else %}{{ section.settings.button_bg_color }}{% endif %};
+        --button-text-color: {% if apply_custom %}{{ b.button_text_color }}{% else %}{{ section.settings.button_text_color }}{% endif %};
+        --button-underline: {%  if section.settings.button_underline %}underline{% endif %};
+        --text-alignment: {% if apply_custom %}{{ b.text_on_image_alignment }}{% else %}{{ section.settings.text_on_image_alignment }}{% endif %};
+        {% if section.settings.style == 'text-on-image' %}
+          --text-on-image-top-position: {% if apply_custom %}{{ b.text_on_image_top_position }}{% else %}{{ section.settings.text_on_image_top_position }}{% endif %}%;
+          --text-on-image-top-position-negative: calc(var(--text-on-image-top-position) * -1);
+        {% endif %}
+        {% if b.custom_column_width %}
+          --column-width-desktop: {{ b.column_width_desktop }}%;
+          --column-width-tablet: {{ b.column_width_tablet }}%;
+          --column-width-mobile: {{ b.column_width_mobile }}%;
+        {% endif %}
+      {% endcapture %}
+
+      {% if b.button_link != blank %}
+        <a href="{{ b.button_link }}" {{ block.shopify_attributes }} class="grid-block {% if b.custom_column_width %}custom-column-width{% endif %}" style="{{ block_styles | strip }}">
+      {% else %}
+        <div {{ block.shopify_attributes }} class="grid-block {% if b.custom_column_width %}custom-column-width{% endif %}" style="{{ block_styles | strip }}">
+      {% endif %}
+
+      {% if b.image %}
+        <div class="block-image block-image-desktop">
+          <img
+            src="{{ b.image | image_url }}"
+            alt="{{ b.title | escape }}"
+            width="{{ b.image.width }}"
+            height="{{ b.image.height }}"
+            loading="lazy"
+          >
+        </div>
+      {% else %}
+        <div class="block-image-placeholder block-image-desktop">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {% endif %}
+
+      {% if b.image_mobile %}
+        {% assign image_mobile = b.image_mobile %}
+      {% else %}
+        {% assign image_mobile = b.image %}
+      {% endif %}
+
+        <div class="block-image block-image-mobile">
+          {% if image_mobile %}
+            <img
+            src="{{ image_mobile | image_url }}"
+            alt="{{ b.title | escape }}"
+            width="{{ image_mobile.width }}"
+            height="{{ image_mobile.height }}"
+            loading="lazy"
+          >
+          {% else %}
+            <div class="block-image-placeholder block-image-mobile">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% endif %}
+        </div>
+
+      <div class="block-content">
+        {% if b.title != blank %}
+          <h3 class="block-title">{{ b.title }}</h3>
+        {% endif %}
+
+        {% if b.description != blank %}
+          <div class="block-description">{{ b.description }}</div>
+        {% endif %}
+
+        {% if b.button_text != blank %}
+          <div class="block-button">{{ b.button_text }}</div>
+        {% endif %}
+      </div>
+
+      {% if b.button_link != blank %}
+        </a>
+      {% else %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if section.settings.button_text != blank and section.settings.button_url != blank %}
+    <a href="{{ section.settings.button_url }}" class="dynamic-grid-section-button">
+      {{ section.settings.button_text }}
+    </a>
+  {% endif %}
+
+</div>
+
+<style>
+  #{{ section.id }} {
+    padding-top: var(--spacing-top-desktop);
+    padding-bottom: var(--spacing-bottom-desktop);
+    background-color: var(--background-color);
+    padding-inline: 20px;
+  }
+
+  #{{ section.id }} .block-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #0000000a;
+  }
+
+  #{{ section.id }} .block-image-placeholder .placeholder-svg {
+    max-width: 100%;
+  }
+
+  #{{ section.id }} .dynamic-grid-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: baseline;;
+
+  }
+
+  #{{ section.id }} .grid-block {
+    flex: 1 0 calc((100% / var(--cols-desktop)) - 20px);
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #{{ section.id }} .grid-block.custom-column-width {
+    flex: 1 0 calc(var(--column-width-desktop) - 20px);
+  }
+
+  #{{ section.id }} .dynamic-grid-section-title {
+    font-size: var(--section-title-font-size-desktop);
+    font-weight: var(--section-title-font-weight);
+    color: var(--section-title-color);
+    text-transform: var(--section-title-transform);
+    text-align: var(--section-content-alignment);
+    {% if section.settings.section_description == blank %}
+      margin-bottom: 20px;
+    {% else %}
+      margin-bottom: 10px;
+    {% endif %}
+  }
+
+  #{{ section.id }} .dynamic-grid-section-description {
+    font-size: var(--section-description-font-size-desktop);
+    color: var(--section-description-color);
+    text-transform: var(--section-description-transform);
+    margin-bottom: 20px;
+    text-align: var(--section-content-alignment);
+  }
+
+  #{{ section.id }} .dynamic-grid-section-button {
+    background-color: var(--section-button-background);
+    color: var(--section-button-color);
+    border: 1px solid var(--section-border-color);
+    font-size: var(--section-button-font-size-desktop)px;
+    margin-top: 40px;
+    display: block;
+    width: fit-content;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    margin-inline: auto;
+  }
+
+  @media (max-width: 991px) {
+    #{{ section.id }} .grid-block {
+      flex: 1 0 calc((100% / var(--cols-tablet)) - 10px);
+    }
+
+    #{{ section.id }} .grid-block.custom-column-width {
+      flex: 1 0 calc(var(--column-width-tablet) - 10px);
+    }
+
+    #{{ section.id }} .dynamic-grid-wrapper {
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    #{{ section.id }} {
+      padding-top: var(--spacing-top-mobile);
+      padding-bottom: var(--spacing-bottom-mobile);
+      padding-inline: 10px;
+    }
+
+    #{{ section.id }} .grid-block {
+      flex: 1 0 calc((100% / var(--cols-mobile)) - 10px);
+    }
+
+    #{{ section.id }} .grid-block.custom-column-width {
+      flex: 1 0 calc(var(--column-width-mobile) - 10px);
+    }
+
+    #{{ section.id }} .dynamic-grid-section-title {
+      font-size: var(--section-title-font-size-mobile);
+      text-align: var(--section-content-alignment-mobile);
+    }
+
+    #{{ section.id }} .dynamic-grid-section-description {
+      font-size: var(--section-description-font-size-mobile);
+      text-align: var(--section-content-alignment-mobile);
+    }
+  }
+
+  #{{ section.id }} .block-image {
+    height: 100%;
+  }
+  #{{ section.id }} .block-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #{{ section.id }} .block-title {
+    font-size: var(--title-font-size-desktop);
+    color: var(--title-font-color);
+    text-transform: var(--title-font-transform);
+    margin: 10px 0 0;
+    text-decoration: {% if section.settings.text_decoration %}underline{% else %}none{% endif %};
+    font-weight: {% if section.settings.bold_title %}bold{% else %}normal{% endif %};
+    text-underline-offset: 2px;
+  }
+
+  #{{ section.id }} .block-description {
+    font-size: var(--description-font-size-desktop);
+    color: var(--description-font-color);
+    margin: 10px 0 0;
+  }
+
+  @media (max-width: 767px) {
+    #{{ section.id }} .block-title {
+      font-size: var(--title-font-size-mobile);
+    }
+
+    #{{ section.id }} .block-description {
+      font-size: var(--description-font-size-mobile);
+    }
+
+    #{{ section.id }} .dynamic-grid-section-button {
+      font-size: var(--section-button-font-size-mobile)px;
+    }
+  }
+
+  #{{ section.id }} .block-button {
+    display: inline-block;
+    padding: 15px 35px;
+    {%  if section.settings.button_underline %}padding-inline: 0px !important;{% endif %}
+    border-radius: 100px;
+    font-size: var(--button-font-size);
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    text-transform: var(--button-font-transform);
+    margin-top: 20px;
+    text-decoration: var(--button-underline);
+    text-underline-offset: 5px;
+  }
+
+  #{{ section.id }} .block-button:hover {
+    opacity: .8;
+  }
+
+  @media (max-width: 767px) {
+    #{{ section.id }} .block-button {
+      padding: 15px 22px;
+    }
+  }
+
+  #{{ section.id }} .text-on-image .grid-block {
+    position: relative;
+  }
+
+  #{{ section.id }} .text-on-image .block-title {
+    margin-top: 0;
+  }
+
+  #{{ section.id }} .grid-block .block-content {
+    text-align: var(--text-alignment);
+  }
+
+  #{{ section.id }} .text-on-image .grid-block .block-content {
+    position: absolute;
+    z-index: 1;
+    top: var(--text-on-image-top-position);
+    left: 0;
+    transform: translate(0, var(--text-on-image-top-position-negative));
+    width: 100%;
+    padding-inline: 20px;
+  }
+
+  #{{ section.id }} .text-on-image .grid-block .block-content .block-title {
+    text-decoration: none;
+  }
+
+  @media (max-width: 767px) {
+    #{{ section.id }} .text-on-image .grid-block .block-content {
+      padding-inline: 20px;
+    }
+  }
+
+  #{{ section.id }} .block-image-desktop {
+    display: block;
+  }
+
+  #{{ section.id }} .block-image-mobile {
+    display: none;
+  }  
+
+  @media (max-width: 767px) {
+    #{{ section.id }} .block-image-desktop {
+      display: none;
+    }
+
+    #{{ section.id }} .block-image-mobile {
+      display: block;
+    }
+  }
+</style>

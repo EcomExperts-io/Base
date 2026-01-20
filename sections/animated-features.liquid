@@ -1,0 +1,299 @@
+{% comment %} /sections/animated-features.liquid {% endcomment %}
+{{ 'section-animated-features.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-animated-features.js' | asset_url }}" type="module"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .animated-features[data-section-id="{{ section.id }}"] {
+    --animation-speed: {{ section.settings.animation_speed | default: 1.2 }}s;
+    --card-animation-speed: {{ section.settings.animation_speed | default: 1.2 | times: 0.83 | round: 2 }}s;
+    --card-flip-speed: {{ section.settings.animation_speed | default: 1.2 | times: 0.5 | round: 2 }}s;
+  }
+{%- endstyle -%}
+
+<animated-features
+  class="color-{{ section.settings.color_scheme }} animated-features section-{{ section.id }}-padding"
+  data-section-id="{{ section.id }}"
+  data-animation-speed="{{ section.settings.animation_speed | default: 1.2 }}"
+  style="
+    --button: var(--color-{{ section.settings.button_type }});
+    --button-text: var(--color-{{ section.settings.button_type }}-text);
+  "
+>
+  <div class="page-width">
+    <div class="animated-features__container">
+      <div class="animated-features__left">
+        <div class="animated-features__left-content">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="animated-features__heading">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+
+          {%- if section.settings.subheading != blank -%}
+            <div class="animated-features__subheading">{{ section.settings.subheading }}</div>
+          {%- endif -%}
+
+          {%- if section.settings.button_text != blank -%}
+            <a
+              href="{{ section.settings.button_link }}"
+              class="animated-features__button {{ section.settings.button_type }}"
+            >
+              {{ section.settings.button_text | escape }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.notes != blank -%}
+          <div class="animated-features__notes">{{ section.settings.notes }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="animated-features__right">
+        <div class="animated-features__grid">
+          {%- for i in (1..4) -%}
+            {%- assign image_key = 'image_' | append: i -%}
+            {%- assign label_key = 'label_' | append: i -%}
+            {%- assign flipped_text_key = 'flipped_text_' | append: i -%}
+            {%- assign current_image = section.settings[image_key] -%}
+            {%- assign current_label = section.settings[label_key] -%}
+            {%- assign current_flipped_text = section.settings[flipped_text_key] -%}
+
+            <div class="animated-features__card" id="animated-features-card-{{ i }}">
+              <div class="animated-features__card-inner">
+                <div class="animated-features__card-front">
+                  <div class="animated-features__icon">
+                    {{ 'icon-sync.svg' | inline_asset_content }}
+                  </div>
+                  {%- if current_image != blank -%}
+                    <img
+                      src="{{ current_image | image_url: width: 400 }}"
+                      srcset="{{ current_image | image_url: width: 400 }} 1x, {{ current_image | image_url: width: 800 }} 2x"
+                      alt="{{ current_image.alt | default: current_label | escape }}"
+                      loading="lazy"
+                      width="{{ current_image.width }}"
+                      height="{{ current_image.height }}"
+                      class="animated-features__image"
+                    >
+                  {%- else -%}
+                    <div class="animated-features__image-placeholder">
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {%- endif -%}
+                  {%- if current_label != blank -%}
+                    <div class="animated-features__label">{{ current_label | escape }}</div>
+                  {%- endif -%}
+                </div>
+                <div class="animated-features__card-back">
+                  <div class="animated-features__icon">
+                    {{ 'icon-sync.svg' | inline_asset_content }}
+                  </div>
+                  <div class="animated-features__flipped-text">
+                    {{ current_flipped_text | default: '<p>Add the flipped text here</p>' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</animated-features>
+
+{% schema %}
+{
+  "name": "Animated Features",
+  "tag": "section",
+  "class": "animated-features",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Animation Settings"
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Animation Speed",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "info": "Controls the speed of all animations in this section"
+    },
+    {
+      "type": "header",
+      "content": "Spacing Settings"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Add Heading here"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Add Subheading here"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Read more"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "button_type",
+      "label": "Button Style",
+      "options": [
+        { "value": "button", "label": "Primary" },
+        { "value": "secondary-button", "label": "Secondary" }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "richtext",
+      "id": "notes",
+      "label": "Notes",
+      "default": "<p>Add the notes here</p>"
+    },
+    {
+      "type": "header",
+      "content": "Feature 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image"
+    },
+    {
+      "type": "richtext",
+      "id": "flipped_text_1",
+      "label": "Flipped Text",
+      "default": "<p>Add the flipped text here</p>"
+    },
+    {
+      "type": "text",
+      "id": "label_1",
+      "label": "Label",
+      "default": "Label 1"
+    },
+    {
+      "type": "header",
+      "content": "Feature 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image"
+    },
+    {
+      "type": "richtext",
+      "id": "flipped_text_2",
+      "label": "Flipped Text"
+    },
+    {
+      "type": "text",
+      "id": "label_2",
+      "label": "Label",
+      "default": "Label 2"
+    },
+    {
+      "type": "header",
+      "content": "Feature 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image"
+    },
+    {
+      "type": "richtext",
+      "id": "flipped_text_3",
+      "label": "Flipped Text"
+    },
+    {
+      "type": "text",
+      "id": "label_3",
+      "label": "Label",
+      "default": "Label 3"
+    },
+    {
+      "type": "header",
+      "content": "Feature 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Image"
+    },
+    {
+      "type": "richtext",
+      "id": "flipped_text_4",
+      "label": "Flipped Text"
+    },
+    {
+      "type": "text",
+      "id": "label_4",
+      "label": "Label",
+      "default": "Label 4"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Animated Features"
+    }
+  ]
+}
+{% endschema %}
