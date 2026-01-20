@@ -146,6 +146,5 @@ Progress bar logic:
 1. **Swiper dependency**: Requires `window.Swiper` to be present; otherwise JS logs an error.
 2. **Preview grid**: Before Swiper initializes, CSS shows a 4-column grid for better theme editor preview.
 3. **Progress bar**: The JS computes progress based on the “last visible” slide index.
-4. **Console logging**: `section-shop-categories.js` currently logs progress in `updateProgressBar()` (consider removing for production).
-5. **VitePress mustache safety**: If referencing Liquid mustaches in prose/inline code, escape them like `\{\{ ... \}\}` to avoid blank pages. [[memory:13638067]]
+4. **VitePress mustache safety**: If referencing Liquid mustaches in prose/inline code, escape them like `\{\{ ... \}\}` to avoid blank pages. [[memory:13638067]]
 
