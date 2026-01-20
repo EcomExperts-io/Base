@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "sections": {
     "brand_story_v2_JiEECc": {
       "type": "brand-story-v2",
@@ -53,9 +53,21 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "link_readme_brand_story_v2_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
-    "brand_story_v2_JiEECc"
+    "brand_story_v2_JiEECc",
+    "link_readme_brand_story_v2_Ay7yfa"
   ]
 }

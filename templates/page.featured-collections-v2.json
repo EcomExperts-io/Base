@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "sections": {
     "featured_collections_v2_example": {
       "type": "featured-collections-v2",
@@ -73,9 +73,21 @@
         "padding_top": 80,
         "padding_bottom": 60
       }
+    },
+    "link_readme_featured_collections_v2_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
-    "featured_collections_v2_example"
+    "featured_collections_v2_example",
+    "link_readme_featured_collections_v2_Ay7yfa"
   ]
 }

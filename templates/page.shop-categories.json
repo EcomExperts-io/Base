@@ -9,39 +9,46 @@
  */
  {
   "sections": {
-    "featured_collections_hhETJ9": {
-      "type": "featured-collections",
+    "shop_categories_43RftD": {
+      "type": "shop-categories",
       "blocks": {
-        "collection_card_3ccame": {
-          "type": "collection_card",
+        "category_NN9k3W": {
+          "type": "category",
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "collection_card_BRp9XN": {
-          "type": "collection_card",
+        "category_Qxphmr": {
+          "type": "category",
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "collection_card_jbyADA": {
-          "type": "collection_card",
+        "category_ByFNMp": {
+          "type": "category",
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "collection_card_LVn8DN": {
-          "type": "collection_card",
+        "category_49DaQx": {
+          "type": "category",
           "settings": {
             "collection": "",
             "custom_title": ""
           }
         },
-        "collection_card_nCgcp7": {
-          "type": "collection_card",
+        "category_8pn9UH": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "custom_title": ""
+          }
+        },
+        "category_X4kFpF": {
+          "type": "category",
           "settings": {
             "collection": "",
             "custom_title": ""
@@ -49,24 +56,21 @@
         }
       },
       "block_order": [
-        "collection_card_3ccame",
-        "collection_card_BRp9XN",
-        "collection_card_jbyADA",
-        "collection_card_LVn8DN",
-        "collection_card_nCgcp7"
+        "category_NN9k3W",
+        "category_Qxphmr",
+        "category_ByFNMp",
+        "category_49DaQx",
+        "category_8pn9UH",
+        "category_X4kFpF"
       ],
-      "name": "Featured Collections",
+      "name": "Shop Categories",
       "settings": {
         "color_scheme": "",
-        "heading": "Find the perfect fit for your game",
-        "subheading": "Browse through our collections",
-        "heading_alignment": "center",
-        "style": "style2",
-        "grid_gap": 25,
-        "hide_shop_now": true
+        "padding_top": 36,
+        "padding_bottom": 36
       }
     },
-    "link_readme_featured_collections_Ay7yfa": {
+     "link_readme_shop_categories_Ay7yfa": {
       "type": "link-readme",
       "name": "Link Readme",
       "settings": {
@@ -79,7 +83,7 @@
     }
   },
   "order": [
-    "featured_collections_hhETJ9",
-    "link_readme_featured_collections_Ay7yfa"
+    "shop_categories_43RftD",
+    "link_readme_shop_categories_Ay7yfa"
   ]
 }

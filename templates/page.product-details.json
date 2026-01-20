@@ -9,44 +9,36 @@
  */
  {
   "sections": {
-   "blogs_6DGtRD": {
-      "type": "blogs",
+    "product_details_xbXmpy": {
+      "type": "product-details",
       "blocks": {
-        "blog_article_xKftck": {
-          "type": "blog_article",
+        "detail_CH7eB8": {
+          "type": "detail",
           "settings": {
-            "blog": ""
+            "title": "Fit & Features",
+            "content": "<p>Add key product information here, such as fit, materials, or care instructions.</p>"
           }
         },
-        "blog_article_jqywpf": {
-          "type": "blog_article",
+        "detail_hFtM3H": {
+          "type": "detail",
           "settings": {
-            "blog": ""
-          }
-        },
-        "blog_article_MhaqYM": {
-          "type": "blog_article",
-          "settings": {
-            "blog": ""
+            "title": "Fabric & Care",
+            "content": "<p>Add key product information here, such as fit, materials, or care instructions.</p>"
           }
         }
       },
       "block_order": [
-        "blog_article_xKftck",
-        "blog_article_jqywpf",
-        "blog_article_MhaqYM"
+        "detail_CH7eB8",
+        "detail_hFtM3H"
       ],
-      "name": "Blogs",
+      "name": "Product Details",
       "settings": {
         "color_scheme": "",
-        "heading_text": "VIEW LOOKBOOKS",
-        "navigation_link_text": "VIEW LOOKBOOK",
-        "navigation_link_url": "",
         "padding_top": 40,
         "padding_bottom": 40
       }
     },
-    "link_readme_blogs_Ay7yfa": {
+     "link_readme_product_details_Ay7yfa": {
       "type": "link-readme",
       "name": "Link Readme",
       "settings": {
@@ -59,7 +51,7 @@
     }
   },
   "order": [
-    "blogs_6DGtRD",
-    "link_readme_blogs_Ay7yfa"
+    "product_details_xbXmpy",
+    "link_readme_product_details_Ay7yfa"
   ]
 }

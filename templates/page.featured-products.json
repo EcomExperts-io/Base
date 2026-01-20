@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "sections": {
     "featured_products_example": {
       "type": "featured-products",
@@ -70,9 +70,22 @@
         "product_content_alignment": "center",
         "review_content_alignment": "center"
       }
+    },
+    "link_readme_featured_products_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
-    "featured_products_example"
+    "featured_products_example",
+    "link_readme_featured_products_Ay7yfa"
+
   ]
 }

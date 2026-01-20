@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
+ {
   "sections": {
     "animated_features_hd8GtU": {
       "type": "animated-features",
@@ -32,9 +32,21 @@
         "flipped_text_4": "",
         "label_4": "Label 4"
       }
+    },
+    "link_readme_animated_features_Ay7yfa": {
+      "type": "link-readme",
+      "name": "Link Readme",
+      "settings": {
+        "button_text": "Read Me",
+        "button_link": "",
+        "color_scheme": "",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
-    "animated_features_hd8GtU"
+    "animated_features_hd8GtU",
+    "link_readme_animated_features_Ay7yfa"
   ]
 }

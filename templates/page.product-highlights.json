@@ -9,44 +9,50 @@
  */
  {
   "sections": {
-   "blogs_6DGtRD": {
-      "type": "blogs",
+    "product_highlights_gUaG6E": {
+      "type": "product-highlights",
       "blocks": {
-        "blog_article_xKftck": {
-          "type": "blog_article",
+        "feature_f8LrHp": {
+          "type": "feature",
           "settings": {
-            "blog": ""
+            "text": "Feature text"
           }
         },
-        "blog_article_jqywpf": {
-          "type": "blog_article",
+        "feature_R8xqLd": {
+          "type": "feature",
           "settings": {
-            "blog": ""
+            "text": "Feature text"
           }
         },
-        "blog_article_MhaqYM": {
-          "type": "blog_article",
+        "feature_7naTQ3": {
+          "type": "feature",
           "settings": {
-            "blog": ""
+            "text": "Feature text"
+          }
+        },
+        "feature_fb6KKM": {
+          "type": "feature",
+          "settings": {
+            "text": "Feature text"
           }
         }
       },
       "block_order": [
-        "blog_article_xKftck",
-        "blog_article_jqywpf",
-        "blog_article_MhaqYM"
+        "feature_f8LrHp",
+        "feature_R8xqLd",
+        "feature_7naTQ3",
+        "feature_fb6KKM"
       ],
-      "name": "Blogs",
+      "name": "Product Highlights",
       "settings": {
         "color_scheme": "",
-        "heading_text": "VIEW LOOKBOOKS",
-        "navigation_link_text": "VIEW LOOKBOOK",
-        "navigation_link_url": "",
         "padding_top": 40,
-        "padding_bottom": 40
+        "padding_bottom": 40,
+        "title": "Product Highlights Title",
+        "description": "Product Highlights description will appear here."
       }
     },
-    "link_readme_blogs_Ay7yfa": {
+    "link_readme_product_highlights_Ay7yfa": {
       "type": "link-readme",
       "name": "Link Readme",
       "settings": {
@@ -59,7 +65,7 @@
     }
   },
   "order": [
-    "blogs_6DGtRD",
-    "link_readme_blogs_Ay7yfa"
+    "product_highlights_gUaG6E",
+     "link_readme_product_highlights_Ay7yfa"
   ]
 }

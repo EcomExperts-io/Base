@@ -9,25 +9,20 @@
  */
  {
   "sections": {
-    "animated_features_v2_4yNYN7": {
-      "type": "animated-features-v2",
-      "name": "Animated Features V2",
+    "promo_banner_example": {
+      "type": "promo-banner",
       "settings": {
-        "color_scheme": "",
-        "animation_speed": 1.2,
+        "color_scheme": "scheme-1",
+        "product": "",
+        "image_placement": "row",
+        "image_height": 500,
+        "image_fit": "cover",
+        "image_position": "top",
         "padding_top": 40,
-        "padding_bottom": 40,
-        "image_label": "Image Label",
-        "heading_percentage": "70%",
-        "subheading": "Write subheading here",
-        "feature_1": "Feature 1",
-        "feature_2": "Feature 2",
-        "feature_3": "Feature 3",
-        "feature_4": "Feature 4",
-        "disclaimer": "<p>Write disclaimer here</p>"
+        "padding_bottom": 40
       }
     },
-    "link_readme_animated_features_Ay7yfa": {
+    "link_readme_promo_banner_Ay7yfa": {
       "type": "link-readme",
       "name": "Link Readme",
       "settings": {
@@ -40,7 +35,7 @@
     }
   },
   "order": [
-    "animated_features_v2_4yNYN7",
-    "link_readme_animated_features_Ay7yfa"
+    "promo_banner_example",
+    "link_readme_promo_banner_Ay7yfa"
   ]
 }
