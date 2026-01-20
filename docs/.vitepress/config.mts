@@ -63,7 +63,8 @@ export default defineConfig({
             { text: 'Selling Points V2', link: '/sections/selling-points-v2' },
             { text: 'Shop By Category', link: '/sections/shop-by-category' },
             { text: 'Shop By Category V2', link: '/sections/shop-by-category-v2' },
-            { text: 'Shop Categories', link: '/sections/shop-categories' }
+            { text: 'Shop Categories', link: '/sections/shop-categories' },
+            { text: 'Shop The Look', link: '/sections/shop-the-look' }
           ]
         }
       ],
