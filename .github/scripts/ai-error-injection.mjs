@@ -2,8 +2,9 @@ import Anthropic from '@anthropic-ai/sdk';
 import { readFile, writeFile, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 
-const MAX_RETRIES = 2;
+const MAX_RETRIES = 4;
 const RATE_LIMIT_DELAY_MS = 2000;
+const OVERLOADED_DELAY_MS = 15000;
 
 const client = new Anthropic();
 
@@ -85,9 +86,15 @@ async function analyzeFile(filename, content) {
 
       return cleaned;
     } catch (err) {
-      if (err.status === 429 && attempt < MAX_RETRIES) {
-        console.log(`  ⏳ Rate limited on ${filename}, retrying in ${RATE_LIMIT_DELAY_MS}ms...`);
-        await sleep(RATE_LIMIT_DELAY_MS * (attempt + 1));
+      const isRetryable = err.status === 429 || err.status === 529 || err.status === 503 ||
+        err.error?.type === 'overloaded_error';
+
+      if (isRetryable && attempt < MAX_RETRIES) {
+        const isOverloaded = err.status === 529 || err.status === 503 || err.error?.type === 'overloaded_error';
+        const delay = isOverloaded ? OVERLOADED_DELAY_MS * (attempt + 1) : RATE_LIMIT_DELAY_MS * (attempt + 1);
+        const reason = isOverloaded ? 'Overloaded' : 'Rate limited';
+        console.log(`  ⏳ ${reason} on ${filename}, retrying in ${delay / 1000}s (attempt ${attempt + 1}/${MAX_RETRIES})...`);
+        await sleep(delay);
         continue;
       }
       console.error(`  ✗ Failed to analyze ${filename}:`, err.message);
