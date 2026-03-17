@@ -130,9 +130,6 @@ export class ProductInfo extends HTMLElement {
   }
 
   updateURL(variantId) {
-    // this.querySelector('share-button')?.updateUrl(
-    //   `${window.shopUrl}${url}${variantId ? `?variant=${variantId}` : ''}`
-    // );
 
     // Don't update URL if this is in a modal/quick-add context
     if (this.dataset.updateUrl === 'false') return;
