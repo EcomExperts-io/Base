@@ -25,46 +25,54 @@ export class ProductInfo extends HTMLElement {
 
       const mainGalleryEl = this.querySelector('.product-media-gallery__main');
       if (mainGalleryEl) {
-        this.swiper = new Swiper(mainGalleryEl, {
-          spaceBetween: 0,
-          thumbs: {
-            swiper: new Swiper(thumbnailGalleryEl, {
-              spaceBetween: 12,
-              slidesPerView: 'auto',
-              freeMode: true,
-              watchSlidesProgress: true,
-              slideToClickedSlide: true,
-              navigation: {
-                prevEl: thumbnailWrapperEl?.querySelector('.swiper-button-prev') || thumbnailGalleryEl.querySelector('.swiper-button-prev'),
-                nextEl: thumbnailWrapperEl?.querySelector('.swiper-button-next') || thumbnailGalleryEl.querySelector('.swiper-button-next'),
-              },
-              breakpoints: {
-                768: {
-                  spaceBetween: 14,
+        try {
+          this.swiper = new Swiper(mainGalleryEl, {
+            spaceBetween: 0,
+            thumbs: {
+              swiper: new Swiper(thumbnailGalleryEl, {
+                spaceBetween: 12,
+                slidesPerView: 'auto',
+                freeMode: true,
+                watchSlidesProgress: true,
+                slideToClickedSlide: true,
+                navigation: {
+                  prevEl: thumbnailWrapperEl?.querySelector('.swiper-button-prev') || thumbnailGalleryEl.querySelector('.swiper-button-prev'),
+                  nextEl: thumbnailWrapperEl?.querySelector('.swiper-button-next') || thumbnailGalleryEl.querySelector('.swiper-button-next'),
                 },
-                1024: {
-                  spaceBetween: 16,
+                breakpoints: {
+                  768: {
+                    spaceBetween: 14,
+                  },
+                  1024: {
+                    spaceBetween: 16,
+                  }
                 }
-              }
-            }),
-          },
-        });
+              }),
+            },
+          });
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
 
     const carouselGalleryEl = this.querySelector('.product-media-gallery__carousel');
     if (carouselGalleryEl) {
-      this.swiper = new Swiper(carouselGalleryEl, {
-        autoHeight: true,
-        direction: 'horizontal',
-        pagination: {
-          el: carouselGalleryEl.querySelector('.swiper-pagination'),
-        },
-        navigation: {
-          prevEl: carouselGalleryEl.querySelector('.swiper-button-prev'),
-          nextEl: carouselGalleryEl.querySelector('.swiper-button-next'),
-        },
-      });
+      try {
+        this.swiper = new Swiper(carouselGalleryEl, {
+          autoHeight: true,
+          direction: 'horizontal',
+          pagination: {
+            el: carouselGalleryEl.querySelector('.swiper-pagination'),
+          },
+          navigation: {
+            prevEl: carouselGalleryEl.querySelector('.swiper-button-prev'),
+            nextEl: carouselGalleryEl.querySelector('.swiper-button-next'),
+          },
+        });
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 
@@ -92,7 +100,12 @@ export class ProductInfo extends HTMLElement {
 
   getSelectedVariant(html) {
     const selectedVariant = html.querySelector('[data-selected-variant]')?.innerHTML;
-    return !!selectedVariant ? JSON.parse(selectedVariant) : null;
+    try {
+      return !!selectedVariant ? JSON.parse(selectedVariant) : null;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   }
 
   onVariantChange(e) {
