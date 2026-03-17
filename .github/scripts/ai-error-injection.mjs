@@ -1,11 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { readFile, writeFile, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 
 const MAX_RETRIES = 2;
 const RATE_LIMIT_DELAY_MS = 2000;
 
-const client = new Anthropic();
+const client = new OpenAI();
 
 const SYSTEM_PROMPT = `You are a senior JavaScript engineer specializing in error handling and observability.
 
@@ -59,11 +59,11 @@ function getChangedJsFiles() {
 async function analyzeFile(filename, content) {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const response = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
+      const response = await client.chat.completions.create({
+        model: 'gpt-4.1',
         max_tokens: 16000,
-        system: SYSTEM_PROMPT,
         messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
           {
             role: 'user',
             content: `Analyze this JavaScript file and add error instrumentation where appropriate. Return ONLY the complete file content, nothing else — no markdown fences, no explanation.\n\nFilename: ${filename}\n\n${content}`
@@ -71,7 +71,7 @@ async function analyzeFile(filename, content) {
         ]
       });
 
-      const result = response.content[0]?.text;
+      const result = response.choices[0]?.message?.content;
       if (!result) {
         console.log(`  ⚠ Empty response for ${filename}, skipping`);
         return null;
