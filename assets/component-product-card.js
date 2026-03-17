@@ -3,6 +3,9 @@ export class ProductCard extends HTMLElement {
     super();
   }
 
+  connectedCallback() {
+    this.querySelectorAll('.color-swatch').forEach((s) => s.addEventListener('click', this.onSwatchClick.bind(this)));
+  }
 
   onSwatchClick(event) {
     const swatch = event.target;
