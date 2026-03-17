@@ -38,14 +38,14 @@ jobs:
             echo "has_js=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install OpenAI SDK
+      - name: Install Anthropic SDK
         if: steps.changed.outputs.has_js == 'true'
-        run: npm install openai
+        run: npm install @anthropic-ai/sdk
 
       - name: Run AI Error Injection
         if: steps.changed.outputs.has_js == 'true'
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           CHANGED_FILES: ${{ steps.changed.outputs.files }}
         run: node .github/scripts/ai-error-injection.mjs
 
