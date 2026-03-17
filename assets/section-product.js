@@ -91,8 +91,13 @@ export class ProductInfo extends HTMLElement {
   }
 
   getSelectedVariant(html) {
-    const selectedVariant = html.querySelector('[data-selected-variant]')?.innerHTML;
-    return !!selectedVariant ? JSON.parse(selectedVariant) : null;
+    try {
+      const selectedVariant = html.querySelector('[data-selected-variant]')?.innerHTML;
+      return !!selectedVariant ? JSON.parse(selectedVariant) : null;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   }
 
   onVariantChange(e) {
@@ -166,28 +171,32 @@ export class ProductInfo extends HTMLElement {
     })
       .then((response) => response.text())
       .then((responseText) => {
-        // If the section is in a modal, replace the original section id with the modal section id
-        if (this.dataset.updateUrl === 'false') {
-          responseText = responseText.replaceAll(this.dataset.section.split('-modal')[0], this.dataset.section);
-        }
+        try {
+          // If the section is in a modal, replace the original section id with the modal section id
+          if (this.dataset.updateUrl === 'false') {
+            responseText = responseText.replaceAll(this.dataset.section.split('-modal')[0], this.dataset.section);
+          }
 
-        // Parse the response text into an HTML document
-        const html = new DOMParser().parseFromString(responseText, 'text/html');
-        const variant = this.getSelectedVariant(html);
-        if (productUrlChanged) {
-          // If the product url has changed, replace the current section with the new section
-          const productInfo = html.querySelector('product-info');
-          this.replaceWith(productInfo);
-          productInfo.updateURL(variant?.id);
-        } else {
-          this.updateMedia(variant?.featured_media?.id);
-          this.updateURL(variant?.id);
-          this.updateVariantInputs(variant?.id);
-          this.updateSourceFromDestination(html, `add-to-cart-container-${this.dataset.section}`);
-          this.updateSourceFromDestination(html, `variant-selector-${this.dataset.section}`);
-          this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
-          this.updateSourceFromDestination(html, `sku-${this.dataset.section}`);
-          this.updateSourceFromDestination(html, `inventory-${this.dataset.section}`);
+          // Parse the response text into an HTML document
+          const html = new DOMParser().parseFromString(responseText, 'text/html');
+          const variant = this.getSelectedVariant(html);
+          if (productUrlChanged) {
+            // If the product url has changed, replace the current section with the new section
+            const productInfo = html.querySelector('product-info');
+            this.replaceWith(productInfo);
+            productInfo.updateURL(variant?.id);
+          } else {
+            this.updateMedia(variant?.featured_media?.id);
+            this.updateURL(variant?.id);
+            this.updateVariantInputs(variant?.id);
+            this.updateSourceFromDestination(html, `add-to-cart-container-${this.dataset.section}`);
+            this.updateSourceFromDestination(html, `variant-selector-${this.dataset.section}`);
+            this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
+            this.updateSourceFromDestination(html, `sku-${this.dataset.section}`);
+            this.updateSourceFromDestination(html, `inventory-${this.dataset.section}`);
+          }
+        } catch (err) {
+          console.error(err);
         }
       })
       .catch((error) => {
