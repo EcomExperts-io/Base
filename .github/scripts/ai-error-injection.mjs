@@ -59,7 +59,7 @@ function getChangedJsFiles() {
 async function analyzeFile(filename, content) {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const response = await client.messages.create({
+      const stream = client.messages.stream({
         model: 'claude-opus-4-20250514',
         max_tokens: 16000,
         system: SYSTEM_PROMPT,
@@ -71,7 +71,8 @@ async function analyzeFile(filename, content) {
         ]
       });
 
-      const result = response.content[0]?.text;
+      const finalMessage = await stream.finalMessage();
+      const result = finalMessage.content[0]?.text;
       if (!result) {
         console.log(`  ⚠ Empty response for ${filename}, skipping`);
         return null;
