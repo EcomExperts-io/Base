@@ -1,10 +1,309 @@
-<h1>Bundle Builder</h1>
+{% comment %}
+  Bundle Builder Section
+{% endcomment %}
+
+<script src="{{ 'section-bundle-builder.js' | asset_url }}" type="module"></script>
+<bundle-root
+  section-id="{{ section.id }}"
+  class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+>
+
+  <!-- LEFT SIDE -->
+  <div class="bundle-left">
+    {% for block in section.blocks %}
+      <div class="bundle-block" data-block-id="{{ block.id }}">
+        <div class="bundle-steps">
+         <p>Step {{ forloop.index }} of {{ section.blocks.size }}</p>
+        </div>
+        <!-- Heading (click toggles accordion; chevron shows open/closed) -->
+        <div
+          class="bundle-heading"
+          role="button"
+          tabindex="0"
+          aria-expanded="false"
+          aria-controls="bundle-products-{{ block.id }}"
+        >
+          <h3 id="bundle-heading-title-{{ block.id }}">{{ block.settings.grid_title }}</h3>
+          <span
+            class="bundle-heading__count"
+            data-block-id="{{ block.id }}"
+            aria-live="polite"
+          >0 selected</span>
+          <span class="bundle-heading__chevron" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3.5 5.25L7 8.75L10.5 5.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+
+        <!-- Products -->
+        <div class="bundle-products" id="bundle-products-{{ block.id }}" role="region" aria-labelledby="bundle-heading-title-{{ block.id }}">
+          {% for product in block.settings.collection.products %}
+            <bundle-item
+              data-product-id="{{ product.id }}"
+              data-title="{{ product.title }}"
+              data-price="{{ product.price | money_without_currency | strip_html }}"
+              data-block-id="{{ block.id }}"
+              data-image="{{ product.featured_image.src | image_url: width: 70, height: 70 }}"
+            >
+             
+              <div class="bndlr-card">
+                <div class="bndlr-card-image-container">
+                  <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}" width="200" height="200" >
+                </div>
+                <div class="bndlr-card-content">
+                <h4 class="bndlr-product-title">{{ product.title }}</h4>
+                <p class="bndlr-product-description">{{ product.description | truncate: 100 }}</p>
+                
+                <div class="bndlr-qty-container">
+                  <div class="bndlr-qty-value">
+                    <button class="minus">-</button>
+                    <span class="qty-value">0</span>
+                    <button class="plus">+</button>
+                  </div>  
+                  <div class="bndlr-qty-price">
+                      <p class="bndlr-product-price">{{ product.price | money }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </bundle-item>
+          {% endfor %}
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <bundle-bucket>
+    <h3>Review</h3>
+    <div class="bucket-container">
+      <h2>Your Security System</h2>
+      <p>
+        Review your personalized protection system designed to keep what matters most safe.
+      </p>
+      <div class="bucket-items"> </div>
+    </div>
+    
+  </bundle-bucket>
+
+</bundle-root>
+
+
+<!-- CONFIG (Block Titles) -->
+<script type="application/json" id="bundle-config">
+{
+  {% for block in section.blocks %}
+    "{{ block.id }}": {
+      "title": {{ block.settings.bundle_title | json }}
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+}
+</script>
+
+
+<!-- =========================
+     STYLES (Basic)
+========================= -->
+<style>
+bundle-root {
+  max-width: var(--page-width);
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: .5rem 1.5rem;
+  margin: 10px auto;
+}
+.bundle-block { 
+  background-color: #F4F8FF
+}
+bundle-item{
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 10px;
+}
+bundle-item.added{
+  border: 1px solid #4E2FD2B2;
+}
+bundle-bucket{
+  background-color: #F4F8FF;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.bucket-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bundle-heading, .bundle-steps {
+  cursor: pointer;
+  border-bottom: 1px solid #222;
+  border-top: 1px solid #222;
+  font-weight: bold;
+  padding: 10px 20px;
+  margin-top: 10px;
+}
+.bundle-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.bundle-heading h3 {
+  margin: 0;
+  flex: 1;
+  text-align: left;
+}
+.bundle-heading__count {
+  flex-shrink: 0;
+  font-size: 0.9em;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #222;
+}
+.bundle-heading__count.is-empty {
+  font-weight: 500;
+  opacity: 0.65;
+}
+.bundle-heading__chevron {
+  display: flex;
+  flex-shrink: 0;
+  color: inherit;
+  line-height: 0;
+  transition: transform 0.2s ease;
+}
+.bundle-block.active .bundle-heading__chevron {
+  transform: rotate(180deg);
+}
+.bundle-steps{
+  border: none;
+}
+
+.bundle-products {
+  display: none;
+  border: 1px solid #eee;
+  padding: 20px;
+}
+
+.bundle-block.active .bundle-products {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  margin:15px auto;
+}
+
+.bndlr-card {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.bnder-card-content{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bndlr-product-title{
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.6px;
+  font-family: Gilroy-SemiBold;
+}
+
+.bndlr-product-description{
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.6px;
+  line-height: 140%;
+  font-family: Gilroy-Medium;
+}
+.bndlr-qty-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.bndlr-qty-value{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap:4px;
+}
+bundle-root button {
+  background-color: #E6EBF0;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: Gilroy-Medium;
+  color: #222;
+ 
+}
+
+.bundle-block .bundle-products img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bucket-block{
+  border-bottom: 1px solid;
+  padding: 10px 0px;
+}
+
+.bucket-item{
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+</style>
+
 
 {% schema %}
 {
   "name": "Bundle Builder",
-  "tag": "section",
-  "class": "section-bundle-builder",
-  "settings": []
+  "settings": [],
+  "blocks": [
+    {
+      "type": "collection_block",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "grid_title",
+          "label": "Grid Title"
+        },
+        {
+          "type": "text",
+          "id": "bundle_title",
+          "label": "Bundle Title In Bucket"
+        }
+        
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle Builder",
+      "blocks": [
+        {
+          "type": "collection_block"
+        }
+      ]
+    }
+  ]
 }
 {% endschema %}
