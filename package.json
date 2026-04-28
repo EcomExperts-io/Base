@@ -14,5 +14,8 @@
     "@shopify/prettier-plugin-liquid": "^1.5.2",
     "eslint": "^8.45.0",
     "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.91.1"
   }
 }
