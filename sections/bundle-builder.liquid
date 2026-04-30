@@ -10,10 +10,11 @@
 
   <!-- LEFT SIDE -->
   <div class="bundle-left">
+    
     {% for block in section.blocks %}
       <div class="bundle-block" data-block-id="{{ block.id }}">
         <div class="bundle-steps">
-         <p>Step {{ forloop.index }} of {{ section.blocks.size }}</p>
+         <p style="font-size: 12px; font-weight: 200; letter-spacing: 1.6px; color:#484848">STEP {{ forloop.index }} OF {{ section.blocks.size }}</p>
         </div>
         <!-- Heading (click toggles accordion; chevron shows open/closed) -->
         <div
@@ -23,55 +24,253 @@
           aria-expanded="false"
           aria-controls="bundle-products-{{ block.id }}"
         >
-          <h3 id="bundle-heading-title-{{ block.id }}">{{ block.settings.grid_title }}</h3>
+          <h3 id="bundle-heading-title-{{ block.id }}">
+          {% if block.settings.custom_icon != blank %}
+            <img src="{{ block.settings.custom_icon | image_url: width: 20 }}" alt="{{ block.settings.grid_title }}" width="20" height="20">
+          {% endif %}
+            {{ block.settings.grid_title }}</h3>
           <span
             class="bundle-heading__count"
             data-block-id="{{ block.id }}"
             aria-live="polite"
           >0 selected</span>
           <span class="bundle-heading__chevron" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3.5 5.25L7 8.75L10.5 5.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M6.40682 9.43039C6.20741 9.70956 5.7925 9.70956 5.59309 9.43038L1.56472 3.79062C1.32834 3.45968 1.5649 3 1.97159 3L10.0284 3C10.4351 3 10.6716 3.45969 10.4353 3.79062L6.40682 9.43039Z" fill="#4E2FD2"/>
+              </svg>
           </span>
         </div>
 
         <!-- Products -->
         <div class="bundle-products" id="bundle-products-{{ block.id }}" role="region" aria-labelledby="bundle-heading-title-{{ block.id }}">
+          <div class="bundle-products-container"> 
           {% for product in block.settings.collection.products %}
+            {% liquid
+              assign bundle_variant = product.selected_or_first_available_variant
+              assign bundle_has_compare_sale = false
+              assign bundle_save_pct = 0
+              if bundle_variant.compare_at_price != blank and bundle_variant.compare_at_price > bundle_variant.price and bundle_variant.price > 0
+                assign bundle_diff = bundle_variant.compare_at_price | minus: bundle_variant.price
+                assign bundle_save_int = bundle_diff | times: 100 | divided_by: bundle_variant.compare_at_price | round
+                if bundle_save_int > 0
+                  assign bundle_has_compare_sale = true
+                  assign bundle_save_pct = bundle_save_int
+                endif
+              endif
+              if bundle_variant.featured_image
+                assign bundle_thumb = bundle_variant.featured_image | image_url: width:200
+                assign bundle_card_img = bundle_variant.featured_image | image_url: width: 200
+              else
+                assign bundle_thumb = product.featured_image | image_url: width: 200
+                assign bundle_card_img = product.featured_image | image_url: width: 200
+              endif
+            %}
             <bundle-item
               data-product-id="{{ product.id }}"
-              data-title="{{ product.title }}"
-              data-price="{{ product.price | money_without_currency | strip_html }}"
+              data-title="{{ product.title | escape }}"
+              data-price="{{ bundle_variant.price | money_without_currency | strip_html }}"
+              data-price-cents="{{ bundle_variant.price }}"
+              data-default-variant-id="{{ bundle_variant.id }}"
               data-block-id="{{ block.id }}"
-              data-image="{{ product.featured_image.src | image_url: width: 70, height: 70 }}"
+              data-image="{{ bundle_thumb }}"
+              data-bucket-compare-at="{% if bundle_has_compare_sale %}{{ bundle_variant.compare_at_price | money | escape }}{% endif %}"
+              data-bucket-compare-at-price="{% if bundle_has_compare_sale %}{{ bundle_variant.compare_at_price | money_without_currency | strip_html }}{% endif %}"
+              data-bucket-compare-at-cents="{% if bundle_has_compare_sale %}{{ bundle_variant.compare_at_price }}{% endif %}"
+              data-bucket-price-display="{% if bundle_variant.price == 0 %}FREE{% else %}{{ bundle_variant.price | money | escape }}{% endif %}"
             >
-             
+              {%- unless product.has_only_default_variant -%}
+              <script type="application/json" data-bundle-item-variants>
+                [
+                  {%- for variant in product.variants -%}
+                    {%- liquid
+                      assign v_has_compare_sale = false
+                      assign v_save_pct = null
+                      if variant.compare_at_price != blank and variant.compare_at_price > variant.price and variant.price > 0
+                        assign v_diff = variant.compare_at_price | minus: variant.price
+                        assign v_save_rounded = v_diff | times: 100 | divided_by: variant.compare_at_price | round
+                        if v_save_rounded > 0
+                          assign v_has_compare_sale = true
+                          assign v_save_pct = v_save_rounded
+                        endif
+                      endif
+                    -%}
+                    {
+                      "id": {{ variant.id | json }},
+                      "option1": {{ variant.option1 | json }},
+                      "option2": {{ variant.option2 | json }},
+                      "option3": {{ variant.option3 | json }},
+                      "title": {{ variant.title | json }},
+                      "price": {{ variant.price | money_without_currency | strip_html | json }},
+                      "priceDisplay": {{ variant.price | money | json }},
+                      "isFree": {% if variant.price == 0 %}true{% else %}false{% endif %},
+                      "compareAtDisplay":
+                        {%- if v_has_compare_sale -%}
+                          {{ variant.compare_at_price | money | json }}
+                        {%- else -%}
+                          null
+                        {%- endif -%},
+                      "compareAtPrice":
+                        {%- if v_has_compare_sale -%}
+                          {{ variant.compare_at_price | money_without_currency | strip_html | json }}
+                        {%- else -%}
+                          null
+                        {%- endif -%},
+                      "priceCents": {{ variant.price | json }},
+                      "compareAtCents":
+                        {%- if v_has_compare_sale -%}
+                          {{ variant.compare_at_price | json }}
+                        {%- else -%}
+                          null
+                        {%- endif -%},
+                      "savePercent":
+                        {%- if v_has_compare_sale and v_save_pct -%}
+                          {{ v_save_pct | json }}
+                        {%- else -%}
+                          null
+                        {%- endif -%},
+                      "available": {{ variant.available | json }},
+                      "image":
+                        {%- if variant.featured_image -%}
+                          {{ variant.featured_image | image_url: width: 140 | json }}
+                        {%- else -%}
+                          {{ product.featured_image | image_url: width: 140 | json }}
+                        {%- endif -%},
+                      "cardImage":
+                        {%- if variant.featured_image -%}
+                          {{ variant.featured_image | image_url: width: 400 | json }}
+                        {%- else -%}
+                          {{ product.featured_image | image_url: width: 400 | json }}
+                        {%- endif -%}
+                    }{%- unless forloop.last -%},{%- endunless -%}
+                  {%- endfor -%}
+                ]
+              </script>
+              {%- endunless -%}
               <div class="bndlr-card">
+                <div class="bndlr-card-badges" aria-live="polite">
+                  <span
+                    class="bndlr-badge bndlr-badge--free"
+                    {% unless bundle_variant.price == 0 %}hidden{% endunless %}
+                  >FREE</span>
+                  <span
+                    class="bndlr-badge bndlr-badge--save"
+                    {% unless bundle_has_compare_sale %}hidden{% endunless %}
+                  >Save {{ bundle_save_pct }}%</span>
+                </div>
                 <div class="bndlr-card-image-container">
-                  <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title }}" width="200" height="200" >
+                  <img
+                    class="bndlr-card-image"
+                    src="{{ bundle_card_img }}"
+                    alt="{{ product.title | escape }}"
+                    width="200"
+                    height="200"
+                 
+                  >
                 </div>
                 <div class="bndlr-card-content">
                 <h4 class="bndlr-product-title">{{ product.title }}</h4>
                 <p class="bndlr-product-description">{{ product.description | truncate: 100 }}</p>
+
+                {%- unless product.has_only_default_variant -%}
+                <div class="bndlr-options">
+                  {%- for option in product.options_with_values -%}
+                    <fieldset class="bndlr-option-group" data-option-position="{{ option.position }}">
+                      <legend class="bndlr-option-label">{{ option.name | escape }}</legend>
+                      <div class="bndlr-variant-grid" role="group" aria-label="{{ option.name | escape }}">
+                        {%- for value in option.values -%}
+                          {%- assign thumb_variant = false -%}
+                          {%- for variant in product.variants -%}
+                            {%- case option.position -%}
+                              {%- when 1 -%}
+                                {%- if variant.option1 == value -%}
+                                  {%- assign thumb_variant = variant -%}
+                                  {%- break -%}
+                                {%- endif -%}
+                              {%- when 2 -%}
+                                {%- if variant.option2 == value -%}
+                                  {%- assign thumb_variant = variant -%}
+                                  {%- break -%}
+                                {%- endif -%}
+                              {%- when 3 -%}
+                                {%- if variant.option3 == value -%}
+                                  {%- assign thumb_variant = variant -%}
+                                  {%- break -%}
+                                {%- endif -%}
+                            {%- endcase -%}
+                          {%- endfor -%}
+                          {%- liquid
+                            if thumb_variant and thumb_variant.featured_image
+                              assign opt_thumb = thumb_variant.featured_image | image_url: width: 80
+                            elsif thumb_variant
+                              assign opt_thumb = product.featured_image | image_url: width: 80
+                            else
+                              assign opt_thumb = product.featured_image | image_url: width: 80
+                            endif
+                          -%}
+                          {%- assign is_value_selected = false -%}
+                          {%- case option.position -%}
+                            {%- when 1 -%}
+                              {%- if bundle_variant.option1 == value -%}{%- assign is_value_selected = true -%}{%- endif -%}
+                            {%- when 2 -%}
+                              {%- if bundle_variant.option2 == value -%}{%- assign is_value_selected = true -%}{%- endif -%}
+                            {%- when 3 -%}
+                              {%- if bundle_variant.option3 == value -%}{%- assign is_value_selected = true -%}{%- endif -%}
+                          {%- endcase -%}
+                          <button
+                            type="button"
+                            class="bndlr-option-btn{% if is_value_selected %} is-selected{% endif %}"
+                            data-option-position="{{ option.position }}"
+                            data-option-value="{{ value | escape }}"
+                          >
+                            <span class="bndlr-option-btn__thumb">
+                              <img src="{{ opt_thumb }}" alt="" width="28" height="28" >
+                            </span>
+                            <span class="bndlr-option-btn__label">{{ value | escape }}</span>
+                          </button>
+                        {%- endfor -%}
+                      </div>
+                    </fieldset>
+                  {%- endfor -%}
+                </div>
+                {%- endunless -%}
                 
                 <div class="bndlr-qty-container">
                   <div class="bndlr-qty-value">
                     <button class="minus">-</button>
-                    <span class="qty-value">0</span>
+                    <p class="qty-value"><span class="qty-value-number">0</span></p>
                     <button class="plus">+</button>
                   </div>  
                   <div class="bndlr-qty-price">
-                      <p class="bndlr-product-price">{{ product.price | money }}</p>
+                    <div class="bndlr-price-stack">
+                      <p
+                        class="bndlr-price-compare"
+                        {% unless bundle_has_compare_sale %}hidden{% endunless %}
+                      >
+                        {%- if bundle_has_compare_sale -%}
+                          {{- bundle_variant.compare_at_price | money -}}
+                        {%- endif -%}
+                      </p>
+                      <p
+                        class="bndlr-price-current{% if bundle_variant.price == 0 %} bndlr-price-current--free{% elsif bundle_has_compare_sale %} bndlr-price-current--sale{% endif %}"
+                      >
+                        {%- if bundle_variant.price == 0 -%}FREE{%- else -%}{{ bundle_variant.price | money }}{%- endif -%}
+                      </p>
                     </div>
+                  </div>
                   </div>
                 </div>
               </div>
 
             </bundle-item>
           {% endfor %}
+          </div>
+          {% unless forloop.last %}
+            <div class="next-step-container">
+              <p class="next-step-text">Next: {{ section.blocks[forloop.index].settings.grid_title }}</p>
+            </div>
+          {% endunless %}
         </div>
-
+        
       </div>
     {% endfor %}
   </div>
@@ -80,13 +279,26 @@
   <bundle-bucket>
     <h3>Review</h3>
     <div class="bucket-container">
-      <h2>Your Security System</h2>
+      <h2>{{ section.settings.bucket_heading }}</h2>
       <p>
-        Review your personalized protection system designed to keep what matters most safe.
+        {{ section.settings.bucket_description }}
       </p>
       <div class="bucket-items"> </div>
     </div>
-    
+    <div class="bucket-footer">
+      <p class="bucket-savings-banner" data-bucket-savings-banner hidden></p>
+      <button type="button" class="bucket-footer-button" disabled>Checkout</button>
+      <button type="button" class="bucket-footer-button-secondary" data-bundle-save-for-later>
+        Save my system for later
+      </button>
+      <p
+        class="bucket-save-feedback"
+        data-bundle-save-feedback
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
+    </div>
   </bundle-bucket>
 
 </bundle-root>
@@ -108,7 +320,15 @@
      STYLES (Basic)
 ========================= -->
 <style>
+  @font-face {
+    font-family: 'Gilroy-SemiBold';
+    src: url('{{ "Gilroy-SemiBold.ttf" | asset_url }}') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
 bundle-root {
+  font-family: 'Gilroy-SemiBold';
   max-width: var(--page-width);
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -139,13 +359,17 @@ bundle-bucket{
   flex-direction: column;
   gap: 10px;
 }
+.bundle-left{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .bundle-heading, .bundle-steps {
   cursor: pointer;
-  border-bottom: 1px solid #222;
-  border-top: 1px solid #222;
+  border-bottom: 0.5px solid #1F1F1F;
+  border-top: 0.5px solid #1F1F1F;
   font-weight: bold;
   padding: 10px 20px;
-  margin-top: 10px;
 }
 .bundle-heading {
   display: flex;
@@ -154,16 +378,20 @@ bundle-bucket{
   gap: 12px;
 }
 .bundle-heading h3 {
+  font-size: 28px;
   margin: 0;
   flex: 1;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .bundle-heading__count {
   flex-shrink: 0;
   font-size: 0.9em;
   font-weight: 600;
   white-space: nowrap;
-  color: #222;
+  color: #5b4df2;
 }
 .bundle-heading__count.is-empty {
   font-weight: 500;
@@ -190,20 +418,174 @@ bundle-bucket{
 }
 
 .bundle-block.active .bundle-products {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.bundle-products-container{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 24px;
   margin:15px auto;
 }
-
+.next-step-container{
+  text-align: center;
+  margin-top: 10px;
+}
+.next-step-text{
+  display: inline-block;
+  border: 1px solid #5b4df2;
+  color: #5b4df2;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Gilroy-Medium;
+  letter-spacing: 0.02em;
+}
 .bndlr-card {
+  position: relative;
   padding: 10px;
   margin-bottom: 10px;
 }
-.bnder-card-content{
+.bndlr-card-badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;
+}
+.bndlr-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.bndlr-badge--save {
+  background-color: #5b4df2;
+  color: #fff;
+}
+.bndlr-badge--free {
+  background-color: #5b4df2;
+  color: #fff;
+  text-transform: uppercase;
+}
+.bndlr-badge[hidden],
+.bndlr-price-compare[hidden] {
+  display: none !important;
+}
+.bndlr-price-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+.bndlr-price-compare {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  text-decoration: line-through;
+}
+.bndlr-price-current {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+}
+.bndlr-price-current--sale {
+  color: #c4151c;
+}
+.bndlr-price-current--free {
+  color: #5b4df2;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+}
+.bndlr-card-content {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+.bndlr-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+.bndlr-option-group {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.bndlr-option-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  padding: 0;
+}
+.bndlr-variant-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+bundle-root .bndlr-option-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 32px;
+  padding: 2px 4px;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid #d0d8e4;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #222;
+  font-size: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+bundle-root .bndlr-option-btn:hover {
+  border-color: #0AA288;
+}
+bundle-root .bndlr-option-btn.is-selected {
+  border-color: #0AA288;
+  box-shadow: 0 0 0 0.5px #0AA288;
+}
+.bndlr-option-btn__thumb {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #e6ebf0;
+}
+.bndlr-option-btn__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bndlr-option-btn__label {
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .bndlr-product-title{
   font-size: 18px;
@@ -226,11 +608,44 @@ bundle-bucket{
   align-items: center;
   margin-top: 10px;
 }
-.bndlr-qty-value{
-  display: flex;
+.bndlr-qty-value {
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
-  gap:4px;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
+}
+bundle-root .bndlr-qty-value button.minus,
+bundle-root .bndlr-qty-value button.plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  font-size: 18px;
+  font-weight: 600;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.bndlr-qty-value .qty-value {
+  margin: 0;
+  padding: 0 4px;
+  min-width: 1.75rem;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  box-sizing: border-box;
 }
 bundle-root button {
   background-color: #E6EBF0;
@@ -263,6 +678,144 @@ bundle-root button {
   border-bottom: 1px solid #eee;
   margin-bottom: 10px;
 }
+.bucket-item__pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+  min-width: 0;
+}
+.bucket-item__compare {
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  text-decoration: line-through;
+}
+.bucket-item__current {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+}
+.bucket-item__current--sale {
+  color:#5b4df2;
+}
+.bucket-item__current--free {
+  color: #5b4df2;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.bucket-total {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.bucket-total__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+.bucket-total__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+.bucket-total__compare {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
+  text-decoration: line-through;
+}
+.bucket-total__payable {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+}
+.bucket-total__payable--sale {
+  color: #5b4df2;
+}
+.bucket-savings-banner {
+  margin: 0 0 4px;
+  width: 100%;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #5b4df2;
+}
+.bucket-savings-banner[hidden] {
+  display: none !important;
+}
+.bucket-footer{
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.bucket-footer-button{
+  width: 100%;
+  background-color: #5b4df2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: Gilroy-Medium;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.bucket-footer-button-secondary {
+  width: 100%;
+  background-color: transparent;
+  color: #5b4df2;
+  border: 2px solid #5b4df2;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Gilroy-Medium;
+  letter-spacing: 0.02em;
+}
+.bucket-footer-button:disabled,
+.bucket-footer-button-secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.bucket-save-feedback {
+  margin: 4px 0 0;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #2e7d32;
+}
+.bucket-save-feedback[hidden] {
+  display: none !important;
+}
+.bucket-save-feedback.is-error {
+  color: #c4151c;
+}
+
+@media screen and (max-width: 768px){
+  bundle-root {
+    grid-template-columns: 1fr;
+  }
+  .bundle-products-container {
+    grid-template-columns: 1fr;
+  }
+}
 
 </style>
 
@@ -270,7 +823,19 @@ bundle-root button {
 {% schema %}
 {
   "name": "Bundle Builder",
-  "settings": [],
+  "settings": [{
+    "type": "text",
+    "id": "bucket_heading",
+    "label": "Bucket Heading",
+    "default": "Your Security System"
+  },
+  {
+    "type": "text",
+    "id": "bucket_description",
+    "label": "Bucket Description",
+    "default": "Review your personalized protection system designed to keep what matters most safe."
+  }
+],
   "blocks": [
     {
       "type": "collection_block",
@@ -280,6 +845,11 @@ bundle-root button {
           "type": "collection",
           "id": "collection",
           "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Icon Image"
         },
         {
           "type": "text",
