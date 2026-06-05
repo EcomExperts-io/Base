@@ -140,8 +140,13 @@ if (!customElements.get('product-info')) {
 </product-info>
 
 <!-- Load component script -->
-<script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'component-product-info.js' | asset_url }}" type="module"></script>
 ```
+
+> Section/component scripts are loaded with `type="module"` (not `defer`) — this matches the
+> `javascript-standards.mdc` standard and the `pr-review` skill check P-04. Vendored library globals
+> (e.g. Swiper, Alpine) are the exception and use `defer` because they attach globals rather than
+> being imported as modules.
 
 ---
 
@@ -316,8 +321,11 @@ class ProductInfo extends HTMLElement {
 
 ```liquid
 <script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
-<script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'component-product-info.js' | asset_url }}" type="module"></script>
 ```
+
+> The vendored Swiper script uses `defer` (it exposes the global `Swiper`); the component script
+> uses `type="module"` per `javascript-standards.mdc` / `pr-review` P-04.
 
 ---
 

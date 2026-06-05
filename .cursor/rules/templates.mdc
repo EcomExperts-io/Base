@@ -1,5 +1,5 @@
 ---
-description:
+description: Online Store 2.0 JSON template structure and standards
 globs: templates/*.json
 alwaysApply: false
 ---

@@ -10,12 +10,12 @@ reference material. Load it with the Read tool when you need depth beyond the ru
 
 ### Global Variables
 
-Global variables should be scoped to the `:root` selector in `snippets/theme-styles-variables.liquid`.
+Global variables should be scoped to the `:root` selector in `snippets/css-variables.liquid`.
 
 **Example of global variables**
 
 ```css
-/* in snippets/theme-styles-variables.liquid */
+/* in snippets/css-variables.liquid */
 :root {
     --page-width: 1400px;
      --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }}; /* Referencing a theme setting */

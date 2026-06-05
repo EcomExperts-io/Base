@@ -29,7 +29,7 @@ CSS variables, a.k.a. custom properties, are a powerful tool for reducing redund
 
 - If you need to hardcode a value, set it to a variable and use that variable in the declaration. Example: a touch target size. `--touch-target-size: 44px;`
 - **Never** hardcode colors, always use the color schemes
-- Global variables are scoped to `:root` in `snippets/theme-styles-variables.liquid`. Scope component variables to the component; scoped variables can reference global variables. See the reference for global/scoped/semantic-color/design-token examples.
+- Global variables are scoped to `:root` in `snippets/css-variables.liquid`. Scope component variables to the component; scoped variables can reference global variables. See the reference for global/scoped/semantic-color/design-token examples.
 
 ### Namespace Your CSS Variables
 
