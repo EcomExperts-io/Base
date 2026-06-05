@@ -9,12 +9,15 @@ Auto-attached when working in `locales/` directory.
 
 ## File Structure
 
+This theme ships a single language: English. Only the default English locale and its
+schema counterpart exist — there are no `es.json`, `fr.json`, `de.json`, or other
+translated locale files. Add new keys to `en.default.json` only; translators add other
+languages later if/when the store goes multilingual.
+
 ```
 locales/
-├── en.default.json     # English (required)
-├── es.json             # Spanish
-├── fr.json             # French
-└── de.json             # German
+├── en.default.json            # English storefront strings (required)
+└── en.default.schema.json     # English schema/editor strings (required)
 ```
 
 ## Key Organization
@@ -65,4 +68,4 @@ locales/
 
 **Schema Translations:**
 
-Use the rules outlined in our [typescript schema](schemas/schema.d.ts) to determine the appropriate key structure for schema translations.
+Refer to `locales/en.default.schema.json` for the current schema translation structure.

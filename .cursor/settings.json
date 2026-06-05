@@ -1,0 +1,7 @@
+{
+  "plugins": {
+    "hex": {
+      "enabled": true
+    }
+  }
+}

@@ -33,7 +33,7 @@ Every section must include:
   "
 >
   <div class="page-width">
-    {% content_for 'blocks %}
+    {% content_for 'blocks' %}
   </div>
 </section>
 

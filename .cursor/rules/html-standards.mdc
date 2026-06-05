@@ -1,5 +1,5 @@
 ---
-description:
+description: Modern semantic HTML standards for Shopify Liquid templates
 globs: *.liquid
 alwaysApply: false
 ---

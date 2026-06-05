@@ -10,26 +10,9 @@ Fix accessibility issue in [COMPONENT_NAME] or Fix GitHub accessibility issue #[
 
 ## Accessibility Rules Reference
 
-**IMPORTANT**: Use the `fetch_rules` tool to access specific accessibility rules for components you're working on:
+**IMPORTANT**: Use the Read tool to load the relevant `.cursor/rules/*.mdc` or `.cursor/skills/accessibility-review/SKILL.md` for the component you're working on. Read the target component's `.liquid` (and matching `.js`) file directly to discover the ARIA patterns already in use rather than fetching separate per-component rule files.
 
-- `accordion-accessibility`: Accordion component ARIA patterns
-- `breadcrumb-accessibility`: Breadcrumb navigation patterns
-- `carousel-accessibility`: Carousel/slider ARIA compliance
-- `cart-drawer-accessibility`: Cart drawer accessibility patterns
-- `color-swatch-accessibility`: Color swatch component patterns
-- `combobox-accessibility`: Combobox/dropdown ARIA patterns
-- `disclosure-accessibility`: Disclosure/collapsible content patterns
-- `dropdown-navigation-accessibility`: Navigation dropdown patterns
-- `modal-accessibility`: Modal/dialog ARIA Dialog Pattern
-- `product-card-accessibility`: Product card accessibility patterns
-- `product-filter-accessibility`: Product filtering interface patterns
-- `sale-price-accessibility`: Sale price display patterns
-- `slider-accessibility`: Slider/range input patterns
-- `switch-accessibility`: Toggle switch patterns
-- `tab-accessibility`: Tab interface patterns
-- `tooltip-accessibility`: Tooltip accessibility patterns
-
-Always fetch and follow the relevant rule(s) for the component you're fixing.
+For a complete, structured audit, prefer running the `/accessibility-review` skill (`.cursor/skills/accessibility-review/SKILL.md`), which supersedes this prompt.
 
 ## Base Workflow
 
@@ -48,7 +31,7 @@ Always fetch and follow the relevant rule(s) for the component you're fixing.
 - **Role must be on the element that contains the items** - not the wrapper
 - **Screen readers need direct parent-child relationship** between role and items
 - **Test with actual screen readers**, not just markup validation
-- **Fetch specific component rules** before implementing fixes
+- **Read the relevant rule and the component file** before implementing fixes
 
 ### Testing Requirements
 
@@ -74,7 +57,7 @@ In addition to standard testing requirements:
 
 ### Implementation Guidelines
 
-- **Fetch and follow existing rules** for the component type you're working on
+- **Read and follow existing rules** for the component type you're working on
 - **Search for existing ARIA patterns** in the codebase first
 - **Make minimal changes** that improve accessibility
 - **Focus on semantic correctness** over visual changes

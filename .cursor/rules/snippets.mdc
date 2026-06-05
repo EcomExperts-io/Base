@@ -1,5 +1,5 @@
 ---
-description:
+description: Snippet development standards including LiquidDoc, parameter defaults, and component patterns
 globs: snippets/*.liquid
 alwaysApply: false
 ---
