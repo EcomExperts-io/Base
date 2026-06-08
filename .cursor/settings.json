@@ -1,5 +1,8 @@
 {
   "plugins": {
+    "figma": {
+      "enabled": true
+    },
     "hex": {
       "enabled": true
     }
