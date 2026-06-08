@@ -37,3 +37,6 @@ Example: `/scaffold-section testimonials "Displays customer testimonials in a gr
 - This repo has **no `schemas/` folder** and **no `npm run build:schemas`** step. Schemas are
   written inline in the section `.liquid` file inside a `{% schema %}` tag.
 - Section CSS/JS file naming must match: `section-<name>.{css,js}`.
+- **Figma MCP fallback:** If `get_design_context` returns "file could not be accessed" (common with
+  View-only Figma seats or files outside the authenticated team), use attached screenshots and
+  existing theme sections with similar layouts for spacing/typography.
