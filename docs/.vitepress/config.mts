@@ -1,12 +1,34 @@
 import { defineConfig } from 'vitepress'
 
+const guidesSidebar = [
+  { text: 'Architecture', link: '/architecture' },
+  { text: 'Development Workflow', link: '/development-workflow' },
+  { text: 'Design System', link: '/design-system' },
+  { text: 'JavaScript Patterns', link: '/javascript-patterns' },
+  { text: 'AI Tooling', link: '/ai-tooling' },
+  { text: 'Integrations', link: '/integrations' }
+]
+
 export default defineConfig({
   title: "Base Theme Documentation",
   description: "Documentation for the Base Theme",
-  base: '/Base/', 
+  base: '/Base/',
+  // Internal audit/planning docs are not part of the published site.
+  srcExclude: ['_audit/**'],
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
+      {
+        text: 'Guides',
+        items: [
+          { text: 'Architecture', link: '/architecture' },
+          { text: 'Development Workflow', link: '/development-workflow' },
+          { text: 'Design System', link: '/design-system' },
+          { text: 'JavaScript Patterns', link: '/javascript-patterns' },
+          { text: 'AI Tooling', link: '/ai-tooling' },
+          { text: 'Integrations', link: '/integrations' }
+        ]
+      },
       { text: 'Sections', link: '/sections/product' },
       { text: 'Snippets', link: '/snippets/component-product-card' },
       { text: 'Assets', link: '/assets/component-product-card' }
@@ -14,6 +36,12 @@ export default defineConfig({
     ],
 
     sidebar: {
+      '/architecture': [{ text: 'Guides', items: guidesSidebar }],
+      '/development-workflow': [{ text: 'Guides', items: guidesSidebar }],
+      '/design-system': [{ text: 'Guides', items: guidesSidebar }],
+      '/javascript-patterns': [{ text: 'Guides', items: guidesSidebar }],
+      '/ai-tooling': [{ text: 'Guides', items: guidesSidebar }],
+      '/integrations': [{ text: 'Guides', items: guidesSidebar }],
       '/sections/': [
         {
           text: 'Sections',

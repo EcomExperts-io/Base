@@ -1,6 +1,6 @@
 ---
 description: Localization coding standards and best practices guide
-globs: *.liquid,schemas/*
+globs: *.liquid
 alwaysApply: false
 ---
 # Localization Standards

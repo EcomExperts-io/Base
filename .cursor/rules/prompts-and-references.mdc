@@ -1,11 +1,9 @@
 ---
-description:
-globs:
 alwaysApply: true
 ---
 # Prompts and References
 
-The prompts and references directories contain documentation and guides for AI agents to follow when working on various tasks in the Horizon theme.
+The prompts and references directories contain documentation and guides for AI agents to follow when working on various tasks in the Base theme.
 
 ## Living Documents
 
