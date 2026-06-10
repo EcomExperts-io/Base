@@ -105,9 +105,11 @@ export default defineConfig({
             { text: 'Product Info', link: '/assets/section-product' },
             { text: 'Collection Info', link: '/assets/section-collection' },
 
+            { text: 'Cart Engine', link: '/assets/cart' },
             { text: 'Cart Discount', link: '/assets/component-cart-discount' },
             { text: 'Cart Drawer', link: '/assets/component-cart-drawer' },
             { text: 'Cart Notification', link: '/assets/component-cart-notification' },
+            { text: 'Cart Page', link: '/assets/component-cart-page' },
             { text: 'Product Card', link: '/assets/component-product-card' },
             { text: 'Filters Price Range', link: '/assets/component-filters-price-range' },
             { text: 'Infinite Scroll', link: '/assets/component-infinite-scroll' },

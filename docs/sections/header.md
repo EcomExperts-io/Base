@@ -18,7 +18,7 @@
 
 - Search functionality uses Alpine.js for state management (`x-data`, `x-show`, `x-model`).
 - Sticky header behavior handled by inline JavaScript.
-- Cart count updates via Liquid Ajax Cart (`data-ajax-cart-bind="item_count"`).
+- Cart count updates via the native cart engine (`assets/cart.js`), which syncs every `[data-cart-count]` element after each cart mutation.
 
 ---
 
@@ -61,7 +61,7 @@ The section uses extensive inline styles with dynamic values. Key dynamic CSS in
 ## Markup Structure
 
 ```liquid
-<div class="color-{{ section.settings.color_scheme }}" x-data="{ cartOpen: false }" @cart-open.window="cartOpen = true">
+<div class="color-{{ section.settings.color_scheme }}">
   <header id="main-header" x-data="{ searchOpen: false, searchTerm: '{{ search.terms | escape }}' }">
     <!-- Navigation drawer -->
     <!-- Search icon (conditional) -->
@@ -75,7 +75,7 @@ The section uses extensive inline styles with dynamic values. Key dynamic CSS in
 </div>
 ```
 
-- Header wrapped in color scheme container with Alpine.js cart state.
+- Header wrapped in a color scheme container; no Alpine state is needed for the cart (the `<cart-drawer>` element owns its own open/close state).
 - Main header uses Alpine.js for search state management.
 - Conditional rendering based on logo position and menu settings.
 
@@ -153,7 +153,17 @@ The section uses extensive inline styles with dynamic values. Key dynamic CSS in
 - Localization selectors render when country/language selectors are enabled.
 - Search icon position varies based on logo position setting.
 - Customer account icon shows when accounts are enabled and `enable_customer_avatar` is true.
-- Cart icon includes item count badge with Liquid Ajax Cart binding.
+- Cart bubble is a plain link to the cart page with a count badge:
+
+```liquid
+<a id="header-cart-bubble" href="{{ routes.cart_url }}">
+  {{- 'icon-cart.svg' | inline_asset_content -}}
+  <div data-cart-count>{{ cart.item_count }}</div>
+</a>
+```
+
+- With JavaScript enabled and `settings.cart_type == 'drawer'`, the `<cart-drawer>` element intercepts clicks on `#header-cart-bubble` and toggles the drawer instead; without JavaScript the link falls back to navigating to `/cart`.
+- The `[data-cart-count]` badge is kept in sync by `assets/cart.js` after every cart mutation.
 
 ---
 
@@ -197,8 +207,8 @@ function updateHeaderHeight() {
 ### Alpine.js Integration
 
 - **Search state**: `x-data="{ searchOpen: false, searchTerm: '...' }"` manages search visibility and input value.
-- **Cart drawer**: `x-data="{ cartOpen: false }"` manages cart drawer state when `cart_type == 'drawer'`.
 - **Click outside**: `@click.outside="searchOpen = false"` closes search when clicking outside.
+- Alpine is used only for header search/menu state — cart drawer open/close is owned by the `<cart-drawer>` custom element (`component-cart-drawer.js`), not Alpine.
 
 ---
 
@@ -379,7 +389,7 @@ function updateHeaderHeight() {
 
 2. **Alpine.js dependency**: Search functionality requires Alpine.js to be loaded in the theme. Ensure Alpine.js is included in `layout/theme.liquid`.
 
-3. **Liquid Ajax Cart**: Cart count badge uses `data-ajax-cart-bind="item_count"` to automatically update. Ensure Liquid Ajax Cart is initialized.
+3. **Cart engine**: Cart count badge uses `data-cart-count` and is updated by the native cart engine (`assets/cart.js`, loaded from `layout/theme.liquid`) on init and after every cart mutation.
 
 4. **Logo height**: Logo height comes from theme settings (`settings.logo_height`), not section settings. Ensure this is configured in theme settings.
 
@@ -398,9 +408,9 @@ function updateHeaderHeight() {
    - Shows in header actions otherwise
 
 9. **Cart type integration**: Header conditionally renders cart notification or drawer based on `settings.cart_type`:
-   - `drawer`: Renders `component-cart-drawer` snippet
+   - `drawer`: Renders `component-cart-drawer` snippet (the `<cart-drawer>` element intercepts the cart bubble click)
    - `notification`: Renders `component-cart-notification` snippet
-   - Otherwise: Cart icon links to cart page
+   - Otherwise: Cart bubble simply navigates to the cart page
 
 10. **Predictive search**: When `settings.predictive_search_enabled` is true, uses `component-predictive-search` snippet instead of standard search form.
 

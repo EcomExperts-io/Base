@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Remove-Item -Force \"c:\\\\Users\\\\moeme\\\\OneDrive\\\\Documents\\\\EcomExperts\\\\Clients\\\\Base\\\\assets\\\\liquid-ajax-cart-v2.1.1.js\" -Confirm:$false)",
+      "mcp__shopify-dev-mcp__validate_theme",
+      "Bash(grep \"\\\\.js$\")",
+      "Bash(cd \"/c/Users/moeme/OneDrive/Documents/EcomExperts/Clients/Base\" && grep -rniE \"liquid-ajax-cart|liquidAjaxCart|ajax-cart|ajax cart\" README.md .cursor docs --include=\"*.md\" --include=\"*.mdc\" --include=\"*.mts\" --include=\"*.ts\" 2>/dev/null | grep -v \"docs/.vitepress/dist\" | grep -v \"docs/OLD_README.md\" | grep -v \"docs/node_modules\")",
+      "Read(//c/c/Users/moeme/OneDrive/Documents/EcomExperts/Clients/Base/**)",
+      "mcp__shopify-dev-mcp__search_docs_chunks"
+    ]
+  }
+}

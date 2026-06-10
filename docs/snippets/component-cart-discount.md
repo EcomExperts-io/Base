@@ -9,7 +9,7 @@
 - Renders a discount code input form
 - Displays applied discount codes as removable pills
 - Shows error messages for invalid discount codes
-- Updates dynamically via Liquid Ajax Cart integration
+- Refreshes the rest of the cart UI via `window.Cart.refresh()` after changes
 - Provides loading states during API calls
 
 ---
@@ -28,7 +28,7 @@ This snippet does not accept any parameters. It uses the global `cart` object av
 | CSS | `cart.css` (contains discount form styles) |
 | Icons | `icon-error.svg`, `icon-close.svg` (inline via `inline_asset_content`) |
 | Data | Requires `cart` object with `cart_level_discount_applications` |
-| External | Liquid Ajax Cart library for cart updates |
+| External | Native cart engine (`assets/cart.js`, `window.Cart`) for cart refreshes |
 
 ---
 
@@ -194,7 +194,7 @@ The `<cart-discount-form>` custom element wraps the entire component and handles
 5. Discount is applied via `/cart/update.js`
 6. Cart state is fetched from `/cart.js`
 7. Pills are updated dynamically
-8. Liquid Ajax Cart updates cart sections
+8. `window.Cart?.refresh()` re-renders the cart drawer/page sections
 9. Input is cleared and loading state is reset
 
 ### Discount Removal
@@ -205,7 +205,7 @@ The `<cart-discount-form>` custom element wraps the entire component and handles
 4. Discount is removed via API
 5. Cart state is fetched
 6. Pills are updated (removed pill disappears)
-7. Liquid Ajax Cart updates cart sections
+7. `window.Cart?.refresh()` re-renders the cart drawer/page sections
 
 ### Error Handling
 
@@ -270,12 +270,12 @@ JavaScript prevents duplicate codes:
 - Clears input if duplicate is detected
 - No API call is made for duplicates
 
-### Liquid Ajax Cart Integration
+### Cart Engine Integration
 
-The component triggers Liquid Ajax Cart updates:
-- Updates all `data-ajax-cart-section` elements
-- Keeps cart totals and other cart UI in sync
-- No page reload required
+The component triggers a cart refresh via the native cart engine:
+- Calls `window.Cart?.refresh()` after applying/removing codes
+- The engine re-fetches `/cart.js` plus the cart section HTML, then dispatches `cart:change` so `<cart-drawer>` / `<cart-page>` re-render
+- Keeps cart totals and other cart UI in sync without a page reload
 
 ### Dynamic Pill Updates
 
@@ -331,7 +331,7 @@ JavaScript requires these specific IDs:
 Unlike older implementations, this component:
 - Does not reload the page
 - Updates UI dynamically
-- Uses Liquid Ajax Cart for cart synchronization
+- Uses `window.Cart.refresh()` for cart synchronization
 - Provides smooth user experience
 
 ### Accessibility
@@ -360,7 +360,7 @@ Ensure this is included on pages where the discount form appears.
 
 The snippet requires the `cart` object to be available in Liquid context. This is automatically available on:
 - Cart page (`/cart`)
-- Cart drawer (via Liquid Ajax Cart)
+- Cart drawer (rendered globally from the header)
 - Any page with cart context
 
 ---

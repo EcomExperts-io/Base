@@ -72,7 +72,7 @@ if (!customElements.get('product-info')) {
       this.quantitySelector.querySelector('button[name="plus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
       this.quantitySelector.querySelector('button[name="minus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
       document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
-      document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
+      document.addEventListener('cart:change', this.onCartUpdate.bind(this));
     }
 
     connectedCallback() {
@@ -223,31 +223,51 @@ class ProductInfo extends HTMLElement {
   onCartUpdate(e) {
     // Check page context before executing
     if (!window.location.pathname.includes('/products/')) return;
-    
-    const { requestState } = e.detail;
-    
-    // If the "add to cart" request is successful
-    if (requestState.requestType === 'add' && requestState.responseData?.ok) {
+
+    // cart:change only fires on successful requests
+    // detail: { action, payload, response, cart, previousCart, sections, source }
+    if (e.detail.action === 'add') {
       // Add the CSS class to the "body" tag
-      document.body.classList.add('js-show-ajax-cart');
-      
+      document.body.classList.add('js-item-added');
+
       // Dispatch a custom event for other components
+      // (for adds, detail.response is the added line item from /cart/add.js)
       document.dispatchEvent(
         new CustomEvent('item-added-to-cart', {
-          detail: requestState?.responseData?.body,
+          detail: e.detail.response,
         })
       );
     }
   }
 
   setupEventListeners() {
-    // Listen to third-party library events
-    document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
+    // Listen to the cart engine's events (assets/cart.js)
+    document.addEventListener('cart:change', this.onCartUpdate.bind(this));
     // Listen to own component events
     this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
   }
 }
 ```
+
+**Cart mutations go through the `window.Cart` API (assets/cart.js):**
+
+```javascript
+// Add to cart — pass the product form's FormData
+Cart.add(new FormData(form), form);
+
+// Change a line quantity
+Cart.change({ line: 1, quantity: 2 }, sourceElement);
+
+// Update cart note or attributes
+Cart.update({ note: 'Gift wrap please' }, sourceElement);
+
+// Re-fetch state + section HTML after external cart changes
+Cart.refresh();
+```
+
+- All mutations are serialized through an internal queue, so rapid calls can't race.
+- Success dispatches `cart:change` on `document`; failures dispatch `cart:error` with `detail.error: { status, message, description }`.
+- Current cart state is always available at `window.Cart.state`.
 
 **Page context awareness:**
 

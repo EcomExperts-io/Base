@@ -16,6 +16,7 @@
 
 <div class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
   <div class="page-width">
+    <cart-page>
     {%- if cart.item_count > 0 -%}
       <div id="cart-main">
         <div class="cart-header">
@@ -23,7 +24,7 @@
           <a href="{{ routes.all_products_collection_url }}"> Continue shopping </a>
         </div>
 
-        <div class="cart-items" data-ajax-cart-section data-ajax-cart-section-scroll>
+        <div class="cart-items">
         {% for line_item in cart.items %}
           {% assign line_item_index = forloop.index %}
 
@@ -105,33 +106,26 @@
               </div>
 
               <div class="cart-item__action">
-                <ajax-cart-quantity>
-                  <a
-                    data-ajax-cart-quantity-minus
-                    href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | minus: 1 }}"
-                  >
+                <div class="cart-quantity">
+                  <a href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | minus: 1 }}">
                     {{- 'icon-minus.svg' | inline_asset_content -}}
                   </a>
 
                   <input
-                    data-ajax-cart-quantity-input="{{ line_item_index }}"
                     name="updates[]"
                     value="{{ line_item.quantity }}"
                     type="number"
-                    form="my-ajax-cart-form"
+                    form="cart-checkout-form"
                   >
 
-                  <a
-                    data-ajax-cart-quantity-plus
-                    href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | plus: 1 }}"
-                  >
+                  <a href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | plus: 1 }}">
                     {{- 'icon-plus.svg' | inline_asset_content -}}
                   </a>
-                </ajax-cart-quantity>
+                </div>
 
                 <div class="cart-item__remove">
                   {{- 'icon-close.svg' | inline_asset_content -}}
-                  <a href="{{ line_item.url_to_remove }}" data-ajax-cart-request-button>Remove</a>
+                  <a href="{{ line_item.url_to_remove }}">Remove</a>
                 </div>
               </div>
 
@@ -151,7 +145,7 @@
               </div>
             </div>
             <div class="cart-item__errors">
-              <div data-ajax-cart-errors="{{ line_item.key }}"></div>
+              <div class="cart-item__error"></div>
               {{- 'icon-info.svg' | inline_asset_content -}}
             </div>
           </div>
@@ -164,7 +158,6 @@
             <label for="CartNote">Order special instructions</label>
             <textarea
               name="note"
-              form="cart"
               id="CartNote"
             >{{ cart.note }}</textarea>
           </div>
@@ -173,7 +166,7 @@
         <div class="cart-actions">
           {% render 'component-cart-discount', section_id: section.id %}
           
-          <div class="cart-charges" data-ajax-cart-section>
+          <div class="cart-charges">
             {% if cart.cart_level_discount_applications.size > 0 %}
               <ul class="cart-discounts">
                 {% for discount_application in cart.cart_level_discount_applications %}
@@ -192,7 +185,7 @@
             <small class="cart-total__small">Taxes, discounts and shipping calculated at checkout.</small>
           </div>
 
-          {% form 'cart', cart, id: 'my-ajax-cart-form' %}
+          {% form 'cart', cart, id: 'cart-checkout-form' %}
             <button type="submit" name="checkout">Check out</button>
           {% endform %}
         </div>
@@ -206,9 +199,11 @@
         <p class="cart__login-paragraph"><a href="{{ routes.account_login_url }}">Log in</a> to check out faster.</p>
       </div>
     {% endif %}
+    </cart-page>
   </div>
 </div>
 
+<script src="{{ 'component-cart-page.js' | asset_url }}" type="module"></script>
 <script src="{{ 'component-cart-discount.js' | asset_url }}" type="module" fetchpriority="low"></script>
 
 

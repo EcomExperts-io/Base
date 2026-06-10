@@ -10,7 +10,7 @@
 - Inlines scoped CSS (via `{% stylesheet %}`) to style the floating notification, headings, buttons, and responsive breakpoints.
 - Renders the `<cart-notification>` custom element with the correct classes/ARIA attributes.
 - Provides action links: view cart, checkout, and continue shopping.
-- Includes `component-cart-notification.js` so the custom element can listen for Liquid Ajax Cart events.
+- Includes `component-cart-notification.js` so the custom element can listen for the cart engine's `cart:change` events.
 
 ---
 
@@ -28,10 +28,7 @@
 ## Markup Structure
 
 ```liquid
-<cart-notification
-  data-ajax-cart-section
-  class="cart-notification-wrapper{% if desktop_menu_type != 'drawer' %} page-width{% endif %}"
->
+<cart-notification class="cart-notification-wrapper{% if desktop_menu_type != 'drawer' %} page-width{% endif %}">
   <div
     id="cart-notification"
     class="cart-notification {% if color_scheme %} color-{{ color_scheme }} gradient{% endif %}"
@@ -48,7 +45,7 @@
 <script src="{{ 'component-cart-notification.js' | asset_url }}" type="module"></script>
 ```
 
-- Wrapper adds `data-ajax-cart-section` so Liquid Ajax Cart updates target the correct DOM node.
+- The `<cart-notification>` wrapper needs no data attributes — its JS module subscribes to the `cart:change` event from `assets/cart.js`.
 - Inner `div#cart-notification` acts as the dialog container with `role="dialog"` and localized `aria-label`.
 
 ---
@@ -68,7 +65,7 @@
 - CSS ensures semantic `<dl>` styling for option pairs.
 
 ### 4. Actions
-- “View cart” anchor shows current `item_count` via `data-ajax-cart-bind="item_count"`.
+- “View cart” anchor shows the current item count via a `data-cart-count` span that `assets/cart.js` keeps in sync.
 - Checkout form posts to `routes.cart_url` and submits `checkout`.
 - “Continue shopping” button shares the `cart-notification-continue_shopping` class used by the JS controller to hide the drawer.
 
@@ -84,8 +81,8 @@ The snippet always includes:
 
 This ensures the `<cart-notification>` web component is registered. The module:
 - Binds click handlers to the close/continue buttons.
-- Listens for `liquid-ajax-cart:request-end`.
-- Injects product markup and toggles the `cart-notification-open` class.
+- Listens for `cart:change` and reacts when `detail.action === 'add'`.
+- Builds the toast from `event.detail.response` (the added line item) and toggles the `cart-notification-open` class.
 
 ---
 

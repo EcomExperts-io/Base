@@ -13,14 +13,15 @@ export class QuickAdd extends HTMLElement {
     if (!this.initialized) {
       this.initialized = true;
       document.body.appendChild(this);
-      document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+      document.addEventListener('cart:change', this.onCartRequestEnd);
     }
   }
 
   setupAjaxCartButtons() {
     document.addEventListener('submit', (event) => {
-      const form = event.target.closest('ajax-cart-product-form');
-      if (!form) return;
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (!(form.getAttribute('action') || '').includes('/cart/add')) return;
 
       const button = form.querySelector('.quick-add__icon-button');
       if (button) this.toggleSpinner(button, true);
@@ -39,13 +40,12 @@ export class QuickAdd extends HTMLElement {
 
   disconnectedCallback() {
     if (this.initialized) {
-      document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+      document.removeEventListener('cart:change', this.onCartRequestEnd);
     }
   }
 
   onCartRequestEnd(event) {
-    const { requestState } = event.detail || {};
-    if (requestState?.requestType === 'add' && requestState?.responseData?.ok) {
+    if (event.detail?.action === 'add') {
       document.body.classList.remove('overflow-hidden');
 
       document.querySelectorAll('quick-add-modal').forEach((modal) => {

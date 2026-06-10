@@ -12,7 +12,7 @@
 - Removes discount codes while preserving other active codes
 - Updates discount pills dynamically without page reload
 - Shows loading states during API calls
-- Integrates with Liquid Ajax Cart for seamless cart updates
+- Triggers `window.Cart?.refresh()` so the rest of the cart UI re-renders
 
 ---
 
@@ -155,7 +155,7 @@ Handles form submission for applying discount codes:
 6. Applies discount via API
 7. Fetches updated cart
 8. Updates pill display
-9. Triggers Liquid Ajax Cart update
+9. Triggers `window.Cart?.refresh()`
 10. Clears input and resets loading state
 
 **Error Handling:**
@@ -174,7 +174,7 @@ Handles remove button clicks using event delegation:
 6. Applies remaining codes (or empty string if none)
 7. Fetches updated cart
 8. Updates pill display
-9. Triggers Liquid Ajax Cart update
+9. Triggers `window.Cart?.refresh()`
 
 **Error Handling:**
 - Removes loading class and re-enables button on error
@@ -200,17 +200,15 @@ The element is wrapped in a guard to prevent re-registration during hot reloadin
 
 ---
 
-## Integration with Liquid Ajax Cart
+## Integration with the Cart Engine
 
-The component integrates with Liquid Ajax Cart for seamless cart updates:
+The component integrates with the native cart engine (`assets/cart.js`) for seamless cart updates:
 
 ```js
-if (window.liquidAjaxCart?.update) {
-  window.liquidAjaxCart.update({}, {});
-}
+window.Cart?.refresh();
 ```
 
-This triggers Liquid Ajax Cart to update all sections marked with `data-ajax-cart-section`, ensuring cart totals and other cart-related UI elements stay in sync.
+`Cart.refresh()` re-fetches the cart state from `/cart.js` plus the cart section HTML via the Section Rendering API, then dispatches a `cart:change` event (action `'refresh'`) so `<cart-drawer>` / `<cart-page>` re-render and cart totals stay in sync.
 
 ---
 
@@ -256,7 +254,7 @@ Common error scenarios:
 5. Pills must have `data-discount-code` attribute
 6. Remove buttons must have class `cart-discount__pill-remove`
 7. Load `component-cart-discount.js` as a module
-8. Ensure Liquid Ajax Cart is loaded for cart updates
+8. Ensure the cart engine (`assets/cart.js`) is loaded so `window.Cart.refresh()` can re-render the cart UI
 
 ---
 

@@ -67,7 +67,7 @@
 - `product_form_id` combines `quick-add-`, `section_id`, and the product ID for unique IDs.
 - When `quick_add == 'standard'`:
   - If multiple variants or quantity rules exist, renders a modal opener button and `<quick-add-modal>` container that loads variant content asynchronously.
-  - Otherwise, renders an `<ajax-cart-product-form>` with hidden variant ID and quick-add submit button.
+  - Otherwise, renders a plain `{% form 'product' %}` (inside a `.quick-add__icon-wrapper` div) with hidden variant ID and quick-add submit button; the native cart engine (`assets/cart.js`) intercepts the submit via `form[action*="/cart/add"]` delegation.
 - Buttons include loading spinners and localized labels (`products.product.add_to_cart`, `products.product.choose_options`, etc.).
 
 ---
@@ -78,7 +78,7 @@
 - Uses platform custom elements:
   - `<product-card>` for the interactive card wrapper.
   - `<modal-opener>` and `<quick-add-modal>` for the Quick Add experience.
-  - `<ajax-cart-product-form>` for direct submissions.
+- Direct submissions use a plain product form — `assets/cart.js` handles them globally via event delegation, no wrapper element needed.
 - Icons loaded via `inline_asset_content` (`icon-close.svg`, `icon-spinner.svg`).
 
 ---
