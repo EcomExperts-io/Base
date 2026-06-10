@@ -20,7 +20,7 @@ features:
   - title: Clean Architecture
     details: Organized, logical file structure with clear separation of concerns.
   - title: Minimal Dependencies
-    details: Only essential libraries like Alpine.js and Liquid AJAX Cart.
+    details: Only essential libraries like Alpine.js — cart functionality is a native engine built on Shopify APIs.
   - title: Modern Development
     details: Built using Shopify CLI 3.0 and Online Store 2.0 features.
 
@@ -48,5 +48,6 @@ Base Theme is crafted for developers who appreciate clean, well-structured code 
 We use a carefully selected set of libraries to provide essential functionality while maintaining performance:
 
 - **[Alpine.js](https://alpinejs.dev/)**: Lightweight framework for UI state management and interactivity.
-- **[Liquid AJAX Cart](https://liquid-ajax-cart.js.org/)**: Cart functionality without custom JavaScript.
 - **[Swiper](https://swiperjs.com/)**: Modern mobile touch slider for product image galleries.
+
+Cart functionality is handled by a native cart engine (`assets/cart.js`) built on Shopify's Cart AJAX API and Section Rendering API. It exposes a `window.Cart` API and broadcasts `cart:change` / `cart:error` events that the cart components react to — no third-party cart library required.

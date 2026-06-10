@@ -314,9 +314,6 @@
 
 <div
   class="color-{{ section.settings.color_scheme }}"
-  {% if settings.cart_type == 'drawer' %}
-    x-data="{ cartOpen: false }" @cart-open.window="cartOpen = true"
-  {% endif %}
 >
   <header
     {% if section.settings.menu_position == 'center' %}
@@ -399,16 +396,9 @@
         {%- endcase -%}
       {%- endfor -%}
 
-      <a
-        id="header-cart-bubble"
-        {%- if settings.cart_type == 'drawer' -%}
-          @click.prevent="cartOpen = !cartOpen"
-        {%- else -%}
-          href="{{ routes.cart_url }}"
-        {%- endif -%}
-      >
+      <a id="header-cart-bubble" href="{{ routes.cart_url }}">
         {{- 'icon-cart.svg' | inline_asset_content -}}
-        <div data-cart-count data-ajax-cart-bind="item_count">{{ cart.item_count }}</div>
+        <div data-cart-count>{{ cart.item_count }}</div>
       </a>
     </div>
 

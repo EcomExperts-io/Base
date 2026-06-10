@@ -150,9 +150,7 @@ export class CartDiscountForm extends HTMLElement {
         this.input.value = '';
         this.updatePills(cart);
 
-        if (window.liquidAjaxCart?.update) {
-          window.liquidAjaxCart.update({}, {});
-        }
+        window.Cart?.refresh();
       } else {
         this.showError('That discount code is not valid.');
       }
@@ -188,9 +186,7 @@ export class CartDiscountForm extends HTMLElement {
       const cart = await fetch(`${window.Shopify.routes.root}cart.js`).then(r => r.json());
       this.updatePills(cart);
 
-      if (window.liquidAjaxCart?.update) {
-        window.liquidAjaxCart.update({}, {});
-      }
+      window.Cart?.refresh();
     } catch (err) {
       console.error(err);
       pill.classList.remove('cart-discount__pill--removing');

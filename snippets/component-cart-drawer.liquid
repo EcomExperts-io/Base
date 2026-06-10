@@ -1,6 +1,7 @@
 {% doc %}
   Renders the slide-out cart drawer with line items, options, totals, and actions.
-  Uses Alpine.js for open/close state and listens for an `item-added-to-cart` event.
+  The <cart-drawer> custom element (component-cart-drawer.js) owns open/close
+  state and re-renders the wrapper on the `cart:change` event from cart.js.
 
   @example
   {% render 'component-cart-drawer' %}
@@ -10,15 +11,14 @@
 <cart-drawer
   id="cart-drawer"
   class="color-{{ settings.cart_color_scheme }}"
-  :class="{ 'cart-open': cartOpen }"
 >
-  <button class="drawer-overlay" @click="cartOpen = !cartOpen">
+  <button class="drawer-overlay">
     <span hidden>{{ 'accessibility.close' | t }}</span>
   </button>
-  <div class="drawer__wrapper" data-ajax-cart-section>
+  <div class="drawer__wrapper">
     {%- if cart == empty -%}
       <div class="cart-header cart-header--empty">
-        <div class="cart-drawer__close" @click="cartOpen = !cartOpen">
+        <div class="cart-drawer__close">
           {{- 'icon-close.svg' | inline_asset_content -}}
         </div>
       </div>
@@ -54,12 +54,12 @@
     {%- else -%}
       <div class="cart-header">
         <h2>{{ 'cart.title' | t }} ({{ cart.item_count }})</h2>
-        <div class="cart-drawer__close" @click="cartOpen = !cartOpen">
+        <div class="cart-drawer__close">
           {{- 'icon-close.svg' | inline_asset_content -}}
         </div>
       </div>
 
-      <div class="cart-items" data-ajax-cart-section-scroll>
+      <div class="cart-items">
         {% for line_item in cart.items %}
           {% assign line_item_index = forloop.index %}
 
@@ -141,33 +141,26 @@
               </div>
 
               <div class="cart-item__action">
-                <ajax-cart-quantity>
-                  <a
-                    data-ajax-cart-quantity-minus
-                    href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | minus: 1 }}"
-                  >
+                <div class="cart-quantity">
+                  <a href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | minus: 1 }}">
                     {{- 'icon-minus.svg' | inline_asset_content -}}
                   </a>
 
                   <input
-                    data-ajax-cart-quantity-input="{{ line_item_index }}"
                     name="updates[]"
                     value="{{ line_item.quantity }}"
                     type="number"
-                    form="my-ajax-cart-form"
+                    form="cart-checkout-form"
                   >
 
-                  <a
-                    data-ajax-cart-quantity-plus
-                    href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | plus: 1 }}"
-                  >
+                  <a href="{{ routes.cart_change_url }}?line={{ line_item_index }}&quantity={{ line_item.quantity | plus: 1 }}">
                     {{- 'icon-plus.svg' | inline_asset_content -}}
                   </a>
-                </ajax-cart-quantity>
+                </div>
 
                 <div class="cart-item__remove">
                   {{- 'icon-close.svg' | inline_asset_content -}}
-                  <a href="{{ line_item.url_to_remove }}" data-ajax-cart-request-button>{{ 'cart.remove' | t }}</a>
+                  <a href="{{ line_item.url_to_remove }}">{{ 'cart.remove' | t }}</a>
                 </div>
               </div>
 
@@ -188,7 +181,7 @@
             </div>
 
             <div class="cart-item__errors">
-              <div data-ajax-cart-errors="{{ line_item.key }}"></div>
+              <div class="cart-item__error"></div>
               {{- 'icon-info.svg' | inline_asset_content -}}
             </div>
           </div>
@@ -197,13 +190,10 @@
 
       <div class="cart-footer">
         {%- if settings.show_cart_note -%}
-          <div class="cart-note" x-data="{ noteOpen: false }">
-            <label for="CartNote" :class="{ 'note-open': noteOpen }" @click="noteOpen = !noteOpen"
-              >{{ 'cart.seller_note' | t }}</label
-            >
+          <div class="cart-note">
+            <label for="CartNote">{{ 'cart.seller_note' | t }}</label>
             <textarea
               name="note"
-              form="cart"
               id="CartNote"
             >{{ cart.note }}</textarea>
           </div>
@@ -231,7 +221,7 @@
             <small class="cart-total__small">{{ 'cart.taxes_and_shipping_policy' | t }}</small>
           </div>
 
-          {% form 'cart', cart, id: 'my-ajax-cart-form' %}
+          {% form 'cart', cart, id: 'cart-checkout-form' %}
             <button type="submit" name="checkout">{{ 'cart.checkout' | t }}</button>
           {% endform %}
         </div>

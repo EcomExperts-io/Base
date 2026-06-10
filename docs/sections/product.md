@@ -10,7 +10,7 @@
 |------|-------------------|
 | CSS  | `swiper7.4.1.min.css`, `component-product-price.css`, `section-product.css`, `component-product-media-modal.css` (conditional), `component-product-card.css` (conditional), `component-complementary-products.css` (conditional), `component-quick-add.css` (conditional), `component-pickup-availability.css` (conditional), `component-product-share-button.css` (conditional) |
 | JavaScript | `section-product.js`, `swiper7.4.1.min.js`, `component-product-card.js` (conditional), `product-recommendations.js` (conditional), `component-quick-add.js` (conditional), `component-modal-opener.js` (conditional), `component-pickup-availability.js` (conditional), `component-product-share-button.js` (conditional), `component-product-media-modal.js` (conditional), `component-product-media-magnify.js` (conditional), `component-selling-plans.js` (conditional) |
-| Custom Elements | `<product-info>`, `<variant-selector>`, `<quantity-selector>`, `<ajax-cart-product-form>`, `<pickup-availability>`, `<product-recommendations>`, `<selling-plans-widget>` |
+| Custom Elements | `<product-info>`, `<variant-selector>`, `<quantity-selector>`, `<pickup-availability>`, `<product-recommendations>`, `<selling-plans-widget>` |
 | Snippets | `component-product-media-gallery`, `component-product-price`, `component-product-share-button`, `component-product-card`, `component-pickup-availability`, `component-product-media-modal` |
 | Icons | `icon-spinner.svg`, `icon-unavailable.svg`, `icon-caret.svg`, `icon-inventory-status.svg` (inline via `inline_asset_content`) |
 
@@ -194,17 +194,16 @@ The section supports the following block types (rendered in order):
 ```liquid
 {%- when 'buy_buttons' -%}
   <div class="product-form__buttons" {{ block.shopify_attributes }}>
-    <ajax-cart-product-form>
-      {% form 'product', product, id: product_form_id, novalidate: 'novalidate' %}
-        <!-- Add to cart button, dynamic checkout -->
-      {% endform %}
-    </ajax-cart-product-form>
+    {% form 'product', product, id: product_form_id, novalidate: 'novalidate' %}
+      <div class="form-error"></div>
+      <!-- Add to cart button, dynamic checkout -->
+    {% endform %}
     
     <!-- Pickup availability (conditional) -->
   </div>
 ```
 
-- **AJAX cart integration**: Uses `ajax-cart-product-form` custom element for cart updates.
+- **AJAX cart integration**: The native cart engine (`assets/cart.js`) intercepts submits on any `form[action*="/cart/add"]` via event delegation — no wrapper element or data attributes needed. The submit button is disabled and its `.loading__spinner` shown while the request runs; errors render into the `.form-error` div.
 - **Dynamic checkout**: Optional Shop Pay, Apple Pay buttons.
 - **Pickup availability**: Optional local pickup information.
 
@@ -295,7 +294,7 @@ The section supports the following block types (rendered in order):
 
 - **Image zoom**: Supports lightbox, hover zoom, or no zoom based on settings.
 
-- **AJAX cart**: Add to cart uses AJAX via `ajax-cart-product-form` custom element.
+- **AJAX cart**: Add to cart submits are intercepted by the native cart engine (`assets/cart.js`), which posts the form data to `/cart/add.js` and dispatches a `cart:change` event on success (`cart:error` on failure).
 
 - **Pickup availability**: Fetches and displays local pickup information when enabled.
 
@@ -332,7 +331,7 @@ Each block type has its own settings for customization (colors, font sizes, text
 
 5. **Quantity selector**: The `<quantity-selector>` custom element handles increment/decrement buttons and validates against variant quantity rules.
 
-6. **AJAX cart**: Uses `ajax-cart-product-form` custom element (likely from Liquid Ajax Cart library) for seamless cart updates.
+6. **AJAX cart**: The product form is a plain `{% form 'product' %}`; the native cart engine (`assets/cart.js`) handles submission via document-level event delegation on `form[action*="/cart/add"]` for seamless cart updates.
 
 7. **Pickup availability**: Uses `<pickup-availability>` custom element which fetches store availability data and displays it in a drawer.
 

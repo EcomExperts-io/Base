@@ -401,23 +401,24 @@ class DataLayerAddToCart extends HTMLElement {
   }
 
   connectedCallback() {
-    document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    document.addEventListener('cart:change', this.onCartRequestEnd);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    document.removeEventListener('cart:change', this.onCartRequestEnd);
   }
 
   onCartRequestEnd(event) {
-    const { requestState } = event.detail || {};
+    const detail = event.detail || {};
 
     // Only track successful add requests
-    if (requestState?.requestType !== 'add' || !requestState?.responseData?.ok) {
+    if (detail.action !== 'add' || !detail.response) {
       return;
     }
 
-    const { sku, id, product_title, vendor, product_type, variant_title, price, quantity } = requestState?.responseData?.body;
-    const sellingPlanId = requestState?.responseData?.body?.selling_plan_allocation?.selling_plan?.id || null;
+    // FormData adds respond with the added line item at the top level
+    const { sku, id, product_title, vendor, product_type, variant_title, price, quantity } = detail.response;
+    const sellingPlanId = detail.response?.selling_plan_allocation?.selling_plan?.id || null;
 
     const item = {
       item_id: sku || id.toString(),
@@ -491,8 +492,7 @@ class DataLayerCtaClick extends HTMLElement {
       button.closest('product-card') ||
       button.closest('.quick-add') ||
       button.closest('form[action*="/cart"]') ||
-      button.closest('ajax-cart-product-form') ||
-      button.closest('ajax-cart-quantity') ||
+      button.closest('.cart-quantity') ||
       button.type === 'submit' ||
       (button.href && button.href.includes('/cart')) ||
       (button.href && button.href.includes('/checkout'))
@@ -670,7 +670,7 @@ class DataLayerViewCart extends HTMLElement {
   }
 
   trackViewCart() {
-    const cartState = window.liquidAjaxCart?.cart;
+    const cartState = window.Cart?.state;
 
     if (!cartState || !cartState.items || cartState.item_count === 0) {
       return;
@@ -702,23 +702,23 @@ class DataLayerRemoveFromCart extends HTMLElement {
   }
 
   connectedCallback() {
-    document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    document.addEventListener('cart:change', this.onCartRequestEnd);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    document.removeEventListener('cart:change', this.onCartRequestEnd);
   }
 
   onCartRequestEnd(event) {
-    const { requestState } = event.detail || {};
+    const detail = event.detail || {};
 
     // Only track change requests that result in removals
-    if (requestState?.requestType !== 'change' || !requestState?.responseData?.ok) {
+    if (detail.action !== 'change') {
       return;
     }
 
-    const removedItems = requestState.responseData.body?.items_removed;
-    const currentCartItems = requestState.responseData.body?.items;
+    const removedItems = detail.response?.items_removed;
+    const currentCartItems = detail.response?.items;
 
     // Only proceed if there are items removed
     if (!removedItems || removedItems.length === 0) {
@@ -777,43 +777,36 @@ class DataLayerUpdateCart extends HTMLElement {
   constructor() {
     super();
     this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
-    this.cartStateBeforeUpdate = null;
   }
 
   connectedCallback() {
-    document.addEventListener('liquid-ajax-cart:request-start', (event) => {
-      const { requestState } = event.detail || {};
-      if (requestState?.requestType === 'change') {
-        this.cartStateBeforeUpdate = window.liquidAjaxCart?.cart;
-      }
-    });
-
-    document.addEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    document.addEventListener('cart:change', this.onCartRequestEnd);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('liquid-ajax-cart:request-end', this.onCartRequestEnd);
+    document.removeEventListener('cart:change', this.onCartRequestEnd);
   }
 
   onCartRequestEnd(event) {
-    const { requestState } = event.detail || {};
+    const detail = event.detail || {};
 
     // Only track change requests
-    if (requestState?.requestType !== 'change' || !requestState?.responseData?.ok) {
+    if (detail.action !== 'change') {
       return;
     }
 
-    // Get updated items from response
-    const updatedItems = requestState.responseData.body?.items;
+    // Get updated items from response and the snapshot taken before the mutation
+    const updatedItems = detail.response?.items;
+    const previousItems = detail.previousCart?.items;
 
     // If there are no updated items or the previous cart state is not available, return
-    if (!updatedItems || !this.cartStateBeforeUpdate?.items) {
+    if (!updatedItems || !previousItems) {
       return;
     }
 
     // Compare previous cart state with current state to find quantity changes
     updatedItems.forEach((currentItem) => {
-      const previousItem = this.cartStateBeforeUpdate.items.find(
+      const previousItem = previousItems.find(
         (prev) => prev.key === currentItem.key || prev.variant_id === currentItem.variant_id,
       );
 

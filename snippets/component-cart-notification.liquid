@@ -140,7 +140,7 @@
   }
 {% endstylesheet %}
 
-<cart-notification  data-ajax-cart-section class="cart-notification-wrapper{% if desktop_menu_type != 'drawer' %} page-width{% endif %}">
+<cart-notification class="cart-notification-wrapper{% if desktop_menu_type != 'drawer' %} page-width{% endif %}">
   <div
     id="cart-notification"
     class="cart-notification {% if color_scheme %} color-{{ color_scheme }} gradient{% endif %}"
@@ -169,7 +169,7 @@
         class="cart-notification-button"
       >
         {{ 'general.cart.view_empty_cart' | t }} (<span
-          data-ajax-cart-bind="item_count"
+          data-cart-count
           id="cart-notification-count"
         ></span
         >)

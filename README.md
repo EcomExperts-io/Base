@@ -31,17 +31,14 @@ The theme uses a carefully selected set of third-party libraries to provide esse
   - Used for UI state management and interactivity
   - Perfect for declarative DOM manipulation
 
-- **Liquid AJAX Cart** ([Documentation](https://liquid-ajax-cart.js.org/))
-  - Cart functionality without custom JavaScript
-  - Real-time cart updates and synchronization
-  - Built specifically for Shopify themes
-
 - **Swiper** ([Documentation](https://swiperjs.com/))
   - Modern mobile touch slider
   - Used for product image galleries
   - Supports touch gestures and various navigation options
 
 These libraries were chosen for their minimal footprint, excellent documentation, and specific utility in solving common Shopify theme challenges.
+
+Cart functionality is handled by a small native cart engine (`assets/cart.js`) built on Shopify's Cart AJAX API and Section Rendering API — no third-party cart library required. It exposes a `window.Cart` API, serializes all cart mutations, and broadcasts `cart:change` / `cart:error` events that the cart components react to.
 
 
 

@@ -4,14 +4,15 @@
  */
 export class CartNotification extends HTMLElement {
   /**
-   * Sets up button handlers and subscribes to AJAX cart updates.
+   * Sets up button handlers and subscribes to cart updates.
    */
   constructor() {
     super();
     this.hideNotification = this.hideNotification.bind(this);
+    this.onCartUpdate = this.onCartUpdate.bind(this);
     this.querySelector('.cart-notification-continue_shopping').addEventListener('click', () => this.hideNotification());
     this.querySelector('.cart-notification__close').addEventListener('click', () => this.hideNotification());
-    document.addEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
+    document.addEventListener('cart:change', this.onCartUpdate);
   }
 
   /**
@@ -20,17 +21,16 @@ export class CartNotification extends HTMLElement {
   disconnectedCallback() {
     this.querySelector('.cart-notification-continue_shopping').removeEventListener('click', this.hideNotification);
     this.querySelector('.cart-notification__close').removeEventListener('click', this.hideNotification);
-    document.removeEventListener('liquid-ajax-cart:request-end', this.onCartUpdate.bind(this));
+    document.removeEventListener('cart:change', this.onCartUpdate);
   }
 
   /**
-   * Handles Liquid Ajax Cart responses and updates the UI after successful adds.
-   * @param {CustomEvent} event - Liquid Ajax Cart completion event.
+   * Updates the UI after successful adds.
+   * @param {CustomEvent} event - cart:change event from cart.js.
    */
   onCartUpdate(event) {
-    const { requestState } = event.detail;
-    if (requestState?.requestType === 'add' && requestState.responseData?.ok) {
-      this.updateNotification(requestState.responseData.body)
+    if (event.detail.action === 'add') {
+      this.updateNotification(event.detail.response);
     }
   }
 

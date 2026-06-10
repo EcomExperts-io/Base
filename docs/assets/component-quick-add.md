@@ -10,7 +10,8 @@ The `QuickAdd` component:
 - Opens a modal dialog for quick product viewing
 - Fetches product information dynamically via AJAX
 - Preprocesses content to prevent ID conflicts in modal contexts
-- Handles cart add events and automatically closes modal on success
+- Listens for the cart engine's `cart:change` event and automatically closes modals after a successful add
+- Shows the quick-add icon spinner while an add-to-cart form submits
 - Supports keyboard navigation (ESC to close)
 - Manages body scroll lock when modal is open
 - Reinjects scripts from fetched content to ensure functionality
@@ -22,7 +23,10 @@ export class QuickAdd extends HTMLElement {
   constructor()
   connectedCallback()
   disconnectedCallback()
+  setupAjaxCartButtons()
+  toggleSpinner(button, show)
   onCartRequestEnd(event)
+  resetAllSpinners()
   setupModal()
   bindEvents()
   show(opener)
@@ -36,11 +40,14 @@ export class QuickAdd extends HTMLElement {
 
 | Method | Description |
 |--------|-------------|
-| `constructor()` | Initializes the component, sets up modal, binds events, and prepares cart listener |
-| `connectedCallback()` | Lifecycle hook that listens for cart request end events |
-| `disconnectedCallback()` | Lifecycle hook that removes cart event listener |
-| `onCartRequestEnd(event)` | Handles cart add completion and closes modal |
-| `setupModal()` | Queries modal elements and appends component to body |
+| `constructor()` | Initializes the component, sets up modal, binds events, and wires the add-to-cart submit hook |
+| `connectedCallback()` | Lifecycle hook that appends the component to body and listens for `cart:change` |
+| `disconnectedCallback()` | Lifecycle hook that removes the `cart:change` listener |
+| `setupAjaxCartButtons()` | Document-level submit hook on `form[action*="/cart/add"]` to show button spinners |
+| `toggleSpinner(button, show)` | Toggles spinner/icon/text visibility inside a quick-add button |
+| `onCartRequestEnd(event)` | Handles `cart:change` add actions: closes modals and resets spinners |
+| `resetAllSpinners()` | Restores all quick-add icon buttons to their idle state |
+| `setupModal()` | Queries modal elements |
 | `bindEvents()` | Attaches click, keyboard, and outside-click event listeners |
 | `show(opener)` | Fetches product data and displays modal |
 | `hide()` | Closes modal and clears content |
@@ -60,15 +67,35 @@ export class QuickAdd extends HTMLElement {
     this.setupModal();
     this.bindEvents();
     this.onCartRequestEnd = this.onCartRequestEnd.bind(this);
+    this.setupAjaxCartButtons();
   }
 }
 ```
 
 **Initialization:**
 - Sets up modal references
-- Appends component to document body
 - Binds events
 - Prepares cart event handler
+- Wires the document-level add-to-cart submit hook
+
+### setupAjaxCartButtons()
+
+```javascript
+  setupAjaxCartButtons() {
+    document.addEventListener('submit', (event) => {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (!(form.getAttribute('action') || '').includes('/cart/add')) return;
+
+      const button = form.querySelector('.quick-add__icon-button');
+      if (button) this.toggleSpinner(button, true);
+    });
+  }
+```
+
+**Behavior:**
+- Matches submits on any `form[action*="/cart/add"]` — the same selector the cart engine uses (there is no wrapper element around product forms anymore)
+- Shows the spinner on the form's `.quick-add__icon-button` while the add request runs
 
 ### setupModal()
 
@@ -76,14 +103,13 @@ export class QuickAdd extends HTMLElement {
   setupModal() {
     this.modal = this.querySelector('[role="dialog"]');
     this.modalContent = this.querySelector('[id^="QuickAddInfo-"]');
-    document.body.appendChild(this);
   }
 ```
 
 **Behavior:**
 - Finds modal dialog element
 - Finds modal content container (ID starting with `QuickAddInfo-`)
-- Moves component to body for proper z-index stacking
+- `connectedCallback()` then moves the component to `document.body` for proper z-index stacking and subscribes to `cart:change`
 
 ### show(opener)
 
@@ -91,11 +117,8 @@ export class QuickAdd extends HTMLElement {
   show(opener) {
     this.openedBy = opener;
 
-    // Only set aria-disabled and show spinner if it's a quick-add operation
-    // with a loading spinner element
-    if (opener && opener.querySelector('.loading__spinner')) {
+    if (opener && opener.getAttribute('data-product-url')) {
       opener.setAttribute('aria-disabled', true);
-      opener.querySelector('.loading__spinner').classList.remove('hidden');
 
       fetch(opener.getAttribute('data-product-url'))
         .then(response => response.text())
@@ -104,18 +127,27 @@ export class QuickAdd extends HTMLElement {
             .parseFromString(responseText, 'text/html')
             .querySelector('product-info');
 
+          if (!productElement) {
+            console.error('Product info not found in response');
+            return;
+          }
+
           this.preprocessContent(productElement);
           this.setContent(productElement.outerHTML);
 
           document.body.classList.add('overflow-hidden');
           this.setAttribute('open', '');
 
+          this.resetAllSpinners();
+
           if (window.Shopify?.PaymentButton) Shopify.PaymentButton.init();
           if (window.ProductModel) window.ProductModel.loadShopifyXR();
         })
+        .catch(error => {
+          console.error('Error loading product:', error);
+        })
         .finally(() => {
           opener.removeAttribute('aria-disabled');
-          opener.querySelector('.loading__spinner').classList.add('hidden');
         });
     } else {
       // For other modals (like monogram popup) that don't need fetch
@@ -127,14 +159,14 @@ export class QuickAdd extends HTMLElement {
 
 **Behavior:**
 1. Stores reference to opener element
-2. If opener has loading spinner, shows loading state
+2. If opener has a `data-product-url`, marks it `aria-disabled` while loading
 3. Fetches product HTML from `data-product-url` attribute
 4. Parses response and extracts `product-info` element
 5. Preprocesses content to prevent ID conflicts
 6. Sets modal content and reinjects scripts
 7. Locks body scroll and opens modal
-8. Initializes Shopify PaymentButton and ProductModel if available
-9. Hides loading spinner when complete
+8. Resets any active quick-add button spinners
+9. Initializes Shopify PaymentButton and ProductModel if available
 
 ### preprocessContent(element)
 
@@ -183,23 +215,27 @@ export class QuickAdd extends HTMLElement {
 
 ```javascript
   onCartRequestEnd(event) {
-    const { requestState } = event.detail || {};
-    if (requestState?.requestType === 'add' && requestState?.responseData?.ok) {
+    if (event.detail?.action === 'add') {
       document.body.classList.remove('overflow-hidden');
 
       document.querySelectorAll('quick-add-modal').forEach((modal) => {
         modal.removeAttribute('open');
-        modal.modalContent.innerHTML = '';
+        if (modal.modalContent) {
+          modal.modalContent.innerHTML = '';
+        }
       });
+
+      this.resetAllSpinners();
     }
   }
 ```
 
 **Behavior:**
-- Listens for liquid-ajax-cart add-to-cart completion
-- Closes all quick-add modals when add succeeds
+- Listens for the cart engine's `cart:change` event (which only fires on success) and reacts to `action === 'add'`
+- Closes all quick-add modals when an add succeeds
 - Unlocks body scroll
 - Clears modal content
+- Resets all quick-add button spinners
 
 ## Custom Element Definition
 
@@ -241,8 +277,8 @@ Ensures the element is registered only once across bundles or hot reload session
 - Modal content container must have an ID starting with `QuickAddInfo-`
 - Close button should have an ID starting with `ModalClose-`
 - Quick-add buttons should have `data-product-url` attribute with product URL
-- Loading spinner element should have class `.loading__spinner` and be hidden by default
-- The component automatically handles liquid-ajax-cart integration
+- Quick-add icon buttons use `.add-to-cart-icon-spinner`, `.add-to-cart-icon`, and `.add-to-cart-text__content` spans for the spinner toggle
+- The component integrates with the native cart engine: it hooks `form[action*="/cart/add"]` submits for spinners and listens for `cart:change` to close modals
 - Modal is appended to body for proper z-index stacking
 - Content is preprocessed to prevent ID conflicts with main page
 - Scripts are automatically reinjected to ensure functionality

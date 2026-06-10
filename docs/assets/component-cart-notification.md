@@ -1,6 +1,6 @@
 # CartNotification Web Component
 
-Meet `<cart-notification>`, a lightweight Web Component defined in `assets/component-cart-notification.js` that keeps shoppers informed after an AJAX add-to-cart. It listens for Liquid Ajax Cart events, swaps in the latest product details, and controls the cart notification drawer UI.
+Meet `<cart-notification>`, a lightweight Web Component defined in `assets/component-cart-notification.js` that keeps shoppers informed after an AJAX add-to-cart. It listens for the cart engine's `cart:change` event, swaps in the latest product details, and controls the cart notification drawer UI.
 
 **Source:** [`assets/component-cart-notification.js`](../../assets/component-cart-notification.js)
 
@@ -8,7 +8,7 @@ Meet `<cart-notification>`, a lightweight Web Component defined in `assets/compo
 
 ## What It Does
 
-- Subscribes to `liquid-ajax-cart:request-end` so it can react immediately to add-to-cart requests.
+- Subscribes to `cart:change` (dispatched by `assets/cart.js`) so it can react immediately to add-to-cart requests.
 - Updates the notification drawer with product title, image, and selected options returned by the cart API.
 - Provides dedicated methods for showing and hiding the drawer via a CSS class toggle.
 - Removes all event listeners inside `disconnectedCallback()` to avoid duplicate bindings.
@@ -19,10 +19,10 @@ Meet `<cart-notification>`, a lightweight Web Component defined in `assets/compo
 
 | Method / Property           | Purpose                                                                 |
 |----------------------------|-------------------------------------------------------------------------|
-| `constructor()`            | Binds UI handlers and registers the Liquid Ajax Cart listener.          |
+| `constructor()`            | Binds UI handlers and registers the `cart:change` listener.             |
 | `disconnectedCallback()`   | Cleans up listeners when the element leaves the DOM.                    |
-| `onCartUpdate(event)`      | Filters cart responses and triggers UI updates for successful adds.     |
-| `updateNotification(cart)` | Builds notification markup (image, vendor, options) from the cart JSON. |
+| `onCartUpdate(event)`      | Filters cart events and triggers UI updates for successful adds.        |
+| `updateNotification(item)` | Builds notification markup (image, vendor, options) from the line item. |
 | `showNotification()`       | Adds `cart-notification-open` to reveal the drawer.                     |
 | `hideNotification()`       | Removes the class to hide the drawer.                                   |
 
@@ -37,20 +37,18 @@ Initializes the component and wires up events:
 constructor() {
   super();
   this.hideNotification = this.hideNotification.bind(this);
+  this.onCartUpdate = this.onCartUpdate.bind(this);
   this.querySelector('.cart-notification-continue_shopping')
     .addEventListener('click', () => this.hideNotification());
   this.querySelector('.cart-notification__close')
     .addEventListener('click', () => this.hideNotification());
-  document.addEventListener(
-    'liquid-ajax-cart:request-end',
-    this.onCartUpdate.bind(this)
-  );
+  document.addEventListener('cart:change', this.onCartUpdate);
 }
 ```
 
-- Uses a single bound `hideNotification` reference for all button listeners.
+- Uses single bound `hideNotification` / `onCartUpdate` references so listeners can be removed cleanly.
 - Hooks into “continue shopping” and close controls for quick dismissal.
-- Subscribes to the global Liquid Ajax Cart event bus.
+- Subscribes to the cart engine's `cart:change` event on `document`.
 
 ### disconnectedCallback()
 
@@ -60,10 +58,7 @@ disconnectedCallback() {
     .removeEventListener('click', this.hideNotification);
   this.querySelector('.cart-notification__close')
     .removeEventListener('click', this.hideNotification);
-  document.removeEventListener(
-    'liquid-ajax-cart:request-end',
-    this.onCartUpdate.bind(this)
-  );
+  document.removeEventListener('cart:change', this.onCartUpdate);
 }
 ```
 
@@ -74,15 +69,14 @@ disconnectedCallback() {
 
 ```js
 onCartUpdate(event) {
-  const { requestState } = event.detail;
-  if (requestState?.requestType === 'add' && requestState.responseData?.ok) {
-    this.updateNotification(requestState.responseData.body);
+  if (event.detail.action === 'add') {
+    this.updateNotification(event.detail.response);
   }
 }
 ```
 
-- Checks the request type and HTTP status before updating the drawer.
-- Passes the cart payload to `updateNotification`.
+- `cart:change` only fires on successful requests, so checking `detail.action === 'add'` is enough.
+- `event.detail.response` is the `/cart/add.js` response — because `cart.js` posts FormData, this is the added line item at the top level (with `product_title`, `image`, `options_with_values`, etc.), exactly what `updateNotification` needs.
 
 ### updateNotification(updatedCartNotification)
 
@@ -163,7 +157,7 @@ Include the wrapper and script inside `theme.liquid` or the relevant section/sni
 <script src="{{ 'component-cart-notification.js' | asset_url }}" type="module"></script>
 ```
 
-Ensure your add-to-cart logic (e.g., [Liquid Ajax Cart](https://shopify.dev/docs/api/ajax/reference/cart)) dispatches `liquid-ajax-cart:request-end` with the `requestState` payload this component expects.
+The native cart engine (`assets/cart.js`, loaded from `layout/theme.liquid`) dispatches the `cart:change` event this component expects, with the added line item available at `event.detail.response`.
 
 ---
 
