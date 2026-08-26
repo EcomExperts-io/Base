@@ -38,31 +38,14 @@ sh .claude/scripts/sync-ai-config.sh --check || {
   FAILED=1
 }
 
-# --- 3. Theme Check on the whole theme --------------------------------------
-# Liquid and schema correctness: undefined objects, missing snippets,
-# deprecated filters, malformed schema, translation keys that do not resolve.
-# Runs clean on this theme today (130 files, zero offenses), so a genuine
-# offense means this commit introduced it.
-#
-# The CLI failing to start and the CLI reporting problems are different things
-# and must not be conflated. The Shopify CLI needs a recent Node; on a shell
-# where `node` is older it dies with a SyntaxError before checking anything. An
-# environment problem must never block a commit, so we only trust the result
-# when the output actually contains a Theme Check summary.
-if command -v shopify >/dev/null 2>&1; then
-  TC_OUT=$(shopify theme check --fail-level error 2>&1) && TC_CODE=0 || TC_CODE=$?
-
-  if ! printf '%s' "$TC_OUT" | grep -q "Theme Check Summary"; then
-    echo "pre-commit: Theme Check did not run (CLI or Node problem) — skipping."
-    echo "            Your Node may be too old for the Shopify CLI. Not blocking."
-  elif [ "$TC_CODE" -ne 0 ]; then
-    printf '%s\n' "$TC_OUT"
-    echo ""
-    echo "  Theme Check found errors. Fix them, or if a check is wrong for this"
-    echo "  theme, disable it in .theme-check.yml with a comment saying why."
-    echo ""
-    FAILED=1
-  fi
+# --- 3. Theme Check, scoped to staged files ---------------------------------
+# Theme Check always scans the whole theme, so used directly it would let a
+# pre-existing offense anywhere block everyone — including whoever is trying to
+# commit the fix. This wrapper runs the scan and only fails on errors in files
+# this commit actually touches. Warnings never block. A CLI that cannot start
+# is a skip, not a block.
+if command -v python3 >/dev/null 2>&1; then
+  python3 .claude/scripts/check-theme-staged.py || FAILED=1
 fi
 
 exit $FAILED

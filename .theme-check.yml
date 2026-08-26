@@ -10,6 +10,11 @@
 # hardcoded English in markup; those are
 # .claude/scripts/check-section-contract.py. Neither tool covers the other, and
 # passing one is not passing both.
+#
+# In the pre-commit hook this runs via .claude/scripts/check-theme-staged.py,
+# which discards offenses in files the commit did not touch. A full-theme run
+# (`shopify theme check`) still reports everything — use that when you want the
+# whole picture rather than just your own diff.
 
 extends:
   - theme-check:recommended
