@@ -1,11 +1,8 @@
 ---
 description: Modern HTML standards for writing .liquid markup
-globs: **/*.liquid
-alwaysApply: false
+paths:
+  - "**/*.liquid"
 ---
-
-<!-- GENERATED from .claude/rules/html-standards.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-
 
 # Modern HTML Standards
 

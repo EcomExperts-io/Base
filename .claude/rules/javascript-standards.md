@@ -1,11 +1,9 @@
 ---
 description: Writing JavaScript inside .js files, or within the {% javascript %} or {% script %} or <script></script> tags in .liquid files
-globs: **/*.js,**/*.liquid
-alwaysApply: false
+paths:
+  - "**/*.js"
+  - "**/*.liquid"
 ---
-
-<!-- GENERATED from .claude/rules/javascript-standards.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-
 
 # JavaScript Standards
 

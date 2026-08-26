@@ -1,11 +1,9 @@
 ---
 description: Localization standards — applies to every string in every file, including brand-new sections with no existing translation calls nearby
-globs: **/*.liquid,schemas/**
-alwaysApply: false
+paths:
+  - "**/*.liquid"
+  - "schemas/**"
 ---
-
-<!-- GENERATED from .claude/rules/localization.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-
 
 # Localization Standards
 

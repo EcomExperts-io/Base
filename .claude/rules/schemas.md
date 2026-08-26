@@ -1,11 +1,10 @@
 ---
 description: Schema standards for section and block {% schema %} tags
-globs: blocks/**/*.liquid,sections/**/*.liquid,schemas/**
-alwaysApply: false
+paths:
+  - "blocks/**/*.liquid"
+  - "sections/**/*.liquid"
+  - "schemas/**"
 ---
-
-<!-- GENERATED from .claude/rules/schemas.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-
 
 # Schema Standards
 

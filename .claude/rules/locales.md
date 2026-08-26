@@ -1,11 +1,8 @@
 ---
 description: Locales coding standards and best practices guide
-globs: locales/**/*.json
-alwaysApply: false
+paths:
+  - "locales/**/*.json"
 ---
-
-<!-- GENERATED from .claude/rules/locales.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-
 
 # Translation Development Standards
 

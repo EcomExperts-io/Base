@@ -1,0 +1,53 @@
+---
+description: Core engagement rules that apply to all work in this theme, regardless of file type
+---
+
+# Rules of Engagement
+
+## Theme Structure
+
+- **Keep `layout/theme.liquid` concise**: Aim for an average of 200–300 lines. Extract markup into well-named snippets and sections to keep `theme.liquid` readable and maintainable.
+- **Prefer snippets for composition**: Use snippets to organize, modals, and reusable UI fragments. Avoid large monolithic blocks inside `theme.liquid`.
+
+## JavaScript Practices
+
+- **Prefer Custom Elements over `DOMContentLoaded`**: Do not attach logic using `document.addEventListener('DOMContentLoaded', ...)`. Instead, wrap the relevant HTML in a custom element and implement a class that extends `HTMLElement` (register it with `customElements.define`).
+- **Avoid `DOMContentLoaded` entirely when possible**: Use `connectedCallback`/`disconnectedCallback` lifecycle hooks of your custom element to initialize and clean up behavior.
+- **Do not use jQuery**: Never add jQuery to the codebase. Prefer native browser APIs and/or Alpine.js (already included in `theme.liquid`) for light interactivity and state.
+
+### Always set `display` on a custom element that carries section styling
+
+Custom elements default to `display: inline`. An inline box **paints no background around block
+children and ignores vertical padding**, so a section wrapper like `<product-reviews class="product-reviews">`
+will silently drop its `background-color` and `padding-block` — while `getComputedStyle()` still
+reports both, which makes this look correct in a DOM check and wrong on screen.
+
+If a class sits on a custom element tag, give it an explicit `display`:
+
+```css
+.product-reviews {
+  display: block; /* <product-reviews> is a custom element; without this the grey band never paints */
+  background-color: #f4f4f4;
+  padding: 60px 0;
+}
+```
+
+Verify by comparing the element's box height to its inner wrapper's — if vertical padding is
+being applied, the outer box is taller. Don't trust `getComputedStyle` alone here.
+
+## Formatting and Readability
+
+- **Indent consistently**: Poorly formatted code is hard to read and maintain. Always keep indentation and spacing consistent with the project's existing style (do not mix tabs and spaces).
+- **Auto-format on save**: Use the project formatter configuration where available. If no formatter is configured, match the surrounding file's style.
+
+## Code Hygiene
+
+- **Do not leave commented-out code**: Either delete unused code or re-enable it. Do not keep large commented blocks or "temporary" comments in commits.
+
+## Quick Checklist
+
+- `theme.liquid` is <= ~300 lines and delegates to snippets/sections
+- No new uses of `DOMContentLoaded`; behavior lives in custom elements
+- Custom elements extend `HTMLElement` and are registered once
+- Code is consistently indented and formatted
+- No commented-out code left behind

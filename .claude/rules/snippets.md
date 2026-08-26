@@ -1,11 +1,8 @@
 ---
 description: Snippet development standards and best practices guide
-globs: snippets/**/*.liquid
-alwaysApply: false
+paths:
+  - "snippets/**/*.liquid"
 ---
-
-<!-- GENERATED from .claude/rules/snippets.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-
 
 # Snippet Development Standards
 
