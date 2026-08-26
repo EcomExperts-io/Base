@@ -238,9 +238,11 @@ Stated plainly, because pretending otherwise is how v1 becomes permanent:
 
 - **It is not unattended.** A developer reviews the output. Complex pages —
   Collection, PDP, Homepage — need more hand-holding than simple ones.
-- **The design half is undone.** Getting designers to structure Figma files so
-  MCP extracts them unambiguously is half the original problem and no document
-  covers it yet.
+- **The design half is a request, not a practice.**
+  [`figma-ai-friendly-design-practices.md`](./figma-ai-friendly-design-practices.md)
+  now states what we need from a Figma file and why, but writing it down is not
+  the same as designers adopting it. Until they do, expect the re-prompting
+  cycles that document exists to remove.
 - **Figma page listing is unreliable**, so node IDs come from humans.
 - **Pixel-perfect verification is manual comparison**, not an automated diff.
 - **Nothing aggregates the mistake logs across projects.** They are local to
@@ -263,3 +265,4 @@ Stated plainly, because pretending otherwise is how v1 becomes permanent:
 | Pass/fail checklist | `docs/base-theme-standards/base-theme-compliance-checklist.md` |
 | Rulings and open questions | `docs/base-theme-standards/base-theme-decisions-log.md` |
 | The durable why | `docs/base-theme-standards/base-theme-ai-workflow-vision.md` |
+| Share with designers | `docs/ai-workflow/figma-ai-friendly-design-practices.md` |

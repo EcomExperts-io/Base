@@ -11,15 +11,37 @@
 #   Rules:  .claude/rules/*.md  -> .cursor/rules/*.mdc  (frontmatter converted)
 #   Skills: .claude/skills/**   -> .cursor/skills/**    (verbatim copy)
 #
-# Usage: sh .claude/scripts/sync-ai-config.sh [--check]
+# Generated .mdc files carry a checksum of their own content. Before overwriting
+# one, the script recomputes it: if it no longer matches, the file was edited by
+# hand and the script REFUSES rather than silently discarding that work. Without
+# this, the hook told a Cursor user their .cursor copy had diverged and the fix
+# command then destroyed the change they had just made.
+#
+# Note the weaker guarantee for skills: they are byte-identical copies with no
+# banner to carry a checksum, so a hand-edit there cannot be distinguished from
+# a source change and will be overwritten. Never edit .cursor/skills/ directly.
+#
+# Usage: sh .claude/scripts/sync-ai-config.sh [--check] [--force]
 #   --check  exit 1 if anything is out of sync, write nothing (for the hook)
+#   --force  overwrite even a hand-edited .mdc (discards it — last resort)
 
 set -e
 cd "$(git rev-parse --show-toplevel)"
 
 CHECK=0
-[ "$1" = "--check" ] && CHECK=1
+FORCE=0
+for arg in "$@"; do
+  [ "$arg" = "--check" ] && CHECK=1
+  [ "$arg" = "--force" ] && FORCE=1
+done
 STALE=0
+CLOBBER=0
+
+# Checksum of a file with its own checksum line removed, so the recorded value
+# never feeds into itself. cksum is POSIX and sufficient for tamper detection.
+content_sum() {
+  grep -v '^<!-- checksum: ' "$1" | cksum | awk '{print $1}'
+}
 
 # --- rules: .md -> .mdc -------------------------------------------------------
 # A .claude rule carries a `paths:` glob (or nothing, meaning always-apply).
@@ -71,19 +93,45 @@ for src in .claude/rules/*.md; do
     printf '%s\n' "$body"
   } > "$tmp"
 
-  if [ ! -f "$dest" ] || ! cmp -s "$tmp" "$dest"; then
-    if [ "$CHECK" -eq 1 ]; then
-      echo "OUT OF SYNC: $dest (source: $src)"
-      STALE=1
-      rm -f "$tmp"
-    else
-      mkdir -p .cursor/rules
-      mv "$tmp" "$dest"
-      echo "synced  $dest"
-    fi
-  else
+  # Stamp the generated content with its own checksum.
+  sum=$(content_sum "$tmp")
+  tmp2=$(mktemp)
+  awk -v s="$sum" '
+    /^<!-- GENERATED from /{ print; print "<!-- checksum: " s " -->"; next }
+    { print }
+  ' "$tmp" > "$tmp2"
+  mv "$tmp2" "$tmp"
+
+  if [ -f "$dest" ] && cmp -s "$tmp" "$dest"; then
     rm -f "$tmp"
+    continue
   fi
+
+  if [ "$CHECK" -eq 1 ]; then
+    echo "OUT OF SYNC: $dest (source: $src)"
+    STALE=1
+    rm -f "$tmp"
+    continue
+  fi
+
+  # Would this overwrite hand-written work? Only if the destination's recorded
+  # checksum disagrees with its actual content.
+  if [ -f "$dest" ] && [ "$FORCE" -eq 0 ]; then
+    recorded=$(sed -n 's/^<!-- checksum: \([0-9]*\) -->$/\1/p' "$dest" | head -1)
+    actual=$(content_sum "$dest")
+    if [ -n "$recorded" ] && [ "$recorded" != "$actual" ]; then
+      echo "REFUSING to overwrite $dest — it has been edited by hand."
+      echo "    Move your changes into ${src}, then run this script again."
+      echo "    (.cursor/rules is generated; edits there are lost on every sync.)"
+      CLOBBER=1
+      rm -f "$tmp"
+      continue
+    fi
+  fi
+
+  mkdir -p .cursor/rules
+  mv "$tmp" "$dest"
+  echo "synced  $dest"
 done
 
 # --- orphan check ------------------------------------------------------------
@@ -116,6 +164,13 @@ for src in .claude/skills/*/; do
     echo "synced  $dest/"
   fi
 done
+
+if [ "$CLOBBER" -eq 1 ]; then
+  echo ""
+  echo "Nothing was overwritten. Move the hand edits above into .claude/rules/,"
+  echo "or re-run with --force to discard them."
+  exit 1
+fi
 
 if [ "$CHECK" -eq 1 ] && [ "$STALE" -eq 1 ]; then
   echo ""

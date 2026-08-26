@@ -10,6 +10,43 @@ Vitamins build follow this?") live in that project's own audit doc.
  
 ## Resolved
  
+**Q: If the settings contract is required, why do 23 of Base's own 48
+sections not have it? Does the reference theme fail its own standard?**
+**A:** Two separate things are going on, and neither is a problem.
+
+**Most of the 23 are sections the contract does not apply to.** Counted
+directly: `cart`, `product`, `collection`, `article`, `blog`, `page`,
+`search`, `404`, `password`, `login`, `register`, `order`, `account`,
+`addresses`, `activate-account`, `reset-password`, `header`, `footer`,
+`announcement-bar`. These are template main sections and section-group
+members — a merchant cannot place them freely, and a `presets` entry on
+`cart` would be actively wrong, since it would let someone add a second
+cart to a page. The contract exists to guarantee merchant editability, so
+a section nobody can position is outside its scope.
+
+**The genuine gaps are a handful of content sections** — `hero`,
+`featured-products`, `featured-collections` and a few others are missing
+padding settings they arguably should have. Those predate the rule.
+
+**They are deliberately not being retrofitted in this change.** Editing
+them means touching theme code that every client fork inherits, for no
+functional gain, in a change whose purpose is tooling. The rules state
+forward direction; `development` records current practice; where they
+disagree the rules win and the gap is logged — which is what this entry
+is.
+
+**The gate is scoped so this never becomes friction.** It only checks
+sections *added* in a commit, so editing any of the 23 does not trigger
+it. That was a deliberate design decision made after measuring the repo,
+not a convenient exemption: a check that fires on a third of the theme
+during unrelated work would be switched off within a week.
+
+**If someone wants the content-section gaps closed**, that is a separate,
+small, purely additive change — and worth doing on its own so it can be
+reviewed as a theme change rather than buried in a tooling branch.
+
+---
+
 **Q: When behavior is needed on several pages, does it become one shared
 `component-*` file or a `section-*` file per page?**
 **A (Naish, Aug 2026):** Apply a test rather than a blanket preference.
@@ -188,3 +225,6 @@ start putting multiple classes in other section files.
 - **Aug 26, 2026** — These standards docs migrated from the Bites
   Vitamins repo into Base, where forks can inherit them. Project-specific
   audits stay in the client repo.
+- **Aug 26, 2026** — Recorded why Base's own sections do not all carry the
+  settings contract, and why they are not being retrofitted in the tooling
+  change (see Resolved, above).
