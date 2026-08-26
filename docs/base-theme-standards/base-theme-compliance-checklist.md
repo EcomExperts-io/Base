@@ -113,9 +113,9 @@ A–E and still ship sections a merchant cannot edit at all.
       mentioning `presets`. The contract is about merchant editability,
       so a section nobody can place is out of scope for it.
 - [ ] The `{%- style -%}` block computes
-      `.section-{{ section.id }}-padding`, with mobile at 0.75× the
+      <code v-pre>.section-{{ section.id }}-padding</code>, with mobile at 0.75× the
       desktop value, and the wrapper carries both
-      `color-{{ section.settings.color_scheme }}` and that padding class.
+      <code v-pre>color-{{ section.settings.color_scheme }}</code> and that padding class.
 - [ ] Schema `label`, `content`, `info`, preset `name` and block `name`
       all use `t:` keys resolving in `locales/en.default.schema.json` —
       no bare English. Note that older Base sections use bare labels;

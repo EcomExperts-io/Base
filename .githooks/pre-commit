@@ -48,4 +48,13 @@ if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-theme-staged.py || FAILED=1
 fi
 
+# --- 4. Liquid examples in docs must not break the VitePress build ----------
+# VitePress evaluates {{ }} in inline code spans as Vue expressions. The docs
+# build was broken for two and a half months before anyone noticed, and the
+# branch that added this check introduced three more instances while writing
+# documentation about Liquid. Cheap to check, easy to get wrong by hand.
+if command -v python3 >/dev/null 2>&1; then
+  python3 .claude/scripts/check-docs-interpolation.py || FAILED=1
+fi
+
 exit $FAILED

@@ -106,7 +106,7 @@ repo-wide grep); don't assume every custom tag has a JS class behind it.
  
 | Attribute | Used by | Meaning |
 |---|---|---|
-| `data-section="{{ section.id }}"` | `CollectionInfo`, `ProductInfo` | Section Rendering API target |
+| <code v-pre>data-section="{{ section.id }}"</code> | `CollectionInfo`, `ProductInfo` | Section Rendering API target |
 | `data-render-section` | Filter/sort inputs | Participates in form serialization on change |
 | `data-render-section-url` | Links, clear buttons, pagination | Pre-built URL query string; click → AJAX |
 | `data-url` | `ProductInfo` | Canonical product URL for variant fetches |
