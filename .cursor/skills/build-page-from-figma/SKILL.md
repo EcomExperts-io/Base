@@ -36,10 +36,27 @@ Before any Figma call, establish and state back:
 - **Which frame** — a node ID, and whether it is the desktop or mobile variant
 - **Which template** the result belongs to
 
+- **The Notion sub-task**, if one was given — it carries the functional
+  requirements
+
 If any of these is missing or ambiguous, **ask**. Do not infer a file key from
 repo documentation without checking it — on Bites Vitamins a stale file key
 appeared in 10 places across the docs against 3 for the correct one, and the
 stale one is not readable by the connected account.
+
+### Notion is the functional source; Figma is not
+
+A Figma frame shows what a page looks like, never how it behaves. Requirements
+an account manager wrote — default selections, conditional visibility, edge
+cases, where a value comes from — live in Notion and exist nowhere in the design.
+
+A Notion link is supplied roughly **60% of the time**.
+
+- **Given** → read it first and treat it as the source of truth for behaviour.
+  Walk its requirements individually at verification time.
+- **Not given** → infer reasonable behaviour from the design, and **state every
+  assumption you made** in your write-up so a human can correct it. Inferring
+  silently is the failure to avoid; inferring openly is fine and expected.
 
 If a Figma call fails with an access error, do not assume the account needs a
 share grant. Ask whether there is a newer file first; that has been the cause
@@ -89,18 +106,36 @@ theme token, use the token.
 **Code:** run the standards coach agent for advisory feedback, then fix what it
 finds. Confirm the gate would pass.
 
-**Visual:** compare against the frame at both breakpoints. Measure rather than
-eyeball — read computed values from the DOM and compare to the frame's specs.
-Screenshots are for spotting problems, not for confirming numbers.
+**Visual:** verify against the rendered page, not against your own memory of
+what you wrote.
 
-Report the two separately, each with what you actually checked.
+1. Start the dev server and open the page in the browser tools.
+2. Pull the frame's own image via the Figma screenshot tool.
+3. **Set the viewport to the exact width the frame was designed at.** A 1440
+   desktop frame is checked at 1440, not "desktop-ish"; a 393 mobile frame at
+   393. Checking at the wrong width invalidates the comparison — a layout can
+   be correct at 1440 and broken at 1280.
+4. Compare rendered output against the frame at that width. Then repeat for the
+   other breakpoint.
+5. **Measure, don't eyeball.** Read computed values off the DOM — spacing, font
+   size, line height, colour — and compare against the frame's specs. A
+   screenshot tells you something looks off; only a number tells you it is
+   fixed. Custom elements are a specific trap here: they default to
+   `display: inline`, which drops background and vertical padding on screen
+   while `getComputedStyle` still reports both.
+
+**Functionality:** walk the Notion requirements one at a time and confirm each.
+Say plainly which ones you could not verify and why.
+
+Report all three separately, each with what you actually checked.
 
 ## Step 5 — Update Notion
 
 Via Notion MCP, on the sub-task for this page:
 
-1. **Set the status** to reflect real state. If part of the page is blocked or
-   was built from screenshots, the status says so.
+1. **Set the status to Quality Inspection**, so QI knows to pick it up. If part
+   of the page is blocked, or was built from screenshots because a Figma call
+   failed, say so in the comment rather than moving it on quietly.
 2. **Post a comment** covering: what was built, decisions made and why,
    anything deliberately left out, and any assumption a human should confirm.
    Written for someone who was not in the session.
