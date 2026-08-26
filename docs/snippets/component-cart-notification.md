@@ -18,7 +18,7 @@
 
 | Parameter            | Type     | Default  | Description                                                                 |
 |----------------------|----------|----------|-----------------------------------------------------------------------------|
-| `color_scheme`       | string   | `nil`    | When provided, adds `color-{{ color_scheme }} gradient` to the drawer.      |
+| `color_scheme`       | string   | `nil`    | When provided, adds <code v-pre>color-{{ color_scheme }} gradient</code> to the drawer.      |
 | `desktop_menu_type`  | string   | `blank`  | Determines layout wrapper; non-`drawer` adds the `page-width` utility class.|
 
 > The snippet uses LiquidDoc style comments to describe these params inline.

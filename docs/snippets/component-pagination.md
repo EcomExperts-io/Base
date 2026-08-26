@@ -308,7 +308,7 @@ Typically used in:
 
 38. **Icon rotation**: Previous button icon should be rotated 180° via CSS to point left instead of right.
 
-39. **Spacing**: Icon has space before it in next button (`<span class="svg-wrapper"> {{ 'icon-caret.svg' | inline_asset_content }}</span>`) but not in previous button - this may be intentional or a minor inconsistency.
+39. **Spacing**: Icon has space before it in next button (<code v-pre>&lt;span class="svg-wrapper"&gt; {{ 'icon-caret.svg' | inline_asset_content }}&lt;/span&gt;</code>) but not in previous button - this may be intentional or a minor inconsistency.
 
 40. **Translation file structure**: Translation keys should be structured in `locales/en.default.json`:
     ```json
