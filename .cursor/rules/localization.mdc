@@ -51,6 +51,29 @@ Schema labels use the `t:` prefix and live in
 `locales/en.default.json`. Two different files — check you are adding to the
 right one.
 
+### What does *not* need `| t`
+
+**Merchant-entered text from a setting.** `{{ section.settings.heading | escape }}`
+is content the merchant typed in the theme editor; it is already localised by
+whoever typed it, and wrapping it in `| t` would be wrong. Most visible copy in
+a content section is this.
+
+`| t` is for **theme-provided** strings — text the theme itself supplies, which
+the merchant never sees a field for:
+
+| Needs `| t` | Does not |
+|---|---|
+| `"Add to cart"`, `"Read more"`, `"No results"` | `{{ section.settings.heading }}` |
+| Empty-state and error copy | `{{ product.title }}` |
+| `aria-label`, `alt`, `title` you authored | `{{ block.settings.text }}` |
+| Schema labels (`t:` form) | Merchant-uploaded image alt text |
+
+So a section whose visible copy all comes from settings can legitimately contain
+very few `| t` calls. That is not the failure. The failure is the theme-authored
+strings — accessibility attributes and schema labels above all — which have no
+setting behind them and get hardcoded because nobody notices they are strings at
+all.
+
 ## Translation Requirements
 
 - **Every user-facing text** must use translation filters

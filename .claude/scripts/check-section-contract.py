@@ -36,12 +36,12 @@ import re
 import subprocess
 import sys
 
-# Bare-English schema labels are a rule breach, but they are a different kind of
-# work from a missing setting: a section copied from an older Base section can
-# carry 20+ of them, each needing a locale key written. They block by default —
-# flip this to False if that proves noisy enough that people start reaching for
-# --no-verify, which would cost more than the check is worth.
-BLOCK_ON_BARE_LABELS = True
+# Hardcoded English is a rule breach, but it is a different kind of work from a
+# missing setting: a section copied from an older Base section can carry 20+
+# bare schema labels, each needing a locale key written. These block by default
+# — flip this to False if that proves noisy enough that people start reaching
+# for --no-verify, which would cost more than the checks are worth.
+BLOCK_ON_HARDCODED_STRINGS = True
 
 REFERENCE = ".claude/skills/scaffold-section/reference-section.liquid"
 RULE = ".claude/rules/sections.md"
@@ -50,6 +50,34 @@ SCHEMA_RE = re.compile(r"\{%-?\s*schema\s*-?%\}(.*?)\{%-?\s*endschema\s*-?%\}", 
 COMMENT_RE = re.compile(r"\{%-?\s*comment\s*-?%\}(.*?)\{%-?\s*endcomment\s*-?%\}", re.S)
 # A schema label that is a bare string rather than a `t:` key.
 BARE_LABEL_RE = re.compile(r'"(?:label|content|info)"\s*:\s*"(?!t:)([^"]+)"')
+
+# An accessibility attribute holding a literal string. Values containing `{` or
+# `}` are Liquid output and therefore fine; `alt=""` is legitimately empty on a
+# decorative image, so a value is only flagged when it has at least one char.
+#
+# Deliberately narrow. Visible body text is NOT checked here: in a Shopify
+# content section most of it comes from merchant settings
+# (`{{ section.settings.heading | escape }}`), which correctly does not use
+# `| t` — `| t` is for theme-provided strings. Detecting the difference in
+# freeform markup is not reliable enough for a blocking gate, so that judgment
+# stays with the review agents. These attributes are always theme-authored,
+# which is what makes them safe to check mechanically.
+A11Y_ATTR_RE = re.compile(r'\b(aria-label|alt|title)="([^"{}]+)"')
+
+# Regions to ignore when scanning markup: Liquid comments, the schema block
+# (labels are checked separately), and style/stylesheet blocks.
+IGNORED_REGIONS = [
+    re.compile(r"\{%-?\s*comment\s*-?%\}.*?\{%-?\s*endcomment\s*-?%\}", re.S),
+    re.compile(r"\{%-?\s*schema\s*-?%\}.*?\{%-?\s*endschema\s*-?%\}", re.S),
+    re.compile(r"\{%-?\s*style(?:sheet)?\s*-?%\}.*?\{%-?\s*endstyle(?:sheet)?\s*-?%\}", re.S),
+]
+
+
+def markup_only(src):
+    """Strip regions where a literal attribute value is not a finding."""
+    for rx in IGNORED_REGIONS:
+        src = rx.sub(" ", src)
+    return src
 
 
 def added_sections():
@@ -145,7 +173,21 @@ def check(path, src):
             "      locales/en.default.schema.json. Note that older Base sections\n"
             "      use bare labels — do not copy that pattern forward."
         )
-        (problems if BLOCK_ON_BARE_LABELS else advisory).append(msg)
+        (problems if BLOCK_ON_HARDCODED_STRINGS else advisory).append(msg)
+
+    hardcoded = A11Y_ATTR_RE.findall(markup_only(src))
+    if hardcoded:
+        shown = ", ".join(f'{a}="{v}"' for a, v in hardcoded[:3])
+        more = f" (+{len(hardcoded) - 3} more)" if len(hardcoded) > 3 else ""
+        msg = (
+            f"{len(hardcoded)} accessibility attribute(s) hold hardcoded English: "
+            f"{shown}{more}\n"
+            "      These are theme-authored strings, so they need a locale key:\n"
+            '      aria-label="{{ \'sections.example.label\' | t }}"\n'
+            "      Keys go in locales/en.default.json. Five of these shipped to a\n"
+            "      client on the Bites Vitamins build."
+        )
+        (problems if BLOCK_ON_HARDCODED_STRINGS else advisory).append(msg)
 
     return problems, advisory
 
