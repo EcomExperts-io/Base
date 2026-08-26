@@ -15,3 +15,6 @@ release
 .early.coverage
 docs/.vitepress/dist
 docs/.vitepress/cache/deps
+# Python bytecode from .claude/scripts
+__pycache__/
+*.pyc

@@ -1,12 +1,6 @@
 ---
 description: How to treat .cursor/prompts/ and .cursor/references/ as living documents — applies regardless of file type
-globs: 
-alwaysApply: true
 ---
-
-<!-- GENERATED from .claude/rules/prompts-and-references.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2886586045 -->
-
 
 # Prompts and References
 

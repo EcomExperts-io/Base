@@ -1,12 +1,8 @@
 ---
 description: Guidelines and examples for organizing and structuring the Shopify theme settings schema
-globs: config/settings_schema.json
-alwaysApply: false
+paths:
+  - "config/settings_schema.json"
 ---
-
-<!-- GENERATED from .claude/rules/theme-settings.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1500886127 -->
-
 
 # Settings Schema Standards
 

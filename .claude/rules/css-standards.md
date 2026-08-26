@@ -1,12 +1,9 @@
 ---
 description: Writing CSS, whether inside .css files or in the {% stylesheet %}…{% endstylesheet %} or {% style %}…{% endstyle %} or in <style></style> tags
-globs: **/*.css,**/*.liquid
-alwaysApply: false
+paths:
+  - "**/*.css"
+  - "**/*.liquid"
 ---
-
-<!-- GENERATED from .claude/rules/css-standards.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 477504281 -->
-
 
 # CSS Standards
 

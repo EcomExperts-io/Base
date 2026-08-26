@@ -1,0 +1,38 @@
+# Theme Check configuration
+#
+# Base had no Theme Check config at all, so it had never run here. A default
+# run over this theme reports 132 files inspected and a single offense — the
+# false positive disabled below — so turning it on costs essentially no noise.
+#
+# Scope note: Theme Check catches Liquid and schema correctness — undefined
+# objects, missing snippets, deprecated filters, malformed schema, translation
+# keys that do not resolve. It does NOT check the merchant settings contract or
+# hardcoded English in markup; those are
+# .claude/scripts/check-section-contract.py. Neither tool covers the other, and
+# passing one is not passing both.
+#
+# In the pre-commit hook this runs via .claude/scripts/check-theme-staged.py,
+# which discards offenses in files the commit did not touch. A full-theme run
+# (`shopify theme check`) still reports everything — use that when you want the
+# whole picture rather than just your own diff.
+
+extends:
+  - theme-check:recommended
+
+ignore:
+  - 'node_modules/**'
+  - 'docs/**'
+  - '.claude/**'
+  - '.cursor/**'
+
+# snippets/css-variables.liquid builds this up with `assign` inside a `for`
+# loop, which Theme Check cannot follow — it reports the variable as undefined
+# on the line that appends to it. The only offense in the theme, and a false
+# one.
+UndefinedObject:
+  enabled: false
+
+# The theme has one genuine long template and no appetite for splitting it
+# during this change. Left as a warning so it surfaces without failing a run.
+TemplateLength:
+  severity: warning

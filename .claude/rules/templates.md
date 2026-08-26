@@ -1,12 +1,8 @@
 ---
 description: JSON template file structure rules
-globs: templates/**/*.json
-alwaysApply: false
+paths:
+  - "templates/**/*.json"
 ---
-
-<!-- GENERATED from .claude/rules/templates.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2940517971 -->
-
 
 # Templates
 

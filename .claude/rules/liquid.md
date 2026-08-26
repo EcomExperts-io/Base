@@ -1,12 +1,8 @@
 ---
 description: Liquid syntax standards
-globs: **/*.liquid
-alwaysApply: false
+paths:
+  - "**/*.liquid"
 ---
-
-<!-- GENERATED from .claude/rules/liquid.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2740384216 -->
-
 
 # Liquid Syntax Standards
 

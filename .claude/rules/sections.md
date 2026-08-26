@@ -1,12 +1,8 @@
 ---
 description: Section coding standards, including the required merchant settings contract every section must expose
-globs: sections/**/*.liquid
-alwaysApply: false
+paths:
+  - "sections/**/*.liquid"
 ---
-
-<!-- GENERATED from .claude/rules/sections.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 392585332 -->
-
 
 # Section Development Standards
 

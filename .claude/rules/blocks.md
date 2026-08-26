@@ -1,12 +1,8 @@
 ---
 description: Development standards and best practices for creating/configuring/styling theme blocks, including static and nested blocks, schema configuration, CSS, and usage examples
-globs: blocks/**/*.liquid
-alwaysApply: false
+paths:
+  - "blocks/**/*.liquid"
 ---
-
-<!-- GENERATED from .claude/rules/blocks.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3798493533 -->
-
 
 # Theme Blocks Development Standards
 

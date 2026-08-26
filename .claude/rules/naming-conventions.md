@@ -1,12 +1,6 @@
 ---
 description: File naming and structure conventions for sections and snippets — applies regardless of file type
-globs: 
-alwaysApply: true
 ---
-
-<!-- GENERATED from .claude/rules/naming-conventions.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3449943270 -->
-
 
 # Architecture Standards
 

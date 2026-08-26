@@ -1,12 +1,8 @@
 ---
 description: Static files (css, js, and images) for theme templates
-globs: assets/**
-alwaysApply: false
+paths:
+  - "assets/**"
 ---
-
-<!-- GENERATED from .claude/rules/assets.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1790917314 -->
-
 
 # Assets
 
