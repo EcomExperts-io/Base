@@ -164,7 +164,7 @@ The `section-shop-the-look.js` custom element:
 ### CSS Variables Used
 - `--color-background`: Background colors
 - `--color-foreground`: Text and border colors
-- Theme color scheme variables via `color-{{ color_scheme }}` class
+- Theme color scheme variables via <code v-pre>color-{{ color_scheme }}</code> class
 
 ### Key CSS Features
 - CSS Grid for responsive layouts

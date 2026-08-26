@@ -44,7 +44,7 @@ The section uses CSS custom properties set via a `<style>` block and inline styl
 
 - CSS variables set for button colors, alignment options, and stars color.
 - Inline styles applied to stars, product titles, and prices with fallback defaults.
-- Alignment classes applied via CSS variable: `product-card__info--{{ product_content_alignment }}` and `product-card__reviews--{{ review_content_alignment }}`.
+- Alignment classes applied via CSS variable: <code v-pre>product-card__info--{{ product_content_alignment }}</code> and <code v-pre>product-card__reviews--{{ review_content_alignment }}</code>.
 
 ---
 
@@ -100,7 +100,7 @@ The section uses CSS custom properties set via a `<style>` block and inline styl
 </div>
 ```
 
-- Heading alignment controlled via CSS class: `featured-products__titles--{{ heading_alignment }}`.
+- Heading alignment controlled via CSS class: <code v-pre>featured-products__titles--{{ heading_alignment }}</code>.
 - "View All" link appears as text link when `show_view_all_as_button` is false.
 
 ### Swiper Carousel

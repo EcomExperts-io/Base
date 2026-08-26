@@ -57,7 +57,7 @@ onDocumentClick(event) {
 }
 ```
 
-- The header cart bubble is a plain `<a href="{{ routes.cart_url }}">`; with JS active the drawer intercepts it, without JS the link still navigates to the cart page.
+- The header cart bubble is a plain <code v-pre>&lt;a href="{{ routes.cart_url }}"&gt;</code>; with JS active the drawer intercepts it, without JS the link still navigates to the cart page.
 
 ### onInnerClick(event)
 

@@ -9,7 +9,7 @@
 ## What It Does
 
 - Exposes a global API: `window.Cart = { state, add, change, update, refresh }`.
-- Reads initial cart state from `<script type="application/json" id="cart-data">{{ cart | json }}</script>` in `layout/theme.liquid`.
+- Reads initial cart state from <code v-pre>&lt;script type="application/json" id="cart-data"&gt;{{ cart | json }}&lt;/script&gt;</code> in `layout/theme.liquid`.
 - Serializes every mutation through a promise queue so rapid clicks can't race; while requests are in flight, `<html>` gets a `cart-busy` class (`cart.css` dims `.cart-items`).
 - Bundles Section Rendering API HTML into every mutation via the `sections` request param — section ids are read from the DOM (`closest('.shopify-section')`) for any `<cart-drawer>` / `<cart-page>` elements present, nothing is hardcoded.
 - Dispatches `cart:change` on success and `cart:error` on failure (both on `document`).
