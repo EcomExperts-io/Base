@@ -1,0 +1,41 @@
+#!/bin/sh
+# Base Theme pre-commit checks.
+#
+# Activated by `npm install` (the prepare script sets core.hooksPath), or
+# manually with:  git config core.hooksPath .githooks
+#
+# Design note: this hook BLOCKS on failure. The previous generation of this
+# hook wrote results to TestResults/ and exited 0, then ran `git add .` — so
+# nothing it found ever stopped anything. That is how 30 non-compliant
+# sections reached a client's production theme.
+#
+# Everything here must be objective and fast. No judgment calls: a check that
+# is sometimes wrong teaches people to use --no-verify, which is worse than
+# having no check.
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+FAILED=0
+
+# --- 1. Section settings contract on newly added sections -------------------
+if command -v python3 >/dev/null 2>&1; then
+  python3 .claude/scripts/check-section-contract.py || FAILED=1
+else
+  # A missing interpreter must not block a commit — warn and carry on.
+  echo "pre-commit: python3 not found, skipping the section contract check."
+fi
+
+# --- 2. Cursor/Claude AI config must not drift ------------------------------
+# The two copies existing by hand is what hid our conventions from Claude Code
+# for the first 18 days of a client build.
+sh .claude/scripts/sync-ai-config.sh --check || {
+  echo ""
+  echo "  .cursor/ is out of sync with .claude/. Run:"
+  echo "      sh .claude/scripts/sync-ai-config.sh"
+  echo "  then stage the result."
+  echo ""
+  FAILED=1
+}
+
+exit $FAILED
