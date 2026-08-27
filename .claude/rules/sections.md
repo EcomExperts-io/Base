@@ -121,6 +121,23 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 {% endschema %}
 ```
 
+> **The `750px` above is the padding boilerplate's breakpoint, not the theme's
+> layout breakpoint.** Keep it — it is inherited from Dawn and 31 sections here
+> already use it, so changing it in one section desynchronises that section's mobile
+> padding from every other. Your own component CSS is a separate decision: Base's
+> `section-*.css` is split evenly between `750px` and `769px`, so **in a client theme
+> forked from Base, grep `assets/` and match whatever that theme settled on** rather
+> than copying a number out of this file. Two numbers, two jobs — don't unify them.
+
+> **`.page-width` is correct in Base and may not be in the theme you are working in.**
+> Base uses it in all 32 of its sections. A client theme often introduces its own
+> container with a different max-width, and the two are frequently **identical at
+> 1440** — so a section built and measured only at 1440 passes review and then reads
+> as broken on a large screen. This happened on a client build and was caught by the
+> lead, not by the developer. Check which container class that theme's finished,
+> QI-passed pages use, and measure at 1920 and 393 as well as at the width the Figma
+> frame was drawn at.
+
 The four `t:` keys above all resolve in `locales/en.default.schema.json` today —
 use them rather than inventing new ones. Note that the mobile padding is
 three-quarters of the desktop value; that scaling is part of the pattern, not

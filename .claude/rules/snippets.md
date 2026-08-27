@@ -8,7 +8,15 @@ paths:
 
 ## Snippet Documentation
 
-Every snippet must include JSDoc-style comments using LiquidDoc:
+Every snippet must include a `{% doc %}` block using LiquidDoc.
+
+**The type comes before the name, in braces, and a dash separates the
+description:** `@param {type} name - description`. Optional params wrap the name
+in square brackets. Every one of this theme's 45 declarations uses this form, and it is
+what Shopify's `ValidDocParamTypes` check validates — the JSDoc-style
+`@param name {Type} description` reads fine to a human and is silently skipped by
+the checker, so a snippet documented that way has no validated parameter coverage
+at all.
 
 ```liquid
 {% doc %}
@@ -16,12 +24,12 @@ Every snippet must include JSDoc-style comments using LiquidDoc:
 
   Renders a product card with customizable options.
 
-  @param product {Object} Product object (required)
-  @param show_vendor {Boolean} Display vendor name (default: false)
-  @param show_quick_add {Boolean} Show quick add button (default: false)
-  @param image_ratio {String} Image aspect ratio (default: 'adapt')
-  @param lazy_load {Boolean} Enable lazy loading (default: true)
-  @param card_class {String} Additional CSS classes
+  @param {product} product - Product object
+  @param {boolean} [show_vendor] - Display vendor name (default: false)
+  @param {boolean} [show_quick_add] - Show quick add button (default: false)
+  @param {string} [image_ratio] - Image aspect ratio (default: 'adapt')
+  @param {boolean} [lazy_load] - Enable lazy loading (default: true)
+  @param {string} [card_class] - Additional CSS classes
 
   @example
     {% render 'product-card',
@@ -58,11 +66,11 @@ Always provide defaults and validate parameters:
 
 **Icon Snippet:**
 ```liquid
-{% comment %}
-  @param icon {String} Icon name (required)
-  @param size {String} Icon size class (default: 'icon--medium')
-  @param class {String} Additional classes
-{% endcomment %}
+{% doc %}
+  @param {string} icon - Icon name
+  @param {string} [size] - Icon size class (default: 'icon--medium')
+  @param {string} [class] - Additional classes
+{% enddoc %}
 
 {% liquid
   assign icon = icon | default: ''
@@ -81,11 +89,11 @@ Always provide defaults and validate parameters:
 
 **Price Snippet:**
 ```liquid
-{% comment %}
-  @param product {Object} Product object (required)
-  @param show_compare_at {Boolean} Show compare at price (default: true)
-  @param show_unit_price {Boolean} Show unit price (default: false)
-{% endcomment %}
+{% doc %}
+  @param {product} product - Product object
+  @param {boolean} [show_compare_at] - Show compare at price (default: true)
+  @param {boolean} [show_unit_price] - Show unit price (default: false)
+{% enddoc %}
 
 {% liquid
   assign show_compare_at = show_compare_at | default: true
