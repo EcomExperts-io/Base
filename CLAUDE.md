@@ -84,13 +84,17 @@ The two copies existing by hand is what caused this project's worst failure —
 the conventions sat in `.cursor/rules/` where Claude Code could not read them
 for the first 18 days of a client build. The script makes drift impossible.
 
-## Skills and agents
+## Skills, agents and workflows
 
 - `.claude/skills/` — invoked procedures: building a page from a Figma frame,
   scaffolding a section, closing the QA loop, accessibility review.
 - `.claude/agents/` — review passes with their own context:
   `shopify-standards-coach` (advisory, teaches) and `shopify-pr-reviewer`
   (gates, decides whether something is safe to merge).
+- `.claude/workflows/` — multi-agent procedures a human starts deliberately.
+  `parallel-section-build.md` builds a whole page by giving each section to its
+  own agent, and carries the assembly and verification steps that make that
+  safe. Point an agent at the file; it is not auto-loaded.
 
 Skills only run when invoked. Conventions that must hold unprompted live in
 `.claude/rules/`, not in a skill.
