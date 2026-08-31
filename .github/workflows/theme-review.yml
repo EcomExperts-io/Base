@@ -112,10 +112,26 @@ jobs:
           ORIG_HEAD="$(git rev-parse HEAD)"
           git reset --soft "${BASE_SHA}"
 
+          # Prove the index really holds base..head before trusting a pass.
+          # check-theme-staged.py returns 0 SILENTLY when it sees no staged
+          # files, so an index this step failed to populate would look
+          # identical to a clean theme. A gate that cannot be told apart from a
+          # skip is the exact failure this workflow exists to remove.
+          staged_count="$(git diff --cached --name-only | wc -l | tr -d ' ')"
+          echo "Theme Check scope: ${staged_count} file(s) changed by this PR"
+          if [ "${staged_count}" -eq 0 ]; then
+            echo "::error::index is empty after reset --soft; the check would pass vacuously"
+            git reset --soft "${ORIG_HEAD}"
+            exit 1
+          fi
+
           set +e
           python3 .claude/scripts/check-theme-staged.py
           status=$?
           set -e
+          if [ "${status}" -eq 0 ]; then
+            echo "Theme Check: no errors in the files this PR touches"
+          fi
 
           git reset --soft "${ORIG_HEAD}"
           exit "${status}"
@@ -161,6 +177,13 @@ jobs:
 
           ORIG_HEAD="$(git rev-parse HEAD)"
           git reset --soft "${BASE_SHA}"
+
+          # Same reason as the Theme Check step: this script also returns 0
+          # silently when the index lists no added sections, which is both the
+          # normal case and what a broken reset looks like. Print the scope so
+          # the two are distinguishable in the log.
+          added="$(git diff --cached --name-only --diff-filter=A | grep -c '^sections/' || true)"
+          echo "Section contract scope: ${added} section(s) added by this PR"
 
           set +e
           python3 .claude/scripts/check-section-contract.py
