@@ -18,11 +18,9 @@ name: Theme Review
 # checks a developer runs locally, giving the same answer.
 #
 # Differences from the hook, all intentional:
-#   * Theme Check runs over the WHOLE theme, not just the diff. The hook scopes
-#     it (check-theme-staged.py) so an inherited offense cannot block someone's
-#     unrelated commit. A pull request into development or main is exactly the
-#     place where the whole theme's state has to be true. As of this commit a
-#     full run is 130 files, no offenses, so this starts green.
+#   * Theme Check runs TWICE: once over the whole theme purely to report, and
+#     once through check-theme-staged.py to gate on the files the pull request
+#     touches. Same rule as the hook — you answer for what you touched.
 #   * check-rule-links.py runs with --all, for the same reason.
 #   * The section contract still only looks at sections ADDED, but "added"
 #     means added by the pull request rather than by one commit — see the step.
@@ -31,11 +29,6 @@ name: Theme Review
 #     checks means the gate silently did not happen.
 #
 # Every blocking check in .githooks/pre-commit is mirrored here.
-#
-# One caveat when this reaches a client fork: the full-theme Theme Check
-# above starts green in Base, but a fork carrying pre-existing offenses
-# would fail every pull request from day one. Clean the fork first, or
-# swap this step for check-theme-staged.py there.
 
 on:
   pull_request:
@@ -83,12 +76,49 @@ jobs:
       # in one run, not fix, push, wait, and meet the next one. A failed step
       # still fails the job; the later steps merely get to report as well.
 
-      - name: Theme Check
-        # Whole-theme scan. --config matches the command documented in
-        # CLAUDE.md. --fail-level error is explicit rather than implied:
-        # TemplateLength is deliberately set to `warning` in .theme-check.yml
-        # and must not fail a pull request.
-        run: shopify theme check --config=.theme-check.yml --fail-level error
+      - name: Theme Check (whole theme, report only)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        # Visibility, not a gate. Prints the full picture so the state of the
+        # theme is never a surprise, and cannot fail the job.
+        run: shopify theme check --config=.theme-check.yml || true
+
+      - name: Theme Check (blocking, files this PR touches)
+        if: ${{ !cancelled() }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        # This gates on the diff, NOT the whole theme, for the reason
+        # check-theme-staged.py's own docstring gives: "You are accountable for
+        # what you touch, not for what you inherited." That script exists
+        # because a bad section arriving via merge once blocked an unrelated
+        # docs-only commit.
+        #
+        # An earlier draft of this job gated on the whole-theme scan. It starts
+        # green in Base (130 files, no offenses) so the cost was invisible here
+        # — but Base is forked, and a client theme carrying pre-existing
+        # offenses would fail every pull request from day one. A gate that is
+        # always red is not a gate; people learn to merge past it. It would
+        # also have needed a per-fork edit, which breaks the one thing the
+        # inheritance model depends on: the same file working everywhere.
+        #
+        # Same index adaptation as the section contract step below — the script
+        # reads `git diff --cached`, which is empty on a PR checkout.
+        run: |
+          set -eu
+
+          git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null \
+            || git fetch --no-tags --quiet origin "${BASE_SHA}"
+
+          ORIG_HEAD="$(git rev-parse HEAD)"
+          git reset --soft "${BASE_SHA}"
+
+          set +e
+          python3 .claude/scripts/check-theme-staged.py
+          status=$?
+          set -e
+
+          git reset --soft "${ORIG_HEAD}"
+          exit "${status}"
 
       - name: Section settings contract
         if: ${{ !cancelled() }}
