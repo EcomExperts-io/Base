@@ -65,13 +65,24 @@ Full conventions are one-topic-per-file in `.claude/rules/`. Each is scoped by a
 `paths` glob except the always-apply ones. **Read the relevant file before
 writing non-trivial code in that area** — this summary is not a substitute.
 
-Always applies: `rules-of-engagement.md`, `naming-conventions.md`,
-`prompts-and-references.md`.
+Always applies: `rules-of-engagement.md`, `naming-conventions.md`.
 
 Path-scoped: `sections.md`, `snippets.md`, `blocks.md`, `schemas.md`,
-`liquid.md`, `html-standards.md`, `css-standards.md`,
+`liquid.md`, `html-standards.md`, `css-in-markup.md`, `css-standards.md`,
 `javascript-standards.md`, `localization.md`, `locales.md`, `templates.md`,
-`theme-settings.md`, `assets.md`.
+`theme-settings.md`, `assets.md`, `living-documents.md`.
+
+Two notes on scope, because both were wrong until recently:
+
+- **`css-in-markup.md` vs `css-standards.md`.** Class naming, custom-property
+  namespacing and passing settings in via a `style` attribute are decisions you
+  make in the markup, so `css-in-markup.md` is scoped to `**/*.liquid` and
+  `**/*.css` both. Everything else about CSS is scoped to `**/*.css` alone.
+  Before the split, editing one snippet injected 2,444 lines of rules, 919 of
+  them CSS authoring guidance that a Liquid file cannot act on.
+- **`living-documents.md`** was `prompts-and-references`: always-apply, and
+  entirely about two `.cursor/` directories that hold one file each here and do
+  not exist in a client fork.
 
 `.cursor/rules/*.mdc` is the Cursor-readable copy of the same content, generated
 from `.claude/rules/`. **Edit `.claude/rules/` only**, then run:
@@ -98,6 +109,37 @@ for the first 18 days of a client build. The script makes drift impossible.
 
 Skills only run when invoked. Conventions that must hold unprompted live in
 `.claude/rules/`, not in a skill.
+
+## Flowing changes back to Base
+
+Base is the upstream every client theme is forked from, and until recently
+**nothing had ever flowed back up**. That is not because the forks learned
+nothing — it is because there was no written answer to "where does this go?",
+so everything stayed where it was found.
+
+The inheritance is working where it has been used: 14 of the 16 rules are
+byte-identical between Base and the BPN fork, and the two that differ —
+`sections.md` and `snippets.md` — differ *correctly*. Base says "grep `assets/`
+and match whatever that theme settled on"; BPN says "769px, 14 files against
+4". Generic principle upstream, measured specifics downstream. Keep that shape.
+
+**The test:** would this be true in a Shopify theme that is not this client's?
+
+| | Where it goes |
+|---|---|
+| A Liquid, Shopify or platform trap | **Base**, then forks pull it down |
+| A convention we want every client to follow | **Base** |
+| A measurement of *this* theme — breakpoints, container class, file counts | the client's rule copy only |
+| A client's design decision | the client's rule copy only |
+
+**How:** branch off `development` here, make the change generic — strip the
+client's numbers, keep the incident — open the PR, and pull it down to the
+client once merged. The four traps added in this change came from the BPN
+Quick-Shop build and are the worked example: the bug was found there, the rule
+lives here.
+
+**What not to do:** copy a whole rule file up. The divergences above are load
+bearing. Move the paragraph, not the file.
 
 ## Two success criteria, kept separate
 

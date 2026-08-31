@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/schemas.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3898416210 -->
+<!-- checksum: 1411073358 -->
 
 
 # Schema Standards
@@ -52,6 +52,31 @@ not
 
 Some existing Base sections use bare English labels for padding. Those predate
 this rule; match the `t:` form above, not them.
+
+## `name` is capped at 25 characters
+
+Theme Check's `ValidSchemaName` fails a schema whose `name` exceeds 25
+characters. It is a hard limit, it is not obvious from the error, and it is
+easy to hit with a descriptive name:
+
+```json
+"name": "Complete Your Stack Drawer"   // 26 — fails
+"name": "Complete Your Stack"          // 19 — fine
+```
+
+The limit is on `name` only. Preset names, labels and headings are unaffected —
+put the longer wording in the preset name, which is what a merchant actually
+reads in the theme editor:
+
+```json
+{
+  "name": "Quick Shop",
+  "presets": [{ "name": "t:sections.quick_shop.preset_name" }]
+}
+```
+
+Count it before you commit; the pre-commit Theme Check will otherwise tell you
+at the worst moment.
 
 ## Schema Structure
 ```json

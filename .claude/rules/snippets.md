@@ -138,4 +138,4 @@ Include testing scenarios in comments:
 {% endcomment %}
 ```
 
-See [snippet-example.liquid](../../.cursor/rules/examples/snippet-example.liquid) for a full worked example.
+See [snippet-example.liquid](examples/snippet-example.liquid) for a full worked example.

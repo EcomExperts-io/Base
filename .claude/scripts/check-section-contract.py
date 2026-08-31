@@ -23,7 +23,9 @@ Escape hatches, both requiring a written reason
 ----------------------------------------------
 A Liquid comment mentioning `presets` marks a section as not merchant-addable
 and exempts it from the whole contract — the contract is about merchant
-editability, so a section a merchant cannot place is out of scope.
+editability, so a section a merchant cannot place is out of scope. This works
+whether or not the section has a `{% schema %}`: a render-target section may
+legitimately have none.
 
 A Liquid comment mentioning `color_scheme` exempts that one setting, for
 designs that fix the surface on purpose.
@@ -125,7 +127,19 @@ def comments_mentioning(src, needle):
 
 def check(path, src):
     """Return (blocking, advisory) lists of problem strings for one section."""
+    # The presets exemption is resolved BEFORE the schema is parsed, because a
+    # render-target section (rendered by another section, never placed by a
+    # merchant) legitimately has no {% schema %} at all. Checking the schema
+    # first made the exemption unreachable for exactly the sections it was
+    # written for: they had to carry a stub schema to satisfy a check whose own
+    # docstring says they are out of scope. sections/pickup-availability.liquid
+    # and sections/predictive-results.liquid are both in this state.
+    #
+    # A malformed schema still blocks regardless — that breaks the theme, and
+    # no exemption should hide it.
     schema, err = parse_schema(src)
+    if err == "no {% schema %} block found" and comments_mentioning(src, "presets"):
+        return [], []
     if err:
         return [err], []
 

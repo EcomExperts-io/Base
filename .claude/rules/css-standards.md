@@ -1,11 +1,16 @@
 ---
-description: Writing CSS, whether inside .css files or in the {% stylesheet %}…{% endstylesheet %} or {% style %}…{% endstyle %} or in <style></style> tags
+description: Writing CSS in a .css file — specificity, variables, nesting, media queries, logical properties, layout, performance
 paths:
   - "**/*.css"
-  - "**/*.liquid"
 ---
 
 # CSS Standards
+
+Class naming (BEM), custom-property namespacing, and passing settings in via a
+`style` attribute live in `css-in-markup.md`, which is scoped to `**/*.liquid`
+as well as `**/*.css` because those are decisions you make in the markup. This
+file is the rest, and is scoped to `**/*.css` only: in this theme new CSS goes
+in a `.css` file loaded with `stylesheet_tag`, never in the Liquid.
 
 ## Specificity Rules
 
@@ -28,7 +33,7 @@ CSS variables, a.k.a. custom properties, are a powerful tool for reducing redund
 
 ### Global Variables
 
-Global variables should be scoped to the `:root` selector in `snippets/theme-styles-variables.liquid`.
+Global variables should be scoped to the `:root` selector in `snippets/css-variables.liquid`.
 
 **Example of global variables**
 
@@ -55,28 +60,6 @@ Be sure to scope your CSS variables to the component they are being used in, if 
   --facets-open-z-index: 4;
 
   --facets-clear-shadow: 0px -4px 14px 0px rgb(var(--color-foreground-rgb) / var(--opacity-10)); /* Referencing a Color Scheme variable */
-}
-```
-
-### Namespace Your CSS Variables
-
-Namespace your variables to avoid collisions unless you explicitly want them to bleed through to other components.
-
-✅ Do this:
-
-```css
-.component {
-  --component-padding: ...;
-  --component-aspect-ratio: ...;
-}
-```
-
-❌ Don't do this:
-
-```css
-.component {
-  --padding: ...;
-  --aspect-ratio: ...;
 }
 ```
 
@@ -132,36 +115,6 @@ Establish consistent spacing and typography scales:
 }
 ```
 
-## Scoping CSS to Instances of Sections and Blocks
-
-Reset CSS variable values inline on a `style` attribute with a section/block settings. This has a couple benefits:
-
-- Less CSS in Liquid which allows us to use the `{% stylesheet %}` tag for all CSS.
-- Reduces redundancy in CSS selectors and number of selectors in the HTML, i.e. `.selector--{{ block.id }}` pattern.
-
-✅ Do this:
-
-```html
-<section
-  style="
-    --background-color: {{ settings.background_color }};
-    --padding: {{ settings.padding }}px;
-  "
->
-  ...
-</section>
-
-<button style="--button-color: {{ settings.button_color }};">...</button>
-```
-
-❌ Don't do this:
-
-```html
-{% style %} .selector--{{ block.id }} { --button-color: {{ settings.button_color }}; } {% endstyle %}
-
-<button class="selector--{{ block.id }}">...</button>
-```
-
 ### Redundancy
 
 Use variables to reduce property assignment redundancy.
@@ -186,200 +139,23 @@ Use variables to reduce property assignment redundancy.
 }
 ```
 
-## BEM Naming Convention
-
-Use the @BEM CSS convention for class names.
-
-BEM TL;DR:
-
-- **Block**: Component name (`.product-card`)
-- **Element**: Block + element (`.product-card__title`)
-- **Modifier**: Block/element + modifier (`.product-card--featured`)
-- **Use dashes** to separate words in names
-
-```css
-/* Good BEM structure */
-.product-card {
-}
-.product-card__image {
-}
-.product-card__title {
-}
-.product-card__price {
-}
-.product-card--featured {
-}
-.product-card__title--large {
-}
-```
-
-```css
-.block {
-  ...;
-}
-.block--modifier {
-  ...;
-}
-.block__element {
-  ...;
-}
-.block__multi-word-element {
-  ...;
-}
-.block__element--modifier {
-  ...;
-}
-.block__element--multi-word-modifier {
-  ...;
-}
-```
-
-Dashes are used to separate words in blocks, elements, and modifiers.
-
-Exception: We also use global @utility classes that can be applied to block and and elements without following BEM naming convention.
-
-### Naming a "Block" (component)
-
-The root "block" namespace must wrap any elements derived from it.
-
-✅ Do this:
-
-```html
-<div class="my-component">
-  <div class="my-component__wrapper"></div>
-</div>
-```
-
-❌ Not this:
-
-`.my-component__wrapper` is used as a parent to `.my-component`.
-
-```html
-<div class="my-component__wrapper my-component--page-width">
-  <div class="my-component"></div>
-</div>
-```
-
-### Naming an "Element" (child)
-
-There should only be a _single_ "element" in a classname. Only the root "block" name needs to be included in child classnames. If additional naming specificity is necessary, use a "-" to seperate words or consider starting a new BEM scope altogether when an element could make sense as a standalone entity.
-
-✅ Do this:
-
-```html
-<div class="my-component my-component--full-width">
-  <div class="my-component__wrapper">
-    <button class="my-component__button">
-      <span class="my-component__button-label">My button</span>
-    </button>
-  </div>
-</div>
-```
-
-✅ Or this:
-
-Started new scope with `.button-component`.
-
-```html
-<div class="my-component my-component--full-width">
-  <div class="my-component__wrapper">
-    <button class="button-component">
-      <span class="button-component__label">My button</span>
-    </button>
-  </div>
-</div>
-```
-
-❌ Not this:
-
-Multiple element names are used (`__wrapper__button__label`).
-
-```html
-<div class="my-component my-component--full-width">
-  <div class="my-component__wrapper">
-    <button class="my-component__wrapper__button">
-      <span class="my-component__wrapper__button__label">My button</span>
-    </button>
-  </div>
-</div>
-```
-
-### Naming a "Modifier" (variant)
-
-Any "modifier" classname should always use a "--" and should always correspond to an existing block and element namespace. Never use a modifier class on an element that doesn't also have a base classname.
-
-✅ Do this:
-
-The `.button` class is the base classname and modified by `--secondary`.
-
-```html
-<button class="button button--secondary"></button>
-```
-
-❌ Not this:
-
-The `.button` and `.button-secondary` classes are both named as _exclusive_ components and should not used together.
-
-```html
-<button class="button button-secondary"></button>
-```
-
-❌ Or this:
-
-Modifer class is used without corresponding base classname.
-
-```html
-<button class="button--secondary"></button>
-```
-
-Also consider keeping modifiers at the highest element that makes sense. This makes the component more extensible and resilient as styling needs are changed or added in the future.
-
-✅ Do this:
-
-```html
-<div class="my-component my-component--size-large my-component--page-width">
-  <div class="my-component__wrapper"></div>
-</div>
-```
-
-### Utility Classes
-
-Utility classes are intended to act as global overrides for a single styling decision, e.g. alignment, show/hide, etc. BEM conventions are not followed, there is no hierarchy in utility classes and utility classes do not assume they are used with any particular block or element.
-
-Name multi-word utility classes with hyphens `-`. Append any viewport specifications at the **end**, e.g. `hidden-mobile`.
-
-✅ This is fine:
-
-```css
-.align-left {
-  text-align: left;
-}
-```
-
-```html
-<div class="my-component align-left">
-  <p class="my-component__text"></p>
-</div>
-```
-
 ## Modern CSS Features
 
-### Container Queries
+### Container Queries — do not use them here
 
-Use container queries for truly responsive components:
+This file used to recommend them. It was contradicted by `sections.md`, which
+says the opposite, and `sections.md` is right: **Base has zero uses of
+`container-type` or `@container` in `assets/`, `sections/`, `snippets/`,
+`blocks/` or `layout/`.** Measured, not assumed.
 
-```css
-.product-grid {
-  container-type: inline-size;
-}
+Use the `min-width` media queries the rest of the theme uses. Introducing a
+container query means this section responds to a different signal than every
+other section on the page, which is a real inconsistency to pay for and there
+is no case in this theme that has needed it.
 
-@container (min-width: 400px) {
-  .product-card {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-}
-```
+If you hit a genuine one — a component that must reflow to its slot rather
+than the viewport, placed in slots of different widths on the same page —
+raise it rather than quietly starting a second responsive system.
 
 ### CSS Functions
 
@@ -885,35 +661,53 @@ Use consistent commenting for better maintainability:
 
 ## Example Component Structure
 
+Two files: the section loads its stylesheet with `stylesheet_tag`, and passes
+merchant settings in as custom properties on the wrapper. No `{% stylesheet %}`
+(banned in new sections by `sections.md`), no container queries (zero uses in
+this theme).
+
 ```liquid
-{% stylesheet %}
-  .featured-collection {
-    --section-padding: {{ section.settings.padding | default: 60 }}px;
-    --bg-color: {{ section.settings.background_color | default: '#ffffff' }};
-    --text-color: {{ section.settings.text_color | default: '#000000' }};
+{% comment %} sections/featured-collection.liquid {% endcomment %}
+{{ 'section-featured-collection.css' | asset_url | stylesheet_tag }}
 
-    padding: var(--section-padding) 0;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    container-type: inline-size;
-  }
+<div
+  class="featured-collection color-{{ section.settings.color_scheme }}"
+  style="
+    --featured-collection-padding-block-start: {{ section.settings.padding_top }}px;
+    --featured-collection-padding-block-end: {{ section.settings.padding_bottom }}px;
+    --featured-collection-columns: {{ section.settings.columns | default: 4 }};
+  "
+>
+  <div class="featured-collection__grid">
+    {%- for product in section.settings.collection.products -%}
+      {%- render 'component-product-card', card_product: product -%}
+    {%- endfor -%}
+  </div>
+</div>
+```
 
+```css
+/* assets/section-featured-collection.css */
+.featured-collection {
+  padding-block-start: var(--featured-collection-padding-block-start);
+  padding-block-end: var(--featured-collection-padding-block-end);
+}
+
+.featured-collection__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+}
+
+@media screen and (min-width: 750px) {
   .featured-collection__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(var(--featured-collection-columns), 1fr);
   }
+}
 
-  @container (min-width: 768px) {
-    .featured-collection__grid {
-      grid-template-columns: repeat({{ section.settings.columns | default: 4 }}, 1fr);
-    }
+@media (prefers-reduced-motion: reduce) {
+  .featured-collection * {
+    transition: none;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .featured-collection * {
-      transition: none !important;
-    }
-  }
-{% endstylesheet %}
+}
 ```

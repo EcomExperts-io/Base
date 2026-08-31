@@ -17,12 +17,14 @@ These are strictly for UX improvements that are non-blocking for conversions.
 **Expandable Content:**
 - Use `<details>` and `<summary>` instead of JavaScript toggles
 - Perfect for FAQs, product details, filters
-- See the [accordion component](../../assets/accordion-custom.js) for cases where animation is involved
+- For an animated accordion, see the `<details>` usage in
+  `snippets/component-filters-sidebar.liquid` and `sections/product.liquid`
 
 **Modals and Popups:**
 - Use `<dialog>` for modals instead of custom overlays
 - Built-in focus management and backdrop clicks
-- See the [dialog component](../../assets/dialog.js) for how we use these
+- See `assets/component-product-media-modal.js` — the only `showModal()` in
+  the theme, and the pattern to copy
 
 **Tooltips and Menus:**
 - Use `popover` attribute for floating content
@@ -271,9 +273,15 @@ Section and block IDs are the only things we can guarantee are unique, and so sh
 </search>
 ```
 
-**Responsive Product Card:**
+**Product Card:**
+
+Settings come in as custom properties on the wrapper; responsiveness is a
+`min-width` media query in the stylesheet. Do not reach for a container query
+— `css-standards.md` and `sections.md` both rule them out, and the theme has
+zero uses.
+
 ```html
-<div class="product-card" style="container-type: inline-size;">
+<div class="product-card" style="--product-card-gap: {{ settings.gap }}px;">
   <div class="product-card__media">
     {{ product.featured_image | image_url: width: 800 | image_tag }}
   </div>
