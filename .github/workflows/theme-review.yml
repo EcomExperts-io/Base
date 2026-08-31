@@ -31,7 +31,11 @@ name: Theme Review
 #     checks means the gate silently did not happen.
 #
 # Every blocking check in .githooks/pre-commit is mirrored here.
-# each — worth adding, left out of this change on purpose.
+#
+# One caveat when this reaches a client fork: the full-theme Theme Check
+# above starts green in Base, but a fork carrying pre-existing offenses
+# would fail every pull request from day one. Clean the fork first, or
+# swap this step for check-theme-staged.py there.
 
 on:
   pull_request:
