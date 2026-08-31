@@ -1,0 +1,163 @@
+name: Theme Review
+
+# Why this exists
+# ---------------
+# .githooks/pre-commit already runs these checks, and `git commit --no-verify`
+# skips every one of them in a single keystroke. The backstop was meant to be
+# the shopify-pr-reviewer agent, which has never run once — during the build
+# that prompted this workflow a standing session instruction disabled it
+# outright, and nothing announced that it had. A check the person being checked
+# can switch off is not a gate.
+#
+# So the deterministic half of the review runs here, on the pull request, where
+# there is no --no-verify.
+#
+# Deliberately NOT here: any Claude agent. That needs an API credential in
+# repository secrets and a separate decision about what an agent is allowed to
+# block. Everything below is objective, offline and reproducible — the same
+# checks a developer runs locally, giving the same answer.
+#
+# Differences from the hook, all intentional:
+#   * Theme Check runs over the WHOLE theme, not just the diff. The hook scopes
+#     it (check-theme-staged.py) so an inherited offense cannot block someone's
+#     unrelated commit. A pull request into development or main is exactly the
+#     place where the whole theme's state has to be true. As of this commit a
+#     full run is 130 files, no offenses, so this starts green.
+#   * check-rule-links.py runs with --all, for the same reason.
+#   * The section contract still only looks at sections ADDED, but "added"
+#     means added by the pull request rather than by one commit — see the step.
+#   * A missing python3 fails the job. The hook warns and carries on, because a
+#     contributor's machine is not our problem; a runner that cannot run the
+#     checks means the gate silently did not happen.
+#
+# Every blocking check in .githooks/pre-commit is mirrored here.
+# each — worth adding, left out of this change on purpose.
+
+on:
+  pull_request:
+    branches: [development, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: theme-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Review
+    runs-on: ubuntu-latest
+    env:
+      # The CLI is interactive and phones home by default; both are noise or a
+      # hang in CI. Theme Check itself needs no store and no authentication.
+      SHOPIFY_CLI_NO_ANALYTICS: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history. The section contract check diffs against the base
+          # branch, so base.sha has to be a real object in this clone.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          # 22, not the 20 that deploy-docs.yml pins. The Shopify CLI imports
+          # `enableCompileCache` from node:module, which does not exist before
+          # Node 22 — on 20 the CLI dies at startup, before checking anything.
+          # That failure mode is the dangerous one: check-theme-staged.py
+          # treats a CLI that cannot start as a skip, so a Node 20 runner would
+          # take this job green by never having run it.
+          node-version: 22
+
+      - name: Install Shopify CLI
+        run: npm install --global @shopify/cli
+
+      # Each check below carries `if: ${{ !cancelled() }}` so one failure does
+      # not hide the others — a contributor should see everything that is wrong
+      # in one run, not fix, push, wait, and meet the next one. A failed step
+      # still fails the job; the later steps merely get to report as well.
+
+      - name: Theme Check
+        # Whole-theme scan. --config matches the command documented in
+        # CLAUDE.md. --fail-level error is explicit rather than implied:
+        # TemplateLength is deliberately set to `warning` in .theme-check.yml
+        # and must not fail a pull request.
+        run: shopify theme check --config=.theme-check.yml --fail-level error
+
+      - name: Section settings contract
+        if: ${{ !cancelled() }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        # WHAT WAS ADAPTED, AND WHY
+        # -------------------------
+        # check-section-contract.py reads the git INDEX: `git diff --cached
+        # --diff-filter=A` for the file list, `git show :<path>` for the
+        # content. Correct for a commit hook, inert in CI — nothing is ever
+        # staged on a runner, so run unchanged it finds zero added sections and
+        # passes on every pull request, forever. A gate that cannot fail is
+        # worse than no gate, because it reports success.
+        #
+        # The change is to the git state, not to the script. The hook and this
+        # job have to stay the same check; a CI-only fork of the logic is a
+        # second thing to keep in sync and a second thing to be wrong.
+        #
+        # `git reset --soft <base>` moves HEAD back to the base branch and
+        # touches neither the index nor the working tree, both of which stay at
+        # the pull request's head. `git diff --cached` compares HEAD against
+        # the index, so it now yields base..head — meaning --diff-filter=A
+        # lists the sections this pull request ADDS (the hook's exact scope,
+        # widened from one commit to the whole PR) and `git show :<path>`
+        # returns the PR's version of each file. The check's own behaviour is
+        # untouched, and no file on disk is modified.
+        #
+        # HEAD is put back afterwards: for the rest of the job HEAD should mean
+        # the commit under review, not its base.
+        #
+        # Cosmetic wart, left alone on purpose: the script's failure banner
+        # says "COMMIT BLOCKED" and suggests `git commit --no-verify`. Neither
+        # applies here. Rewording it means editing a script the hook shares,
+        # which is not worth doing to fix a noun.
+        run: |
+          set -eu
+
+          git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null \
+            || git fetch --no-tags --quiet origin "${BASE_SHA}"
+
+          ORIG_HEAD="$(git rev-parse HEAD)"
+          git reset --soft "${BASE_SHA}"
+
+          set +e
+          python3 .claude/scripts/check-section-contract.py
+          status=$?
+          set -e
+
+          git reset --soft "${ORIG_HEAD}"
+          exit "${status}"
+
+      - name: Rule cross-references
+        if: ${{ !cancelled() }}
+        # --all, not the hook's staged scope: on a pull request a broken link
+        # anywhere under .claude/ is worth knowing about, and this is the one
+        # place a fork's inherited breakage ever gets looked at.
+        run: python3 .claude/scripts/check-rule-links.py --all
+
+      - name: AI config is structurally sound
+        if: ${{ !cancelled() }}
+        # Asserts the rules themselves: every one loadable and scoped, the
+        # always-apply list explicit, the per-file injection budget respected,
+        # and CLAUDE.md's inventory matching disk. Added to the hook after this
+        # workflow was first written, hence its "not yet mirrored" note above.
+        run: python3 .claude/scripts/check-ai-config.py --verbose
+
+      - name: Docs Liquid examples do not break the VitePress build
+        if: ${{ !cancelled() }}
+        run: python3 .claude/scripts/check-docs-interpolation.py
+
+      - name: AI config mirror is in sync
+        if: ${{ !cancelled() }}
+        # --check writes nothing and exits 1 if .cursor/ has drifted from
+        # .claude/. Two hand-maintained copies is how the conventions stayed
+        # invisible to Claude Code for the first 18 days of a client build.
+        run: sh .claude/scripts/sync-ai-config.sh --check
