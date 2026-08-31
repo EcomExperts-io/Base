@@ -132,7 +132,7 @@
           {{- 'icon-arrow.svg' | inline_asset_content -}}
         </span>
       </span>
-      {{ 'blogs.article.back_to_blog' | t: title: blog.title | escape }}
+      {{ 'blogs.article.back_to_blog' | t: title: blog.title }}
     </a>
   </div>
   {%- if blog.comments_enabled? -%}

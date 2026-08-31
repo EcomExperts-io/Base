@@ -336,5 +336,5 @@ See [css-standards.md](css-standards.md) for rules on writing CSS
 
 ## Examples Referenced
 
-[text.liquid](../../.cursor/rules/examples/block-example-text.liquid) - Basic content block from existing project
-[group.liquid](../../.cursor/rules/examples/block-example-group.liquid) - Container with nested blocks from existing project
+[text.liquid](examples/block-example-text.liquid) - Basic content block from existing project
+[group.liquid](examples/block-example-group.liquid) - Container with nested blocks from existing project

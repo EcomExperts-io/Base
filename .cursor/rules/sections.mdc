@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/sections.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 856169508 -->
+<!-- checksum: 1501576878 -->
 
 
 # Section Development Standards
@@ -158,6 +158,38 @@ an arbitrary choice in any one section.
   much as to edits.
 - `{{ block.shopify_attributes }}` on every block-rendered element
 
+## Declaring a section exempt
+
+A section a merchant cannot place is out of scope for the contract — but it has
+to **say so**, in a Liquid comment mentioning `presets`:
+
+```liquid
+{%- comment -%}
+  No `presets`: main section for the `product` template. A merchant places it
+  by choosing the template, not by adding it in the theme editor.
+{%- endcomment -%}
+```
+
+Three cases qualify, and nothing else does:
+
+| Case | Example |
+|---|---|
+| Template main section | `product`, `cart`, `search`, `customers/*` |
+| Section-group member | `header` |
+| Render target, requested by other code | `pickup-availability`, `predictive-results` |
+
+A separate comment mentioning `color_scheme` exempts that one setting on a
+section that is otherwise in scope, for a design that fixes the surface on
+purpose. **Padding has no exemption at all.**
+
+The check only runs on sections **added** in a commit, so this is about new
+work. Base's existing sections predate the contract and are not annotated: 17
+have no `presets` (most of them legitimately, being template mains), 7 are
+missing padding or `color_scheme`, and 20 carry bare English schema labels.
+Do not copy an existing section and assume its schema is compliant — measure
+against the list above, or start from
+`.claude/skills/scaffold-section/reference-section.liquid`, which is.
+
 ## Naming
 
 Name sections by **function**, not by the page they first appear on. `hero`,
@@ -176,7 +208,7 @@ Bites build that happened immediately.
   general pattern.
 - **Do not** reach for container queries. Zero uses in Base; use the
   `min-width` media queries the rest of the theme uses.
-- **Do not** follow `.cursor/rules/examples/section-example.liquid`. It predates
+- **Do not** follow `.claude/rules/examples/section-example.liquid`. It predates
   this rule, teaches the two patterns above, and exposes none of the required
   settings. The worked example in this file is the current one.
 

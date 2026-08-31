@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/localization.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 217938565 -->
+<!-- checksum: 3901778029 -->
 
 
 # Localization Standards
@@ -97,6 +97,41 @@ all.
 <p>Check out our best products</p>
 <button>Add to cart</button>
 ```
+
+## Never chain `| escape` onto `| t`
+
+`t` already HTML-escapes the values it interpolates. Adding `| escape` after it
+encodes the output a second time, and the entity itself becomes visible: a
+product called **Salt & Pepper** renders as `Salt &amp; Pepper` on the page.
+
+```liquid
+<!-- Bad — double-encoded -->
+{{ 'blogs.article.back_to_blog' | t: title: blog.title | escape }}
+
+<!-- Good -->
+{{ 'blogs.article.back_to_blog' | t: title: blog.title }}
+```
+
+It is easy to misread the bad form as escaping the *argument*. It does not —
+Liquid parses the filter arguments up to the next `|`, so `escape` receives the
+finished output of `t`.
+
+The escaping is keyed off the **key name**, which is the convention this theme
+already relies on: a key ending in `_html` is left unescaped so it can carry
+markup, and every other key has its interpolations escaped. This theme has eleven
+`_html` keys (`paragraph_html`, `date_html`, `shipping_policy_html` …), which
+is what proves the rule is in force here.
+
+So:
+
+| Key | `t` escapes interpolations? | Add `\| escape`? |
+|---|---|---|
+| `products.foo` | yes | never |
+| `products.foo_html` | no, by design | no — the key opted out on purpose |
+
+`| escape` is still correct on a **bare object** in its own output tag —
+`{{ product.title | escape }}` — because nothing has escaped it yet. The rule
+is only about chaining it onto `t`.
 
 ## Translation with Variables
 

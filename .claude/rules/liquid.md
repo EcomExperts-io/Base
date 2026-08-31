@@ -88,6 +88,35 @@ paths:
 - Use object dot notation: `product.title` not `product['title']`
 - Respect object scope and availability
 
+## Traps
+
+### A literal `{{ }}` cannot be passed as a filter argument
+
+Liquid closes an output tag at the **first** `}}` it meets. It does not know
+the inner braces were meant to be literal, so this does not parse:
+
+```liquid
+{% comment %} BROKEN — the tag closes at the inner }} {% endcomment %}
+{{ 'products.price_each' | t: price: '{{price}}' }}
+```
+
+The parser reads `{{ 'products.price_each' | t: price: '{{price`, closes there,
+and emits the trailing `' }}` as visible text. There is no escaping form that
+fixes it inline — the brace pair has to reach the filter as an already-built
+string.
+
+Build it with `capture` and `raw`:
+
+```liquid
+{%- capture price_token %}{% raw %}{{price}}{% endraw %}{% endcapture -%}
+{{ 'products.price_each' | t: price: price_token }}
+```
+
+This comes up whenever a translated string is handed to JavaScript as a
+template — a placeholder the client-side code substitutes later. Found on the
+BPN Quick-Shop build, where the bundle-picker snippet still carries the
+broken form.
+
 ## Inline Variables Pattern
 
 For props that are relatively straightforward, prefer to inline the liquid instead of declaring extra variables. In smaller components it doesn't make a big difference, but in bigger ones it helps not having to scroll up and down to know what is being applied where.

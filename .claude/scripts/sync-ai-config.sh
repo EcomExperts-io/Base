@@ -8,8 +8,17 @@
 # how that happened; this script makes drift impossible instead of discouraged.
 #
 # Canonical source is .claude/ — edit there, never in .cursor/.
-#   Rules:  .claude/rules/*.md  -> .cursor/rules/*.mdc  (frontmatter converted)
-#   Skills: .claude/skills/**   -> .cursor/skills/**    (verbatim copy)
+#   Rules:     .claude/rules/*.md        -> .cursor/rules/*.mdc  (frontmatter converted)
+#   Examples:  .claude/rules/examples/** -> .cursor/rules/examples/**  (verbatim)
+#   Skills:    .claude/skills/**         -> .cursor/skills/**          (verbatim)
+#   Agents:    .claude/agents/**         -> .cursor/agents/**          (verbatim)
+#   Workflows: .claude/workflows/**      -> .cursor/workflows/**       (verbatim)
+#
+# Examples, agents and workflows were added after an audit found that a rule
+# could link an example file the fork had never received (the examples lived
+# under .cursor/, which .claude/ forks do not carry), and that Cursor users had
+# no copy of the two review agents at all. Cursor does not auto-load agents or
+# workflows the way it loads rules — the point is that a human can open them.
 #
 # Generated .mdc files carry a checksum of their own content. Before overwriting
 # one, the script recomputes it: if it no longer matches, the file was edited by
@@ -147,11 +156,14 @@ for dest in .cursor/rules/*.mdc; do
   fi
 done
 
-# --- skills: verbatim --------------------------------------------------------
-for src in .claude/skills/*/; do
-  [ -d "$src" ] || continue
-  name=$(basename "$src")
-  dest=".cursor/skills/${name}"
+# --- verbatim trees ----------------------------------------------------------
+# Everything below is a straight copy — no format conversion, and so no banner
+# and no checksum. A hand-edit under .cursor/ in these trees cannot be told
+# apart from a source change and WILL be overwritten. Edit .claude/ only.
+mirror_tree() {
+  src="$1"
+  dest="$2"
+  [ -d "$src" ] || return 0
   if [ "$CHECK" -eq 1 ]; then
     if ! diff -rq "$src" "$dest" >/dev/null 2>&1; then
       echo "OUT OF SYNC: $dest (source: $src)"
@@ -159,11 +171,19 @@ for src in .claude/skills/*/; do
     fi
   else
     mkdir -p "$dest"
-    # -a keeps it a straight copy; skills need no format conversion.
     cp -a "$src". "$dest"/
-    echo "synced  $dest/"
+    echo "synced  ${dest%/}/"
   fi
+}
+
+for src in .claude/skills/*/; do
+  [ -d "$src" ] || continue
+  mirror_tree "$src" ".cursor/skills/$(basename "$src")"
 done
+
+mirror_tree ".claude/rules/examples/" ".cursor/rules/examples/"
+mirror_tree ".claude/agents/"         ".cursor/agents/"
+mirror_tree ".claude/workflows/"      ".cursor/workflows/"
 
 if [ "$CLOBBER" -eq 1 ]; then
   echo ""

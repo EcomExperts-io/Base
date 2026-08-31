@@ -386,6 +386,34 @@ class ProductInfo extends HTMLElement {
 </script>
 ```
 
+## URLs and Query Parameters
+
+**Build query strings with `URL` and `searchParams`. Never concatenate.**
+
+The URL you are appending to often already has a query string, and you rarely
+control where it came from. Product URLs returned by the **product
+recommendations API** arrive carrying `?pr_prod_strat=…&pr_rec_id=…` — so a
+concatenated `?variant=` produces a second `?` and the parameter is silently
+dropped:
+
+```javascript
+// Bad — yields /products/x?pr_prod_strat=collection?variant=123
+const url = product.url + '?variant=' + variantId;
+
+// Good — replaces the key if present, appends if not
+const url = new URL(product.url, window.location.origin);
+url.searchParams.set('variant', variantId);
+```
+
+`searchParams.set` also encodes the value and overwrites an existing key rather
+than duplicating it, both of which hand-built strings get wrong.
+
+Reading is the same story — `new URL(...).searchParams.get('variant')` rather
+than a regex over `location.search`.
+
+Pass `window.location.origin` as the second argument whenever the input may be
+a relative path; `new URL('/products/x')` alone throws.
+
 ## DOM Manipulation Patterns
 
 **Update specific sections with helper methods:**

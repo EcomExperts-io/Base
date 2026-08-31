@@ -48,7 +48,14 @@ if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-theme-staged.py || FAILED=1
 fi
 
-# --- 4. Liquid examples in docs must not break the VitePress build ----------
+# --- 4. Rules must not link files that are not there ------------------------
+# Scoped to staged files: a pre-existing broken link in a file you did not
+# touch is not your commit's problem. Sweep everything with --all after a fork.
+if command -v python3 >/dev/null 2>&1; then
+  python3 .claude/scripts/check-rule-links.py || FAILED=1
+fi
+
+# --- 5. Liquid examples in docs must not break the VitePress build ----------
 # VitePress evaluates {{ }} in inline code spans as Vue expressions. The docs
 # build was broken for two and a half months before anyone noticed, and the
 # branch that added this check introduced three more instances while writing

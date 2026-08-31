@@ -17,7 +17,7 @@ Read `.claude/rules/sections.md` and `.claude/rules/schemas.md`. This skill
 tells you what to produce; those state the requirements and why they exist.
 
 Use `.claude/skills/scaffold-section/reference-section.liquid` as the structural
-template. **Do not use `.cursor/rules/examples/section-example.liquid`** — it
+template. **Do not use `.claude/rules/examples/section-example.liquid`** — it
 predates the current standard, teaches `{% stylesheet %}` and
 `{% content_for 'blocks' %}`, and exposes none of the required settings.
 
