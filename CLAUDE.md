@@ -80,7 +80,7 @@ Two notes on scope, because both were wrong until recently:
   `**/*.css` both. Everything else about CSS is scoped to `**/*.css` alone.
   Before the split, editing one snippet injected 2,444 lines of rules, 919 of
   them CSS authoring guidance that a Liquid file cannot act on.
-- **`living-documents.md`** was `prompts-and-references.md`: always-apply, and
+- **`living-documents.md`** was `prompts-and-references`: always-apply, and
   entirely about two `.cursor/` directories that hold one file each here and do
   not exist in a client fork.
 
