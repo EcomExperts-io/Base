@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/liquid.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1078424966 -->
+<!-- checksum: 2698422490 -->
 
 
 # Liquid Syntax Standards
@@ -120,6 +120,78 @@ This comes up whenever a translated string is handed to JavaScript as a
 template — a placeholder the client-side code substitutes later. Found on the
 BPN Quick-Shop build, where the bundle-picker snippet still carries the
 broken form.
+
+### Filters are not applied to `{% render %}` arguments
+
+The filter is **silently ignored** and the snippet receives the unfiltered
+value. Nothing errors, which is what makes it expensive:
+
+```liquid
+{% comment %} BROKEN — the snippet gets the raw drop, not the HTML {% endcomment %}
+{% render 'component-answer', answer: item.answer | metafield_tag %}
+
+{% comment %} Correct — filter first, then pass the result {% endcomment %}
+{%- assign answer_html = item.answer | metafield_tag -%}
+{% render 'component-answer', answer: answer_html %}
+```
+
+This is the one standing exception to the "Inline Variables Pattern" below: a
+filtered value destined for a `render` argument **has** to be assigned first.
+
+Theme Check catches this one as `UnsupportedFilterArguments`, so a full
+`shopify theme check` run will find it — but only if the file is in scope, which
+is why it survived in a client theme for months.
+
+### A rich text metafield does not print as HTML
+
+`rich_text_field` stores a JSON AST. Outputting the field renders that JSON as
+visible text on the page, and `.value` hands back the same tree as an object.
+`metafield_tag` is the filter that produces markup:
+
+```liquid
+{{ item.answer }}                     {% comment %} {"type":"root",…} on the page {% endcomment %}
+{{ item.answer.value }}               {% comment %} same tree, as an object {% endcomment %}
+{{ item.answer | metafield_tag }}     {% comment %} <div class="metafield-rich_text_field"><p>…</p></div> {% endcomment %}
+```
+
+It brings its own wrapper element, so any CSS targeting the flow children of the
+field has to reach one level deeper than it would for a `richtext` **setting**,
+which is already HTML and needs no filter. Mixing the two up is easy: a schema
+`richtext` setting and a `rich_text_field` metafield look identical in the
+editor and behave differently in Liquid.
+
+### Array filters cannot reach a nested property on a metaobject
+
+`sort`, `sort_natural`, `map` and `where` all take a property name, and all four
+fail quietly on a dotted path into a metaobject's `system`:
+
+| Attempt | Result |
+|---|---|
+| `entries \| sort: 'system.id'` | no-op — order unchanged |
+| `entries \| sort_natural: 'system.id'` | no-op — order unchanged |
+| `entries \| map: 'system.id'` | an array of empties |
+| `entries \| where: 'system.handle', h` | matches nothing |
+
+To order metaobject entries you therefore build the sort key by hand — append
+`id:handle` pairs into a string, `split` it into a real array of strings, `sort`
+that, then match each handle back with an inner loop. **Zero-pad the id** so a
+string sort is also a numeric one; ids are the same length today and will not
+always be.
+
+Note also that `metaobject.system` exposes only `handle`, `id`, `type` and
+`url` — there is **no `created_at`**, so an id is the only proxy for creation
+order.
+
+### `.first` does not work on `shop.metaobjects.<type>.values`
+
+It iterates correctly in a `for` loop, but `.first` returns blank, and so does
+anything chained off it. Use `for … limit: 1` to take one entry.
+
+Note also that `shop.metaobjects` is documented as replaced by `metaobjects`,
+and that the paginated form (`{% paginate shop.metaobjects.<type>.values by 250 %}`)
+and the bare form behave differently once a type holds more entries than a
+single page. If a section says "leave empty to list every entry", check which
+form it uses before believing it.
 
 ## Inline Variables Pattern
 

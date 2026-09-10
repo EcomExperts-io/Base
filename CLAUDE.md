@@ -102,10 +102,20 @@ for the first 18 days of a client build. The script makes drift impossible.
 - `.claude/agents/` — review passes with their own context:
   `shopify-standards-coach` (advisory, teaches) and `shopify-pr-reviewer`
   (gates, decides whether something is safe to merge).
-- `.claude/workflows/` — multi-agent procedures a human starts deliberately.
-  `parallel-section-build.md` builds a whole page by giving each section to its
-  own agent, and carries the assembly and verification steps that make that
-  safe. Point an agent at the file; it is not auto-loaded.
+- `.claude/workflows/` — procedures a human starts deliberately, at two scales.
+  `parallel-section-build.md` builds one page by giving each section to its own
+  agent inside a single session. `multi-session-rebuild.md` coordinates a whole
+  storefront rebuild across separate sessions, one per page or component, all
+  merging into one integration branch — it carries the session brief template,
+  the worktree and hook setup, the locale-namespacing convention that keeps
+  parallel branches merging cleanly, and the merge-order and audit steps. Point
+  an agent at the file; neither is auto-loaded.
+- `.claude/references/` — debugging accounts of traps that already cost someone
+  hours: hover states, scroll carousels, equal-height columns, overriding a
+  shared component, and VitePress mustache handling. Too long and too
+  situational to inject on every task; the first thing to read when the same
+  symptom appears. **Rules stay short because these exist** — a rule says what
+  to do, a reference says why the obvious fix did not work.
 
 Skills only run when invoked. Conventions that must hold unprompted live in
 `.claude/rules/`, not in a skill.
