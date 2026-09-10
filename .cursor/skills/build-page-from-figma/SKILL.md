@@ -1,12 +1,42 @@
 ---
 name: build-page-from-figma
-description: Build a store page from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement a page or section from a Figma frame.
+description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states.
 ---
 
 # build-page-from-figma
 
 The end-to-end workflow: Figma frame in, Base-standard code out, Notion updated,
 QA checklist written for a non-technical reviewer.
+
+## Not everything from Figma is a page
+
+This skill is named for pages because pages came first, but on a full rebuild
+**most of the work is not a page**. One client rebuild ran nine builds: four were
+pages, and five were a footer, a site header with five mega-menu panels, a cart
+drawer, a search overlay with four states, and a set of filter and quick-add
+drawers. The skill was bypassed on all five, because Step 1 asks which template
+the result belongs to and there is no answer for a footer.
+
+That was the wrong call — the parts that mattered most (the settings contract,
+translation keys, verifying both criteria separately, the Notion handoff) apply
+just as much. Use the skill; substitute the four steps below where the page
+assumptions do not fit.
+
+| The skill says | For a component, overlay or state, instead |
+|---|---|
+| "Which template the result belongs to" | Which page types it renders on. A shared component renders everywhere, so **verify on at least three different page types**, not one. |
+| One desktop frame and one mobile frame | Often a **component frame** for exact specs plus **in-context frames** showing it on real pages. Take numbers from the component frame and behaviour from the in-context ones. |
+| Visual fidelity against the frame | Also fidelity across **states** — default, open, active, scrolled, empty. A state frame is a specification, not a suggestion; build what it shows rather than inventing the state. |
+| The section settings contract | Still applies to any section. A snippet rendered from the header is not a section and does not need `presets` — but if you add a section, it does. |
+
+Two extra hazards that only appear in this kind of work:
+
+- **A shared component is on every page**, so breaking it breaks all of them. Before
+  finishing, open every page type that renders it. This is also the one case where
+  editing a file another session owns is likely — say so loudly rather than quietly.
+- **An overlay or drawer needs the accessibility work a page does not**: focus moved
+  in on open, focus returned to the trigger on close, Escape to close, no page
+  scroll behind it, and an `aria-live` region if its contents change.
 
 **This is v1.** It reflects how we actually work today, not a finished process.
 Expect to hit cases it doesn't cover — when that happens, record it in the
