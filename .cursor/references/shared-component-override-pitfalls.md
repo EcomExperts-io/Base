@@ -69,7 +69,7 @@ is stable. The strip button became a new variant rather than a local override:
   --button-background: transparent;
   --button-background-hover: #fff;
   --button-color: #fff;
-  --button-color-hover: var(--milb-text);
+  --button-color-hover: var(--color-foreground);
   --button-border: #fff;
   --button-border-hover: #fff;
 }
@@ -83,9 +83,16 @@ Ranked options when a section needs a shared component to look different:
 1. **Add or use a variant on the component** — correct when the design is a
    reusable treatment ("transparent on a photo"). Document it in the snippet's
    `@param` list.
-2. **Set a custom property the component already reads** — safe, because
-   inherited custom properties are not subject to this ordering problem when
-   set on an ancestor or via a more specific selector.
+2. **Set a custom property the component already reads** — but only one the
+   component does **not** redeclare on the element itself. A custom property
+   declared on the element (`.button--outline { --button-background: #fff }`)
+   beats an inherited value from any ancestor, regardless of the ancestor
+   selector's specificity or source order — inheritance loses to a declaration
+   on the target every time. So: if the component sets the property on its own
+   element, an ancestor override does nothing and you need a variant (option 1)
+   or a more specific selector on the element itself (option 3). If the
+   component only *reads* the property and leaves it for the consumer to
+   supply, an ancestor declaration is safe and immune to stylesheet order.
 3. **Double the class for specificity** — `.hero-strip-card__button.button`
    (0,2,0) beats any single-class component rule regardless of order. A last
    resort: it works, but it hides the reason and the next person will not know

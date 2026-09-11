@@ -101,7 +101,7 @@ and it still scrolls on mobile where `per_view_mobile` is smaller.
 - `hover-state-pitfalls.md` — hover/focus states on these same sections, including
   why measuring a hover needs transitions disabled first.
 
-## 8. Min-content width silently inflates carousel cards (two layers)
+## 6. Min-content width silently inflates carousel cards (two layers)
 
 Symptom on the MiLB homepage: product titles spilled out of their card into the
 next slide, and the card's image rendered *wider than the card itself*. Both are
@@ -132,7 +132,7 @@ Diagnose it by comparing a child's width to its parent's — if
 declaration. `getComputedStyle(el).gridTemplateColumns` names the real column
 widths and is the fastest confirmation.
 
-## 9. `grid-row` without `grid-column` creates an implicit column
+## 7. `grid-row` without `grid-column` creates an implicit column
 
 Overlaying the add-to-cart on the image by moving it into row 1 looked right:
 
@@ -157,7 +157,7 @@ Pinning only *some* of them moves the problem rather than fixing it: pinning the
 action alone pushed the media (which has its own `grid-row: 1`) into column 2,
 because explicitly-placed items are resolved before auto-placed ones.
 
-## 10. Measuring a section against a Figma frame
+## 8. Measuring a section against a Figma frame
 
 Render the frame once at 1:1 and measure the PNG rather than eyeballing crops:
 
@@ -177,7 +177,7 @@ Render the frame once at 1:1 and measure the PNG rather than eyeballing crops:
   compare against the frame width — a scrollbar makes a 1440 window lay out at
   1425 and every x will be 15px out. Emulate 1455 to lay out at 1440.
 
-## 11. Progress-thumb travel must be measured against the bar, not the track
+## 9. Progress-thumb travel must be measured against the bar, not the track
 
 The thumb overshot the end of its bar on the last slide and sat on top of the
 "6/6" counter. Cause: mixed reference widths.
@@ -219,7 +219,7 @@ that assignment to the nearest snap point, so the thumb legitimately reads as
 unmoved and the test looks like a bug. Assert at 0 and at max, which are both
 snap points.
 
-## 12. Dot index must come from scroll *progress*, not scrollLeft ÷ viewport
+## 10. Dot index must come from scroll *progress*, not scrollLeft ÷ viewport
 
 The last dot never lit up. At the end of the teams carousel the indicator sat on
 the middle dot of three.
@@ -248,11 +248,11 @@ The clamp (`Math.min(page, pages - 1)`) becomes unnecessary — `ratio <= 1`
 guarantees it. Verify by sampling 0 / 25 / 50 / 75 / 100 %: the sequence must be
 monotonic, start at 0 and end at `pages - 1`.
 
-Same root cause as the progress-thumb bug in §11: a position computed against
+Same root cause as the progress-thumb bug in §9: a position computed against
 one length and applied to another. When a control tracks scroll, ask what its
 0-to-1 range actually is.
 
-## 13. A hidden browser pane will not commit programmatic scrolls
+## 11. A hidden browser pane will not commit programmatic scrolls
 
 `track.scrollLeft = 137` read back `0` on an element with `scrollWidth 823`,
 `clientWidth 343`, `overflow-x: auto` and a live layout — with scroll-snap
@@ -276,7 +276,7 @@ carousel.update();
 Assigning to the *end* position happens to persist (it is already a valid snap
 position and often a no-op), which is what made this look intermittent.
 
-## 14. `setPointerCapture` on pointerdown steals every click inside the track
+## 12. `setPointerCapture` on pointerdown steals every click inside the track
 
 The fan gallery's play button responded to the keyboard but not the mouse. The
 cause was in the carousel's drag, not the video: `onPointerDown` claimed the

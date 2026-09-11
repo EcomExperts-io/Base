@@ -168,15 +168,20 @@ fail quietly on a dotted path into a metaobject's `system`:
 | `entries \| map: 'system.id'` | an array of empties |
 | `entries \| where: 'system.handle', h` | matches nothing |
 
-To order metaobject entries you therefore build the sort key by hand — append
-`id:handle` pairs into a string, `split` it into a real array of strings, `sort`
-that, then match each handle back with an inner loop. **Zero-pad the id** so a
-string sort is also a numeric one; ids are the same length today and will not
-always be.
+To order metaobject entries on a field the filters cannot reach, you therefore
+build the sort key by hand — append `key:handle` pairs into a string, `split` it
+into a real array of strings, `sort` that, then match each handle back with an
+inner loop. If the key is numeric, **zero-pad it** so a string sort is also a
+numeric one.
 
-Note also that `metaobject.system` exposes only `handle`, `id`, `type` and
-`url` — there is **no `created_at`**, so an id is the only proxy for creation
-order.
+**Sort on a field the merchant controls.** Add an explicit `order` (integer) or
+`date` field to the metaobject definition and sort on that. `metaobject.system`
+exposes only `handle`, `id`, `type` and `url` — there is **no `created_at`** —
+and while ids have been observed to increase with creation, that is not
+documented behaviour and nothing guarantees it. If a definition has no such
+field and you fall back to `system.id`, say so in a Liquid comment and in the
+handoff, so the merchant knows adding an entry may not place it where they
+expect.
 
 ### `.first` does not work on `shop.metaobjects.<type>.values`
 

@@ -171,6 +171,15 @@ mirror_tree() {
       STALE=1
     fi
   else
+    # Replace the tree rather than layer onto it: `cp -a` alone never removes a
+    # destination file whose source was deleted or renamed, so a retired
+    # reference lingered in .cursor/ and `--check` stayed red with no fix path.
+    # These trees are documented as generated and disposable. The guard keeps a
+    # bad argument from ever expanding to `rm -rf` of anything outside .cursor/.
+    case "$dest" in
+      .cursor/*) rm -rf "$dest" ;;
+      *) echo "refusing to replace '$dest': not under .cursor/"; exit 1 ;;
+    esac
     mkdir -p "$dest"
     cp -a "$src". "$dest"/
     echo "synced  ${dest%/}/"
