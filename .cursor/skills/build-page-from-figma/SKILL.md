@@ -36,7 +36,11 @@ Two extra hazards that only appear in this kind of work:
   editing a file another session owns is likely — say so loudly rather than quietly.
 - **An overlay or drawer needs the accessibility work a page does not**: focus moved
   in on open, focus returned to the trigger on close, Escape to close, no page
-  scroll behind it, and an `aria-live` region if its contents change.
+  scroll behind it. For asynchronous updates that nothing else announces — an
+  item added to the cart, a result count changing — add a small dedicated status
+  node with `aria-live="polite"` and `aria-atomic="true"`, and write only the
+  status into it. Do **not** make the whole drawer or result list live: a screen
+  reader would re-announce the entire region on every quantity tick or keystroke.
 
 **This is v1.** It reflects how we actually work today, not a finished process.
 Expect to hit cases it doesn't cover — when that happens, record it in the

@@ -136,10 +136,16 @@ How it presented: every property from the section's own rule applied *except*
 that actually won. **When one property of a rule mysteriously loses, check a
 second, em-derived property; its computed value tells you the real font size.**
 
-Note also that `component-scroll-carousel.css` is fetched 8 times on the
-homepage (one `stylesheet_tag` per section that renders a carousel). That is
-harmless — Shopify serves it from cache — but it makes stylesheet dumps
-confusing to read, so dedupe by filename before comparing rules.
+Note also that a shared component's stylesheet was emitted 8 times on the
+homepage (one `stylesheet_tag` per section that rendered the component). The
+cache absorbs the transfer cost, but **it is not behaviourally harmless**: every
+copy re-enters the cascade at its own document position, so a later copy wins
+over any equal-specificity section rule placed between two copies — which
+means a section's override can succeed or fail depending on which other
+sections happen to render on the page. `shared-component-override-pitfalls.md`
+is that failure written up. Two consequences here: dedupe by filename before
+comparing rules in a stylesheet dump, and never rely on "my section CSS loads
+later" for a shared component.
 
 ## 9. Two more measurement traps (same root cause as §6.1)
 
