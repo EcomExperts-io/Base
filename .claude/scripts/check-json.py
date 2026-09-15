@@ -40,10 +40,14 @@ def main(argv):
             json.loads(body)
             continue
         except json.JSONDecodeError as strict_err:
-            pass
+            # Python unbinds `strict_err` when the handler ends (PEP 3110), so
+            # keep the one field the warning below needs while it is still in
+            # scope. Reading it after the block raises UnboundLocalError, which
+            # is what this check did on every file it was written to report.
+            strict_lineno = strict_err.lineno
         try:
             json.loads(re.sub(r",(\s*[}\]])", r"\1", body))
-            print(f"  warn   {path}:{strict_err.lineno} trailing comma — Shopify tolerates it, "
+            print(f"  warn   {path}:{strict_lineno} trailing comma — Shopify tolerates it, "
                   "strict JSON tools do not. Remove it.")
         except json.JSONDecodeError as e:
             print(f"  error  {path}:{e.lineno}:{e.colno} invalid JSON — {e.msg}")
