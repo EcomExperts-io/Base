@@ -140,9 +140,78 @@ relocated into `section-collection.js` instead of its own file — reuses
 that exact mechanism instead. Scoped to this file only; not a signal to
 start putting multiple classes in other section files.
 ---
- 
+
+**Q: Does Base consider the Search page the same architectural pattern as
+Collection?**
+**A (from the code, 15 Sep 2026):** Yes. `sections/search.liquid` renders
+`<collection-info data-section>` with `section-collection.js`, calls the same
+three filter snippets with `results: search` and `context: 'search'`, and uses
+the same sort/`form=`, `data-render-section`, active-filter and grid markup —
+down to the copied schema name. A new faceted listing page does the same. See
+the Header, Cart Engine & Search reference.
+
+---
+
+**Q: Keep the Cursor mirror, or drop it now that the team is moving to
+Claude Code?**
+**A (Naish, 15 Sep 2026):** Keep it, until the move has happened. Developers
+will move from Cursor to Claude eventually, not now. The maintenance cost is
+removed instead: the pre-commit hook regenerates `.cursor/` and stages it, so
+there is no command to run and nothing to remember; `.claude/hooks/` is
+mirrored too. The audit's recommendation to delete it stands as the end state,
+not the current one.
+
+---
+
+**Q: Where does the record of a mistake live, and who creates it?**
+**A (15 Sep 2026):** In the repo where it happened, committed, created by one
+command at the moment it happened — `/record-incident` writing
+`docs/ai-workflow/incidents/<date>-<slug>.md` with `scope`,
+`should_have_caught` and `status`. The v1 answer (a gitignored mistake log,
+created only on offer-and-consent, at the end of the build) produced zero
+entries across four client builds. Incidents do not travel with the tooling
+overlay; the rules they produce do, via `/harvest`.
+
+---
+
+**Q: In what order is a store rebuilt?**
+**A (15 Sep 2026):** By dependency, not by page: recon → foundations → global
+chrome → shared components → transactional templates → homepage and content →
+long tail. See `.claude/workflows/rebuild-playbook.md`. The v1 vision's
+"Collection → PDP → header/cart later" is superseded; the MiLB build showed
+that most of a rebuild is chrome and overlays every page depends on.
+
+---
+
+**Q: How does a client fork receive Base's tooling and send learnings back,
+given none of the forks share history with Base?**
+**A (15 Sep 2026):** Without merging. `base-link.sh` adds Base as a remote and
+a worktree (a worktree checks out any fetched ref; no common ancestor needed);
+`pull-base-tooling.py` overlays the tooling three-way against a `.base-version`
+stamp so a fork's edits are kept and listed; `check-tooling-drift.py` lists
+harvest and pull-down candidates; `/harvest` edits and pushes from the
+worktree and opens the Base PR. CI runs Base's workflow through a six-line
+caller. The CLAUDE.md claim "14 of 16 rules identical to BPN" (measured: 6)
+is replaced by the drift report.
+
+---
+
 ## Open
- 
+
+- **Retrofit Base's own sections to the contract.** The earlier ruling (above)
+  left 24 of 46 sections non-compliant to keep a tooling change pure. The
+  audit of 14 Sep 2026 argues the other way: the reference implementation is
+  the training data — agents copy the code they read more reliably than they
+  obey the rules that describe it (the same mechanism as the translation
+  pattern-matching failure), and every fork copies 48% compliance on day one.
+  Recommended: one additive theme PR — the 24 sections, the 558 bare labels,
+  the `max-width` queries, constructor wiring moved to `connectedCallback` —
+  reviewed as a theme change. **Needs Moemen's ruling; not done in the v2
+  tooling branch.** `check-conventions.py --all` gives the standing count.
+- **Admin API writes from a session** (create pages, metafield definitions,
+  menus) would close the "inert until someone creates the page" gap the MiLB
+  build hit four times. Needs a decision on scope and confirmation per write;
+  `/store-recon` is read-only until then.
 - **Collection filters — single-open-desktop accordion:** current
   `<collection-filters>` custom element (Aug 5, 2026 rewrite) treats all
   filter groups as independent — any number open at once, both
@@ -164,8 +233,6 @@ start putting multiple classes in other section files.
   intentionally disconnected from the filter/URL pipeline (separate
   pipeline, doesn't update the URL, resets from page 1 on filter change),
   or is this a gap worth fixing?
-- **Search page pattern:** does Base consider the Search page the same
-  architectural pattern as Collection, for future faceted-listing pages?
 - **Responsive layout switch (grid desktop / carousel mobile):** no Base
   precedent exists either way — Base's own collection page never
   switches its rendering mode by breakpoint. Being worked through via
@@ -228,3 +295,16 @@ start putting multiple classes in other section files.
 - **Aug 26, 2026** — Recorded why Base's own sections do not all carry the
   settings contract, and why they are not being retrofitted in the tooling
   change (see Resolved, above).
+- **Sep 14, 2026** — Audit of the v1 workflow against its vision: five of
+  eight pipeline steps real; inheritance a policy with no mechanism (no fork
+  could pull Base down; Base's hook never ran in a fork); ~5% of the rules
+  mechanically enforced; verification by eye; the mistake log never created;
+  Base itself at 48% contract compliance. The retrofit ruling reopened (see
+  Open).
+- **Sep 15, 2026** — Workflow v2 landed in six phases: runtime hooks that gate
+  at edit and turn end; three-way tooling distribution with drift reporting
+  and a reusable CI workflow; `verify-against-figma` as a measured report;
+  `/record-incident` and `/harvest`; `/recon-theme`, `/store-recon` and the
+  dependency-ordered rebuild playbook; the Header, Cart Engine & Search
+  reference. Cursor mirror kept and made maintenance-free. Rulings above
+  dated Sep 15.
