@@ -140,28 +140,42 @@ theme token, use the token.
 **Code:** run the standards coach agent for advisory feedback, then fix what it
 finds. Confirm the gate would pass.
 
-**Visual:** verify against the rendered page, not against your own memory of
-what you wrote.
+**Visual:** run `/verify-against-figma` — start the theme with `/run-theme`,
+then give the skill the page URL, the file key and each node id with the width
+it was designed at. It renders the page at exactly that width, diffs it
+against the frame's own export, masks the regions marked `data-verify-mask`,
+computes a box-by-box table from `get_metadata` and the DOM, takes one
+deliberate look at the side-by-side, and writes
+`.claude/verify/<slug>/report.{json,md}`. That report is the evidence. Until
+it exists and is newer than your last edit, the page is not verified — the
+Stop hook will say so.
 
-1. Start the dev server and open the page in the browser tools.
-2. Pull the frame's own image via the Figma screenshot tool.
-3. **Set the viewport to the exact width the frame was designed at.** A 1440
-   desktop frame is checked at 1440, not "desktop-ish"; a 393 mobile frame at
-   393. Checking at the wrong width invalidates the comparison — a layout can
-   be correct at 1440 and broken at 1280.
-4. Compare rendered output against the frame at that width. Then repeat for the
-   other breakpoint.
-5. **Measure, don't eyeball.** Read computed values off the DOM — spacing, font
-   size, line height, colour — and compare against the frame's specs. A
-   screenshot tells you something looks off; only a number tells you it is
-   fixed. Custom elements are a specific trap here: they default to
-   `display: inline`, which drops background and vertical padding on screen
-   while `getComputedStyle` still reports both.
+Why a script and not your eyes: the workflow's worst recorded failure was a
+section reported as built because it measured 614px against a 615px frame
+while its media column rendered empty. A measurement is a check on a
+screenshot, never a substitute for one, and a table typed from memory is not a
+measurement. Custom elements remain the specific trap: they default to
+`display: inline`, which drops background and vertical padding on screen while
+`getComputedStyle` still reports both — the heatmap catches it, the table does
+not.
 
 **Functionality:** walk the Notion requirements one at a time and confirm each.
 Say plainly which ones you could not verify and why.
 
-Report all three separately, each with what you actually checked.
+Report all three separately, each with what you actually checked, quoting the
+verify report's numbers rather than "matches the design".
+
+**Keep the session honest with a goal.** For a page of any size, set one
+before building so a fresh evaluator — not the model doing the work — decides
+when it is done:
+
+```text
+/goal .claude/verify/<slug>/report.json exists with diff_pct under 5 at every
+frame width, table_off is 0, every new section passes
+python3 .claude/scripts/check-section-contract.py --files, and
+python3 .claude/scripts/check-conventions.py --changed --block exits 0.
+Stop after 25 turns if not met and report what remains.
+```
 
 ## Step 5 — Update Notion
 

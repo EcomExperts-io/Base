@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "theme-dev",
+      "runtimeExecutable": "shopify",
+      "runtimeArgs": ["theme", "dev", "--port", "9292", "--live-reload", "hot-reload"],
+      "port": 9292
+    }
+  ]
+}

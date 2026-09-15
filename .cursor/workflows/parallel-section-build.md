@@ -73,6 +73,14 @@ measurement is a check on a screenshot, never a substitute for one. If you could
 get a usable screenshot, the honest report is "unverified" — not the number you did
 manage to measure.
 
+Since v2 this is a skill, not a habit: once the template is assembled and the theme is
+running (`/run-theme`), run `/verify-against-figma` for each band with its desktop and
+mobile node ids and a `--section` selector. It renders at the exact widths, diffs
+against the frame's export, masks `data-verify-mask` regions, computes the box table,
+and writes `.claude/verify/<band>/report.json`. The agents cannot run it — their
+section is not on a page yet — which is why step 10 of their brief asks for the raw
+values and this step turns them into evidence.
+
 ### 6. Gate
 
 Run `shopify-standards-coach` for the advisory pass and `shopify-pr-reviewer` over the
