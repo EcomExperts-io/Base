@@ -110,14 +110,22 @@ def main(argv):
 
     h = min(a.height, b.height)
     a2, b2 = a.crop((0, 0, a.width, h)), b.crop((0, 0, a.width, h))
+    # Count the pixels actually covered rather than adding up rectangle areas.
+    # Masks overlap (a carousel's cloned slides) and hang off the edges (a slide
+    # half out of frame), so the sum of w*mh can exceed the compared area — and
+    # that used to drive the denominator to 1 and print a diff of 1065500%.
+    # A coverage bitmap cannot lie about either.
+    covered = Image.new("1", (a.width, h), 0)
+    cover_draw = ImageDraw.Draw(covered)
     for (x, y, w, mh) in masks:
         for im in (a2, b2):
             ImageDraw.Draw(im).rectangle((x, y, x + w, y + mh), fill=(128, 128, 128))
+        cover_draw.rectangle((x, y, x + w, y + mh), fill=1)
 
     mism = channel_max_diff(a2, b2).point(lambda v: 255 if v > threshold else 0)
     mismatched = mism.histogram()[255]
     total = a.width * h
-    masked_px = sum(w * mh for (_, _, w, mh) in masks)
+    masked_px = covered.histogram()[255] if masks else 0
     denom = max(1, total - masked_px)
     diff_pct = round(100.0 * mismatched / denom, 2)
 
