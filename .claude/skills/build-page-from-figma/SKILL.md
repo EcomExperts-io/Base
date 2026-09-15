@@ -96,6 +96,17 @@ If a Figma call fails with an access error, do not assume the account needs a
 share grant. Ask whether there is a newer file first; that has been the cause
 before.
 
+## Step 1½ — Check the frame is buildable
+
+Run `/figma-readiness` on each node before the first `get_design_context`
+call. It scores the frame from `get_metadata` — default layer names, hidden
+leftovers, width in the frame name, components, text as text — and, with the
+design context and `get_variable_defs`, auto layout and tokens. On `send back`
+do not build: hand the developer the message for the designer and stop unless
+told to build anyway (record that in the report). Every re-prompt cycle the
+designer practices document describes starts with one of these facts; ten
+minutes of renaming on their side is a day on ours.
+
 ## Step 2 — Fetch the frame by node ID, one frame at a time
 
 **Always pass an explicit `nodeId`.** Never rely on file-wide page listing.
