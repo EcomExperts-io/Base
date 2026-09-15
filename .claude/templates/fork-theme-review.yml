@@ -1,0 +1,29 @@
+name: Theme Review
+
+# Installed by .claude/scripts/pull-base-tooling.py. Do not add steps here.
+#
+# The review logic lives in Base — EcomExperts-io/Base/.github/workflows/
+# theme-review.yml — and this file only calls it, so every client repo runs the
+# same checks and a fix to a check lands everywhere with one PR to Base. The
+# audit of 14 Sep 2026 found Base's review workflow present in one fork of
+# four, with the other three running a different review system entirely.
+#
+# Requirements, once per organisation:
+#   * Base's repository settings > Actions > "Access" must allow workflows from
+#     repositories in the organisation, or this call is refused.
+#   * To report tooling drift against Base's current development branch the
+#     called workflow checks Base out; if Base is private, add a read-only PAT
+#     as the BASE_READ_TOKEN secret on this repo (or the organisation).
+#     Without it that one step is skipped — the gates still run.
+
+on:
+  pull_request:
+    branches: [development, main]
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    uses: EcomExperts-io/Base/.github/workflows/theme-review.yml@development
+    secrets: inherit
