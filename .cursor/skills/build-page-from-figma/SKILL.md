@@ -223,16 +223,16 @@ wrong.
 ## Step 7 — Record anything that went wrong
 
 If this build involved a real mistake — you built the wrong thing, misread the
-design, broke something and had to be re-prompted — record it in the project's
-mistake log so the pattern is visible later.
+design, broke something and had to be re-prompted, hit a trap a rule should
+have named — run `/record-incident` **at the moment it happens**, not at the
+end. It writes a committed file under `docs/ai-workflow/incidents/` with the
+four fields that matter: what happened, how it surfaced, what fixed it, and
+which rule or check should have caught it. That last field is what turns a
+list of incidents into a queue of standards gaps; `/harvest` takes a generic
+one up to Base from this repo.
 
-If the project has no mistake log yet, **offer to create one** in the client
-repo; do not create it unasked. It belongs in that repo, in a location excluded
-from version control, not in Base.
-
-Record: what happened, how it surfaced, what fixed it, and — most useful —
-which rule or skill should have caught it and didn't. That last field is what
-turns a list of incidents into a queue of standards gaps.
+The gitignored "mistake log" this replaced was asked for on every build and
+created on none — a record nobody can see in a pull request is not a record.
 
 ## Closing the loop
 

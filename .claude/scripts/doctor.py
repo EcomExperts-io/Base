@@ -232,7 +232,8 @@ def compliance_line():
 
 
 def incidents_line():
-    files = glob.glob(os.path.join(ROOT, "docs", "ai-workflow", "incidents", "*.md"))
+    files = [f for f in glob.glob(os.path.join(ROOT, "docs", "ai-workflow", "incidents", "*.md"))
+             if open(f, errors="replace").read(64).startswith("---")]
     open_ = [f for f in files
              if not re.search(r"^status:\s*(harvested|client-only)", open(f, errors="replace").read(), re.M)]
     return f"incidents: {len(open_)} open of {len(files)} recorded"

@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/living-documents.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 4290641159 -->
+<!-- checksum: 738152111 -->
 
 
 # Living Documents
@@ -63,6 +63,13 @@ not a follow-up to it.
 | A step in a procedure someone invokes | the matching `.claude/skills/*/SKILL.md` |
 | A CSS or browser trap you had to **measure** to find — a cascade order, a layout feedback loop, a state that reports correctly and renders wrong | `.claude/references/*-pitfalls.md`, **and up to Base** |
 | Something true only of this client's theme | that theme's rule copy, not Base |
+| A fix that a rule, gate or check **should have prevented** | `/record-incident` → `docs/ai-workflow/incidents/`, committed, the moment it happens; then `/harvest` if it is generic |
+
+**The incident comes first.** The rule paragraph is written from the incident,
+not the other way round — and an incident recorded at the end of a build is an
+incident not recorded. Four client builds asked for a gitignored mistake log
+and produced none; the committed, structured file replaced it because a script
+can count what is still open and a pull request can show it.
 
 The line between a rule and a reference: a **rule** is what to do, is scoped by
 a `paths` glob and is injected automatically. A **reference** is a debugging
@@ -73,9 +80,11 @@ symptom appears. Rules stay short because references exist.
 ## The one hard constraint
 
 `.claude/` is canonical. `.cursor/rules/*.mdc`, `.cursor/rules/examples/`,
-`.cursor/skills/`, `.cursor/agents/`, `.cursor/workflows/` and
-`.cursor/references/` are **generated** by `.claude/scripts/sync-ai-config.sh`.
-Edit the `.claude/` copy and run the script; never edit under `.cursor/`.
+`.cursor/skills/`, `.cursor/agents/`, `.cursor/workflows/`,
+`.cursor/references/` and `.cursor/hooks/` are **generated** by
+`.claude/scripts/sync-ai-config.sh`. Edit the `.claude/` copy; the pre-commit
+hook regenerates the mirror and stages it, so there is no command to remember
+— and never edit under `.cursor/`.
 
 Generated `.mdc` files carry a checksum, so a hand-edit there is detected and
 the sync refuses to clobber it — but the skills and examples are plain copies
