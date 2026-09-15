@@ -15,8 +15,9 @@
 #
 # Emulation.setDeviceMetricsOverride sets the viewport instead, which the
 # window manager has no say in. The Python version also asks the page how wide
-# it thinks it is and refuses to write a file when the answer is wrong, and
-# refuses to write a blank capture — the other way this used to fail quietly.
+# it thinks it is and refuses to write a file when the answer is wrong, refuses
+# to write a blank capture, and stretches the viewport over the whole document
+# so lazy images load before the shot — three ways this used to fail quietly.
 #
 # Usage: render-screenshot.sh <url> <width> <height> <out.png> [wait-ms] [deadline-s]
 #

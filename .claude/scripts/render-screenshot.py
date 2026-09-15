@@ -32,6 +32,10 @@ Exits non-zero, and writes nothing, when:
   * the page's own innerWidth does not match the width requested
   * the captured image is blank
 
+Warns on stderr, and still writes, when an image never finished loading — that
+is usually the page's own defect and belongs in the diff, but it is worth
+knowing before you read the number.
+
 CHROME_BIN overrides the binary.
 """
 
@@ -269,6 +273,67 @@ def main(argv):
         ws.call("Page.navigate", {"url": url})
         ws.wait_event("Page.loadEventFired", timeout=min(deadline, 60))
         time.sleep(wait_ms / 1000.0)
+
+        def evaluate(expression):
+            return ws.call("Runtime.evaluate", {
+                "expression": expression, "returnByValue": True,
+            })["result"].get("value")
+
+        # Lazy images are the second quiet failure, and it looks exactly like a
+        # section that was never built. `loading="lazy"` only fetches near the
+        # viewport, so on a page taller than the one asked for,
+        # captureBeyondViewport writes the whole document with holes in it:
+        # space reserved by the layout, nothing painted in it. Measured on a
+        # 393x9000 homepage — two bands came back as blank cream.
+        #
+        # So stretch the viewport over the whole document first, let the images
+        # land, then put it back to the size the caller asked for. Chrome's
+        # texture limit is the cap.
+        page_height = evaluate("String(document.documentElement.scrollHeight)")
+        try:
+            page_height = int(page_height)
+        except (TypeError, ValueError):
+            page_height = height
+        reach = min(max(page_height, height), 16000)
+        if reach > height:
+            ws.call("Emulation.setDeviceMetricsOverride", {
+                "width": width, "height": reach,
+                "deviceScaleFactor": scale, "mobile": mobile,
+            })
+
+        # An image has painted once it has intrinsic dimensions. `complete` is
+        # not the test: a carousel that clones its slides re-evaluates srcset on
+        # the clones, so images that are on screen and decoded sit at
+        # complete === false indefinitely. naturalWidth === 0 is the honest
+        # "nothing there" — still fetching if !complete, failed if complete.
+        loading = None
+        images_deadline = time.time() + min(deadline, 60)
+        while time.time() < images_deadline:
+            loading = evaluate(
+                "String(Array.from(document.images)"
+                ".filter(i => !i.complete && i.naturalWidth === 0).length)"
+            )
+            if loading in (None, "0"):
+                break
+            time.sleep(0.5)
+        broken = evaluate(
+            "String(Array.from(document.images)"
+            ".filter(i => i.naturalWidth === 0).length)"
+        )
+        if broken not in (None, "0"):
+            print(
+                f"render-screenshot: {broken} image(s) have no pixels. The "
+                "capture will have blank boxes where they belong — check "
+                "whether that is the page or the network before diffing it.",
+                file=sys.stderr,
+            )
+
+        if reach > height:
+            ws.call("Emulation.setDeviceMetricsOverride", {
+                "width": width, "height": height,
+                "deviceScaleFactor": scale, "mobile": mobile,
+            })
+            time.sleep(0.4)
 
         # Assert the page agrees about its own width before trusting the pixels.
         got = ws.call("Runtime.evaluate", {
