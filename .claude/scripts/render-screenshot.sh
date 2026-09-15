@@ -1,88 +1,35 @@
 #!/bin/sh
-# Render a URL at an exact viewport in headless Chrome and save a PNG.
+# Render a URL at an exact viewport and save a PNG.
 #
-# Why this exists
-# ---------------
-# "Check at 1440, not desktop-ish" was a rule nobody could follow mechanically:
-# the browser tools return an image into the conversation, not a file, and
-# without a file there is no pixel diff. Chrome's own headless mode renders at
-# any window size and writes the PNG directly, with no install beyond the Chrome
-# already on every developer machine. Height is the frame's height, so a
-# full-page render lines up with the Figma export without scrolling.
+# This is now a thin wrapper around render-screenshot.py, which drives Chrome
+# over the DevTools protocol. Everything that already calls this script keeps
+# working and gets the fix without changing its arguments.
 #
-# Chrome is run in the background and killed once the PNG exists (or after the
-# deadline), because headless Chrome has been seen to write the screenshot and
-# then never exit — the first version of this script hung a session on exactly
-# that. macOS has no `timeout`, so the deadline is a poll loop here.
+# What the fix is. This script used to pass --window-size to headless Chrome.
+# That is a *window* size and the window manager may overrule it: on macOS
+# Chrome clamps the window to about 501px wide, lays the page out at 501, and
+# then crops the screenshot to the width that was asked for. The image came out
+# the right size with the wrong page inside it, nothing errored, and a
+# homepage's worth of mobile diffs came back plausible and meaningless. See
+# docs/ai-workflow/incidents/2026-09-16-headless-cannot-render-a-mobile-viewport.md
+#
+# Emulation.setDeviceMetricsOverride sets the viewport instead, which the
+# window manager has no say in. The Python version also asks the page how wide
+# it thinks it is and refuses to write a file when the answer is wrong, and
+# refuses to write a blank capture — the other way this used to fail quietly.
 #
 # Usage: render-screenshot.sh <url> <width> <height> <out.png> [wait-ms] [deadline-s]
-#   wait-ms     virtual time budget for fonts and images (default 4000)
-#   deadline-s  give up and kill Chrome after this many seconds (default 45)
 #
-# CHROME_BIN overrides the binary. Exit 1 if Chrome is missing or no PNG came out.
+# CHROME_BIN overrides the binary. For a mobile viewport (touch, mobile UA)
+# call render-screenshot.py directly with --mobile; this wrapper keeps the old
+# positional signature.
 
-URL="$1"; W="$2"; H="$3"; OUT="$4"; WAIT="${5:-4000}"; DEADLINE="${6:-45}"
+URL="$1"; W="$2"; H="$3"; OUT="$4"; WAIT="${5:-6000}"; DEADLINE="${6:-120}"
 if [ -z "$URL" ] || [ -z "$W" ] || [ -z "$H" ] || [ -z "$OUT" ]; then
   echo "usage: render-screenshot.sh <url> <width> <height> <out.png> [wait-ms] [deadline-s]" >&2
   exit 2
 fi
 
-CHROME="${CHROME_BIN:-}"
-for c in "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-         "$(command -v google-chrome 2>/dev/null)" \
-         "$(command -v google-chrome-stable 2>/dev/null)" \
-         "$(command -v chromium 2>/dev/null)" \
-         "$(command -v chromium-browser 2>/dev/null)"; do
-  [ -n "$CHROME" ] && break
-  [ -n "$c" ] && [ -x "$c" ] && CHROME="$c"
-done
-if [ -z "$CHROME" ]; then
-  echo "render-screenshot: no Chrome/Chromium found. Install Google Chrome or set CHROME_BIN." >&2
-  echo "                   Fallback: take the screenshot with the browser tool and save it to $OUT." >&2
-  exit 1
-fi
-
-mkdir -p "$(dirname "$OUT")"
-rm -f "$OUT"
-PROFILE=$(mktemp -d)
-# A throwaway profile so this never collides with the Chrome the developer has open.
-"$CHROME" --headless=new --disable-gpu --hide-scrollbars --no-first-run --no-default-browser-check \
-  --user-data-dir="$PROFILE" --force-device-scale-factor=1 \
-  --window-size="${W},${H}" --virtual-time-budget="$WAIT" \
-  --screenshot="$OUT" "$URL" >/dev/null 2>&1 &
-PID=$!
-
-elapsed=0
-while [ "$elapsed" -lt "$DEADLINE" ]; do
-  if [ -s "$OUT" ]; then
-    # The PNG is written whole at the end of the render; give Chrome a moment to
-    # close the file on its own, then stop waiting for a process that may never exit.
-    sleep 1
-    break
-  fi
-  if ! kill -0 "$PID" 2>/dev/null; then
-    break
-  fi
-  sleep 1
-  elapsed=$((elapsed + 1))
-done
-kill "$PID" 2>/dev/null; pkill -P "$PID" 2>/dev/null; wait "$PID" 2>/dev/null
-rm -rf "$PROFILE"
-
-if [ ! -s "$OUT" ]; then
-  echo "render-screenshot: Chrome produced no image for $URL within ${DEADLINE}s" >&2
-  exit 1
-fi
-if command -v python3 >/dev/null 2>&1; then
-  python3 - "$OUT" <<'PY' 2>/dev/null || echo "rendered $OUT"
-import sys
-try:
-    from PIL import Image
-    im = Image.open(sys.argv[1])
-    print(f"rendered {sys.argv[1]} {im.width}x{im.height}")
-except Exception:
-    print(f"rendered {sys.argv[1]}")
-PY
-else
-  echo "rendered $OUT"
-fi
+DIR=$(dirname "$0")
+exec python3 "$DIR/render-screenshot.py" "$URL" "$W" "$H" "$OUT" \
+  --wait-ms "$WAIT" --deadline "$DEADLINE"
