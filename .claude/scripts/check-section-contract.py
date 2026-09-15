@@ -31,9 +31,18 @@ A Liquid comment mentioning `color_scheme` exempts that one setting, for
 designs that fix the surface on purpose.
 
 Padding has no exception on a merchant-addable section.
+
+Modes
+-----
+  (default)        sections ADDED in the staged changeset — the pre-commit hook
+  --files <paths>  these working-tree sections, judged as if new — the runtime
+                   hooks pass the file Claude just wrote, or every section new
+                   since HEAD at the end of a turn
+  --quiet          say nothing when everything passes
 """
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -206,32 +215,49 @@ def check(path, src):
     return problems, advisory
 
 
-def main():
-    paths = added_sections()
+def working_tree_content(path):
+    return open(path, encoding="utf-8", errors="replace").read()
+
+
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else argv
+    quiet = "--quiet" in argv
+
+    if "--files" in argv:
+        mode = "files"
+        given = [os.path.normpath(a) for a in argv[argv.index("--files") + 1:] if not a.startswith("--")]
+        paths = [p for p in given if re.fullmatch(r"sections/[^/]+\.liquid", p) and os.path.exists(p)]
+        content = working_tree_content
+    else:
+        mode = "staged"
+        paths = added_sections()
+        content = staged_content
     if not paths:
         return 0
 
     failures = {}
     notes = {}
     for p in paths:
-        problems, advisory = check(p, staged_content(p))
+        problems, advisory = check(p, content(p))
         if problems:
             failures[p] = problems
         if advisory:
             notes[p] = advisory
 
     if not failures:
-        print(f"Section contract OK ({len(paths)} new section(s) checked).")
-        for path, advisory in notes.items():
-            print(f"  note — {path}")
-            for a in advisory:
-                print(f"    {a}")
+        if not quiet:
+            print(f"Section contract OK ({len(paths)} new section(s) checked).")
+            for path, advisory in notes.items():
+                print(f"  note — {path}")
+                for a in advisory:
+                    print(f"    {a}")
         return 0
 
     n = sum(len(v) for v in failures.values())
+    banner = "COMMIT BLOCKED" if mode == "staged" else "BLOCKED"
     print()
     print("=" * 74)
-    print(f"  COMMIT BLOCKED — {n} problem(s) in {len(failures)} new section(s)")
+    print(f"  {banner} — {n} problem(s) in {len(failures)} new section(s)")
     print("=" * 74)
     print()
     print("  Every merchant-addable section must expose padding_top,")
@@ -249,9 +275,10 @@ def main():
     print("-" * 74)
     print(f"  Working example: {REFERENCE}")
     print(f"  The rule and why it exists: {RULE}")
-    print()
-    print("  To bypass for a genuine emergency: git commit --no-verify")
-    print("  If you find yourself doing that twice, the check is wrong — say so.")
+    if mode == "staged":
+        print()
+        print("  To bypass for a genuine emergency: git commit --no-verify")
+        print("  If you find yourself doing that twice, the check is wrong — say so.")
     print("-" * 74)
     print()
     return 1

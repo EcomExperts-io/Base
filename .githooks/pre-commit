@@ -26,17 +26,25 @@ else
   echo "pre-commit: python3 not found, skipping the section contract check."
 fi
 
-# --- 2. Cursor/Claude AI config must not drift ------------------------------
+# --- 2. Cursor mirror is regenerated, not policed -----------------------------
 # The two copies existing by hand is what hid our conventions from Claude Code
-# for the first 18 days of a client build.
-sh .claude/scripts/sync-ai-config.sh --check || {
+# for the first 18 days of a client build. The mirror is a derived artefact of
+# .claude/, so the hook regenerates it and stages the result: it can never be
+# out of date and nobody has to remember a command. (The previous version
+# failed the commit and asked you to run the script by hand.) The sync still
+# REFUSES to overwrite a hand-edited .mdc — that refusal fails the commit with
+# the file named. Unlike the old blanket `git add .`, this stages only the
+# generated tree, and only after the generator succeeded.
+if SYNC_OUT=$(sh .claude/scripts/sync-ai-config.sh 2>&1); then
+  git add .cursor
+else
+  echo "$SYNC_OUT"
   echo ""
-  echo "  .cursor/ is out of sync with .claude/. Run:"
-  echo "      sh .claude/scripts/sync-ai-config.sh"
-  echo "  then stage the result."
+  echo "  .cursor/ could not be regenerated — see above. Move hand edits into"
+  echo "  .claude/ and commit again."
   echo ""
   FAILED=1
-}
+fi
 
 # --- 3. Theme Check, scoped to staged files ---------------------------------
 # Theme Check always scans the whole theme, so used directly it would let a
@@ -70,6 +78,16 @@ fi
 # documentation about Liquid. Cheap to check, easy to get wrong by hand.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-docs-interpolation.py || FAILED=1
+fi
+
+# --- 7. Conventions a grep can decide ----------------------------------------
+# max-width queries, DOMContentLoaded, {% stylesheet %} in a section, a range
+# with fewer than three steps, a t: key in a template value. Errors block only
+# in files this commit ADDS; in modified files they are printed and let through
+# — you answer for what you add, and Base's own legacy is not your commit's
+# problem. Before this step the gate enforced about five percent of the rules.
+if command -v python3 >/dev/null 2>&1; then
+  python3 .claude/scripts/check-conventions.py --staged || FAILED=1
 fi
 
 exit $FAILED
