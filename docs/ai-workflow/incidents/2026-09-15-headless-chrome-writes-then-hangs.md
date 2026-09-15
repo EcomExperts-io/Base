@@ -1,5 +1,5 @@
 ---
-title: Headless Chrome wrote the screenshot and then never exited
+title: "Headless Chrome wrote the screenshot and then never exited"
 date: 2026-09-15
 repo: Base
 scope: generic

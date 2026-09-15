@@ -1,5 +1,5 @@
 ---
-title: A t: key copied into a template value rendered its own path to the customer
+title: "A t: key copied into a template value rendered its own path to the customer"
 date: 2026-08-28
 repo: BarePerformanceNutritionRebuild
 scope: generic

@@ -1,5 +1,5 @@
 ---
-title: CLAUDE.md claimed 14 of 16 rules identical to a fork; the number was 6
+title: "CLAUDE.md claimed 14 of 16 rules identical to a fork; the number was 6"
 date: 2026-09-14
 repo: Base
 scope: generic

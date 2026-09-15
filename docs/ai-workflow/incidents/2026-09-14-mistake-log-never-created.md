@@ -1,5 +1,5 @@
 ---
-title: The mistake log the workflow asked for existed in zero client repos
+title: "The mistake log the workflow asked for existed in zero client repos"
 date: 2026-09-14
 repo: Base
 scope: generic

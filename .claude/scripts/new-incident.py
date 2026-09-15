@@ -32,6 +32,7 @@ eyeball, verify, ci, other.
 """
 
 import datetime
+import json
 import os
 import re
 import subprocess
@@ -42,7 +43,7 @@ SURFACED = ("theme-500", "theme-check", "gate", "hook", "review", "qa", "designe
             "eyeball", "verify", "ci", "other")
 
 TEMPLATE = """---
-title: {title}
+title: {title_yaml}
 date: {date}
 repo: {repo}
 scope: {scope}
@@ -86,7 +87,7 @@ def frontmatter(text):
     for line in text[3:end].strip().split("\n"):
         if ":" in line:
             k, v = line.split(":", 1)
-            out[k.strip()] = v.strip()
+            out[k.strip()] = v.strip().strip('"')
     return out
 
 
@@ -158,7 +159,8 @@ def main(argv):
         print(f"{path} already exists — edit it instead.")
         return 1
     open(path, "w", encoding="utf-8").write(TEMPLATE.format(
-        title=title, date=date, repo=repo_name(), scope=scope, surfaced_by=surfaced, should_have_caught=caught))
+        title=title, title_yaml=json.dumps(title), date=date, repo=repo_name(), scope=scope,
+        surfaced_by=surfaced, should_have_caught=caught))
     print(path)
     return 0
 

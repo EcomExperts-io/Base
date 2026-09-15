@@ -1,5 +1,5 @@
 ---
-title: A range setting with two steps passed Theme Check and failed the theme upload
+title: "A range setting with two steps passed Theme Check and failed the theme upload"
 date: 2026-08-28
 repo: BarePerformanceNutritionRebuild
 scope: generic

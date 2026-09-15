@@ -1,5 +1,5 @@
 ---
-title: Theme Check silently skipped on machines whose default Node was 20
+title: "Theme Check silently skipped on machines whose default Node was 20"
 date: 2026-09-01
 repo: Base
 scope: generic

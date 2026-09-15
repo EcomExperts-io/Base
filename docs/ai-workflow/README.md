@@ -89,7 +89,7 @@ what is built and what is left) and `/store-recon` (what the store has). The
 previous team's conventions win where they conflict with Base's — half the
 theme already uses them — and the recon writes them into this repo's rule
 copies. Build in the dependency order in
-[`rebuild-playbook.md`](../../.claude/workflows/rebuild-playbook.md): recon,
+`.claude/workflows/rebuild-playbook.md`: recon,
 foundations, global chrome, shared components, transactional templates,
 homepage, long tail.
 

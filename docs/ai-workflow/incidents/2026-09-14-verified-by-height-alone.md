@@ -1,5 +1,5 @@
 ---
-title: A section was reported as matching its frame because 614px matched 615px
+title: "A section was reported as matching its frame because 614px matched 615px"
 date: 2026-09-14
 repo: Base
 scope: generic

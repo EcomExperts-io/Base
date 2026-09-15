@@ -1,5 +1,5 @@
 ---
-title: Base's pre-commit hook had never run on a client machine
+title: "Base's pre-commit hook had never run on a client machine"
 date: 2026-09-14
 repo: Base
 scope: generic
