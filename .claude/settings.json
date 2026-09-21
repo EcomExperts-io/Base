@@ -1,12 +1,63 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Remove-Item -Force \"c:\\\\Users\\\\moeme\\\\OneDrive\\\\Documents\\\\EcomExperts\\\\Clients\\\\Base\\\\assets\\\\liquid-ajax-cart-v2.1.1.js\" -Confirm:$false)",
+      "Bash(python3 .claude/scripts/*)",
+      "Bash(sh .claude/scripts/*)",
+      "Bash(shopify theme check*)",
+      "mcp__shopify-dev-mcp__search_docs_chunks",
+      "mcp__shopify-dev-mcp__fetch_full_docs",
       "mcp__shopify-dev-mcp__validate_theme",
-      "Bash(grep \"\\\\.js$\")",
-      "Bash(cd \"/c/Users/moeme/OneDrive/Documents/EcomExperts/Clients/Base\" && grep -rniE \"liquid-ajax-cart|liquidAjaxCart|ajax-cart|ajax cart\" README.md .cursor docs --include=\"*.md\" --include=\"*.mdc\" --include=\"*.mts\" --include=\"*.ts\" 2>/dev/null | grep -v \"docs/.vitepress/dist\" | grep -v \"docs/OLD_README.md\" | grep -v \"docs/node_modules\")",
-      "Read(//c/c/Users/moeme/OneDrive/Documents/EcomExperts/Clients/Base/**)",
-      "mcp__shopify-dev-mcp__search_docs_chunks"
+      "mcp__shopify-dev-mcp__validate_theme_codeblocks"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh\"",
+            "timeout": 20,
+            "statusMessage": "Base: reading the state of the theme"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR}/.claude/hooks/post-edit-gate.sh\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PROJECT_DIR}/.claude/hooks/tool-failure-nudge.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-gate.py\"",
+            "timeout": 150,
+            "statusMessage": "Base: running the gate on this turn's changes"
+          }
+        ]
+      }
     ]
   }
 }

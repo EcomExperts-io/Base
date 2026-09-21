@@ -59,6 +59,13 @@ git checkout -B development base/development
 echo "==> activating the hooks"
 git config core.hooksPath .githooks
 
+echo "==> stamping the tooling version"
+# The tooling is byte-identical to Base right now, so a stamp is all the record
+# needs. From here check-tooling-drift.py can say what this repo edited and what
+# Base changed, and pull-base-tooling.py can update without clobbering either.
+python3 .claude/scripts/pull-base-tooling.py --stamp-only \
+  || echo "    (could not stamp — run: python3 .claude/scripts/pull-base-tooling.py --stamp-only)"
+
 cat <<'NEXT'
 
 Done. Two remotes, real shared history:
@@ -68,7 +75,8 @@ Done. Two remotes, real shared history:
 
 Before you build anything, in this order:
 
-  1. npm install                       — installs deps and confirms hooks are on
+  1. npm install && npm run setup      — deps, hooks, cursor mirror, and doctor
+     tells you what this machine still lacks (Node 22+, MCP sign-in, store handle)
   2. Confirm rule injection works. Open any .liquid file in Claude Code or
      Cursor and check the rules are actually in context. On Bites Vitamins the
      conventions sat where the tool could not read them for 18 days and nothing
@@ -84,11 +92,16 @@ Before you build anything, in this order:
      Grep for them. Do not copy a number out of Base.
   5. python3 .claude/scripts/report-compliance.py   — record the starting number
      so you can tell later whether you improved it or added to it.
-  6. Create docs/mistake-log.md, empty. Add the first entry the first time
-     review catches something. It has been asked for since build-page-from-figma
-     was written and has never existed.
+  6. The first time a fix is needed that a rule or gate should have prevented,
+     run /record-incident. It writes docs/ai-workflow/incidents/<date>-<slug>.md
+     in THIS repo, committed. The gitignored mistake log this replaced was asked
+     for on every build and created on none.
 
 To pull Base improvements later:   git fetch base && git merge base/development
-To send a generic fix upstream:    branch off base/development, cherry-pick, PR to Base
+                                   (theme code) and python3 .claude/scripts/pull-base-tooling.py
+                                   (tooling, three-way — your measured rule edits survive)
+To send a generic fix upstream:    /harvest <incident-or-rule-file>  — or branch off
+                                   base/development, cherry-pick, PR to Base
+To see drift either way:           python3 .claude/scripts/check-tooling-drift.py
 
 NEXT

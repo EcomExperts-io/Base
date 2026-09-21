@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/templates.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2940517971 -->
+<!-- checksum: 654379057 -->
 
 
 # Templates
@@ -97,7 +97,7 @@ Alternative templates may exist for any of the standard templates, following the
       "type": "header"
     },
     "main": {
-      "type": "main-product",
+      "type": "product",
       "settings": {
         "show_vendor": true,
         "show_sku": false,
@@ -146,7 +146,7 @@ Alternative templates may exist for any of the standard templates, following the
       }
     },
     "main": {
-      "type": "main-collection-product-grid",
+      "type": "collection",
       "settings": {
         "products_per_page": 24,
         "columns_desktop": 4,
@@ -157,3 +157,24 @@ Alternative templates may exist for any of the standard templates, following the
   "order": ["header", "collection-banner", "main"]
 }
 ```
+
+A section's `type` is its filename in `sections/`. Base names sections by
+function — `product`, `collection` — and never with a `main-` prefix; see
+`naming-conventions.md`. Earlier versions of these examples used Dawn's
+`main-product` and `main-collection-product-grid`, which contradicted that rule
+in the one file an agent reads while assembling a template.
+
+## Traps that take the whole theme down
+
+Neither of these is reported by Theme Check. Both were found on a client build
+by every route returning 500, or by a key path rendering to a customer.
+
+- **`t:` keys do not resolve in template values.** Shopify resolves `t:` in a
+  schema `default`, not in a value stored in a template. A preset copied into
+  `templates/*.json` with its `t:` values intact renders the literal key path
+  on the storefront. Strip them to plain strings when assembling a template.
+  `.claude/scripts/check-conventions.py` flags any `"t:` value in a template.
+- **A brand-new block type needs roughly 25 seconds to register** with Shopify
+  before a template may reference it. Reference it too early and every route on
+  the theme returns 500 until the registration catches up — push the section,
+  wait, then push the template.

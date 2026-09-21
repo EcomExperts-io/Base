@@ -51,7 +51,7 @@
         "id": "type_body_font",
         "default": "work_sans_n4",
         "label": "t:general.body"
-      },
+      }
     ]
   },
   {

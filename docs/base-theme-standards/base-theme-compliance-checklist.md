@@ -100,9 +100,11 @@ The section that did not exist when the Bites Vitamins audits were run,
 which is part of why they missed this. A page can pass every item in
 A–E and still ship sections a merchant cannot edit at all.
 
-- [ ] Every **new merchant-addable section** exposes `padding_top` and
-      `padding_bottom` (`range`, 0–100, step 4, default 40). No
-      exceptions.
+- [ ] Every **new merchant-addable section** exposes all four padding
+      settings — `padding_top`, `padding_bottom`, `padding_top_mobile`,
+      `padding_bottom_mobile` (`range`, 0–100, step 4, default 40). No
+      exceptions. Mobile is its own setting, not a multiple of desktop
+      (ruled 2026-09-17; see the decisions log).
 - [ ] Every new merchant-addable section exposes `color_scheme`, **or**
       hardcodes the surface with a Liquid comment stating why (a design
       that fixes the background on purpose).
@@ -113,9 +115,12 @@ A–E and still ship sections a merchant cannot edit at all.
       mentioning `presets`. The contract is about merchant editability,
       so a section nobody can place is out of scope for it.
 - [ ] The `{%- style -%}` block computes
-      <code v-pre>.section-{{ section.id }}-padding</code>, with mobile at 0.75× the
-      desktop value, and the wrapper carries both
+      <code v-pre>.section-{{ section.id }}-padding</code>, reading the mobile
+      settings outside the media query and the desktop pair inside it, and the
+      wrapper carries both
       <code v-pre>color-{{ section.settings.color_scheme }}</code> and that padding class.
+      The `0.75×` multiplier this checklist used to state as fact is retired —
+      a ratio that crosses 1.0 in real frames cannot be a constant.
 - [ ] Schema `label`, `content`, `info`, preset `name` and block `name`
       all use `t:` keys resolving in `locales/en.default.schema.json` —
       no bare English. Note that older Base sections use bare labels;

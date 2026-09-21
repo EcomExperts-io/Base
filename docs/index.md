@@ -15,6 +15,9 @@ hero:
     - theme: brand
       text: Assets
       link: /assets/component-product-card
+    - theme: alt
+      text: AI Workflow
+      link: /ai-workflow/README
 
 features:
   - title: Clean Architecture
