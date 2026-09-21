@@ -8,17 +8,29 @@ name: Theme Review
 # audit of 14 Sep 2026 found Base's review workflow present in one fork of
 # four, with the other three running a different review system entirely.
 #
+# Every pull request, whatever it targets. An earlier version of this caller
+# filtered on `branches: [development, main]` — Base's own branch names. No
+# client repo uses them: the trunks are `Main`, `Develop`, or a ticket-named
+# project branch such as `Project-WorkflowBaseRebuild`, and GitHub matches
+# branch filters case-sensitively. On the first fork to run the v2 workflow
+# the review therefore never fired once across nineteen pull requests, while
+# every one of them showed a red check from an unrelated org workflow — so
+# nobody noticed the gate that mattered was absent. A trunk's name is the
+# fork's decision; the gate must not depend on it.
+#
 # Requirements, once per organisation:
-#   * Base's repository settings > Actions > "Access" must allow workflows from
-#     repositories in the organisation, or this call is refused.
+#   * Base is a public repository today, so its reusable workflow can be called
+#     from any repo with nothing to configure. If Base is ever made private,
+#     its Settings > Actions > "Access" must allow workflows from repositories
+#     in the organisation, or this call is refused.
 #   * To report tooling drift against Base's current development branch the
-#     called workflow checks Base out; if Base is private, add a read-only PAT
-#     as the BASE_READ_TOKEN secret on this repo (or the organisation).
-#     Without it that one step is skipped — the gates still run.
+#     called workflow checks Base out. While Base is public that needs no
+#     token; if it goes private, add a read-only PAT as the BASE_READ_TOKEN
+#     secret on this repo (or the organisation). Without it that one step is
+#     skipped — the gates still run.
 
 on:
   pull_request:
-    branches: [development, main]
 
 permissions:
   contents: read

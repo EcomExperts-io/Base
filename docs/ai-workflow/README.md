@@ -66,7 +66,7 @@ them depend on a person remembering.
 | Claude tries to end a turn | The same gate over everything changed this turn, plus Theme Check; a **new** file that fails blocks the turn; a section changed with no verify report newer than the change is flagged | `Stop` hook |
 | A Shopify command fails | A nudge to `/record-incident` while the details are in context | `PostToolUseFailure` hook |
 | A commit | The full pre-commit gate; the Cursor mirror regenerated and staged | `.githooks/pre-commit` (called from husky in client forks) |
-| A pull request | Base's reusable review workflow, run through a six-line caller in each fork | `.github/workflows/theme-review.yml` |
+| A pull request — into any branch; the fork's trunk is the fork's decision | Base's reusable review workflow, run through a six-line caller in each fork | `.github/workflows/theme-review.yml` |
 
 Modified legacy files are reported, never gated — you answer for what you add.
 Where a check is wrong for a theme, the fix is to say so in the rule, not to
