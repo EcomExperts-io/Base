@@ -27,7 +27,14 @@ Usage
 -----
   python3 .claude/scripts/check-tooling-drift.py [--brief] [--json] [--ref base/development]
   python3 .claude/scripts/check-tooling-drift.py --base-path ../Base
+  python3 .claude/scripts/check-tooling-drift.py --help
   --no-fetch  skip `git fetch base` (offline, or in CI where the remote is a checkout)
+
+When the stamped commit is not on the ref being compared against — the fork
+pulled its tooling from a Base feature branch that has not merged yet — every
+file that branch touched shows as BOTH changed and nothing shows as HARVEST.
+That is not drift; it is the branch not having landed. The report says so
+instead of printing "distance unknown".
 """
 
 import json
@@ -37,7 +44,10 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pull_base_tooling_lib import Source, is_tooling, load_stamp, sh  # noqa: E402
+from pull_base_tooling_lib import Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
+
+KNOWN_FLAGS = {"--brief": False, "--json": False, "--ref": True, "--base-path": True, "--no-fetch": False}
+USAGE = __doc__.split("Usage\n-----\n", 1)[1]
 
 CLIENT_HINT = re.compile(r"\b\d{2,4}px\b|\bfiles? against\b|\bcontainer\b|\bpage-width\b|\bthis (theme|client|store)\b", re.I)
 
@@ -56,6 +66,9 @@ def classify(old, cur):
 
 
 def main(argv):
+    rc = check_flags(argv, KNOWN_FLAGS, USAGE)
+    if rc is not None:
+        return rc
     root = sh("git", "rev-parse", "--show-toplevel").strip()
     os.chdir(root)
     brief = "--brief" in argv
@@ -95,6 +108,14 @@ def main(argv):
     try:
         old_files = sh("git", "ls-tree", "-r", "--name-only", old_sha, cwd=source.git_dir)
         paths |= {p for p in old_files.split("\n") if p and is_tooling(p)}
+    except RuntimeError:
+        pass
+    try:
+        # A count only means something when the stamp is an ancestor of the ref.
+        # A stamp taken from an unmerged feature branch is reachable in the repo
+        # but not on the ref, and `rev-list --count` would happily report a
+        # number that is not a distance.
+        sh("git", "merge-base", "--is-ancestor", old_sha, source.sha, cwd=source.git_dir)
         behind = int(sh("git", "rev-list", "--count", f"{old_sha}..{source.sha}", cwd=source.git_dir).strip())
     except RuntimeError:
         behind = None
@@ -127,9 +148,19 @@ def main(argv):
                           "harvest": harvest, "pull_down": pull_down, "both": both, "fork_only": fork_only}, indent=2))
         return 0
 
-    behind_txt = f"{behind} Base commit(s) behind" if behind is not None else "distance unknown"
+    if behind is not None:
+        behind_txt = f"{behind} Base commit(s) behind"
+        behind_brief = behind_txt
+    else:
+        came_from = stamp.get("ref", "?")
+        behind_brief = (f"stamp not on {source.ref} (pulled from {came_from}) — "
+                        f"BOTH/HARVEST unreliable until that branch merges")
+        behind_txt = (f"stamp {old_sha[:9]} is not on {source.ref}; .base-version says it came from "
+                      f"{came_from}. Until that branch lands on {source.ref}, every file it touched "
+                      f"reads as BOTH changed and nothing reads as HARVEST — that is the branch not "
+                      f"having merged, not drift")
     if brief:
-        print(f"tooling: stamped {old_sha[:9]} ({stamp.get('date', '?')}), {behind_txt}; "
+        print(f"tooling: stamped {old_sha[:9]} ({stamp.get('date', '?')}), {behind_brief}; "
               f"{len(harvest)} local edit(s) to harvest, {len(pull_down)} to pull down, {len(both)} need a merge"
               + (" — python3 .claude/scripts/check-tooling-drift.py" if (harvest or pull_down or both) else ""))
         return 0

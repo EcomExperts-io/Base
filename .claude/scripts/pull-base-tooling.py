@@ -43,6 +43,10 @@ Usage
   python3 .claude/scripts/pull-base-tooling.py [--ref base/development] [--dry-run] [--force]
   python3 .claude/scripts/pull-base-tooling.py --base-path ../Base     # a local Base checkout
   python3 .claude/scripts/pull-base-tooling.py --stamp-only            # fresh fork: record the version
+  python3 .claude/scripts/pull-base-tooling.py --help
+
+An argument the script does not know stops it before it reads or writes
+anything. It used to be ignored, and `--help` once ran a real overlay.
 
 Run `sh .claude/scripts/base-link.sh` first if there is no `base` remote.
 """
@@ -54,7 +58,10 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pull_base_tooling_lib import STAMP, Source, is_tooling, load_stamp, sh  # noqa: E402
+from pull_base_tooling_lib import STAMP, Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
+
+KNOWN_FLAGS = {"--ref": True, "--base-path": True, "--dry-run": False, "--force": False, "--stamp-only": False}
+USAGE = __doc__.split("Usage\n-----\n", 1)[1]
 
 STASH_DIR = ".claude/.cache/base-new"
 CALLER_TEMPLATE = ".claude/templates/fork-theme-review.yml"
@@ -81,6 +88,9 @@ def write_stamp(source):
 
 
 def main(argv):
+    rc = check_flags(argv, KNOWN_FLAGS, USAGE)
+    if rc is not None:
+        return rc
     root = sh("git", "rev-parse", "--show-toplevel").strip()
     os.chdir(root)
     if "EcomExperts-io/Base" in sh("git", "remote", "get-url", "origin", check=False):

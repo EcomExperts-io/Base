@@ -8,8 +8,37 @@ imports this too.
 
 import json
 import subprocess
+import sys
 
 STAMP = ".base-version"
+
+
+def check_flags(argv, known, usage):
+    """Refuse to run on an argument the script does not know.
+
+    Returns an exit code to return at once, or None to carry on. `known` maps
+    each flag to whether it takes a value. This runs before anything is read or
+    written: a stray `--help` once ran a real overlay and re-stamped a fork to
+    the wrong Base commit, because the script only looked for the flags it
+    recognised and silently ignored the rest (Pique incident
+    2026-09-15-pull-script-runs-on-unknown-flag).
+    """
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(usage.strip())
+            return 0
+        if a not in known:
+            print(f"unknown argument: {a} — nothing was read or written.\n\n{usage.strip()}", file=sys.stderr)
+            return 2
+        if known[a]:
+            if i + 1 >= len(argv) or argv[i + 1].startswith("-"):
+                print(f"{a} needs a value.\n\n{usage.strip()}", file=sys.stderr)
+                return 2
+            i += 1
+        i += 1
+    return None
 
 TOOLING_PREFIXES = (".claude/", ".githooks/", "docs/ai-workflow/", "docs/base-theme-standards/")
 TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", ".github/workflows/theme-review.yml"}
