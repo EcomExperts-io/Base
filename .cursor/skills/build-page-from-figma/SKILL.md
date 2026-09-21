@@ -134,8 +134,10 @@ The rules apply in full. The three that a design-driven build most reliably
 misses, because none of them appear in a Figma frame:
 
 1. **The merchant settings contract** — `padding_top`, `padding_bottom`,
-   `color_scheme`, plus a preset. A frame shows one spacing value because a
-   frame can only show one.
+   `padding_top_mobile`, `padding_bottom_mobile`, `color_scheme`, plus a
+   preset. A frame shows one spacing value because a frame can only show one;
+   the mobile frame shows its own, which is why mobile padding is a setting
+   and not a multiple of desktop.
 2. **Translation keys** — the copy in the frame is English because the designer
    wrote it in English. That is not an instruction to hardcode it. This applies
    to brand-new files with no existing `| t` calls nearby.
@@ -224,7 +226,7 @@ Never mention code, settings, schema, tokens, or file names.
 **Never like this:**
 
 - ~~Verify `color_scheme` is exposed in the schema~~
-- ~~Confirm `padding_top` renders at 0.75× on mobile~~
+- ~~Confirm `padding_top_mobile` is read outside the media query~~
 - ~~Check `component-product-card` snippet is used~~
 
 Group by what the reviewer is looking at — Desktop, Mobile, Links and buttons,

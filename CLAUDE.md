@@ -40,10 +40,12 @@ theme-wide. Hence the prefixes.
 These come up in almost every task. The detail is in `.claude/rules/`, and the
 first three are checked by a hook the moment a file is written.
 
-- **Every new section exposes `padding_top`, `padding_bottom`, and
-  `color_scheme`, plus a `presets` entry.** Padding has no exceptions. Colour
-  scheme may be hardcoded only with a Liquid comment saying why. This is the
-  single most-missed rule in this codebase's history — see `rules/sections.md`.
+- **Every new section exposes `padding_top`, `padding_bottom`,
+  `padding_top_mobile`, `padding_bottom_mobile` and `color_scheme`, plus a
+  `presets` entry.** Padding has no exceptions, and mobile padding is its own
+  setting, not `padding_top | times: 0.75`. Colour scheme may be hardcoded only
+  with a Liquid comment saying why. This is the single most-missed rule in this
+  codebase's history — see `rules/sections.md`.
 - **Every string is a translation key** — visible text, schema labels,
   `aria-label`, `alt`. Including in brand-new files with no existing `| t`
   calls nearby. See `rules/localization.md`.

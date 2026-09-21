@@ -194,6 +194,43 @@ worktree and opens the Base PR. CI runs Base's workflow through a six-line
 caller. The CLAUDE.md claim "14 of 16 rules identical to BPN" (measured: 6)
 is replaced by the drift report.
 
+**Q: Mobile padding — is it a multiple of the desktop value, or its own
+setting?** (Raised four times across the Pique rebuild; ruled there 2026-09-17,
+adopted in Base 2026-09-21.)
+**A: Its own setting. Every new section exposes four padding settings —
+`padding_top`, `padding_bottom`, `padding_top_mobile`,
+`padding_bottom_mobile` — and the `0.75 ×` multiplier is retired.**
+
+The multiplier was inherited from Dawn. On the first v2 pilot four sections
+contradicted it before anyone ruled, and the fourth settles it. A header
+measured 9 on desktop against 15 on mobile, a ratio of **1.67**: desktop was
+the *tighter* band because its tallest child was a 46px search field in a 64px
+bar while mobile fitted a 26px logo in 56px. A constant cannot express a ratio
+that crosses 1.0, so `0.75 ×` was never a number to tune — it was the wrong
+shape. A footer wanted 0.43 and 1.70 on the two edges of one section; seven
+homepage bands wanted about 0.5, and rendered 19–21px low at 393 until they
+were corrected by hand.
+
+The earlier recommendation, recorded while the question was open, was to add
+`*_mobile` ids *only* when the measured ratio is not about 0.75. Rejected as
+the ruling: it leaves a per-section judgment call at exactly the moment a
+developer is least equipped to make it — before the section has been measured
+against its frames — and it is why four sections ended up with three
+spellings between them. Four settings always, no condition to evaluate.
+
+**What changed with the ruling:** `.claude/rules/sections.md` and
+`schemas.md` — the contract table, the `{%- style -%}` boilerplate and the
+schema example; `check-section-contract.py` requires all four on a new
+section; `new-section.py` and the scaffold reference emit them; the two
+labels were added to `locales/en.default.schema.json` under
+`sections.all.padding`; `report-compliance.py` prints the pair as its own
+line rather than folding it into the headline number.
+
+**Existing sections are not retrofitted.** None of Base's 48 carries the
+mobile pair; on the pilot, 12 of 49 did. The rest stay on the multiplier
+until touched for their own reasons — the same standing rule as the 750/769
+breakpoint split — and fall under the retrofit ruling below.
+
 ---
 
 ## Open
@@ -308,3 +345,13 @@ is replaced by the drift report.
   dependency-ordered rebuild playbook; the Header, Cart Engine & Search
   reference. Cursor mirror kept and made maintenance-free. Rulings above
   dated Sep 15.
+- **Sep 21, 2026** — First v2 pilot (Pique) reviewed before the branch goes to
+  `development`. Mobile padding ruled: four padding settings per section, the
+  `0.75 ×` multiplier retired, existing sections not retrofitted (see
+  Resolved). The fork CI caller now fires on every pull request — it had
+  filtered on `development`/`main` and never ran once on the pilot's nineteen
+  PRs. Tooling fixes the pilot made locally harvested: CSS comments ignored by
+  the conventions check, `file:line-line` citations, `--eval` for verifying
+  overlay states, a hot-reload-free verify server, the orphaned Cursor prompt
+  paths. `development` had gone red on its own AI-config check after a direct
+  push of `accessibility.md`; inventory and caps corrected here.

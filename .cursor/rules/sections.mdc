@@ -5,21 +5,25 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/sections.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1501576878 -->
+<!-- checksum: 3265616365 -->
 
 
 # Section Development Standards
 
 ## The Merchant Settings Contract — required
 
-**Every section must expose these three settings.** This is not a style
-preference; it is the contract that makes a section usable in the theme editor,
-and Base implements it in 37 of its 48 sections.
+**Every section must expose these settings.** This is not a style
+preference; it is the contract that makes a section usable in the theme editor.
+Base implements the desktop pair in 37 of its 48 sections; the mobile pair
+joined the contract on 2026-09-21 and applies to new work (see the ruling
+below the worked example).
 
 | Setting | Required | Notes |
 |---|---|---|
-| `padding_top` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
-| `padding_bottom` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
+| `padding_top` | **Always. No exceptions.** | Desktop. `range`, 0–100, step 4, default 40 |
+| `padding_bottom` | **Always. No exceptions.** | Desktop. `range`, 0–100, step 4, default 40 |
+| `padding_top_mobile` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
+| `padding_bottom_mobile` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
 | `color_scheme` | Exposed by default | May be omitted **only** with a Liquid comment stating why (see below) |
 
 Plus a `presets` entry, so a merchant can actually add the section.
@@ -48,9 +52,9 @@ case, hardcode it and say so in one line:
 {%- endcomment -%}
 ```
 
-No comment means it was forgotten, not decided. `padding_top` and
-`padding_bottom` have no equivalent exception — there is no design reason for a
-merchant not to adjust vertical rhythm.
+No comment means it was forgotten, not decided. The four padding settings have
+no equivalent exception — there is no design reason for a merchant not to
+adjust vertical rhythm, on either breakpoint.
 
 ## Section Structure
 
@@ -64,8 +68,8 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 
 {%- style -%}
   .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
   }
 
   @media screen and (min-width: 750px) {
@@ -116,6 +120,18 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
       "id": "padding_bottom",
       "label": "t:sections.all.padding.padding_bottom",
       "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "t:sections.all.padding.padding_top_mobile",
+      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "t:sections.all.padding.padding_bottom_mobile",
+      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40
     }
   ],
   "presets": [
@@ -128,7 +144,8 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 > **The `750px` above is the padding boilerplate's breakpoint, not the theme's
 > layout breakpoint.** Keep it — it is inherited from Dawn and 31 sections here
 > already use it, so changing it in one section desynchronises that section's mobile
-> padding from every other. Your own component CSS is a separate decision: Base's
+> padding from every other. Below it the mobile pair applies; at it and above,
+> the desktop pair. Your own component CSS is a separate decision: Base's
 > `section-*.css` is split evenly between `750px` and `769px`, so **in a client theme
 > forked from Base, grep `assets/` and match whatever that theme settled on** rather
 > than copying a number out of this file. Two numbers, two jobs — don't unify them.
@@ -142,15 +159,39 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 > QI-passed pages use, and measure at 1920 and 393 as well as at the width the Figma
 > frame was drawn at.
 
-The four `t:` keys above all resolve in `locales/en.default.schema.json` today —
-use them rather than inventing new ones. Note that the mobile padding is
-three-quarters of the desktop value; that scaling is part of the pattern, not
-an arbitrary choice in any one section.
+> **Mobile padding is its own merchant setting, not a multiple of the desktop
+> one.** Ruled 2026-09-17 on the Pique rebuild and adopted here 2026-09-21; it
+> replaces the `padding_top | times: 0.75` boilerplate inherited from Dawn.
+>
+> The multiplier was measured wrong three ways on one build. Seven homepage
+> bands at 393 wanted roughly *half* the desktop padding, so a `padding_top` of
+> 80 needed 40 and the boilerplate gave 60 — every band's first row sat 19 to
+> 21px low. A footer wanted 80/20 on desktop against 34/34 on mobile, ratios of
+> 0.43 and 1.70 on the two edges of one section. And a header measured 9 on
+> desktop against 15 on mobile — a ratio of 1.67, desktop the *tighter* band,
+> because its tallest child was a 46px search field in a 64px bar while mobile
+> fitted a 26px logo in 56px. A constant cannot express a ratio that crosses
+> 1.0, so `0.75` was never a number to tune; it was the wrong shape.
+>
+> The tempting middle ("add the mobile pair only when the measured ratio is not
+> about 0.75") was rejected. It leaves a judgment call at the moment a developer
+> is least able to make it — before the section has been measured against its
+> frames — and it is how four sections on one build ended up with three
+> spellings between them. **Four settings always, no condition to evaluate.**
+>
+> **Existing sections are not retrofitted as part of unrelated work.** None of
+> Base's 48 carries the mobile pair yet; a section still on the multiplier is
+> legacy, not a bug to fix while passing through — the same standing rule as
+> the 750/769 breakpoint split above. The retrofit is an open ruling in the
+> decisions log. New sections carry all four.
+
+The six `t:` keys above all resolve in `locales/en.default.schema.json` today —
+use them rather than inventing new ones.
 
 ## Section Requirements
 
 - `{% schema %}` with valid JSON, and a `presets` entry
-- The three settings above
+- The settings above — four padding ranges and `color_scheme`
 - Semantic HTML; a `page-width` wrapper unless the section is deliberately full-bleed
 - CSS scoped to the section, in `assets/section-[name].css`
 - **Translation keys for every string** — schema labels and user-facing text

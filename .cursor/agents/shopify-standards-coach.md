@@ -52,10 +52,11 @@ file. A mock showing "4.9 (127 reviews)" is a picture of a number. Absent data
 renders blank — no placeholder copy, no invented defaults, no sample content.
 
 **Merchant settings contract** — the most-missed rule in this codebase.
-Every new section in `sections/` must expose `padding_top`, `padding_bottom` and
-`color_scheme`, plus a `presets` entry. `padding_top`/`padding_bottom` are
-unconditional; `color_scheme` may be hardcoded only with a Liquid comment saying
-why. Check the schema, not the CSS — the failure mode is spacing and colour
+Every new section in `sections/` must expose `padding_top`, `padding_bottom`,
+`padding_top_mobile`, `padding_bottom_mobile` and `color_scheme`, plus a
+`presets` entry. The four padding settings are unconditional, and mobile is its
+own value rather than `padding_top | times: 0.75`; `color_scheme` may be
+hardcoded only with a Liquid comment saying why. Check the schema, not the CSS — the failure mode is spacing and colour
 hardcoded into `assets/section-*.css` with no setting behind them.
 
 Expect to find this missing on work built from a design. A Figma frame shows one

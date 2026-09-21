@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/schemas.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1411073358 -->
+<!-- checksum: 2688577948 -->
 
 
 # Schema Standards
@@ -28,12 +28,16 @@ matching `{%- style -%}` block and the one permitted exception, is in
 | `color_scheme` | `color_scheme` | `t:sections.all.colors.label` |
 | `padding_top` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_top` |
 | `padding_bottom` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_bottom` |
+| `padding_top_mobile` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_top_mobile` |
+| `padding_bottom_mobile` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_bottom_mobile` |
 
 Plus a `presets` array — without one, a merchant cannot add the section in the
 theme editor at all.
 
-`padding_top` and `padding_bottom` are unconditional. `color_scheme` may be
-omitted only with a Liquid comment explaining why, per `sections.md`.
+All four padding settings are unconditional; the mobile pair is its own value,
+not a multiple of the desktop one (ruled 2026-09-17, see `sections.md`).
+`color_scheme` may be omitted only with a Liquid comment explaining why, per
+`sections.md`.
 
 ## Labels must be translation keys
 

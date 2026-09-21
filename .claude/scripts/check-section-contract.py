@@ -30,7 +30,11 @@ legitimately have none.
 A Liquid comment mentioning `color_scheme` exempts that one setting, for
 designs that fix the surface on purpose.
 
-Padding has no exception on a merchant-addable section.
+Padding has no exception on a merchant-addable section. Since 2026-09-21 that
+is four settings — `padding_top`, `padding_bottom`, `padding_top_mobile`,
+`padding_bottom_mobile` — because mobile padding is its own merchant value, not
+a multiple of desktop (see .claude/rules/sections.md for the measurements that
+retired the 0.75 multiplier).
 
 Modes
 -----
@@ -177,6 +181,13 @@ def check(path, src):
     for key in ("padding_top", "padding_bottom"):
         if key not in setting_ids:
             problems.append(f'missing "{key}" setting — required, no exceptions.')
+    for key in ("padding_top_mobile", "padding_bottom_mobile"):
+        if key not in setting_ids:
+            problems.append(
+                f'missing "{key}" setting — required, no exceptions.\n'
+                "      Mobile padding is its own merchant value, not `padding_top | times: 0.75`;\n"
+                "      read it outside the media query and the desktop pair inside it."
+            )
 
     if "color_scheme" not in setting_ids and not comments_mentioning(src, "color_scheme"):
         problems.append(
@@ -261,9 +272,9 @@ def main(argv=None):
     print("=" * 74)
     print()
     print("  Every merchant-addable section must expose padding_top,")
-    print("  padding_bottom and color_scheme, plus a presets entry. Without")
-    print("  them the page renders correctly and the merchant cannot change")
-    print("  anything in the theme editor.")
+    print("  padding_bottom, padding_top_mobile, padding_bottom_mobile and")
+    print("  color_scheme, plus a presets entry. Without them the page renders")
+    print("  correctly and the merchant cannot change anything in the theme editor.")
     print()
 
     for path, problems in failures.items():

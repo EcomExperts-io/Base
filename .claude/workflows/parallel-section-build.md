@@ -181,11 +181,13 @@ correct in a DOM check and wrong on screen.
 ### 5. The merchant settings contract — the most-missed rule here
 
 Every section exposes, in this order: `color_scheme`, a padding `header`,
-`padding_top` and `padding_bottom` (`range` 0–100 step 4 default 40), plus a `presets`
-array. Those four `t:` label keys already exist — reuse them.
+`padding_top`, `padding_bottom`, `padding_top_mobile` and `padding_bottom_mobile`
+(each a `range` 0–100 step 4 default 40), plus a `presets` array. Those six `t:`
+label keys already exist — reuse them.
 
-`padding_top`/`padding_bottom` have **no exceptions**. `color_scheme` may be omitted
-only with a Liquid comment naming the Figma node and saying why the surface is fixed.
+The four padding settings have **no exceptions**, and mobile is its own value, not
+`padding_top | times: 0.75`. `color_scheme` may be omitted only with a Liquid
+comment naming the Figma node and saying why the surface is fixed.
 
 A Figma frame shows one spacing value because a frame can only show one. That is not a
 reason to omit the control. Expose everything a merchant would reasonably want to

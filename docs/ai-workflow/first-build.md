@@ -83,9 +83,9 @@ What you should see happen, in order:
 
 1. **Readiness** — a score for the frame and, if it is not green, a message
    to forward to the designer instead of a build.
-2. **Scaffold** — the section created from the reference shape with
-   `padding_top`, `padding_bottom`, `color_scheme` and a preset already in the
-   schema, every string a translation key.
+2. **Scaffold** — the section created from the reference shape with the four
+   padding settings (desktop and mobile pairs), `color_scheme` and a preset
+   already in the schema, every string a translation key.
 3. **The per-edit gate** — after each file Claude writes, a short block of
    findings appears in the conversation if anything is off. It is normal to
    see one or two on the first pass; it is not normal to see "missing
