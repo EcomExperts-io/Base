@@ -44,6 +44,13 @@ TOOLING_PREFIXES = (".claude/", ".githooks/", "docs/ai-workflow/", "docs/base-th
 TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", ".github/workflows/theme-review.yml"}
 EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/", ".claude/.cache/",
                     ".claude/verify/", "docs/ai-workflow/incidents/")
+# The one file under the excluded incidents directory that does travel. Incidents
+# belong to the repo that recorded them, but the directory itself must exist in
+# a fork on arrival: rules and skills link to it, check-rule-links.py resolves
+# those links, and git cannot carry an empty directory — so the pilot fork's
+# very first commit of the tooling was blocked by three links to a folder only
+# Base had (Pique incident 2026-09-15-dangling-paths-block-first-fork-commit).
+INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
 
 def sh(*args, cwd=None, check=True):
@@ -54,6 +61,8 @@ def sh(*args, cwd=None, check=True):
 
 
 def is_tooling(path):
+    if path == INCIDENTS_README:
+        return True
     if path.startswith(EXCLUDE_PREFIXES) or "__pycache__" in path or path.endswith(".pyc"):
         return False
     return path in TOOLING_FILES or path.startswith(TOOLING_PREFIXES)
