@@ -31,7 +31,10 @@ npm run setup
 ```
 
 `setup` wires the commit gate (under `.githooks/` or through husky, whichever
-the repo has), regenerates the Cursor mirror, and runs the doctor. Read the
+the repo has), regenerates the Cursor mirror, and runs the doctor. If npm says
+the script is missing, run `sh .claude/scripts/setup.sh` — it is the same
+thing; a client fork's `package.json` is the client's and the tooling pull
+leaves it alone. Read the
 doctor's output: every line that is not `OK` has the fix beside it. Fix them.
 
 If the repo has no `.claude/` directory yet, or `doctor` says the tooling is

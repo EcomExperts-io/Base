@@ -80,7 +80,50 @@ def check_hooks_wired():
         return ("OK", "commit gate", "husky pre-commit calls .githooks/pre-commit", "")
     return ("FAIL", "commit gate",
             f"core.hooksPath = {hooks_path or '(unset)'} and husky does not call Base's hook",
-            "npm run setup")
+            "sh .claude/scripts/setup.sh   (npm run setup where package.json has the script)")
+
+
+def check_theme_check_config():
+    """A Theme Check config that enables nothing makes three gates vacuous.
+
+    .theme-check.yml is tooling, so pull-base-tooling.py carries it — but a fork
+    that already had one keeps its own, and the org's older repo template starts
+    with `extends: :nothing` (the Ruby-era form) and lists a dozen checks by
+    their old names. The current CLI runs that as almost nothing: on the first
+    v2 pilot it reported one warning over the whole theme where Base's config
+    found fourteen errors. check-theme-staged.py blocks on errors only, so the
+    Stop hook, the commit gate and CI all passed — a gate that cannot fail,
+    which is the failure this workflow exists to remove. The doctor is the one
+    place that looks at the config itself.
+    """
+    path = os.path.join(ROOT, ".theme-check.yml")
+    if not os.path.exists(path):
+        return ("WARN", "theme check",
+                "no .theme-check.yml — the CLI's defaults run; Base's exclusions (docs/, .claude/, .base-tooling/) are missing",
+                "python3 .claude/scripts/pull-base-tooling.py")
+    lines = open(path, errors="replace").read().split("\n")
+    values = []
+    for i, ln in enumerate(lines):
+        m = re.match(r"^extends:\s*(.*)$", ln)
+        if not m:
+            continue
+        head = m.group(1).strip()
+        if head:
+            values.append(head)
+        for follow in lines[i + 1:]:
+            fm = re.match(r"^\s+-\s*(.+)$", follow)
+            if not fm:
+                break
+            values.append(fm.group(1).strip())
+        break
+    shown = ", ".join(v.strip("'\"[]") for v in values) or "(default: theme-check:recommended)"
+    enables_something = any("theme-check:" in v for v in values) or not values
+    if not enables_something and all(v.strip("'\"[]") in ("nothing", ":nothing", "") for v in values):
+        return ("FAIL", "theme check",
+                f"extends: {shown} — Theme Check runs only the checks this file lists, so the Stop hook, "
+                "the commit gate and CI pass without looking",
+                "extend theme-check:recommended — Base's .theme-check.yml is the model; a tooling pull saves it under .claude/.cache/base-new/")
+    return ("OK", "theme check", f".theme-check.yml extends {shown}", "")
 
 
 def check_runtime_hooks():
@@ -239,8 +282,8 @@ def incidents_line():
     return f"incidents: {len(open_)} open of {len(files)} recorded"
 
 
-FAST = [check_hooks_wired, check_runtime_hooks, check_node, check_python, check_mcp_config,
-        check_store, check_pillow, check_chrome, check_base_link]
+FAST = [check_hooks_wired, check_runtime_hooks, check_theme_check_config, check_node, check_python,
+        check_mcp_config, check_store, check_pillow, check_chrome, check_base_link]
 SLOW = [check_shopify_cli, check_figma_plugin, check_gh, check_hook_latency]
 
 

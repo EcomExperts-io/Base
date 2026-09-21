@@ -107,7 +107,10 @@ every fork:
 
 The pre-commit (`.githooks/pre-commit`, called from husky in forks) and the
 reusable CI workflow run the same checks. `python3 .claude/scripts/doctor.py`
-says whether any of it is wired on this machine; `npm run setup` wires it.
+says whether any of it is wired on this machine; `npm run setup` wires it
+(`sh .claude/scripts/setup.sh` is the same thing, for a fork whose
+`package.json` has no `setup` script — a client's `package.json` is the
+client's, and the tooling pull does not touch it).
 
 ## Skills, agents and workflows
 
@@ -171,7 +174,7 @@ report them separately, with the evidence for each.
 ## Commands
 
 ```bash
-npm run setup
+npm run setup   # or: sh .claude/scripts/setup.sh — identical, for a fork without the script
 ```
 
 ```bash

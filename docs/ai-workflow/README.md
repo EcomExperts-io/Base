@@ -81,7 +81,7 @@ disable hooks.
 ```bash
 sh .claude/scripts/base-link.sh                # Base as remote + worktree + reference dir; no shared history needed
 python3 .claude/scripts/pull-base-tooling.py   # three-way overlay; the previous team's edits are kept and listed
-npm run setup                                  # hooks, mirror, doctor
+npm run setup                                  # hooks, mirror, doctor — or: sh .claude/scripts/setup.sh
 ```
 
 Then `/recon-theme` (lineage, the conventions actually in use, compliance,
@@ -211,7 +211,7 @@ Stated plainly, so v2 does not become permanent either:
 |---|---|
 | Start here, new developer | [`first-build.md`](./first-build.md) |
 | Conventions | `.claude/rules/` — start with `CLAUDE.md` |
-| Arrive on a repo | `base-link.sh`, `pull-base-tooling.py`, `npm run setup`, `/recon-theme`, `/store-recon` |
+| Arrive on a repo | `base-link.sh`, `pull-base-tooling.py`, `npm run setup` (or `setup.sh`), `/recon-theme`, `/store-recon` |
 | Order of attack | `.claude/workflows/rebuild-playbook.md` |
 | Check a frame | `/figma-readiness` · designers: [`figma-handoff-checklist.md`](./figma-handoff-checklist.md) |
 | Build a page or component | `/build-page-from-figma` |
