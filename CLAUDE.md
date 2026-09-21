@@ -75,7 +75,7 @@ Always applies: `rules-of-engagement.md`, `naming-conventions.md`.
 Path-scoped: `sections.md`, `snippets.md`, `blocks.md`, `schemas.md`,
 `liquid.md`, `html-standards.md`, `css-in-markup.md`, `css-standards.md`,
 `javascript-standards.md`, `localization.md`, `locales.md`, `templates.md`,
-`theme-settings.md`, `assets.md`, `living-documents.md`.
+`theme-settings.md`, `assets.md`, `living-documents.md`, `accessibility.md`.
 
 `css-in-markup.md` (class naming, custom-property namespacing, settings passed
 through a `style` attribute) is scoped to Liquid and CSS both; everything else

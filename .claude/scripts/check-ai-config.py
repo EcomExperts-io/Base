@@ -54,10 +54,18 @@ ALWAYS_APPLY_ALLOWLIST = {
 # not style targets — they are the point at which something has gone structurally
 # wrong, normally a large rule scoped more widely than it needs to be. Measured
 # values at the time of writing: 1834 / 2119 / 1214 / 1152.
+#
+# Re-measured 2026-09-21 after `accessibility.md` landed on development scoped
+# to every Liquid, JS and CSS file (359 lines, a WCAG 2.2 AA standard that
+# genuinely applies to all three): 2286 / 2566 / 1573 / 1134. The caps below
+# sit just above that. They were raised, not the rule narrowed, because the
+# rule earns its scope — accessibility defects live in markup, behaviour and
+# styling alike. The ratchet still holds: the next rule that pushes a target
+# over has to say why, here, in the same commit.
 INJECTION_CAPS = {
-    "snippets/component-example.liquid": 2000,
-    "sections/example.liquid": 2300,
-    "assets/section-example.css": 1400,
+    "snippets/component-example.liquid": 2400,
+    "sections/example.liquid": 2700,
+    "assets/section-example.css": 1700,
     "assets/section-example.js": 1400,
 }
 
