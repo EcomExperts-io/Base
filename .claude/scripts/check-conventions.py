@@ -105,7 +105,24 @@ def read(path):
 # ---------------------------------------------------------------------------
 # CSS — runs on .css files and on the CSS blocks inside .liquid files
 # ---------------------------------------------------------------------------
+def blank_css_comments(text):
+    """Replace every `/* … */` body with spaces, keeping newlines.
+
+    Comments are prose. A note explaining why a pattern was *avoided* — "Base
+    expressed this as a max-width override", "this is why the !important is not
+    carried over" — must not be reported as a use of it, and the two ways out of
+    a false error are to delete the explanation or paraphrase around the word.
+    Blanking rather than deleting keeps every byte offset, so `line_of` and the
+    `offset` used for CSS inside Liquid stay exact.
+
+    See docs/ai-workflow/incidents/2026-09-16-conventions-checker-reads-css-comments-as-code.md
+    """
+    return re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text, flags=re.S)
+
+
 def scan_css(path, text, findings, offset=0, hex_check=True):
+    text = blank_css_comments(text)
+
     for m in re.finditer(r"@media[^{]*max-width", text):
         findings.append(Finding(path, offset + line_of(text, m.start()), "css-max-width-query"))
 

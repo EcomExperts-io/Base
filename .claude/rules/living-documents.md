@@ -12,8 +12,8 @@ paths:
 ## What this replaced, and why
 
 This rule used to be called `prompts-and-references.md`. It was **always-apply**
-— injected into every task on every file type — and it was entirely about
-`.cursor/prompts/` and `.cursor/references/`. Two problems with that:
+— injected into every task on every file type — and it was entirely about the
+Cursor prompts and references directories. Two problems with that:
 
 - Those two directories held **one file each in Base and did not exist at all in
   a client fork**, so in a client theme the rule spent its always-apply budget

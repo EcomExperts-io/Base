@@ -19,6 +19,11 @@ These are strictly for UX improvements that are non-blocking for conversions.
 - Perfect for FAQs, product details, filters
 - For an animated accordion, see the `<details>` usage in
   `snippets/component-filters-sidebar.liquid` and `sections/product.liquid`
+- Chrome slots a `<details>` element's content under `::details-content`, which
+  the theme's `*` box-sizing reset cannot match — so a declared height on a row
+  inside `<details>` silently gains its padding. Re-assert
+  `box-sizing: border-box` on the `<details>` root and on the `<summary>` (it is
+  slotted separately); every descendant that says `inherit` is repaired with it.
 
 **Modals and Popups:**
 - Use `<dialog>` for modals instead of custom overlays

@@ -77,6 +77,26 @@ window.scrollY` to get the section's top, and pass it to `compare.py` as
 `--rendered-offset-y`. Render the page tall enough to include the section
 (`<frame-height>` plus that offset).
 
+**Which server to render against:** the `theme-verify` one (port 9293,
+`--live-reload off`, in `.claude/launch.json`), not the hot-reload dev server.
+Hot reload holds a connection open, the renderer waits for the network to
+settle, and the render never completes. See `/run-theme`.
+
+**Verifying an interaction state** — a drawer, a modal, a mega menu, an
+accordion opened — call `render-screenshot.py` directly with `--eval`, which
+runs JavaScript in the page after it has settled at the requested viewport and
+before the capture:
+
+```bash
+python3 .claude/scripts/render-screenshot.py "<url>" <width> <frame-height> \
+  .claude/verify/<slug>/rendered-<width>-open.png \
+  --eval "document.querySelector('<opener-selector>').click()" --eval-settle-ms 1200
+```
+
+If the expression throws, the script writes nothing and exits non-zero — a
+state that was never entered must not be diffed as though it had been. The
+frame for that state has its own node id; treat it as one more breakpoint.
+
 ### 3. Mask what the store supplied
 
 Live data never matches a mock. In the browser tools, paste

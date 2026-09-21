@@ -6,6 +6,12 @@
       "runtimeExecutable": "shopify",
       "runtimeArgs": ["theme", "dev", "--port", "9292", "--live-reload", "hot-reload"],
       "port": 9292
+    },
+    {
+      "name": "theme-verify",
+      "runtimeExecutable": "shopify",
+      "runtimeArgs": ["theme", "dev", "--port", "9293", "--live-reload", "off"],
+      "port": 9293
     }
   ]
 }

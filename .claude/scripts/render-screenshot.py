@@ -26,6 +26,12 @@ would put an install step in front of every fork of this theme.
 
 Usage: render-screenshot.py <url> <width> <height> <out.png> [--wait-ms N]
                             [--deadline S] [--mobile] [--scale N]
+                            [--eval "<js>"] [--eval-settle-ms N]
+
+--eval runs JavaScript in the page once it has settled at the requested
+viewport and before the capture, for states that only exist after an
+interaction: a drawer, a modal, an overlay, an accordion opened. Without it
+those states cannot be verified against their frames at all.
 
 Exits non-zero, and writes nothing, when:
   * Chrome cannot be found or started
@@ -214,6 +220,8 @@ def main(argv):
     deadline = 120
     mobile = "--mobile" in argv
     scale = 1
+    eval_js = None
+    eval_settle_ms = 1200
     for i, a in enumerate(argv):
         if a == "--wait-ms":
             wait_ms = int(argv[i + 1])
@@ -221,6 +229,10 @@ def main(argv):
             deadline = int(argv[i + 1])
         elif a == "--scale":
             scale = int(argv[i + 1])
+        elif a == "--eval":
+            eval_js = argv[i + 1]
+        elif a == "--eval-settle-ms":
+            eval_settle_ms = int(argv[i + 1])
 
     chrome = find_chrome()
     if not chrome:
@@ -334,6 +346,26 @@ def main(argv):
                 "deviceScaleFactor": scale, "mobile": mobile,
             })
             time.sleep(0.4)
+
+        # Put the page into the state being verified, now that the viewport is
+        # the one the caller asked for — an overlay sized against the wrong
+        # viewport would diff against the wrong design.
+        if eval_js:
+            result = ws.call("Runtime.evaluate", {
+                "expression": eval_js,
+                "returnByValue": True,
+                "awaitPromise": True,
+            })
+            thrown = result.get("exceptionDetails")
+            if thrown:
+                text = thrown.get("exception", {}).get("description") or thrown.get("text")
+                print(
+                    f"render-screenshot: --eval threw: {text}. Refusing to write a "
+                    "screenshot of a state that was never entered.",
+                    file=sys.stderr,
+                )
+                return 1
+            time.sleep(eval_settle_ms / 1000)
 
         # Assert the page agrees about its own width before trusting the pixels.
         got = ws.call("Runtime.evaluate", {

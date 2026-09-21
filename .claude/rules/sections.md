@@ -155,6 +155,19 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 > QI-passed pages use, and measure at 1920 and 393 as well as at the width the Figma
 > frame was drawn at.
 
+> **If your section wrapper is a flex or grid container, give the element that
+> carries `.page-width` an explicit `inline-size: 100%`.** `.page-width` centres
+> itself with `margin-inline: auto`, and an auto cross-axis margin on a flex item
+> cancels the default `align-items: stretch` — so the container collapses to its
+> widest child and takes the band's alignment with it. Measured on a client
+> build: 532px wide at x=454 instead of 1248 at x=96, which read as a centred
+> band against a left-aligned frame.
+>
+> Every computed style still reports correct — `align-items: flex-start` and
+> `text-align: start` included — because they are. Only a pixel comparison shows
+> it. Same shape as the custom-element `display` trap in
+> `rules-of-engagement.md`.
+
 > **Mobile padding is its own merchant setting, not a multiple of the desktop
 > one.** Ruled 2026-09-17 on the Pique rebuild and adopted here 2026-09-21; it
 > replaces the `padding_top | times: 0.75` boilerplate inherited from Dawn.

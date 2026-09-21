@@ -94,7 +94,15 @@ def resolve(ref, source):
     # for exactly this form — "reference code as file_path:line_number" — so a
     # rule or an agent's memory that follows the house style must not be read
     # as pointing at a file that does not exist.
-    ref = re.sub(r":\d+(?::\d+)?$", "", ref)
+    #
+    # The range form `assets/cart.js:201-206` is the same citation over more
+    # than one line, and blocked a commit the first time an agent wrote one.
+    #
+    # So did the list form `sections/header.liquid:48,73` — two specific lines
+    # rather than a span — written by the standards coach into its own memory.
+    # Third variant of one bug: the citation syntax is wider than the pattern.
+    # Matching a repeated `[-,]\d+` group covers spans, lists, and both mixed.
+    ref = re.sub(r":\d+(?:[-,]\d+)*(?::\d+)?$", "", ref)
     if not ref or ref.startswith(SKIP_PREFIXES):
         return None
     # A glob is a pattern, not a path — `**/*.liquid` in frontmatter, and the
