@@ -48,6 +48,13 @@ RULES_DIR = ".claude/rules"
 ALWAYS_APPLY_ALLOWLIST = {
     "rules-of-engagement",
     "naming-conventions",
+    # How work is reviewed, and what the platform already handles. Both are org
+    # policy rather than file-type convention: they apply to a change in any
+    # file, and to a reviewer who is reading rather than writing. GitBot also
+    # loads code-review-policy by name, so scoping it by glob would not reduce
+    # what a review costs — only what an authoring task pays.
+    "code-review-policy",
+    "storefront-infrastructure",
 }
 
 # Ceiling on rule lines injected when editing one file of each kind. These are
