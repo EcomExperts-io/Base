@@ -17,7 +17,11 @@ export class QuickAdd extends HTMLElement {
     }
   }
 
+  /* One document listener for every quick-add instance on the page. */
   setupAjaxCartButtons() {
+    if (QuickAdd.submitListenerBound) return;
+    QuickAdd.submitListenerBound = true;
+
     document.addEventListener('submit', (event) => {
       const form = event.target;
       if (!(form instanceof HTMLFormElement)) return;

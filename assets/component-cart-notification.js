@@ -29,9 +29,11 @@ export class CartNotification extends HTMLElement {
    * @param {CustomEvent} event - cart:change event from cart.js.
    */
   onCartUpdate(event) {
-    if (event.detail.action === 'add') {
-      this.updateNotification(event.detail.response);
-    }
+    if (event.detail.action !== 'add') return;
+
+    // JSON adds respond with { items: [...] }; show the first line added.
+    const item = event.detail.response?.items?.[0];
+    if (item) this.updateNotification(item);
   }
 
   /**
@@ -49,7 +51,7 @@ export class CartNotification extends HTMLElement {
           <img src="${updatedCartNotification.image}" alt="${updatedCartNotification.featured_image.alt}" width="70" height="70">
         </div>
         <div>
-          <p class="caption-with-letter-spacing">Shopify</p>
+          <p class="caption-with-letter-spacing">${updatedCartNotification.vendor || ''}</p>
           <h3 class="cart-notification-product__name h4">${updatedCartNotification.product_title}</h3>
           <dl>${optionsHTML}</dl>
         </div>

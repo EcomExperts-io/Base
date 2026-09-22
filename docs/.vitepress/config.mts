@@ -74,7 +74,6 @@ export default defineConfig({
           items: [
             { text: 'Article Card', link: '/snippets/component-article-card' },
             { text: 'Cart Discount', link: '/snippets/component-cart-discount' },
-            { text: 'Cart Drawer', link: '/snippets/component-cart-drawer' },
             { text: 'Cart Notification', link: '/snippets/component-cart-notification' },
             { text: 'Filters Drawer', link: '/snippets/component-filters-drawer' },
             { text: 'Filters Horizontal', link: '/snippets/component-filters-horizontal' },
@@ -107,9 +106,7 @@ export default defineConfig({
 
             { text: 'Cart Engine', link: '/assets/cart' },
             { text: 'Cart Discount', link: '/assets/component-cart-discount' },
-            { text: 'Cart Drawer', link: '/assets/component-cart-drawer' },
             { text: 'Cart Notification', link: '/assets/component-cart-notification' },
-            { text: 'Cart Page', link: '/assets/component-cart-page' },
             { text: 'Product Card', link: '/assets/component-product-card' },
             { text: 'Filters Price Range', link: '/assets/component-filters-price-range' },
             { text: 'Infinite Scroll', link: '/assets/component-infinite-scroll' },

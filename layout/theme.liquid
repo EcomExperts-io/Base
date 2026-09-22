@@ -52,7 +52,10 @@
     <script type="application/json" id="cart-data">
       {{ cart | json }}
     </script>
-    <script src="{{ 'cart.js' | asset_url }}" type="module"></script>
+    <script src="{{ 'cart-store.js' | asset_url }}" type="module"></script>
+    <script src="{{ 'component-cart-count.js' | asset_url }}" type="module"></script>
+    <script src="{{ 'component-product-form.js' | asset_url }}" type="module"></script>
+    {% render 'component-cart-rules' %}
 
     {%- if settings.predictive_search_enabled -%}
       {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
@@ -77,6 +80,11 @@
     </main>
 
     {% sections 'footer-group' %}
+
+    {% section 'cart-json' %}
+    {%- if settings.cart_type == 'drawer' -%}
+      {% section 'cart-drawer' %}
+    {%- endif -%}
 
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'component-predictive-search.js' | asset_url }}" type="module"></script>

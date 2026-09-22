@@ -416,28 +416,28 @@ class DataLayerAddToCart extends HTMLElement {
       return;
     }
 
-    // FormData adds respond with the added line item at the top level
-    const { sku, id, product_title, vendor, product_type, variant_title, price, quantity } = detail.response;
-    const sellingPlanId = detail.response?.selling_plan_allocation?.selling_plan?.id || null;
+    // JSON adds respond with { items: [...] } — one entry per line added.
+    const added = detail.response.items || [];
+    if (!added.length) return;
 
-    const item = {
-      item_id: sku || id.toString(),
-      item_name: product_title,
-      item_brand: vendor,
-      item_category: product_type,
-      item_variant: variant_title,
-      price: price / 100,
-      quantity: quantity,
-    };
+    const items = added.map((line) => {
+      const { sku, id, product_title, vendor, product_type, variant_title, price, quantity } = line;
+      const sellingPlanId = line.selling_plan_allocation?.selling_plan?.id || null;
 
-    if (sellingPlanId) {
-      item.selling_plan_id = sellingPlanId;
-      item.purchase_type = 'subscription';
-    } else {
-      item.purchase_type = 'one-time';
-    }
+      return {
+        item_id: sku || id.toString(),
+        item_name: product_title,
+        item_brand: vendor,
+        item_category: product_type,
+        item_variant: variant_title,
+        price: price / 100,
+        quantity,
+        selling_plan_id: sellingPlanId || undefined,
+        purchase_type: sellingPlanId ? 'subscription' : 'one-time',
+      };
+    });
 
-    const cartValue = item.price * quantity;
+    const cartValue = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     DataLayerUtility.pushToDataLayer({
       event: 'add_to_cart',
@@ -445,7 +445,7 @@ class DataLayerAddToCart extends HTMLElement {
         currency: window.Shopify?.currency?.active || 'USD',
         value: cartValue,
         cart_value_text: `${cartValue.toFixed(2)}`,
-        items: [item],
+        items,
       },
     });
   }

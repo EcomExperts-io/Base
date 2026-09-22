@@ -126,6 +126,7 @@
             data-section-id="{{ section_id }}"
             class="quick-add__icon-wrapper no-js-hidden"
           >
+            <product-form>
             {% form 'product', card_product, id: product_form_id, novalidate: 'novalidate' %}
               <input
                 type="hidden"
@@ -167,6 +168,7 @@
                 </span>
               </button>
             {%- endform -%}
+            </product-form>
           </div>
         {%- endif -%}
       {% endif %}

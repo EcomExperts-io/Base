@@ -740,3 +740,41 @@ h2.cart__empty-text {
     font-size: 1.2rem;
   }
 }
+/* ---- shared line item (component-cart-line-item) ---- */
+
+
+button.cart-drawer__close,
+button.drawer-overlay {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cart-item__components {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  font-size: 1.3rem;
+  opacity: 0.7;
+}
+
+.cart-item__quantity-static {
+  font-size: 1.3rem;
+  opacity: 0.7;
+}
+
+.cart-item__gift-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cart-item--kit-child .cart-item__media {
+  width: 48px;
+}
+
+[aria-busy='true'] .cart-quantity {
+  opacity: 0.5;
+  pointer-events: none;
+}

@@ -1,199 +1,112 @@
+/**
+ * <cart-discount-form data-codes> — applies and removes discount codes through
+ * Cart.update({ discount }). The pills, totals and line prices all come back
+ * as rendered HTML in the same request, so this element renders nothing
+ * itself except an error message.
+ *
+ * `data-codes` is the comma-separated list of codes Liquid found applied.
+ * After a successful apply, the store re-renders this element, so the check
+ * for "did Shopify actually accept the code" reads the new cart state.
+ * @extends HTMLElement
+ */
 export class CartDiscountForm extends HTMLElement {
+  constructor() {
+    super();
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onClick = this.onClick.bind(this);
+  }
+
   connectedCallback() {
-    this.form = this.querySelector('#cart-discount-form');
-    this.input = this.querySelector('#discount-code-input');
-    this.errorEl = this.querySelector('.cart-discount__error');
-    this.codesList = this.querySelector('.cart-discount__codes');
-    this.submitBtn = this.form?.querySelector('button[type="submit"]');
-    this.originalButtonText = this.submitBtn?.textContent.trim();
-
-    if (!this.form) return;
-
-    this.form.addEventListener('submit', this.handleSubmit.bind(this));
-    this.codesList?.addEventListener('click', this.handleRemoveClick.bind(this));
+    this.addEventListener('submit', this.onSubmit);
+    this.addEventListener('click', this.onClick);
   }
 
   disconnectedCallback() {
-    this.form?.removeEventListener('submit', this.handleSubmit.bind(this));
-    this.codesList?.removeEventListener('click', this.handleRemoveClick.bind(this));
+    this.removeEventListener('submit', this.onSubmit);
+    this.removeEventListener('click', this.onClick);
   }
 
-  showError(msg) {
-    const errorText = this.errorEl?.querySelector('.cart-discount__error-text');
-    if (errorText) {
-      errorText.textContent = msg;
-      this.errorEl.style.display = 'flex';
-    }
+  get codes() {
+    return (this.dataset.codes || '').split(',').filter(Boolean);
   }
 
-  hideError() {
-    if (this.errorEl) {
-      this.errorEl.style.display = 'none';
-      const errorText = this.errorEl.querySelector('.cart-discount__error-text');
-      if (errorText) errorText.textContent = '';
-    }
+  get input() {
+    return this.querySelector('input[name="discount_code"]');
   }
 
-  setLoading(loading) {
-    if (this.submitBtn) {
-      this.submitBtn.disabled = loading;
-      this.submitBtn.textContent = loading ? 'Applying...' : this.originalButtonText;
-    }
-    if (this.input) this.input.disabled = loading;
+  /** The element is replaced when its section re-renders; find the live one. */
+  get live() {
+    return this.isConnected ? this : document.querySelector('cart-discount-form') || this;
   }
 
-  async applyDiscount(codes) {
-    const res = await fetch(`${window.Shopify.routes.root}cart/update.js`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ discount: codes })
-    });
+  showError(message) {
+    const box = this.querySelector('[data-discount-error]');
+    const text = this.querySelector('[data-discount-error-text]');
+    if (!box || !text) return;
 
-    if (!res.ok) throw new Error(`Discount update failed: ${res.status}`);
-    return res.json();
+    text.textContent = message;
+    box.hidden = false;
   }
 
-  getExistingCodes() {
-    return Array.from(this.querySelectorAll('.cart-discount__pill'))
-      .map(pill => pill.dataset.discountCode)
-      .filter(Boolean);
+  setBusy(busy) {
+    this.toggleAttribute('aria-busy', busy);
+    for (const control of this.querySelectorAll('input, button')) control.disabled = busy;
   }
 
-  getCartDiscountCodes(cart) {
-    const codes = (cart.cart_level_discount_applications || [])
-      .filter(app => app.type === 'discount_code')
-      .map(app => app.title);
-
-    (cart.items || []).forEach(item => {
-      if (item.discounts) {
-        item.discounts.forEach(d => d.title && codes.push(d.title));
-      }
-      if (item.line_level_discount_allocations) {
-        item.line_level_discount_allocations.forEach(a => {
-          if (a.discount_application?.title) codes.push(a.discount_application.title);
-        });
-      }
-    });
-
-    return [...new Set(codes)];
+  hasCode(code) {
+    return this.codes.some((existing) => existing.toUpperCase() === code.toUpperCase());
   }
 
-  createPill(code) {
-    const li = document.createElement('li');
-    li.className = 'cart-discount__pill';
-    li.dataset.discountCode = code;
+  /**
+   * Shopify accepts any string in `discount` and simply ignores invalid codes,
+   * so acceptance is checked against the cart that comes back.
+   */
+  static isApplied(cart, code) {
+    const upper = code.toUpperCase();
 
-    const codeP = document.createElement('p');
-    codeP.className = 'cart-discount__pill-code';
-    codeP.textContent = code;
+    if (cart.cart_level_discount_applications?.some((app) => app.title?.toUpperCase() === upper)) return true;
 
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'cart-discount__pill-remove';
-    removeBtn.setAttribute('aria-label', `Remove discount ${code}`);
-
-    const existingIcon = this.querySelector('.cart-discount__pill-remove')?.innerHTML;
-    removeBtn.innerHTML = existingIcon || '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-
-    li.appendChild(codeP);
-    li.appendChild(removeBtn);
-    return li;
+    return cart.items?.some((item) =>
+      item.line_level_discount_allocations?.some((allocation) => allocation.discount_application?.title?.toUpperCase() === upper)
+    );
   }
 
-  updatePills(cart) {
-    if (!this.codesList) return;
-
-    const allDiscountCodes = this.getCartDiscountCodes(cart);
-    const currentCodes = this.getExistingCodes();
-    const currentPills = Array.from(this.codesList.querySelectorAll('.cart-discount__pill'));
-
-    currentPills.forEach(pill => {
-      const code = pill.dataset.discountCode;
-      if (!allDiscountCodes.some(c => c.toUpperCase() === code.toUpperCase())) {
-        pill.remove();
-      }
-    });
-
-    allDiscountCodes.forEach(code => {
-      if (!currentCodes.some(c => c.toUpperCase() === code.toUpperCase())) {
-        this.codesList.appendChild(this.createPill(code));
-      }
-    });
-  }
-
-  async handleSubmit(event) {
+  async onSubmit(event) {
     event.preventDefault();
-    this.hideError();
 
     const code = this.input?.value.trim();
-    if (!code) {
-      this.showError('Please enter a discount code.');
-      return;
-    }
+    if (!code || this.hasCode(code)) return;
 
-    const existing = this.getExistingCodes();
-    if (existing.some(c => c.toUpperCase() === code.toUpperCase())) {
-      this.input.value = '';
-      return;
-    }
+    this.setBusy(true);
 
-    this.setLoading(true);
     try {
-      const allCodes = [...existing, code].join(',');
-      await this.applyDiscount(allCodes);
+      const response = await window.Cart.update({ discount: [...this.codes, code].join(',') }, { source: this });
+      const cart = window.Cart.state || response;
 
-      const cart = await fetch(`${window.Shopify.routes.root}cart.js`).then(r => r.json());
-      const cartCodes = this.getCartDiscountCodes(cart);
-      const isApplied = cartCodes.some(c => c.toUpperCase() === code.toUpperCase());
-
-      if (isApplied) {
-        this.input.value = '';
-        this.updatePills(cart);
-
-        window.Cart?.refresh();
-      } else {
-        this.showError('That discount code is not valid.');
-      }
-    } catch (err) {
-      console.error(err);
-      this.showError('Something went wrong while applying the code.');
+      if (!CartDiscountForm.isApplied(cart, code)) this.live.showError(this.dataset.errorInvalid);
+    } catch (error) {
+      this.live.showError(error.description || this.dataset.errorGeneric);
     } finally {
-      this.setLoading(false);
+      this.setBusy(false);
     }
   }
 
-  async handleRemoveClick(event) {
-    const removeBtn = event.target.closest('.cart-discount__pill-remove');
-    if (!removeBtn) return;
+  async onClick(event) {
+    const button = event.target.closest('[data-remove-discount]');
+    if (!button) return;
 
-    const pill = removeBtn.closest('.cart-discount__pill');
-    const codeToRemove = pill?.dataset.discountCode;
-    if (!codeToRemove) return;
+    const code = button.closest('[data-discount-code]')?.dataset.discountCode;
+    if (!code) return;
 
-    event.preventDefault();
-    this.hideError();
-
-    pill.classList.add('cart-discount__pill--removing');
-    removeBtn.disabled = true;
+    this.setBusy(true);
 
     try {
-      const existing = this.getExistingCodes();
-      const remaining = existing.filter(c => c.toUpperCase() !== codeToRemove.toUpperCase());
-      const codes = remaining.length > 0 ? remaining.join(',') : '';
-
-      await this.applyDiscount(codes);
-
-      const cart = await fetch(`${window.Shopify.routes.root}cart.js`).then(r => r.json());
-      this.updatePills(cart);
-
-      window.Cart?.refresh();
-    } catch (err) {
-      console.error(err);
-      pill.classList.remove('cart-discount__pill--removing');
-      removeBtn.disabled = false;
-      this.showError('Something went wrong while removing the discount.');
-      const cart = await fetch(`${window.Shopify.routes.root}cart.js`).then(r => r.json());
-      this.updatePills(cart);
+      const remaining = this.codes.filter((existing) => existing.toUpperCase() !== code.toUpperCase());
+      await window.Cart.update({ discount: remaining.join(',') }, { source: this });
+    } catch (error) {
+      this.live.showError(error.description || this.dataset.errorGeneric);
+    } finally {
+      this.setBusy(false);
     }
   }
 }

@@ -1,0 +1,139 @@
+{% comment %}
+  Slide-out cart. A standalone section, rendered from layout/theme.liquid when
+  settings.cart_type is 'drawer', so the Section Rendering API returns only the
+  drawer on each cart mutation — not the header it used to live inside.
+
+  <cart-drawer> (section-cart-drawer.js) owns open/close and swaps
+  .drawer__wrapper from the HTML that cart-store.js bundles into each mutation.
+  `data-cart-section` marks it for re-rendering.
+
+  No `presets`: static section rendered from layout/theme.liquid, never placed
+  by a merchant.
+{% endcomment %}
+{{ 'cart.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .section-{{ section.id }}-padding .drawer__wrapper {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding .drawer__wrapper {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<cart-drawer
+  id="cart-drawer"
+  class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
+  data-cart-section
+>
+  <button type="button" class="drawer-overlay" data-drawer-close>
+    <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+  </button>
+
+  <div class="drawer__wrapper" role="dialog" aria-modal="true" aria-label="{{ 'cart.title' | t }}" tabindex="-1">
+    {%- if cart == empty -%}
+      <div class="cart-header cart-header--empty">
+        <button type="button" class="cart-drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
+      </div>
+
+      <div class="cart-empty">
+        <div class="cart__empty-content">
+          <h2 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h2>
+          <a href="{{ routes.all_products_collection_url }}" class="button">
+            {{ 'general.continue_shopping' | t }}
+          </a>
+
+          {%- if shop.customer_accounts_enabled and customer == null -%}
+            <p>{{ 'sections.cart.login.title' | t }}</p>
+            <p class="cart__login-paragraph">
+              {{ 'sections.cart.login.paragraph_html' | t: link: routes.account_login_url }}
+            </p>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.empty_collection != blank -%}
+          {%- assign card_collection = section.settings.empty_collection -%}
+          <div class="cart-collection">
+            <a href="{{ card_collection.url }}">
+              {%- if card_collection.featured_image -%}
+                {{ card_collection.featured_image | image_url: width: 1500 | image_tag: alt: card_collection.title }}
+              {%- endif -%}
+              <div class="cart-collection__title">{{ card_collection.title }}</div>
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- else -%}
+      <div class="cart-header">
+        <h2>{{ 'cart.title' | t }} (<cart-count>{{ cart.item_count }}</cart-count>)</h2>
+        <button type="button" class="cart-drawer__close" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
+      </div>
+
+      <div class="cart-items">
+        {%- for line_item in cart.items -%}
+          {% render 'component-cart-line-item', line_item: line_item %}
+        {%- endfor -%}
+      </div>
+
+      {% render 'component-cart-summary' %}
+    {%- endif -%}
+  </div>
+</cart-drawer>
+
+<script src="{{ 'component-cart-count.js' | asset_url }}" type="module"></script>
+<script src="{{ 'component-cart-line-item.js' | asset_url }}" type="module"></script>
+<script src="{{ 'component-cart-discount.js' | asset_url }}" type="module"></script>
+<script src="{{ 'section-cart-drawer.js' | asset_url }}" type="module"></script>
+
+{% schema %}
+{
+  "name": "t:sections.cart-drawer.name",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "collection",
+      "id": "empty_collection",
+      "label": "t:sections.cart-drawer.settings.empty_collection.label",
+      "info": "t:sections.cart-drawer.settings.empty_collection.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

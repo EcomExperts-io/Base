@@ -1,0 +1,27 @@
+{% doc %}
+  Renders the cart rules config from theme settings as JSON and loads
+  cart-rules.js. Rendered once from layout/theme.liquid.
+
+  The gift threshold setting is entered in the shop's currency and converted to
+  cents here, because cart.total_price is in cents.
+
+  @example
+  {% render 'component-cart-rules' %}
+{% enddoc %}
+
+{%- liquid
+  assign gwp_variant = settings.gwp_product.selected_or_first_available_variant
+  assign gwp_threshold = settings.gwp_threshold | times: 100 | round
+-%}
+
+<script type="application/json" id="cart-rules-config">
+  {
+    "gwp": {
+      "enabled": {% if settings.gwp_enabled and gwp_variant %}true{% else %}false{% endif %},
+      "id": "gwp-{{ gwp_variant.id }}",
+      "variant_id": {{ gwp_variant.id | default: 0 }},
+      "threshold": {{ gwp_threshold | default: 0 }}
+    }
+  }
+</script>
+<script src="{{ 'cart-rules.js' | asset_url }}" type="module"></script>

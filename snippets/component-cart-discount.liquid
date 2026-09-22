@@ -1,12 +1,45 @@
-<cart-discount-form>
+{% doc %}
+  Discount code form and applied-code pills. Pills are rendered by Liquid from
+  the cart's discount applications and re-rendered from the Section Rendering
+  API after <cart-discount-form> (component-cart-discount.js) calls
+  Cart.update({ discount }). No pill is ever built in JavaScript.
+
+  @example
+  {% render 'component-cart-discount' %}
+{% enddoc %}
+
+{%- liquid
+  assign applied_codes = ''
+  for discount_application in cart.cart_level_discount_applications
+    if discount_application.type == 'discount_code'
+      assign applied_codes = applied_codes | append: discount_application.title | append: ','
+    endif
+  endfor
+  for item in cart.items
+    for allocation in item.line_level_discount_allocations
+      if allocation.discount_application.type == 'discount_code'
+        assign applied_codes = applied_codes | append: allocation.discount_application.title | append: ','
+      endif
+    endfor
+  endfor
+  assign applied_codes = applied_codes | split: ',' | uniq
+-%}
+
+<cart-discount-form
+  data-codes="{{ applied_codes | join: ',' | escape }}"
+  data-error-invalid="{{ 'cart.discount_code_error' | t | escape }}"
+  data-error-generic="{{ 'cart.error_generic' | t | escape }}"
+>
   <div class="cart-discount">
-    <form id="cart-discount-form" class="cart-discount__form">
+    <form class="cart-discount__form" data-discount-form>
+      <label for="discount-code-input" class="visually-hidden">{{ 'cart.discount_code' | t }}</label>
       <input
         id="discount-code-input"
         name="discount_code"
         type="text"
         class="cart-discount__input"
         placeholder="{{ 'cart.discount_code' | t }}"
+        autocomplete="off"
         required
       >
       <button type="submit" class="cart-discount__button">
@@ -14,57 +47,29 @@
       </button>
     </form>
 
-    <div class="cart-discount__error" style="display: none;" role="alert">
+    <div class="cart-discount__error" role="alert" hidden data-discount-error>
       <span class="svg-wrapper">
         {{- 'icon-error.svg' | inline_asset_content -}}
       </span>
-      <p class="cart-discount__error-text"></p>
+      <p class="cart-discount__error-text" data-discount-error-text></p>
     </div>
 
-    <ul class="cart-discount__codes">
-      {%- for discount_application in cart.cart_level_discount_applications -%}
-        {%- if discount_application.type == 'discount_code' -%}
-          <li
-            class="cart-discount__pill"
-            data-discount-code="{{ discount_application.title | escape }}"
-          >
-            <p class="cart-discount__pill-code">
-              {{ discount_application.title | escape }}
-            </p>
+    {%- if applied_codes.size > 0 -%}
+      <ul class="cart-discount__codes">
+        {%- for code in applied_codes -%}
+          <li class="cart-discount__pill" data-discount-code="{{ code | escape }}">
+            <p class="cart-discount__pill-code">{{ code | escape }}</p>
             <button
               type="button"
               class="cart-discount__pill-remove"
-              aria-label="{{ 'cart.remove_discount' | t: default: 'Remove discount' }} {{ discount_application.title | escape }}"
+              data-remove-discount
+              aria-label="{{ 'cart.remove_discount' | t }} {{ code | escape }}"
             >
               {{- 'icon-close.svg' | inline_asset_content -}}
             </button>
           </li>
-        {%- endif -%}
-      {%- endfor -%}
-      
-      {%- for item in cart.items -%}
-        {%- if item.discounts.size > 0 -%}
-          {%- for discount in item.discounts -%}
-            {%- if discount.title -%}
-              <li
-                class="cart-discount__pill"
-                data-discount-code="{{ discount.title | escape }}"
-              >
-                <p class="cart-discount__pill-code">
-                  {{ discount.title | escape }}
-                </p>
-                <button
-                  type="button"
-                  class="cart-discount__pill-remove"
-                  aria-label="{{ 'cart.remove_discount' | t: default: 'Remove discount' }} {{ discount.title | escape }}"
-                >
-                  {{- 'icon-close.svg' | inline_asset_content -}}
-                </button>
-              </li>
-            {%- endif -%}
-          {%- endfor -%}
-        {%- endif -%}
-      {%- endfor -%}
-    </ul>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
   </div>
 </cart-discount-form>

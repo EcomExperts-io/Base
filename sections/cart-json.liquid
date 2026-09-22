@@ -1,0 +1,18 @@
+{% comment %}
+  Cart state as JSON. Rendered once from layout/theme.liquid and requested
+  again by cart-store.js in every mutation's `sections=` list, so state and
+  cart HTML come back in one response. Presentation-free by design.
+
+  No `presets`: static section rendered from layout/theme.liquid, never placed
+  by a merchant. No `padding_*` or `color_scheme`: it renders no markup.
+{% endcomment %}
+<script type="application/json" data-cart-json>
+  {{ cart | json }}
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.cart-json.name",
+  "settings": []
+}
+{% endschema %}

@@ -117,7 +117,7 @@
   #header-cart-bubble svg, .header-actions_account svg {
     width: 25px;
   }
-  [data-cart-count] {
+  #header-cart-bubble cart-count {
     position: absolute;
     display: grid;
     place-items: center;
@@ -396,9 +396,14 @@
         {%- endcase -%}
       {%- endfor -%}
 
-      <a id="header-cart-bubble" href="{{ routes.cart_url }}">
+      <a
+        id="header-cart-bubble"
+        href="{{ routes.cart_url }}"
+        aria-label="{{ 'cart.title' | t }}"
+        {% if settings.cart_type == 'drawer' %}data-cart-open{% endif %}
+      >
         {{- 'icon-cart.svg' | inline_asset_content -}}
-        <div data-cart-count>{{ cart.item_count }}</div>
+        <cart-count>{{ cart.item_count }}</cart-count>
       </a>
     </div>
 
@@ -444,10 +449,6 @@
       color_scheme: section.settings.color_scheme,
       desktop_menu_type: section.settings.menu_type_desktop
     -%}
-  {%- endif -%}
-
-  {%- if settings.cart_type == 'drawer' -%}
-    {%- render 'component-cart-drawer' -%}
   {%- endif -%}
 </div>
 

@@ -286,8 +286,20 @@
         }
       }
     },
-    "main-cart-items": {
+    "cart": {
       "name": "Cart"
+    },
+    "cart-drawer": {
+      "name": "Cart drawer",
+      "settings": {
+        "empty_collection": {
+          "label": "Empty-cart collection",
+          "info": "Shown when the cart is empty"
+        }
+      }
+    },
+    "cart-json": {
+      "name": "Cart data"
     },
     "main-product": {
       "name": "Product",
@@ -1144,11 +1156,19 @@
         "show_cart_note": {
           "label": "Show cart note"
         },
-        "cart_drawer": {
-          "header": "Cart drawer",
-          "collection": {
-            "label": "Upsell collection",
-            "info": "Products to show below the cart"
+        "gwp": {
+          "header": "Gift with purchase",
+          "enabled": {
+            "label": "Enable gift with purchase",
+            "info": "Adds the gift to the cart when the subtotal reaches the threshold and removes it when it drops below. Make the gift free with an automatic Buy X Get Y discount at the same threshold."
+          },
+          "product": {
+            "label": "Gift product",
+            "info": "Its first available variant is added"
+          },
+          "threshold": {
+            "label": "Cart subtotal threshold",
+            "info": "In the store currency"
           }
         }
       }

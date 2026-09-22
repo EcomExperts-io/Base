@@ -50,7 +50,13 @@
     "apply": "Apply",
     "discount_code_error": "Discount code cannot be applied to your cart",
     "shipping_discount_error": "Shipping discounts are shown at checkout after adding an address",
-    "remove_discount": "Remove discount"
+    "remove_discount": "Remove discount",
+    "error_generic": "Something went wrong. Please try again.",
+    "free_gift": "Free gift",
+    "quantity_label": "Quantity",
+    "quantity_for": "Quantity for {{ title }}",
+    "increase_quantity": "Increase quantity for {{ title }}",
+    "decrease_quantity": "Decrease quantity for {{ title }}"
   },
   "customer": {
     "account": {

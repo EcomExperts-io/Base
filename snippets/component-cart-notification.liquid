@@ -168,11 +168,7 @@
         href="{{ routes.cart_url }}"
         class="cart-notification-button"
       >
-        {{ 'general.cart.view_empty_cart' | t }} (<span
-          data-cart-count
-          id="cart-notification-count"
-        ></span
-        >)
+        {{ 'general.cart.view_empty_cart' | t }} (<cart-count>{{ cart.item_count }}</cart-count>)
       </a>
       <form action="{{ routes.cart_url }}" method="post" id="cart-notification-form">
         <button name="checkout">

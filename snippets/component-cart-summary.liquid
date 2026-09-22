@@ -1,0 +1,45 @@
+{% doc %}
+  Cart footer shared by the drawer and the page: order note, discount form,
+  discount summary, total and the checkout form. Everything here is rendered
+  by Liquid and re-rendered from the Section Rendering API — no money or
+  discount state is formatted in JavaScript.
+
+  @example
+  {% render 'component-cart-summary' %}
+{% enddoc %}
+
+<div class="cart-footer">
+  {%- if settings.show_cart_note -%}
+    <div class="cart-note">
+      <label for="CartNote">{{ 'cart.seller_note' | t }}</label>
+      <textarea name="note" id="CartNote" data-cart-note>{{ cart.note }}</textarea>
+    </div>
+  {%- endif -%}
+
+  <div class="cart-actions">
+    {% render 'component-cart-discount' %}
+
+    <div class="cart-charges">
+      {%- if cart.cart_level_discount_applications.size > 0 -%}
+        <ul class="cart-discounts">
+          {%- for discount_application in cart.cart_level_discount_applications -%}
+            <li>
+              {{- 'icon-discount.svg' | inline_asset_content -}}
+              {{ discount_application.title }} (-{{ discount_application.total_allocated_amount | money }})
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <div class="cart-total">
+        <span class="cart-total__label">{{ 'cart.estimated_total' | t }}</span>
+        <span>{{ cart.total_price | money }}</span>
+      </div>
+      <small class="cart-total__small">{{ 'cart.taxes_and_shipping_policy' | t }}</small>
+    </div>
+
+    {% form 'cart', cart, id: 'cart-checkout-form' %}
+      <button type="submit" name="checkout">{{ 'cart.checkout' | t }}</button>
+    {% endform %}
+  </div>
+</div>
