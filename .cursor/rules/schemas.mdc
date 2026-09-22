@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/schemas.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1411073358 -->
+<!-- checksum: 894225101 -->
 
 
 # Schema Standards
@@ -77,6 +77,19 @@ reads in the theme editor:
 
 Count it before you commit; the pre-commit Theme Check will otherwise tell you
 at the worst moment.
+
+## Blocks are capped at 50; settings are not
+
+A section may define at most **50 blocks**. `max_blocks` lowers that ceiling; it
+cannot raise it. Exceeding it is a real deploy failure.
+
+There is **no documented maximum on the `settings` array**. A section with sixty
+settings is hard to use and probably wants splitting, but it is a usability
+judgement, not a validation or deploy risk, and must never be reported as one.
+
+The distinction matters because the two are easy to conflate. A wrongly claimed
+limit sends someone chasing a failure that cannot happen, and they lose more time
+proving it is fine than they would have spent on a real defect.
 
 ## Schema Structure
 ```json

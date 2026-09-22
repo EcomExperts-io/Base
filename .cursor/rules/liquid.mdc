@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/liquid.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3200049129 -->
+<!-- checksum: 1257088592 -->
 
 
 # Liquid Syntax Standards
@@ -197,6 +197,46 @@ and that the paginated form (`{% paginate shop.metaobjects.<type>.values by 250 
 and the bare form behave differently once a type holds more entries than a
 single page. If a section says "leave empty to list every entry", check which
 form it uses before believing it.
+
+### Nil is not an error
+
+Liquid is nil-tolerant, and this is the single most common source of invented
+bug reports. A missing or nil value renders as empty. `contains` against nil is
+false rather than a failure. A filter applied to nil returns nil or its empty
+equivalent; it does not raise.
+
+```liquid
+{%- comment -%} None of these error. All of them render nothing. {%- endcomment -%}
+{{ product.metafields.custom.missing }}
+{% if product.tags contains undefined_variable %}{% endif %}
+{{ nil_value | upcase | strip }}
+```
+
+So a nil reaching a filter is not a crash — it is a silent blank, which is a
+content bug and should be reported as one. Do not describe it as a runtime error,
+and do not carry expectations from Ruby, JavaScript or Jekyll into Liquid: those
+raise where Liquid shrugs.
+
+The real risk of a nil is what it takes with it. A `{% if %}` guarding a block of
+markup on a nil value renders the whole block empty, which is how a section
+silently loses its content rather than failing loudly.
+
+### `with` before a named argument still parses
+
+The `render` tag collects named arguments wherever they appear, so the `with`
+keyword in front of one is redundant rather than broken:
+
+```liquid
+{%- comment -%} Both pass items identically. The first is just noisy. {%- endcomment -%}
+{% render 'component-list' with items: collection.products %}
+{% render 'component-list', items: collection.products %}
+```
+
+Prefer the comma form. But an undocumented spelling is not automatically a syntax
+error — parsers routinely accept forms the documentation does not show. Reporting
+working markup as broken syntax is worse than leaving the redundancy alone: it is
+the first thing a developer reads, and it sends them rewriting something that
+already renders.
 
 ## Inline Variables Pattern
 

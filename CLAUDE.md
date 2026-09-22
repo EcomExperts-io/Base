@@ -65,12 +65,13 @@ Full conventions are one-topic-per-file in `.claude/rules/`. Each is scoped by a
 `paths` glob except the always-apply ones. **Read the relevant file before
 writing non-trivial code in that area** — this summary is not a substitute.
 
-Always applies: `rules-of-engagement.md`, `naming-conventions.md`.
+Always applies: `rules-of-engagement.md`, `naming-conventions.md`,
+`code-review-policy.md`, `storefront-infrastructure.md`.
 
 Path-scoped: `sections.md`, `snippets.md`, `blocks.md`, `schemas.md`,
 `liquid.md`, `html-standards.md`, `css-in-markup.md`, `css-standards.md`,
 `javascript-standards.md`, `localization.md`, `locales.md`, `templates.md`,
-`theme-settings.md`, `assets.md`, `living-documents.md`.
+`theme-settings.md`, `assets.md`, `living-documents.md`, `accessibility.md`.
 
 Two notes on scope, because both were wrong until recently:
 
