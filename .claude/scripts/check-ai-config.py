@@ -55,6 +55,10 @@ ALWAYS_APPLY_ALLOWLIST = {
     # what a review costs — only what an authoring task pays.
     "code-review-policy",
     "storefront-infrastructure",
+    # Its counterpart for fixing a finding. GitBot's Fix button loads it by
+    # name, and a person fixing a finding with an agent should get the same
+    # instruction the button does.
+    "code-fix-policy",
 }
 
 # Ceiling on rule lines injected when editing one file of each kind. These are

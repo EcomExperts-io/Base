@@ -1,0 +1,59 @@
+---
+description: How a review finding is fixed — the smallest change, in the file's own style, and when to leave it for a person
+globs: 
+alwaysApply: true
+---
+
+<!-- GENERATED from .claude/rules/code-fix-policy.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
+<!-- checksum: 4099046691 -->
+
+
+# Code fix policy
+
+Applies to GitBot's Fix button, which reads this file directly, and to anyone
+fixing a review finding by hand or with an agent.
+
+## Change only what the finding names
+
+Make the smallest edit that resolves the finding. Leave everything else in the
+file alone: no reformatting, no renaming, no reordering, no tidying nearby code,
+and no fixing a different problem you happen to notice. A second problem is a
+second finding.
+
+When a finding asks for a comment to be rewritten — into LiquidDoc, say — keep
+what the comment said. A note about where a file lives or why a name must not
+change is the kind of thing nobody can recover once it is gone.
+
+## Match the file
+
+Use the file's own indentation, quoting, naming, and the way it already does the
+same thing elsewhere. Where the cited rule shows the pattern to use, use that
+pattern.
+
+## Keep behaviour, except for the defect
+
+A fix must not change what a shopper sees or does beyond the defect itself: no
+new copy, no removed attributes, no moved markup, no renamed classes that styles
+or scripts may depend on. Do not delete code to make a finding go away unless
+the finding is that the code should go.
+
+Never change a `{% schema %}` setting id, a block type, or anything else that
+saved merchant data points at. Renaming one silently drops what merchants have
+configured, and nothing in the file shows it happened.
+
+## When to decline
+
+Decline, and say why, when:
+
+- the finding is mistaken, or the code already does what it asks;
+- the fix needs another file — a locale key, a snippet, a setting in another
+  section — or anything you cannot see, such as merchant data or copy;
+- the right fix is a judgement call between options, or a design decision.
+
+Declining is a correct answer. A developer can still fix a finding by hand; they
+cannot un-see a commit that changed something they did not ask about.
+
+## Leave no trace but the fix
+
+Do not add comments explaining the change. The commit says what was fixed and
+why.
