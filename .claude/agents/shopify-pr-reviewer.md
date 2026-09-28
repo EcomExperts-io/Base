@@ -134,11 +134,20 @@ Group findings by severity. For each:
   misleading"
 - **Suggested fix** — specific, minimal
 
-Severity:
-- **Blocker** — fabricated data reaching shoppers, broken behaviour, wrong copy
-- **Should fix** — dead code, unreachable branches, wrong comments, convention
-  breaches
+Severity — classified by consequence, per `.claude/rules/code-review-policy.md`
+(read it; GitBot reads the same file, and a lead should get one vocabulary
+from both):
+- **Blocker** — a shopper cannot buy, fabricated data reaches shoppers, a
+  locale key renders its own path, broken behaviour
+- **Should fix** — a content defect (wrong copy, wrong product shown — real,
+  but not a purchase blocker), dead code, unreachable branches, wrong
+  comments, convention breaches
 - **Consider** — style, naming, comment trimming
+
+Two of that policy's rules bind here word for word: do not assert what you
+cannot see (a diff is a slice — open the file), and only name a platform
+limit you can point at in `schemas.md` or `liquid.md`. Nil in Liquid is a
+silent blank, not a runtime error; report it as the content defect it is.
 
 End with a short verdict: is this mergeable, and what must change first.
 

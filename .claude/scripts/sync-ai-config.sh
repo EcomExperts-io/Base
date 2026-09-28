@@ -129,6 +129,18 @@ for src in .claude/rules/*.md; do
     continue
   fi
 
+  # A merge conflict in a generated file is not hand-written work. Two branches
+  # that each regenerated the same .mdc collide on the checksum line every
+  # time, and the resolution is always the same: regenerate from .claude/.
+  # Without this the checksum guard read the conflict markers as a hand edit
+  # and refused, so resolving meant knowing to pass --force (PR #58, 28 Sep
+  # 2026 — see docs/ai-workflow/incidents/2026-09-28-generated-mirror-conflicts-on-merge.md).
+  if [ -f "$dest" ] && grep -q '^<<<<<<< \|^>>>>>>> ' "$dest"; then
+    mv "$tmp" "$dest"
+    echo "resolved $dest (merge conflict in a generated file — regenerated)"
+    continue
+  fi
+
   # Would this overwrite hand-written work? Only if the destination's recorded
   # checksum disagrees with its actual content.
   if [ -f "$dest" ] && [ "$FORCE" -eq 0 ]; then
