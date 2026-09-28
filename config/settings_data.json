@@ -33,22 +33,22 @@
     "social_pinterest_link": "facebook.com",
     "social_tumblr_link": "",
     "social_vimeo_link": "",
-    "gtm_container_id": "GTM-N84MZJF2",
+    "gtm_container_id": "",
     "gtm_datalayer_enabled": true,
     "gtm_track_view_item": true,
     "gtm_track_add_to_cart": true,
     "gtm_track_cta_click": true,
     "gtm_track_faq_toggle": true,
+    "gtm_track_search": true,
+    "gtm_track_select_content": true,
+    "gtm_track_carousel": true,
     "gtm_track_error_404": true,
     "gtm_track_out_of_stock": true,
     "gtm_track_view_item_list": true,
     "gtm_track_view_cart": true,
     "gtm_track_remove_from_cart": true,
     "gtm_track_update_cart": true,
-    "gtm_track_search": true,
     "gtm_track_product_option": true,
-    "gtm_track_select_content": true,
-    "gtm_track_carousel": true,
     "gtm_track_login": true,
     "gtm_track_sign_up": true,
     "content_for_index": [],
@@ -60,6 +60,7 @@
           "text": "#000000",
           "button": "#121212",
           "button_label": "#ffffff",
+          "secondary_button": "#FFFFFF",
           "secondary_button_label": "#121212",
           "shadow": "#121212"
         }
@@ -71,6 +72,7 @@
           "text": "#121212",
           "button": "#121212",
           "button_label": "#f3f3f3",
+          "secondary_button": "#FFFFFF",
           "secondary_button_label": "#121212",
           "shadow": "#121212"
         }
@@ -82,6 +84,7 @@
           "text": "#ffffff",
           "button": "#ffffff",
           "button_label": "#000000",
+          "secondary_button": "#FFFFFF",
           "secondary_button_label": "#ffffff",
           "shadow": "#121212"
         }
@@ -93,6 +96,7 @@
           "text": "#ffffff",
           "button": "#ffffff",
           "button_label": "#121212",
+          "secondary_button": "#FFFFFF",
           "secondary_button_label": "#ffffff",
           "shadow": "#121212"
         }
@@ -104,6 +108,7 @@
           "text": "#ed1b1b",
           "button": "#ffffff",
           "button_label": "#334fb4",
+          "secondary_button": "#FFFFFF",
           "secondary_button_label": "#ffffff",
           "shadow": "#121212"
         }

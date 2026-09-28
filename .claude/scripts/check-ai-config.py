@@ -48,6 +48,17 @@ RULES_DIR = ".claude/rules"
 ALWAYS_APPLY_ALLOWLIST = {
     "rules-of-engagement",
     "naming-conventions",
+    # How work is reviewed, and what the platform already handles. Both are org
+    # policy rather than file-type convention: they apply to a change in any
+    # file, and to a reviewer who is reading rather than writing. GitBot also
+    # loads code-review-policy by name, so scoping it by glob would not reduce
+    # what a review costs — only what an authoring task pays.
+    "code-review-policy",
+    "storefront-infrastructure",
+    # Its counterpart for fixing a finding. GitBot's Fix button loads it by
+    # name, and a person fixing a finding with an agent should get the same
+    # instruction the button does.
+    "code-fix-policy",
 }
 
 # Ceiling on rule lines injected when editing one file of each kind. These are
@@ -62,10 +73,20 @@ ALWAYS_APPLY_ALLOWLIST = {
 # rule earns its scope — accessibility defects live in markup, behaviour and
 # styling alike. The ratchet still holds: the next rule that pushes a target
 # over has to say why, here, in the same commit.
+#
+# Re-measured 2026-09-28 when development merged into the v2 branch carrying
+# three new always-apply rules — code-review-policy (82), code-fix-policy (53)
+# and storefront-infrastructure (32), 167 lines that every task now pays for:
+# 2501 / 2852 / 1743 / 942. Raised because they were allowlisted deliberately
+# (GitBot loads the first two by name, and a person fixing a finding with an
+# agent should read what the button reads). The cheaper shape, if this bites,
+# is to scope the two review policies to review time only and have the
+# reviewer agents read them by path — authoring a section does not need 135
+# lines on how a finding is written up.
 INJECTION_CAPS = {
-    "snippets/component-example.liquid": 2400,
-    "sections/example.liquid": 2700,
-    "assets/section-example.css": 1700,
+    "snippets/component-example.liquid": 2600,
+    "sections/example.liquid": 2950,
+    "assets/section-example.css": 1800,
     "assets/section-example.js": 1400,
 }
 
