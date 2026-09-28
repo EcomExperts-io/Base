@@ -40,8 +40,8 @@ Copy the reference file's shape. Every section must have:
 
 - CSS loaded with `{{ '...' | asset_url | stylesheet_tag }}`
 - JS, if any, as `<script src="..." type="module"></script>`
-- The `{%- style -%}` block computing `.section-{{ section.id }}-padding`, with
-  mobile at 0.75× the desktop value
+- The `{%- style -%}` block computing `.section-{{ section.id }}-padding`:
+  the mobile pair outside the media query, the desktop pair inside it
 - A wrapper carrying `color-{{ section.settings.color_scheme }}` and
   `section-{{ section.id }}-padding`
 - A `page-width` inner wrapper, unless the design is deliberately full-bleed
@@ -58,12 +58,14 @@ Non-negotiable, in this order:
 | — | `header` | `t:sections.all.padding.section_padding_heading` |
 | `padding_top` | `range` 0–100 step 4, default 40 | `t:sections.all.padding.padding_top` |
 | `padding_bottom` | `range` 0–100 step 4, default 40 | `t:sections.all.padding.padding_bottom` |
+| `padding_top_mobile` | `range` 0–100 step 4, default 40 | `t:sections.all.padding.padding_top_mobile` |
+| `padding_bottom_mobile` | `range` 0–100 step 4, default 40 | `t:sections.all.padding.padding_bottom_mobile` |
 
 Plus a `presets` array — without one the merchant cannot add the section at all.
 
-`padding_top` and `padding_bottom` have **no exceptions**. `color_scheme` may be
-omitted only if the design fixes the surface, and only with a Liquid comment
-saying so:
+The four padding settings have **no exceptions**, and mobile is its own value
+rather than a multiple of desktop. `color_scheme` may be omitted only if the
+design fixes the surface, and only with a Liquid comment saying so:
 
 ```liquid
 {%- comment -%}
@@ -88,9 +90,11 @@ text.
 **Add the keys to the locale file in the same change.** A `t:` key that doesn't
 resolve renders the key path as visible text in the theme editor.
 
-These four already exist and should be reused rather than duplicated:
+These six already exist and should be reused rather than duplicated:
 `sections.all.colors.label`, `sections.all.padding.section_padding_heading`,
-`sections.all.padding.padding_top`, `sections.all.padding.padding_bottom`.
+`sections.all.padding.padding_top`, `sections.all.padding.padding_bottom`,
+`sections.all.padding.padding_top_mobile`,
+`sections.all.padding.padding_bottom_mobile`.
 
 ### 5. Create `assets/section-<name>.css`
 

@@ -11,7 +11,7 @@ structured fix plan.
 **Invocation:** `/accessibility-review <component-or-section-name>`
 Example: `/accessibility-review component-filters-sidebar`
 
-> Converted from the orphaned `.cursor/prompts/fix-accesibility-issue.md` prompt, which referenced
+> Converted from an orphaned Cursor prompt, `fix-accesibility-issue.md`, which referenced
 > a non-existent `fetch_rules` tool. This skill replaces those tool calls with direct reads.
 
 ## Steps

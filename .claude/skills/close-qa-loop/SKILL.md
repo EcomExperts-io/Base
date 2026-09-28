@@ -81,8 +81,9 @@ rather than reading as done.
 ## Step 5 — Record real mistakes
 
 If an issue exists because of an AI error in the original build — not a design
-change or a new requirement — record it in the project's mistake log, with
-which rule or skill should have caught it. See `/build-page-from-figma` step 7.
+change or a new requirement — run `/record-incident` while the fix is fresh,
+naming which rule or skill should have caught it. It writes a committed file
+under `docs/ai-workflow/incidents/`; see `/build-page-from-figma` step 7.
 
 Genuine design changes and new requirements are not mistakes. Don't inflate the
 log; it is only useful if every entry is real.

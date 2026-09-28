@@ -96,6 +96,17 @@ If a Figma call fails with an access error, do not assume the account needs a
 share grant. Ask whether there is a newer file first; that has been the cause
 before.
 
+## Step 1½ — Check the frame is buildable
+
+Run `/figma-readiness` on each node before the first `get_design_context`
+call. It scores the frame from `get_metadata` — default layer names, hidden
+leftovers, width in the frame name, components, text as text — and, with the
+design context and `get_variable_defs`, auto layout and tokens. On `send back`
+do not build: hand the developer the message for the designer and stop unless
+told to build anyway (record that in the report). Every re-prompt cycle the
+designer practices document describes starts with one of these facts; ten
+minutes of renaming on their side is a day on ours.
+
 ## Step 2 — Fetch the frame by node ID, one frame at a time
 
 **Always pass an explicit `nodeId`.** Never rely on file-wide page listing.
@@ -123,8 +134,10 @@ The rules apply in full. The three that a design-driven build most reliably
 misses, because none of them appear in a Figma frame:
 
 1. **The merchant settings contract** — `padding_top`, `padding_bottom`,
-   `color_scheme`, plus a preset. A frame shows one spacing value because a
-   frame can only show one.
+   `padding_top_mobile`, `padding_bottom_mobile`, `color_scheme`, plus a
+   preset. A frame shows one spacing value because a frame can only show one;
+   the mobile frame shows its own, which is why mobile padding is a setting
+   and not a multiple of desktop.
 2. **Translation keys** — the copy in the frame is English because the designer
    wrote it in English. That is not an instruction to hardcode it. This applies
    to brand-new files with no existing `| t` calls nearby.
@@ -140,28 +153,42 @@ theme token, use the token.
 **Code:** run the standards coach agent for advisory feedback, then fix what it
 finds. Confirm the gate would pass.
 
-**Visual:** verify against the rendered page, not against your own memory of
-what you wrote.
+**Visual:** run `/verify-against-figma` — start the theme with `/run-theme`,
+then give the skill the page URL, the file key and each node id with the width
+it was designed at. It renders the page at exactly that width, diffs it
+against the frame's own export, masks the regions marked `data-verify-mask`,
+computes a box-by-box table from `get_metadata` and the DOM, takes one
+deliberate look at the side-by-side, and writes
+`.claude/verify/<slug>/report.{json,md}`. That report is the evidence. Until
+it exists and is newer than your last edit, the page is not verified — the
+Stop hook will say so.
 
-1. Start the dev server and open the page in the browser tools.
-2. Pull the frame's own image via the Figma screenshot tool.
-3. **Set the viewport to the exact width the frame was designed at.** A 1440
-   desktop frame is checked at 1440, not "desktop-ish"; a 393 mobile frame at
-   393. Checking at the wrong width invalidates the comparison — a layout can
-   be correct at 1440 and broken at 1280.
-4. Compare rendered output against the frame at that width. Then repeat for the
-   other breakpoint.
-5. **Measure, don't eyeball.** Read computed values off the DOM — spacing, font
-   size, line height, colour — and compare against the frame's specs. A
-   screenshot tells you something looks off; only a number tells you it is
-   fixed. Custom elements are a specific trap here: they default to
-   `display: inline`, which drops background and vertical padding on screen
-   while `getComputedStyle` still reports both.
+Why a script and not your eyes: the workflow's worst recorded failure was a
+section reported as built because it measured 614px against a 615px frame
+while its media column rendered empty. A measurement is a check on a
+screenshot, never a substitute for one, and a table typed from memory is not a
+measurement. Custom elements remain the specific trap: they default to
+`display: inline`, which drops background and vertical padding on screen while
+`getComputedStyle` still reports both — the heatmap catches it, the table does
+not.
 
 **Functionality:** walk the Notion requirements one at a time and confirm each.
 Say plainly which ones you could not verify and why.
 
-Report all three separately, each with what you actually checked.
+Report all three separately, each with what you actually checked, quoting the
+verify report's numbers rather than "matches the design".
+
+**Keep the session honest with a goal.** For a page of any size, set one
+before building so a fresh evaluator — not the model doing the work — decides
+when it is done:
+
+```text
+/goal .claude/verify/<slug>/report.json exists with diff_pct under 5 at every
+frame width, table_off is 0, every new section passes
+python3 .claude/scripts/check-section-contract.py --files, and
+python3 .claude/scripts/check-conventions.py --changed --block exits 0.
+Stop after 25 turns if not met and report what remains.
+```
 
 ## Step 5 — Update Notion
 
@@ -199,7 +226,7 @@ Never mention code, settings, schema, tokens, or file names.
 **Never like this:**
 
 - ~~Verify `color_scheme` is exposed in the schema~~
-- ~~Confirm `padding_top` renders at 0.75× on mobile~~
+- ~~Confirm `padding_top_mobile` is read outside the media query~~
 - ~~Check `component-product-card` snippet is used~~
 
 Group by what the reviewer is looking at — Desktop, Mobile, Links and buttons,
@@ -209,16 +236,16 @@ wrong.
 ## Step 7 — Record anything that went wrong
 
 If this build involved a real mistake — you built the wrong thing, misread the
-design, broke something and had to be re-prompted — record it in the project's
-mistake log so the pattern is visible later.
+design, broke something and had to be re-prompted, hit a trap a rule should
+have named — run `/record-incident` **at the moment it happens**, not at the
+end. It writes a committed file under `docs/ai-workflow/incidents/` with the
+four fields that matter: what happened, how it surfaced, what fixed it, and
+which rule or check should have caught it. That last field is what turns a
+list of incidents into a queue of standards gaps; `/harvest` takes a generic
+one up to Base from this repo.
 
-If the project has no mistake log yet, **offer to create one** in the client
-repo; do not create it unasked. It belongs in that repo, in a location excluded
-from version control, not in Base.
-
-Record: what happened, how it surfaced, what fixed it, and — most useful —
-which rule or skill should have caught it and didn't. That last field is what
-turns a list of incidents into a queue of standards gaps.
+The gitignored "mistake log" this replaced was asked for on every build and
+created on none — a record nobody can see in a pull request is not a record.
 
 ## Closing the loop
 

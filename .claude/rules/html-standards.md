@@ -19,6 +19,11 @@ These are strictly for UX improvements that are non-blocking for conversions.
 - Perfect for FAQs, product details, filters
 - For an animated accordion, see the `<details>` usage in
   `snippets/component-filters-sidebar.liquid` and `sections/product.liquid`
+- Chrome slots a `<details>` element's content under `::details-content`, which
+  the theme's `*` box-sizing reset cannot match — so a declared height on a row
+  inside `<details>` silently gains its padding. Re-assert
+  `box-sizing: border-box` on the `<details>` root and on the `<summary>` (it is
+  slotted separately); every descendant that says `inherit` is repaired with it.
 
 **Modals and Popups:**
 - Use `<dialog>` for modals instead of custom overlays
@@ -196,6 +201,22 @@ Write CSS where animations can be disabled if reduced motion is preferred.
   }
 }
 ```
+
+## Mark what comes from the store: `data-verify-mask`
+
+Live values — product titles, prices, review counts, images the store
+supplies — never match a design mock, so a pixel comparison of the rendered
+page against its Figma frame lights them up as differences that are not
+defects. The `verify-against-figma` skill masks those regions before it diffs,
+and it finds them by one attribute:
+
+```liquid
+<span class="product-card__price" data-verify-mask>{{ card_product.price | money }}</span>
+```
+
+Put it on the element whose box should be ignored, not on a wrapper. It has no
+runtime effect. It also documents the rule that Figma is design-only: anything
+carrying it is, by definition, a value the design could not have supplied.
 
 ## ID Naming Convention
 

@@ -70,7 +70,9 @@
       "padding": {
         "section_padding_heading": "Section padding",
         "padding_top": "Top padding",
-        "padding_bottom": "Bottom padding"
+        "padding_bottom": "Bottom padding",
+        "padding_top_mobile": "Mobile top padding",
+        "padding_bottom_mobile": "Mobile bottom padding"
       }
     },
     "header": {

@@ -9,8 +9,9 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Sections', link: '/sections/product' },
       { text: 'Snippets', link: '/snippets/component-product-card' },
-      { text: 'Assets', link: '/assets/component-product-card' }
-
+      { text: 'Assets', link: '/assets/component-product-card' },
+      { text: 'AI Workflow', link: '/ai-workflow/README' },
+      { text: 'Standards', link: '/base-theme-standards/base-theme-ai-workflow-vision' }
     ],
 
     sidebar: {
@@ -126,6 +127,30 @@ export default defineConfig({
             { text: 'Product Recommendations', link: '/assets/product-recommendations' },
             { text: 'Featured Products', link: '/assets/section-featured-products' },
             { text: 'Theme', link: '/assets/theme' },
+          ]
+        }
+      ],
+      '/ai-workflow/': [
+        {
+          text: 'AI Workflow',
+          items: [
+            { text: 'The workflow (v2)', link: '/ai-workflow/README' },
+            { text: 'Your first build', link: '/ai-workflow/first-build' },
+            { text: 'Figma handoff — one page', link: '/ai-workflow/figma-handoff-checklist' },
+            { text: 'Figma practices — long form', link: '/ai-workflow/figma-ai-friendly-design-practices' },
+            { text: 'Incidents', link: '/ai-workflow/incidents/README' },
+          ]
+        }
+      ],
+      '/base-theme-standards/': [
+        {
+          text: 'Standards',
+          items: [
+            { text: 'Vision & principles', link: '/base-theme-standards/base-theme-ai-workflow-vision' },
+            { text: 'Reference — Collection & PDP', link: '/base-theme-standards/base-theme-architecture-reference-collection-pdp' },
+            { text: 'Reference — Header, Cart & Search', link: '/base-theme-standards/base-theme-architecture-reference-header-cart-search' },
+            { text: 'Compliance checklist', link: '/base-theme-standards/base-theme-compliance-checklist' },
+            { text: 'Decisions log', link: '/base-theme-standards/base-theme-decisions-log' },
           ]
         }
       ],

@@ -8,6 +8,15 @@ keep those out of here.
 **Facilitating:** Naish Abbas
 **Final sign-off on architecture decisions:** Moemen Hegazy (Head of Engineering)
 **Also looped in:** Mohannad Belidy
+
+**Status note, 15 Sep 2026.** The pipeline in §1 now has a mechanism behind
+each step except the designer's — see `docs/ai-workflow/README.md` (v2) and
+the audit entries in the Decisions Log. Two clarifications to the "why" that
+the audit surfaced: the cross-tool requirement in §3 is met by keeping
+`.claude/` canonical and generating the Cursor copy until the team's move to
+Claude Code is complete; and "minimal human touch-up" is measured by one
+number — a developer who did not build the workflow shipping a compliant,
+verified section on their first pull request.
  
 ---
  

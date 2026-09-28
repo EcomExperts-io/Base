@@ -24,6 +24,9 @@ ignore:
   - 'docs/**'
   - '.claude/**'
   - '.cursor/**'
+  # The reusable review workflow checks Base out here in a client repo, for the
+  # scripts fallback and the drift report. Its sections are not this theme's.
+  - '.base-tooling/**'
 
 # snippets/css-variables.liquid builds this up with `assign` inside a `for`
 # loop, which Theme Check cannot follow — it reports the variable as undefined

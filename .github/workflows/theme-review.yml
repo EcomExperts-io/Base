@@ -12,6 +12,22 @@ name: Theme Review
 # So the deterministic half of the review runs here, on the pull request, where
 # there is no --no-verify.
 #
+# Reusable, on purpose
+# --------------------
+# `workflow_call` lets a client repo run this file with a six-line caller
+# (.claude/templates/fork-theme-review.yml, installed by pull-base-tooling.py)
+# instead of a copy of it. The audit of 14 Sep 2026 found this workflow in one
+# fork of four; the other three ran a different review system. A copy drifts;
+# a call cannot. Inside a call, `github.event.pull_request` is the CALLER's
+# event, so BASE_SHA below resolves to the client PR's base — nothing here
+# needs to know which repo it is running in.
+#
+# For a fork that has no .claude/ yet, Base is checked out into .base-tooling/
+# and the scripts run from there, so the gate works before the tooling has been
+# pulled. That checkout also feeds the drift report. If Base is private, the
+# caller needs a read-only PAT in BASE_READ_TOKEN; without it the checkout is
+# skipped and only the steps that need it are skipped with it.
+#
 # Deliberately NOT here: any Claude agent. That needs an API credential in
 # repository secrets and a separate decision about what an agent is allowed to
 # block. Everything below is objective, offline and reproducible — the same
@@ -22,8 +38,9 @@ name: Theme Review
 #     once through check-theme-staged.py to gate on the files the pull request
 #     touches. Same rule as the hook — you answer for what you touched.
 #   * check-rule-links.py runs with --all, for the same reason.
-#   * The section contract still only looks at sections ADDED, but "added"
-#     means added by the pull request rather than by one commit — see the step.
+#   * The section contract and the conventions check still only BLOCK on files
+#     ADDED, but "added" means added by the pull request rather than by one
+#     commit — see the step.
 #   * A missing python3 fails the job. The hook warns and carries on, because a
 #     contributor's machine is not our problem; a runner that cannot run the
 #     checks means the gate silently did not happen.
@@ -33,12 +50,13 @@ name: Theme Review
 on:
   pull_request:
     branches: [development, main]
+  workflow_call: {}
 
 permissions:
   contents: read
 
 concurrency:
-  group: theme-review-${{ github.event.pull_request.number }}
+  group: theme-review-${{ github.repository }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -56,6 +74,35 @@ jobs:
           # Full history. The section contract check diffs against the base
           # branch, so base.sha has to be a real object in this clone.
           fetch-depth: 0
+
+      - name: Checkout Base (scripts fallback and drift report)
+        if: ${{ !cancelled() }}
+        id: base
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: EcomExperts-io/Base
+          ref: development
+          path: .base-tooling
+          token: ${{ secrets.BASE_READ_TOKEN || github.token }}
+
+      - name: Locate the scripts
+        if: ${{ !cancelled() }}
+        # A fork that has pulled Base's tooling runs its own stamped copy — that
+        # is the copy its developers run locally, so CI gives the same answer.
+        # A fork without .claude/ falls back to Base's, so the gate exists from
+        # the first pull request rather than from the first tooling pull.
+        run: |
+          if [ -d .claude/scripts ]; then
+            echo "SCRIPTS=.claude/scripts" >> "$GITHUB_ENV"
+            echo "Scripts: this repository's own .claude/scripts"
+          elif [ -d .base-tooling/.claude/scripts ]; then
+            echo "SCRIPTS=.base-tooling/.claude/scripts" >> "$GITHUB_ENV"
+            echo "::warning::No .claude/scripts in this repo — running Base's. Run pull-base-tooling.py to get your own copy."
+          else
+            echo "::error::No scripts available: this repo has no .claude/scripts and Base could not be checked out."
+            exit 1
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -80,8 +127,24 @@ jobs:
         if: ${{ !cancelled() }}
         continue-on-error: true
         # Visibility, not a gate. Prints the full picture so the state of the
-        # theme is never a surprise, and cannot fail the job.
-        run: shopify theme check --config=.theme-check.yml || true
+        # theme is never a surprise, and cannot fail the job. Falls back to the
+        # default config when the repo has no .theme-check.yml. The Base
+        # checkout under .base-tooling/ is ignored by Base's config; a fork
+        # without that config will see Base's files in this report only.
+        run: |
+          if [ -f .theme-check.yml ]; then
+            shopify theme check --config=.theme-check.yml || true
+          else
+            shopify theme check || true
+          fi
+
+      - name: Conventions (whole theme, report only)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        # Same idea for the grep-level rules: the standing count of max-width
+        # queries, raw hex, non-module scripts and the rest, so the legacy is
+        # visible without ever failing a pull request over it.
+        run: python3 "${SCRIPTS}/check-conventions.py" --all || true
 
       - name: Theme Check (blocking, files this PR touches)
         if: ${{ !cancelled() }}
@@ -126,7 +189,7 @@ jobs:
           fi
 
           set +e
-          python3 .claude/scripts/check-theme-staged.py
+          python3 "${SCRIPTS}/check-theme-staged.py"
           status=$?
           set -e
           if [ "${status}" -eq 0 ]; then
@@ -136,7 +199,7 @@ jobs:
           git reset --soft "${ORIG_HEAD}"
           exit "${status}"
 
-      - name: Section settings contract
+      - name: Section settings contract and conventions (blocking on files this PR adds)
         if: ${{ !cancelled() }}
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -162,13 +225,16 @@ jobs:
         # returns the PR's version of each file. The check's own behaviour is
         # untouched, and no file on disk is modified.
         #
+        # check-conventions.py --staged reads the same index with the same
+        # added/modified split, so it runs in the same reset window.
+        #
         # HEAD is put back afterwards: for the rest of the job HEAD should mean
         # the commit under review, not its base.
         #
-        # Cosmetic wart, left alone on purpose: the script's failure banner
-        # says "COMMIT BLOCKED" and suggests `git commit --no-verify`. Neither
-        # applies here. Rewording it means editing a script the hook shares,
-        # which is not worth doing to fix a noun.
+        # Cosmetic wart, left alone on purpose: the contract script's failure
+        # banner says "COMMIT BLOCKED" and suggests `git commit --no-verify`.
+        # Neither applies here. Rewording it means editing a script the hook
+        # shares, which is not worth doing to fix a noun.
         run: |
           set -eu
 
@@ -178,43 +244,55 @@ jobs:
           ORIG_HEAD="$(git rev-parse HEAD)"
           git reset --soft "${BASE_SHA}"
 
-          # Same reason as the Theme Check step: this script also returns 0
-          # silently when the index lists no added sections, which is both the
+          # Same reason as the Theme Check step: these scripts return 0
+          # silently when the index lists nothing added, which is both the
           # normal case and what a broken reset looks like. Print the scope so
           # the two are distinguishable in the log.
           added="$(git diff --cached --name-only --diff-filter=A | grep -c '^sections/' || true)"
           echo "Section contract scope: ${added} section(s) added by this PR"
 
           set +e
-          python3 .claude/scripts/check-section-contract.py
-          status=$?
+          python3 "${SCRIPTS}/check-section-contract.py"
+          contract=$?
+          python3 "${SCRIPTS}/check-conventions.py" --staged
+          conventions=$?
           set -e
 
           git reset --soft "${ORIG_HEAD}"
-          exit "${status}"
+          [ "${contract}" -eq 0 ] && [ "${conventions}" -eq 0 ]
 
       - name: Rule cross-references
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('.claude/rules/*.md') != '' }}
         # --all, not the hook's staged scope: on a pull request a broken link
         # anywhere under .claude/ is worth knowing about, and this is the one
         # place a fork's inherited breakage ever gets looked at.
-        run: python3 .claude/scripts/check-rule-links.py --all
+        run: python3 "${SCRIPTS}/check-rule-links.py" --all
 
       - name: AI config is structurally sound
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('.claude/rules/*.md') != '' }}
         # Asserts the rules themselves: every one loadable and scoped, the
         # always-apply list explicit, the per-file injection budget respected,
-        # and CLAUDE.md's inventory matching disk. Added to the hook after this
-        # workflow was first written, hence its "not yet mirrored" note above.
-        run: python3 .claude/scripts/check-ai-config.py --verbose
+        # and CLAUDE.md's inventory matching disk.
+        run: python3 "${SCRIPTS}/check-ai-config.py" --verbose
 
       - name: Docs Liquid examples do not break the VitePress build
-        if: ${{ !cancelled() }}
-        run: python3 .claude/scripts/check-docs-interpolation.py
+        if: ${{ !cancelled() && hashFiles('docs/**/*.md') != '' }}
+        run: python3 "${SCRIPTS}/check-docs-interpolation.py"
 
       - name: AI config mirror is in sync
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('.claude/rules/*.md') != '' }}
         # --check writes nothing and exits 1 if .cursor/ has drifted from
         # .claude/. Two hand-maintained copies is how the conventions stayed
         # invisible to Claude Code for the first 18 days of a client build.
-        run: sh .claude/scripts/sync-ai-config.sh --check
+        # The pre-commit hook now regenerates the mirror itself, so this can
+        # only fail on a commit made with --no-verify.
+        run: sh "${SCRIPTS}/sync-ai-config.sh" --check
+
+      - name: Tooling drift against Base
+        if: ${{ !cancelled() && steps.base.outcome == 'success' && hashFiles('.base-version') != '' }}
+        continue-on-error: true
+        # Report only: which rules this repo edited since it last pulled Base
+        # (harvest candidates) and which Base changed since (pull-down
+        # candidates). The list is the mechanism that replaces end-of-build
+        # archaeology — it exists from the first pull request of the build.
+        run: python3 "${SCRIPTS}/check-tooling-drift.py" --base-path .base-tooling --no-fetch

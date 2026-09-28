@@ -81,6 +81,15 @@ SPACING_CONTROL_TYPES = {"range", "number"}
 
 STANDARD_IDS = {"top": "padding_top", "bottom": "padding_bottom"}
 
+# The mobile pair joined the contract on 2026-09-21 (mobile padding is its own
+# merchant value, not `padding_top | times: 0.75` — see sections.md). The gate
+# requires it on NEW sections. This report deliberately does not fold it into
+# the headline number: every section written before the ruling lacks it, so
+# scoring it would take a trusted 22/46 to 0/46 overnight and say nothing new.
+# It is counted and printed on its own line instead, so the retrofit gap is
+# visible without the number people rely on being redefined under them.
+MOBILE_IDS = {"top": "padding_top_mobile", "bottom": "padding_bottom_mobile"}
+
 WIDTH = 74
 
 
@@ -151,6 +160,7 @@ def audit(path, src, contract):
         "has_padding": False,
         "padding_ids": [],
         "standard_padding_ids": False,
+        "has_mobile_padding": False,
         "has_color_scheme": False,
         "color_scheme_exempt": False,
         "padding_sides": [],
@@ -194,6 +204,9 @@ def audit(path, src, contract):
         STANDARD_IDS["top"] in sides.get("top", [])
         and STANDARD_IDS["bottom"] in sides.get("bottom", [])
     )
+    mobile_ids = {str(s.get("id")) for s in settings
+                  if s.get("type") in SPACING_CONTROL_TYPES}
+    row["has_mobile_padding"] = MOBILE_IDS["top"] in mobile_ids and MOBILE_IDS["bottom"] in mobile_ids
     row["has_color_scheme"] = has_color_scheme(settings)
     row["color_scheme_exempt"] = contract.comments_mentioning(src, "color_scheme")
     row["has_presets"] = bool(schema.get("presets"))
@@ -228,6 +241,9 @@ def tally(rows):
         "compliant": len(compliant),
         "compliant_standard_ids": len(compliant) - len(nonstandard),
         "compliant_non_standard_ids": len(nonstandard),
+        # Compliant sections that also carry the mobile pair — the part of the
+        # contract added on 2026-09-21. Reported, not scored; see MOBILE_IDS.
+        "compliant_with_mobile_pair": sum(1 for r in compliant if r["has_mobile_padding"]),
         # Every in-scope section whose padding control exists under ids the gate
         # does not match — the false-flag count, whatever else the section is
         # missing. dynamic-grid.liquid lives here.
@@ -295,6 +311,10 @@ def report(rows, t):
     line("  standard ids", t["compliant_standard_ids"])
     line("  non-standard ids", t["compliant_non_standard_ids"],
          "full contract met, padding spelled\ndifferently")
+    line("  with mobile pair", f"{t['compliant_with_mobile_pair']}/{t['compliant']}",
+         "padding_top_mobile / padding_bottom_mobile —\n"
+         "in the contract since 2026-09-21, gated on\n"
+         "new sections, not scored on legacy ones")
     print()
     line("NOT COMPLIANT", t["violations"])
     line("  missing padding", t["missing_padding"])

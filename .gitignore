@@ -18,3 +18,9 @@ docs/.vitepress/cache/deps
 # Python bytecode from .claude/scripts
 __pycache__/
 *.pyc
+# AI workflow — per-machine and per-session state, never shared
+.claude/settings.local.json
+.claude/.cache/
+.claude/verify/
+.claude/agent-memory-local/
+CLAUDE.local.md

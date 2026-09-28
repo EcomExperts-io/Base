@@ -14,6 +14,11 @@
 #   Agents:    .claude/agents/**         -> .cursor/agents/**          (verbatim)
 #   Workflows: .claude/workflows/**      -> .cursor/workflows/**       (verbatim)
 #   References:.claude/references/**     -> .cursor/references/**      (verbatim)
+#   Hooks:     .claude/hooks/**          -> .cursor/hooks/**           (verbatim)
+#
+# Hooks are mirrored so a Cursor user has the same gate scripts to wire into
+# Cursor's own hooks configuration; the wiring itself (.claude/settings.json on
+# the Claude side) has no Cursor equivalent this script can generate.
 #
 # Examples, agents and workflows were added after an audit found that a rule
 # could link an example file the fork had never received (the examples lived
@@ -124,6 +129,18 @@ for src in .claude/rules/*.md; do
     continue
   fi
 
+  # A merge conflict in a generated file is not hand-written work. Two branches
+  # that each regenerated the same .mdc collide on the checksum line every
+  # time, and the resolution is always the same: regenerate from .claude/.
+  # Without this the checksum guard read the conflict markers as a hand edit
+  # and refused, so resolving meant knowing to pass --force (PR #58, 28 Sep
+  # 2026 — see docs/ai-workflow/incidents/2026-09-28-generated-mirror-conflicts-on-merge.md).
+  if [ -f "$dest" ] && grep -q '^<<<<<<< \|^>>>>>>> ' "$dest"; then
+    mv "$tmp" "$dest"
+    echo "resolved $dest (merge conflict in a generated file — regenerated)"
+    continue
+  fi
+
   # Would this overwrite hand-written work? Only if the destination's recorded
   # checksum disagrees with its actual content.
   if [ -f "$dest" ] && [ "$FORCE" -eq 0 ]; then
@@ -195,6 +212,7 @@ mirror_tree ".claude/rules/examples/" ".cursor/rules/examples/"
 mirror_tree ".claude/agents/"         ".cursor/agents/"
 mirror_tree ".claude/workflows/"      ".cursor/workflows/"
 mirror_tree ".claude/references/"     ".cursor/references/"
+mirror_tree ".claude/hooks/"          ".cursor/hooks/"
 
 if [ "$CLOBBER" -eq 1 ]; then
   echo ""
