@@ -35,6 +35,27 @@ If the sentence can only be finished with "it would be better if", it is not a
 defect. Precision matters more than volume: a review of six real problems is
 acted on, a review of thirty possible ones is skimmed and closed.
 
+**Name the success criterion.** Every finding fails a WCAG 2.2 success
+criterion, named as number and title (`2.4.7 Focus Visible`). A finding that
+fails none is not an accessibility finding, whatever else it is. GitBot drops
+findings that name none. The sections below map to the criteria they cover:
+
+| Section | Criteria |
+|---|---|
+| 1. Controls | 4.1.2 Name, Role, Value · 2.1.1 Keyboard · 2.5.3 Label in Name |
+| 2. Accessible names | 4.1.2 Name, Role, Value · 2.4.4 Link Purpose · 1.1.1 Non-text Content |
+| 3. Forms | 1.3.1 Info and Relationships · 3.3.1 Error Identification · 3.3.2 Labels or Instructions · 1.3.5 Identify Input Purpose |
+| 4. Keyboard, focus and order | 2.1.1 Keyboard · 2.1.2 No Keyboard Trap · 2.4.3 Focus Order · 2.4.7 Focus Visible · 2.4.11 Focus Not Obscured · 2.5.8 Target Size |
+| 5. Images, icons, media, frames | 1.1.1 Non-text Content · 1.2.x Time-based Media · 4.1.2 for `<iframe>` titles |
+| 6. Structure | 1.3.1 Info and Relationships · 2.4.6 Headings and Labels · 2.4.1 Bypass Blocks · 3.1.1 Language of Page |
+| 7. Colour, contrast, zoom, reflow | 1.4.3 Contrast (Minimum) · 1.4.11 Non-text Contrast · 1.4.1 Use of Color · 1.4.4 Resize Text · 1.4.10 Reflow |
+| 8. ARIA | 4.1.2 Name, Role, Value · 1.3.1 Info and Relationships · 4.1.3 Status Messages |
+| 9. Motion, timing, carousels | 2.3.3 Animation from Interactions · 2.2.2 Pause, Stop, Hide · 2.2.1 Timing Adjustable |
+
+**One finding per criterion per file**, anchored to the first line, with the
+other lines named in the body. Eight new findings is the most one review
+reports; the worst come first.
+
 **State the severity.** A human fixes every one of these now, so triage is part
 of the finding:
 
@@ -343,6 +364,12 @@ Precision is the whole value here. Do not report:
 - Naming, structure or style preferences with no accessibility consequence.
 - Speculation about what JavaScript elsewhere in the theme might do — unless the
   diff shows it.
+- **Untranslated or hardcoded English text.** That is a localization defect
+  (`localization.md`), reported by the main review, not here.
+- **Unescaped merchant output or any injection concern.** That is security,
+  reported by the main review, not here.
+- Copy, wording and content choices. An accessible name that exists but reads
+  badly is not a defect.
 
 Never describe a change as ADA compliant, WCAG compliant, or certified. A review
 of a diff reports specific defects; it does not certify a storefront.

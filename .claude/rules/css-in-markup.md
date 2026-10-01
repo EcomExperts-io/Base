@@ -45,7 +45,7 @@ Namespace your variables to avoid collisions unless you explicitly want them to 
 
 Reset CSS variable values inline on a `style` attribute with a section/block settings. This has a couple benefits:
 
-- Less CSS in Liquid which allows us to use the `{% stylesheet %}` tag for all CSS.
+- Less CSS in Liquid: the component's CSS lives in its asset stylesheet, loaded with `stylesheet_tag` (new sections do not use `{% stylesheet %}` — see `sections.md`).
 - Reduces redundancy in CSS selectors and number of selectors in the HTML, i.e. `.selector--{{ block.id }}` pattern.
 
 ✅ Do this:

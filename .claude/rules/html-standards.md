@@ -188,7 +188,7 @@ Use features that are `Baseline Widely Available`.
 - Use semantic HTML elements
 - Add `aria-label` when visual context isn't enough
 - Use `aria-expanded` for collapsible content
-- Use `aria-role` where appropriate
+- Use `role` where native semantics do not already say it (the attribute is `role`; `aria-role` does not exist)
 
 **Motion Preferences:**
 

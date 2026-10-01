@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 
 <!-- GENERATED from .claude/rules/code-review-policy.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2012255687 -->
+<!-- checksum: 3481930299 -->
 
 
 # Code review policy
@@ -17,12 +17,14 @@ branch, and to GitBot, which reads this file directly.
 
 1. **Correctness bugs that change behaviour** — off-by-one, inverted conditions,
    unanchored matches, wrong variable, null and empty handling, regressions.
-2. **Security and data issues** — leaking customer data, unsafe output,
-   injection, exposed tokens.
+2. **Security and data issues** — leaking customer data, unsafe or unescaped
+   output, injection, an exposed key or token. Classified as security, never
+   as something softer.
 3. **Brittle edges** — markets, currencies, empty carts, out of stock,
    logged-out users.
 4. **Performance and accessibility regressions.**
-5. **Minor issues and nits** — naming, dead code, style. Still worth reporting.
+5. **Minor issues and nits** — naming, dead code, style. Reported when the
+   budget below has room for them.
 
 ## Classify by consequence, not by how it feels
 
@@ -32,10 +34,24 @@ control that misbehaves but still lets the shopper through is a broken experienc
 even when it looks severe. Something that stops a shopper buying is a purchase
 blocker even when the fix is one line.
 
-## Report what you find, invent nothing
+## Report what matters, once
 
-Do not self-filter for importance — coverage matters. Do not pad a review to look
-thorough either: a clean change reported as clean is a useful review.
+A review has a budget: **at most eight findings**, ordered by consequence. One
+problem that occurs on several lines of a file is **one finding** — anchored to
+the first line, the other lines named in the body. Five untranslated labels in
+a schema are one localization finding, not five. Minor issues go in only when
+fewer than three findings sit above them.
+
+The reason is measured, not felt: across 150 pull requests GitBot reported
+twelve findings each and four in five were never acted on. Six correct,
+actionable findings get fixed; thirty possible ones get skimmed and closed.
+
+Invent nothing, and do not pad a review to look thorough: a clean change
+reported as clean is a useful review.
+
+Accessibility is its own pass with its own standard (`accessibility.md`) and
+it is the one that blocks a merge. Untranslated text is localization and
+unescaped output is security; neither is an accessibility finding.
 
 ## Do not assert what you cannot see
 
