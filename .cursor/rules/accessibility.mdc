@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/accessibility.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1627992064 -->
+<!-- checksum: 1726096435 -->
 
 
 # Accessibility standard
@@ -300,8 +300,14 @@ it is used, it must be correct, because wrong ARIA is worse than none.
 
 ## 9. Motion, timing and carousels
 
-- Animation, parallax, auto-advancing carousels and transitions must be disabled
-  under `@media (prefers-reduced-motion: reduce)`. *Serious.*
+- **Motion** — animation or transition of position, size or rotation
+  (`transform`, `translate`, `scale`, `rotate`, `top`/`left`, scroll-linked
+  effects), parallax, and auto-advancing carousels — must be disabled under
+  `@media (prefers-reduced-motion: reduce)`. *Serious.*
+- **Opacity fades and colour transitions are not motion** (2.3.3 covers
+  movement) and need no reduced-motion override. Do not report them, and do
+  not report a reduced-motion block as incomplete for leaving them running.
+  A transition that combines both is a finding only for its motion part.
 - **Anything that moves or auto-updates for more than five seconds needs a pause
   control** (2.2.2) — auto-rotating slideshows, scrolling announcement bars,
   marquees. *Serious.*
