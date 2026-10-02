@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/accessibility.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3292790932 -->
+<!-- checksum: 1627992064 -->
 
 
 # Accessibility standard
@@ -200,6 +200,12 @@ checks their answer. *Serious.*
 - Decorative: `alt=""`. Meaningful: text describing purpose, not appearance.
 - In Liquid, use the merchant value, escaped: `alt="{{ image.alt | escape }}"`,
   with a sensible fallback. Never output an unescaped alt.
+- **A fallback to visible text is the fix.** `alt="{{ settings.image_alt |
+  default: settings.headline | escape }}"` — or the title, the product name,
+  the card's claim — is correct even when that text setting is optional. That a
+  merchant could leave every text field blank is content, not a code defect:
+  do not report it, and judge an earlier finding of this kind fixed once the
+  fallback is there.
 - **Alt text that is the file name, "image", or repeats adjacent visible text**
   is a defect. *Minor.*
 - **Product images** take the product title as a fallback, not "product image".
@@ -253,6 +259,15 @@ functionality, not styling.
   a `{% style %}` block, or a literal hex in CSS. Compute the ratio and state it
   in the finding. Where colours come from a merchant colour scheme, do not guess;
   but a hardcoded colour against a known scheme background is fair game.
+- **A template's custom CSS does not fix a section's colour.** Overriding a
+  failing hardcoded colour from the theme editor (a template JSON's
+  `custom_css`) fixes that one page; the section ships the failing default to
+  every other template it is added to, and a reviewer reading the section
+  cannot see the override. Fix it in the section: change the hardcoded colour
+  to one that passes, or make it a colour setting whose default passes and
+  whose `info` states the contrast it needs. A brand colour that cannot change
+  is a decision for the Lead and AM (the bypass), not a reason to leave the
+  section failing silently.
 - **Colour must not be the only cue** (1.4.1). Sale prices, errors, required
   fields, selected and sold-out states, links inside body copy: each needs text,
   an icon, underline, or shape as well. *Serious.*
@@ -294,6 +309,14 @@ it is used, it must be correct, because wrong ARIA is worse than none.
 - **Carousels** need: real buttons for previous and next, keyboard access to
   every slide, a pause control when it auto-advances, and slides that are not
   hidden from assistive technology while visible.
+- **Swiper manages its own arrow state.** When `<button>` elements are passed
+  to Swiper's `navigation` (`prevEl` / `nextEl`), Swiper sets the native
+  `disabled` attribute on them at each end of the track, alongside its
+  `swiper-button-disabled` class, and its a11y module sets `aria-disabled`. CSS
+  such as `.swiper-button-disabled { pointer-events: none; }` is styling on top
+  of that, not the only cue. Do not report the disabled state of Swiper-driven
+  `<button>` arrows. A `<div>` or `<span>` arrow is still a defect (section 1),
+  and so is an arrow Swiper does not drive.
 - **Countdown timers and auto-closing popups** need a way to extend or dismiss.
 
 ## 10. Patterns that recur in themes
