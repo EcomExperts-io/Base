@@ -13,7 +13,7 @@ This rule applies to **every string you write**, in every file, regardless of
 what the surrounding code looks like.
 
 That sounds obvious enough not to need saying. It needs saying because of how it
-actually failed. On the Bites Vitamins build, localisation was applied
+actually failed. On one client build, localisation was applied
 diligently wherever the agent was *editing an existing Base file* — those files
 were already dense with `| t` calls, so it matched them. In **brand-new
 sections**, where there was no surrounding `| t` to copy, it was skipped almost
@@ -40,7 +40,7 @@ All four of these need translating. The last two are the ones that get missed:
 | **Accessibility attributes** | `aria-label`, `alt`, `title` |
 | **Screen-reader-only text** | `.visually-hidden` spans |
 
-Concrete misses from the Bites build, all hardcoded English in shipped
+Concrete misses from that build, all hardcoded English in shipped
 `aria-label` attributes: `"Products"`, `"Contact methods"`,
 `"Comparison columns"`, `"Filter reviews"`, `"Filter articles"`.
 

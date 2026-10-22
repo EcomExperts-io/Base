@@ -76,4 +76,4 @@ Prettier and a JSON parse all pass the file; `check-json.py` errors above 3,400
 and warns above 3,300. Near the cap, before adding a schema key: reuse a generic
 label (`labels.*`, `sections.all.*`) wherever its wording fits, fold `info`
 lines into one `paragraph` setting, and remove an unused key in the same
-change. Pique's schema locale hit the cap exactly in Oct 2026.
+change. One client store's schema locale hit the cap exactly in Oct 2026.

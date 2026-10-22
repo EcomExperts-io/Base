@@ -39,7 +39,7 @@ other half: a system that notices when the context was ignored.
 | **1** | **Code style and architecture** | `.claude/rules/` — does it look like Base? | the gate: contract, conventions, Theme Check |
 | **2** | **Visual fidelity** | The Figma frame, at that breakpoint | `.claude/verify/<slug>/report.json` |
 
-Passing one says nothing about the other. On Bites Vitamins the pages were
+Passing one says nothing about the other. On one client build the pages were
 pixel-perfect and 30 of 31 new sections shipped with no merchant controls.
 Report the two separately, always, with the evidence for each.
 

@@ -12,7 +12,7 @@ page. A store where the foundations and the chrome are right can have its pages
 rebuilt in any order; a store where they are wrong makes every page a
 renegotiation.
 
-**And commerce before content.** The second rebuild (Pique, Sep–Oct 2026)
+**And commerce before content.** One client rebuild (Sep–Oct 2026)
 got the chrome right and still shipped its purchase path last: the cart
 drawer, discount codes and subscription plans were built after the landing
 pages, and the client reopened the largest bundle as "doesn't add with the
@@ -106,6 +106,6 @@ prevented it, `/record-incident`; fix it in the stage it belongs to.
 ## What this costs, honestly
 
 Recon is a day. Foundations and chrome are the slow stages — a header with
-mega-menu panels and a cart drawer with states took two sessions each on the
-MiLB build — and they are the stages a page-first order skips and pays for
+mega-menu panels and a cart drawer with states took two sessions each on one
+client build — and they are the stages a page-first order skips and pays for
 later. Homepage last feels wrong to everyone until the second rebuild.

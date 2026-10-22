@@ -4,8 +4,8 @@
 # Why this exists
 # ---------------
 # GitBot reviews every push on every branch of every client repository and
-# posts in Slack one to two minutes later. On Pique nobody in the session
-# read those posts; the findings were met on the pull request, by the lead.
+# posts in Slack one to two minutes later. On one client rebuild nobody in the
+# session read those posts; the findings were met on the pull request, by the lead.
 # This adds one line of context after the push so the session reads the
 # review itself (/gitbot-preflight). It does not block and it is silent in
 # Base, which GitBot does not review.

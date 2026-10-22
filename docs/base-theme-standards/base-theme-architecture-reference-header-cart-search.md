@@ -5,7 +5,7 @@
 cart engine and its three consumers, and search — predictive and page. It is
 the durable technical standard for the part of a rebuild that the v1 vision
 scheduled "later" and that a real rebuild turned out to be mostly made of:
-on the MiLB build, five of nine builds were a footer, a header with five
+on one client build, five of nine builds were a footer, a header with five
 mega-menu panels, a cart drawer, a search overlay and a set of drawers, and
 none of them had a reference to build against.
 
@@ -114,7 +114,7 @@ by the drawer and dropdown heights: `calc(100vh - var(--header-height) - var(--a
 **Current state, not the standard:** this is a plain inline script, not a
 custom element, and it binds `window` listeners it never removes. A rebuild
 should put the same logic in a `<header-shell>` custom element with
-`connectedCallback`/`disconnectedCallback` — the MiLB build did exactly this
+`connectedCallback`/`disconnectedCallback` — one client build did exactly this
 and fixed `--header-height` reporting 80 when the header was 110.
 
 ### Settings contract
@@ -137,7 +137,7 @@ must measure it, not assume it.
 The dropdown's toggles are `<div class="menu-toggle">` (the megamenu's are
 `<button>`); nothing sets `aria-expanded`; there is no Escape handling and no
 focus management on open or close; the `#header-search` panel is shown by class
-with no focus move into it. The MiLB parity audit's three high-severity findings
+with no focus move into it. One client parity audit's three high-severity findings
 were all in this layer (a silent cart count, a drawer that announced nothing, a
 failed variant switch). **For a rebuild these are requirements, not
 inheritances** — see the build skill's overlay checklist: focus moved in on
@@ -255,7 +255,7 @@ constructor.
 
 **Current state, not the standard:** the drawer has no `role="dialog"`, no
 focus trap, no Escape handling and no live region; the notification has
-`role="dialog" aria-modal="true"`. The MiLB build added a live region *inside
+`role="dialog" aria-modal="true"`. One client build added a live region *inside
 the dialog but outside the swapped region* so the announcement survives the
 innerHTML swap — that placement is the pattern.
 

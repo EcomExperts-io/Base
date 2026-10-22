@@ -167,7 +167,7 @@ A `section-*` file must not be loaded by more than one unrelated section. If
 something turns out to be genuinely shared, it is renamed to `component-*` —
 it does not keep the name of whichever page happened to need it first.
 
-This is the concrete failure it prevents: on Bites Vitamins,
+This is the concrete failure it prevents: on one client build,
 a `section-about-carousel.js` ended up loaded by eight sections across four
 pages, keeping a name that implied single-page scope. Generalising the code was
 right; not renaming it was the mistake. **When you widen a file's scope, rename

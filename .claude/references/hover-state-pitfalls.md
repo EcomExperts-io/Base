@@ -1,6 +1,6 @@
 # Hover state pitfalls
 
-Learned while adding hover states across the MiLB homepage sections. Each of
+Learned while adding hover states across a client's homepage sections. Each of
 these produces CSS that looks right in review and does nothing (or the wrong
 thing) on screen.
 

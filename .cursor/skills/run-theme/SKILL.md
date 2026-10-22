@@ -1,6 +1,7 @@
 ---
 name: run-theme
-description: Start or reuse the Shopify theme dev server for this checkout so the theme can be opened, screenshotted and verified. Use when the theme needs to be running — before verify-against-reference, before /verify or /run, or when asked to preview, launch or open the theme.
+description: Start or reuse the Shopify theme dev server for this checkout so the theme can be opened, screenshotted and verified. Use when the theme needs to be running — before verify-against-reference, before /run, or when asked to preview, launch or open the theme.
+argument-hint: [--verify]
 ---
 
 # run-theme

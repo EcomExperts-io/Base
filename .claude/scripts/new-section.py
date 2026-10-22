@@ -15,7 +15,7 @@ belongs: **in this codebase, things that must be chosen never run, and things
 that run automatically always do.** A convention that depends on someone
 remembering to invoke it is a convention that is not in force.
 
-The cost of it not being in force is measured. On the Bites Vitamins build 30 of
+The cost of it not being in force is measured. On one client build 30 of
 31 new sections shipped with spacing and colour hardcoded into CSS and no
 merchant settings behind them; 5 uses of `| t` against Base's 221; zero `t:`
 schema keys against Base's 136. Every one of those sections would have been
@@ -77,7 +77,7 @@ PADDING_BREAKPOINT = 750
 SECTION_NAME_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 
 # Named for a page rather than for a job. A page-prefixed name stops being
-# descriptive the first time the section is reused, and on the Bites build that
+# descriptive the first time the section is reused, and on one client build that
 # happened immediately. Warned rather than blocked: `collection-hero` may be
 # genuinely about collections rather than about one page.
 PAGE_PREFIXES = ("home-", "homepage-", "about-", "landing-", "pdp-", "plp-", "contact-")

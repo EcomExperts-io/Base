@@ -11,9 +11,9 @@ Ask the store before wiring anything to it.
 it after the fact by reading the diff. The failure it guards against is
 upstream of the code: a design shows an ingredients panel, the section is wired
 to `product.metafields.custom.ingredients`, and no product has it — or four
-page templates are built and 404 because no page in admin uses them (MiLB).
-The store is a source the workflow named in its vision and never read. These
-are the reads, all of them without admin write access.
+page templates are built and 404 because no page in admin uses them. These
+are the reads that answer such questions, all of them without admin write
+access.
 
 **Invocation:** `/store-recon` — needs the store handle
 (`SHOPIFY_FLAG_STORE` in `settings.local.json` under `.claude/`; ask if unset).
@@ -58,8 +58,8 @@ store; the first command opens a browser login — hand it to them.
    | design assumes | source | state | who creates it |
    |---|---|---|---|
    | `product.metafields.custom.ingredients` (PDP ingredients band) | metafield definition + values | definition missing | client admin |
-   | `/collections/copa` (homepage band) | collection | exists, 0 products | client |
-   | `/pages/shop-by-team` | page using `page.shop-by-team` | missing | client admin |
+   | `/collections/<handle>` (homepage band) | collection | exists, 0 products | client |
+   | `/pages/<handle>` | page using `page.<handle>` | missing | client admin |
 
 5. **Wire to the real source anyway, rendering nothing when absent**, and
    name the exact definition someone must create — name, type, owner type,

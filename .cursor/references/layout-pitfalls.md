@@ -1,6 +1,6 @@
 # Layout pitfalls — declarations that report correct and render wrong
 
-Six traps measured on the Pique rebuild (Sep–Oct 2026). In each of them
+Six traps measured on a client rebuild (Sep–Oct 2026). In each of them
 `getComputedStyle` returned the value the author wrote, the DOM reported the
 state the author intended, and the page was wrong. None is visible in source
 and none is caught by a grep: a pixel diff or a box measurement found every

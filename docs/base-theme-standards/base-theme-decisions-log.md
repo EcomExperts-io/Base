@@ -2,9 +2,9 @@
  
 **What this is:** a running log of architecture questions raised against
 the Base Theme Architecture Reference, and their rulings. This is
-cross-project — decisions here apply to any future client build, not
-just Bites Vitamins. Project-specific findings (e.g. "does the Bites
-Vitamins build follow this?") live in that project's own audit doc.
+cross-project — decisions here apply to any client build, not just the
+one that raised them. Project-specific findings (e.g. "does this client's
+build follow this?") live in that project's own audit doc.
  
 ---
  
@@ -66,7 +66,7 @@ used by several content sections is the opposite case: identical behavior
 and markup contract, only the cards and values differ.
 
 **How this relates to Moemen's earlier position.** On Aug 3, 2026 Moemen
-flagged `section-about-carousel.js` in the Bites Vitamins build as an
+flagged `section-about-carousel.js` in a client build as an
 architecture mismatch, and the Collection Page Audit's revised leaning was
 option B — give each page its own carousel file. Naish's ruling is that
 the DRY cost of duplicating genuinely identical behavior is not worth
@@ -178,7 +178,7 @@ overlay; the rules they produce do, via `/harvest`.
 **A (15 Sep 2026):** By dependency, not by page: recon → foundations → global
 chrome → shared components → transactional templates → homepage and content →
 long tail. See `.claude/workflows/rebuild-playbook.md`. The v1 vision's
-"Collection → PDP → header/cart later" is superseded; the MiLB build showed
+"Collection → PDP → header/cart later" is superseded; a client build showed
 that most of a rebuild is chrome and overlays every page depends on.
 
 ---
@@ -191,11 +191,11 @@ a worktree (a worktree checks out any fetched ref; no common ancestor needed);
 stamp so a fork's edits are kept and listed; `check-tooling-drift.py` lists
 harvest and pull-down candidates; `/harvest` edits and pushes from the
 worktree and opens the Base PR. CI runs Base's workflow through a six-line
-caller. The CLAUDE.md claim "14 of 16 rules identical to BPN" (measured: 6)
+caller. The CLAUDE.md claim "14 of 16 rules identical to the fork" (measured: 6)
 is replaced by the drift report.
 
 **Q: Mobile padding — is it a multiple of the desktop value, or its own
-setting?** (Raised four times across the Pique rebuild; ruled there 2026-09-17,
+setting?** (Raised four times across a client rebuild; ruled there 2026-09-17,
 adopted in Base 2026-09-21.)
 **A: Its own setting. Every new section exposes four padding settings —
 `padding_top`, `padding_bottom`, `padding_top_mobile`,
@@ -246,7 +246,7 @@ breakpoint split — and fall under the retrofit ruling below.
   reviewed as a theme change. **Needs Moemen's ruling; not done in the v2
   tooling branch.** `check-conventions.py --all` gives the standing count.
 - **Admin API writes from a session** (create pages, metafield definitions,
-  menus) would close the "inert until someone creates the page" gap the MiLB
+  menus) would close the "inert until someone creates the page" gap one client
   build hit four times. Needs a decision on scope and confirmation per write;
   `/store-recon` is read-only until then.
 - **Collection filters — single-open-desktop accordion:** current
@@ -273,7 +273,7 @@ breakpoint split — and fall under the retrofit ruling below.
 - **Responsive layout switch (grid desktop / carousel mobile):** no Base
   precedent exists either way — Base's own collection page never
   switches its rendering mode by breakpoint. Being worked through via
-  the Bites Vitamins Collection Page audit; will get logged here once
+  a client's Collection Page audit; will get logged here once
   a pattern is settled, since it'll likely recur on future client builds.
 ---
  
@@ -293,20 +293,20 @@ breakpoint split — and fall under the retrofit ruling below.
 ## Change Log
  
 - **Aug 3, 2026** — Moemen's Base Theme code review flagged
-  `section-about-carousel.js` and `collection-filters.js` in the Bites
-  Vitamins build as architecture mismatches vs. Base Theme standard.
+  `section-about-carousel.js` and `collection-filters.js` in a client
+  build as architecture mismatches vs. Base Theme standard.
 - **Aug 4, 2026** — Base Theme Collection/PDP architecture recon
   completed (see Architecture Reference doc).
 - **Aug 4, 2026** — Moemen confirmed card-level photo-swipe behavior
   (not currently built, but belongs in card JS if added).
 - **Aug 4, 2026** — Container-level carousel ownership resolved as a
   transferable principle from Base precedent (see Resolved, above).
-- **Aug 5, 2026** — Confirmed the Bites Vitamins Collection page's
+- **Aug 5, 2026** — Confirmed that client's Collection page's
   shared carousel component (`section-about-carousel.js`) was built by
   an AI model before Base Theme standards existed for this project, and
   its accompanying `.cursor/references/shared-page-sections.md` is a
   post-hoc AI rationalization, not a reviewed team decision — it should
-  not be treated as precedent. See Bites Vitamins Collection Page Audit
+  not be treated as precedent. See that client's Collection Page Audit
   for the resulting fix options.
 - **Aug 5, 2026** — Collection's dedicated carousel component
   (`section-collection-carousel.js` / `<collection-carousel>`) folded
@@ -325,9 +325,9 @@ breakpoint split — and fall under the retrofit ruling below.
   rather than a blanket preference (see Resolved, above). Compliance
   checklist item A3 rewritten accordingly; new checklist Section E added
   covering schema and merchant controls, which had no coverage before and
-  is part of why the Bites Vitamins audits missed the settings contract.
-- **Aug 26, 2026** — These standards docs migrated from the Bites
-  Vitamins repo into Base, where forks can inherit them. Project-specific
+  is part of why the first client audits missed the settings contract.
+- **Aug 26, 2026** — These standards docs migrated from the first
+  client repo into Base, where forks can inherit them. Project-specific
   audits stay in the client repo.
 - **Aug 26, 2026** — Recorded why Base's own sections do not all carry the
   settings contract, and why they are not being retrofitted in the tooling
@@ -345,7 +345,7 @@ breakpoint split — and fall under the retrofit ruling below.
   dependency-ordered rebuild playbook; the Header, Cart Engine & Search
   reference. Cursor mirror kept and made maintenance-free. Rulings above
   dated Sep 15.
-- **Sep 21, 2026** — First v2 pilot (Pique) reviewed before the branch goes to
+- **Sep 21, 2026** — First v2 pilot (a client rebuild) reviewed before the branch goes to
   `development`. Mobile padding ruled: four padding settings per section, the
   `0.75 ×` multiplier retired, existing sections not retrofitted (see
   Resolved). The fork CI caller now fires on every pull request — it had

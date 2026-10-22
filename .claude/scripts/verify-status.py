@@ -53,7 +53,7 @@ def commerce_status():
     return (f"commerce: {len(files)} purchase-path file(s) changed ({', '.join(os.path.basename(p) for p in files[:4])}"
             f"{', …' if len(files) > 4 else ''}) with no commerce-check report newer than the change. Run "
             "python3 .claude/scripts/commerce-check.py --url <dev theme product URL> before reporting it done — "
-            "on Pique the cart shipped last and the client found the discount bug.")
+            "on one rebuild the cart shipped last and the client found the discount bug.")
 
 
 def main(argv):

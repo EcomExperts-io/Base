@@ -1,7 +1,7 @@
 #!/bin/sh
 # Keeps the Cursor and Claude Code copies of our AI configuration identical.
 #
-# Why this exists: on the Bites Vitamins build the conventions lived only in
+# Why this exists: on one client build the conventions lived only in
 # .cursor/rules/. Claude Code does not read that path, so for the first 18 days
 # of the build the agent had no access to them and ~30 sections shipped without
 # the section schema contract or translation keys. Two hand-maintained copies is

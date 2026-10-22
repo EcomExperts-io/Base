@@ -1,6 +1,7 @@
 ---
 name: figma-readiness
 description: Score a Figma frame's structure before building from it — default layer names, hidden leftovers, width in the frame name, components, text as text, tokens, behaviour notes — and write the message to send the designer if it is not ready. Use before the first get_design_context call of any build, and whenever asked whether a frame is buildable or why a build keeps needing re-prompts.
+argument-hint: <fileKey> <nodeId>[@<width>] [<nodeId>@<width>]
 ---
 
 # figma-readiness
@@ -11,11 +12,11 @@ Check the frame before spending a day on it.
 calls itself aspirational. Every re-prompting cycle it describes traces back to
 a few structural facts a script can see: layers named `Frame 1261153641`,
 hidden old versions, no width in the frame name, no components, text flattened
-to vectors. Until v2 nothing checked a frame before a build started, so the
-questions went back to the designer after the build, one at a time. This sends
-them back before, all at once, with the specific layers named — which is how
-"this is what the workflow requires" gets said to a designer: as a check with
-numbers, every time.
+to vectors. Without a check before the build starts, the questions go back to
+the designer after the build, one at a time. This sends them back before, all
+at once, with the specific layers named — which is how "this is what the
+workflow requires" gets said to a designer: as a check with numbers, every
+time.
 
 **Invocation:** `/figma-readiness <fileKey> <nodeId>[@<width>] [<nodeId>@<width>]`
 — runs as Step 1½ of `/build-page-from-figma`; also on its own.

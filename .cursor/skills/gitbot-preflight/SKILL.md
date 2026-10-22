@@ -1,13 +1,14 @@
 ---
 name: gitbot-preflight
 description: Read what GitBot reports on a pushed branch and settle every finding — fix it, or flag it with the developer's reason — before the pull request, with the local gate run first so the push carries nothing a grep could have caught. Use after a push, before opening or updating a PR, when asked what GitBot said, or when a Slack review has findings to work through.
+argument-hint: [branch]
 ---
 
 # gitbot-preflight
 
 GitBot reviews every push on every branch of every client repository against
-Base's rules, and posts in the client's Slack channel. Nothing in the build
-read those posts: on Pique, 532 of 1,363 commits were fixes, and the review
+Base's rules, and posts in the client's Slack channel. On one rebuild nothing
+in the build read those posts: 532 of 1,363 commits were fixes, and the review
 that would have named most of them was sitting in Slack a minute after each
 push. This skill closes that gap from inside the session.
 
@@ -21,7 +22,7 @@ findings fixed or open.
 
 ## Step 1 — The local gate first
 
-The gate now greps for what GitBot reported most on Pique: hardcoded px/rem
+The gate greps for what GitBot reports most often: hardcoded px/rem
 outside custom properties, physical properties, hex anywhere, CSS `order`,
 `white-space: nowrap`, `outline: none` on focus, spinners with no
 reduced-motion override, a click handler on a div, an `<img>` with no `alt`,
@@ -71,8 +72,8 @@ left for the lead to find on the PR.
 - **Record** when a finding is something the local gate should have caught
   — a greppable pattern, a platform limit, a Liquid trap — with
   `/record-incident`, naming `check-conventions.py` or the rule. That is
-  how the gate learns; the ten checks in Step 1 are Pique's findings
-  written down.
+  how the gate learns; the ten checks in Step 1 are one rebuild's most
+  frequent findings written down.
 
 Then push again and re-run Step 2. The follow-up review reports each earlier
 finding fixed or still open; stop when nothing is open.

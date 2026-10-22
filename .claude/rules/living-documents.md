@@ -97,5 +97,5 @@ line every time; the `.md` merges cleanly, the mirror does not. Resolve the
 detects conflict markers in a generated file and regenerates it — and stage
 `.cursor/`. This is how PR #58's only conflict was resolved.
 
-Two hand-maintained copies is how the Bites Vitamins conventions ended up
+Two hand-maintained copies is how one client build's conventions ended up
 somewhere Claude Code could not read them for the first 18 days of the build.

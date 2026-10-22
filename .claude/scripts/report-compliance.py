@@ -3,7 +3,7 @@
 
 Why this exists
 ---------------
-The Bites Vitamins failure — 30 of 31 new sections shipped with spacing and
+One client build's failure — 30 of 31 new sections shipped with spacing and
 colour hardcoded and no merchant settings behind them — ran for five weeks
 because nobody was counting. Every individual section looked finished, so the
 absence of a control was invisible until an audit went looking for it.

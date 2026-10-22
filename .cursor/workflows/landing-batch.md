@@ -4,7 +4,7 @@ Rebuild a card's worth of landing pages (three to seven pages on a few
 templates) on the Base theme, matched to the live site, in one session with
 up to five agents. A human starts this; it is not a skill.
 
-**Why this exists.** The Pique rebuild ran this 21 times (Sep–Oct 2026): one
+**Why this exists.** One client rebuild ran this 21 times (Sep–Oct 2026): one
 batch per Notion card, each its own branch, worktree, dev theme and session.
 The first batch took two days and invented the method; the last ones took six
 to nine hours, including the QA rounds. What follows is the method with the
@@ -15,8 +15,8 @@ the step where they bit. Use it when a card lists pages whose reference is
 **The one idea.** A landing page is **template content on a section library**.
 A batch adds pages, settings and occasionally a section; it almost never adds
 a second copy of anything. The first job in every batch is the honest diff —
-already built / copy of built / genuinely new — and the batches that skipped
-it (Pique 15–17) rebuilt pages that were already on the branch.
+already built / copy of built / genuinely new — and the three consecutive
+batches that skipped it rebuilt pages that were already on the branch.
 
 ---
 
@@ -26,7 +26,7 @@ it (Pique 15–17) rebuilt pages that were already on the branch.
 
 From the global CLAUDE.md in the home directory, and the reason the laptop overheated twice:
 
-- **At most 5 agents at once**, read-only ones included. Pique settled on 3
+- **At most 5 agents at once**, read-only ones included. That rebuild settled on 3
   for build waves and 2 for recon; use 5 only when the page pass runs one
   agent per template.
 - **At most 3 headless browsers on the machine.** `live-parity.py` and

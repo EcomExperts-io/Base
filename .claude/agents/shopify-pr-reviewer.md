@@ -77,8 +77,8 @@ them, which renders correctly and leaves the merchant unable to change anything.
 - No `presets` entry → **Should fix**; the merchant cannot add the section at all
 
 This is the single most-missed rule in this codebase's history — 30 of 31 new
-sections on the Bites Vitamins build shipped without it — and it is invisible
-unless you look for it, because the page looks finished.
+sections on one client build shipped without it — and it is invisible unless
+you look for it, because the page looks finished.
 
 **Hardcoded English — four places, not one**
 

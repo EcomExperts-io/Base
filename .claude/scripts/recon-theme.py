@@ -25,8 +25,8 @@ Usage
 
 --live-url adds the live feature inventory: what the published storefront
 loads that the theme code does not show — app embeds, tracking pixels, popup
-and chat scripts, markets, a page builder, rich-text metafield HTML. On Pique a
-subscription widget auto-injected a second purchase UI into a rebuilt product
+and chat scripts, markets, a page builder, rich-text metafield HTML. On one
+client rebuild a subscription widget auto-injected a second purchase UI into a rebuilt product
 form and a page builder owned the landing-page template names; both were found
 by a rendered page, weeks in, not by the recon.
 Base is read from --base-path, else the worktree recorded by base-link.sh,

@@ -28,7 +28,6 @@ ROOT=$(git rev-parse --show-toplevel)
 cd "$ROOT"
 BASE_URL="${BASE_URL:-https://github.com/EcomExperts-io/Base.git}"
 BASE_REPO="${BASE_REPO:-EcomExperts-io/Base}"
-CLIENT=$(basename "$ROOT" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
 CMD="$1"; SLUG="$2"
 
 usage() {
@@ -38,7 +37,7 @@ usage() {
 }
 [ -n "$CMD" ] && [ -n "$SLUG" ] || usage
 SLUG=$(printf '%s' "$SLUG" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
-BRANCH="harvest/${CLIENT}-${SLUG}"
+BRANCH="harvest/${SLUG}"
 
 WT=$(python3 -c 'import json,sys
 try: print(json.load(open(".claude/.cache/base-link.json"))["worktree"])

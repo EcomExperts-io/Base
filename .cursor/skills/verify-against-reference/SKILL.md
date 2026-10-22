@@ -1,6 +1,7 @@
 ---
 name: verify-against-reference
 description: Compare a rendered theme page or section against its reference — a Figma frame at the exact breakpoint widths, or the live storefront section by section — and produce a measured fidelity report: pixel diff percentage, heatmap, box-by-box table, and what was actually seen. Use proactively after building or changing anything from a design or from a live page and before reporting it done; also when asked to check fidelity, compare against the design or against live, or audit parity.
+argument-hint: <url> <fileKey> <node>@<width>... --slug <name> | --live <url> --key <section-key>
 ---
 
 # verify-against-reference
@@ -183,7 +184,7 @@ the box comparison under **unverified**, not as passed.
 
 Compare spans as well as heights: each band's top to the next band's top.
 Negative and collapsing margins move a band whose own height matches — on
-Pique two exact bands hid a 96px drift of everything below them.
+one rebuild two exact bands hid a 96px drift of everything below them.
 
 ### 6. Look, once
 
@@ -202,7 +203,7 @@ reports the weight you asked for (`.claude/references/layout-pitfalls.md`).
 ## Against live — per section
 
 One command renders both sides in headless Chrome, at every width, and writes
-the report. It closes every trap the Pique rebuild fell into: the viewport is
+the report. It closes every trap a live comparison has been seen to fall into: the viewport is
 emulated and asserted (never `--window-size`), each side has its own Chrome
 profile and the theme it rendered is read from `Shopify.theme` and asserted
 (a leaked preview cookie makes "live" render our theme), lazy media is forced

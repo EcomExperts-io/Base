@@ -80,7 +80,7 @@ ALWAYS_APPLY_ALLOWLIST = {
 # reviewer agents read them by path — authoring a section does not need 135
 # lines on how a finding is written up.
 #
-# Re-measured 2026-10-22 after the Pique harvest (42 generic incidents into
+# Re-measured 2026-10-22 after a client harvest (42 generic incidents into
 # liquid.md, schemas.md, sections.md, templates.md, css-standards.md and
 # javascript-standards.md — platform limits the upload enforces, Liquid
 # drops that print as numbers, a preset block that renders an empty band):

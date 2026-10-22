@@ -3,10 +3,10 @@
 
 Why this exists
 ---------------
-On the Pique rebuild commerce came last: the cart drawer, discount codes and
+On one client rebuild commerce came last: the cart drawer, discount codes and
 subscription plans were built after the pages, and the client reopened the
-largest bundle as "doesn't add with the correct discount" (PDP QA row 49)
-after a card had been marked done. Nothing in the workflow had walked the
+largest bundle as "doesn't add with the correct discount" after a card had
+been marked done. Nothing in the workflow had walked the
 purchase path; a pixel report cannot. This does, headless, at every width the
 QA team tests at, and it reads the result from `cart:change` — never from a
 fixed sleep, which read a stale DOM and looked exactly like a broken cart
@@ -18,7 +18,7 @@ What it checks, per width (393, 768, 1024, 1440 by default)
              [data-cart-count] updates
   change     the quantity stepper link changes the line to 2 and keeps its
              properties (Shopify replaces properties on /cart/change — GitBot
-             Critical on Pique PR #107)
+             Critical on a client pull request)
   discount   with --discount-code: the code is applied and /cart.js lists it
              as applicable (Liquid's cart JSON has none — incident 2026-10-20)
   remove     the remove link empties the cart and the empty state renders

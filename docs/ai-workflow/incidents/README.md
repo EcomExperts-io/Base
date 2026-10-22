@@ -28,11 +28,11 @@ python3 .claude/scripts/new-incident.py --list --open
 
 ## Harvested from client builds
 
-Incidents stay in the client repo; what they taught lands here. The Pique
+Incidents stay in the client repo; what they taught lands here. One client
 rebuild (Sep–Oct 2026) recorded 48 generic incidents, none harvested during
 the build. This is where each one went, on 22 Oct 2026.
 
-| Pique incident | Where it landed in Base |
+| Incident | Where it landed in Base |
 |---|---|
 | dangling paths block the first fork commit | `pull_base_tooling_lib.py` carries the incidents README down (earlier) |
 | hot reload blocks the verifier | `theme-verify` server on 9293; CDP renderer (earlier) |

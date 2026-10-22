@@ -1,6 +1,7 @@
 ---
 name: scaffold-section
 description: Create a new Base Theme section with the required merchant settings contract, translation keys, and matching CSS/JS files. Use when asked to scaffold, create, or add a new section.
+argument-hint: <name> ["description"]
 ---
 
 # scaffold-section
@@ -16,9 +17,24 @@ Example: `/scaffold-section testimonials "Customer quotes in a responsive grid"`
 Read `.claude/rules/sections.md` and `.claude/rules/schemas.md`. This skill
 tells you what to produce; those state the requirements and why they exist.
 
-Use `.claude/skills/scaffold-section/reference-section.liquid` as the structural
-template. **Do not use `.claude/rules/examples/section-example.liquid`** — it
-predates the current standard, teaches `{% stylesheet %}` and
+**Generate, then edit.** The scaffold is a script, and it refuses to write a
+section that would fail the settings contract:
+
+```bash
+python3 .claude/scripts/new-section.py <name>
+```
+
+It writes `sections/<name>.liquid`, `assets/section-<name>.css`, the JS file
+unless `--no-js`, and the docs page, then runs `check-section-contract.py` on
+what it wrote. It prints the locale keys as a fragment for
+`merge-locale-fragments.py` rather than editing `locales/*.json` (two agents
+writing that file at once corrupt it), and it leaves the template and the docs
+sidebar to you. Steps 1–8 below are what the script produces and what you
+then fill in; read them so you know what each file must keep when you edit it.
+
+`.claude/skills/scaffold-section/reference-section.liquid` is the shape the
+script copies. **Do not use `.claude/rules/examples/section-example.liquid`**
+— it predates the current standard, teaches `{% stylesheet %}` and
 `{% content_for 'blocks' %}`, and exposes none of the required settings.
 
 ## Steps
@@ -145,8 +161,9 @@ dependencies table, schema settings table, example usage.
 
 Run through this and state the result — do not just assert compliance:
 
-- [ ] `color_scheme`, `padding_top`, `padding_bottom` all present in the schema
-      (or a Liquid comment explains the missing `color_scheme`)
+- [ ] `padding_top`, `padding_bottom`, `padding_top_mobile`,
+      `padding_bottom_mobile` all present in the schema, each a `range`
+- [ ] `color_scheme` present, or a Liquid comment explains why not
 - [ ] `presets` array present
 - [ ] Zero bare-English strings — grep your own output for `"label": "[A-Z]`
       and `aria-label="[A-Z]`

@@ -20,7 +20,7 @@ def check_flags(argv, known, usage):
     each flag to whether it takes a value. This runs before anything is read or
     written: a stray `--help` once ran a real overlay and re-stamped a fork to
     the wrong Base commit, because the script only looked for the flags it
-    recognised and silently ignored the rest (Pique incident
+    recognised and silently ignored the rest (client incident
     2026-09-15-pull-script-runs-on-unknown-flag).
     """
     i = 0
@@ -49,7 +49,7 @@ EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/"
 # a fork on arrival: rules and skills link to it, check-rule-links.py resolves
 # those links, and git cannot carry an empty directory — so the pilot fork's
 # very first commit of the tooling was blocked by three links to a folder only
-# Base had (Pique incident 2026-09-15-dangling-paths-block-first-fork-commit).
+# Base had (client incident 2026-09-15-dangling-paths-block-first-fork-commit).
 INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
 # Paths Base has renamed or removed, old -> new (or None). The overlay only

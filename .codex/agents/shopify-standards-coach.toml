@@ -58,9 +58,9 @@ hardcoded into `assets/section-*.css` with no setting behind them.
 
 Expect to find this missing on work built from a design. A Figma frame shows one
 spacing value and one background colour, so a design-matching pass has no reason
-to invent a merchant control. Reference: 30 of 31 new sections on the Bites
-Vitamins build shipped without it. When you find it, say plainly that the page
-may look right and still not be editable.
+to invent a merchant control. Reference: 30 of 31 new sections on one client
+build shipped without it. When you find it, say plainly that the page may look
+right and still not be editable.
 
 **Purposefulness** — every line justifies itself.
 Settings declared and never read, or read and never declared. Branches

@@ -1,6 +1,7 @@
 ---
 name: recon-theme
 description: Measure a theme before building in it — lineage against Base, the conventions actually in use, compliance, which pages exist and which are left, tooling state — and write the state-of-the-theme document plus the fork's measured rule values. Use when arriving on a client repo for the first time, resuming a rebuild another team started, or when asked what was done previously, what conventions to follow, or what is left.
+argument-hint: [--live-url <storefront-url>]
 ---
 
 # recon-theme
@@ -12,10 +13,10 @@ the first act is measurement, not code.
 **Why this exists.** The downstream rule copies are supposed to carry the
 numbers a client theme settled on ("769px, 14 files against 4") so that agents
 build to the theme in front of them rather than to Base's generic text. That was
-done by hand, once, for one fork. Meanwhile a developer landing on Furbish found
-no rules at all, and one landing on BPN found rules that had drifted from Base
-with no record of which edits were deliberate. The recon makes the measurement
-a script and the judgment a checklist.
+done by hand, once, for one fork. Meanwhile a developer landing on one client
+repo found no rules at all, and one landing on another found rules that had
+drifted from Base with no record of which edits were deliberate. The recon
+makes the measurement a script and the judgment a checklist.
 
 **Invocation:** `/recon-theme` — in the client repo, after
 `sh .claude/scripts/base-link.sh` (so lineage can be measured) and
@@ -59,8 +60,8 @@ in the "What the numbers cannot see" section of the document:
 - **What the previous team wrote down.** Their rule edits (the drift report
   lists them), their references, their decisions log, their frame map. Treat
   a doc an AI wrote during a build as a claim, not a ruling, until it is
-  checked against the code — the Bites `shared-page-sections.md` was a post-hoc
-  rationalisation.
+  checked against the code — one build's "shared page sections" document
+  turned out to be a post-hoc rationalisation.
 - **Half-built pages.** Templates with no admin page, sections in no template,
   frames in the map with nothing built. This is the "what is left" list.
 - **Three decisions** to make before the next section: the breakpoint to build
@@ -74,8 +75,8 @@ code does not show. For each line, decide and write down:
 
 - **An app that acts on the theme** (subscriptions, reviews, upsells): which
   sections it injects into or owns, and whether the rebuilt section drives it,
-  switches it off, or leaves it (Pique: Recharge injected a second purchase UI
-  into a rebuilt product form; the fix was one documented flag).
+  switches it off, or leaves it (a subscription app has injected a second
+  purchase UI into a rebuilt product form; the fix was one documented flag).
 - **A popup or chat** paints over every capture; `live-parity.py` hides the
   known ones. An unknown one is added to its overlay list, not masked by hand.
 - **Markets**: the market list to verify in, logged in and out.

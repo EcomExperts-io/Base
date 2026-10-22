@@ -13,7 +13,7 @@ status: harvested
 ## What happened
 
 CLAUDE.md stated, as evidence that inheritance was working, that 14 of the 16
-rules were byte-identical between Base and the BPN fork. Base changed on 1 Sep;
+rules were byte-identical between Base and a client fork. Base changed on 1 Sep;
 the fork could not pull the change because it had no `base` remote and no
 shared history. By 14 Sep the true count was 6 of 16, and the sentence was
 loaded into every session as fact.

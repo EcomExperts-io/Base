@@ -5,7 +5,7 @@ Why this exists
 ---------------
 Every client theme copies Base's `.claude/` on day one and drifts from that
 moment. CLAUDE.md asserted "14 of the 16 rules are byte-identical between Base
-and the BPN fork"; measured on 14 Sep 2026 the number was 6, because Base had
+and the client fork"; measured on 14 Sep 2026 the number was 6, because Base had
 moved and there was no way to pull it down. A fork's rule copies also carry
 things Base must not overwrite — the measured breakpoint, the container class,
 the client's own decisions — so a plain copy is as wrong as no copy.

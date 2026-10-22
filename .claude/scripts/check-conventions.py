@@ -21,7 +21,7 @@ Scope model — you answer for what you ADD
 A finding is *blocking* only when it has error severity AND sits in a file that
 is new. Modified files are reported, never gated: Base carries legacy that
 predates every one of these rules, and a gate that fires on inherited offenses
-during unrelated work is switched off within a week. The Bites Vitamins hook
+during unrelated work is switched off within a week. One client build's hook
 was exactly that — it logged and exited 0 and nobody read the log.
 
 Modes
@@ -48,7 +48,7 @@ THEME_DIRS = ("sections/", "snippets/", "assets/", "layout/", "templates/",
 # Files whose whole job is to hold the merchant's raw values. Hex is not a
 # finding there. snippets/css-variables.liquid is deliberately NOT here any
 # more: a literal hex in it is a brand colour no merchant setting controls,
-# and GitBot reports it (Pique, Oct 2026, `--brand-rule-silver: #c8c8c8`).
+# and GitBot reports it (a client rebuild, Oct 2026, `--brand-rule-silver: #c8c8c8`).
 TOKEN_FILES = {"config/settings_schema.json", "config/settings_data.json"}
 
 # ---------------------------------------------------------------------------
@@ -67,7 +67,7 @@ RULES = {
     "schema-range-steps":  ("error", "a `range` needs at least 3 steps between min and max or the theme upload fails", "schemas.md"),
     "template-t-key":      ("error", "Shopify does not resolve `t:` in template values — the key path renders to the customer", "templates.md"),
     "section-asset-shared": ("error", "a `section-*` asset is loaded by more than one section; rename to `component-*` or confirm the sections are one feature", "naming-conventions.md"),
-    # --- harvested from the Pique rebuild, Sep–Oct 2026 ---
+    # --- harvested from a client rebuild, Sep–Oct 2026 ---
     "css-duplicate-block": ("warn", "this run of lines repeats an earlier block in the same file; the later copy silently wins — delete it", "css-standards.md"),
     "schema-t-key-missing": ("error", "a `t:` key in the schema has no entry in locales/en.default.schema.json — the theme editor shows a missing-translation label", "localization.md"),
     "liquid-t-key-missing": ("error", "a `| t` key has no entry in locales/en.default.json — the key path renders as visible text", "localization.md"),
@@ -75,7 +75,7 @@ RULES = {
     "schema-visible-if-resource": ("error", "Shopify rejects `visible_if` on an `article_list` or `blog` setting at upload; Theme Check passes it", "schemas.md"),
     "template-setting-unknown": ("warn", "a template sets a key its section or block schema does not define — Shopify drops it silently on upload", "templates.md"),
     "docs-orphan-page": ("warn", "a docs page describes a section or snippet that no longer exists — delete or rewrite it", "living-documents.md"),
-    # --- what GitBot reports on every push that the gate did not (Pique, Oct 2026).
+    # --- what GitBot reports on every push that the gate did not (a client rebuild, Oct 2026).
     # Severity follows GitBot's: its Minor is a warning here, its Major and
     # Critical are errors. Errors still block only in a file the change adds.
     "css-hardcoded-length": ("warn", "px/rem values are set on a namespaced custom property first, then used (`--x-gap: 16px;` … `gap: var(--x-gap)`)", "css-standards.md"),
@@ -98,7 +98,7 @@ LOCALE_SCHEMA = "locales/en.default.schema.json"
 LOCALE_RUNTIME = "locales/en.default.json"
 
 # A repeated stylesheet block is only worth reporting at a size no two rules
-# reach by coincidence. Pique's featured-product stylesheet carried three
+# reach by coincidence. One client's featured-product stylesheet carried three
 # copies of 100–200 lines; 40 is well under that and well over any legitimate
 # repeat of a short reset.
 DUP_RUN = 40
@@ -177,7 +177,7 @@ def scan_css(path, text, findings, offset=0, hex_check=True):
     # a comment is not a finding. The comment that excuses it is looked for in
     # the ORIGINAL lines: after blanking there is no `/*` left anywhere, and
     # for ten days this rule could not be satisfied in a .css file at all
-    # (Pique, Sep 2026) — a warning nobody can clear is a warning everyone
+    # (a client rebuild, Sep 2026) — a warning nobody can clear is a warning everyone
     # learns to skim.
     lines = text.split("\n")
     for i, ln in enumerate(lines):
@@ -201,7 +201,7 @@ BLOCK_RE = re.compile(r"([^{}]+)\{([^{}]*)\}")
 def scan_css_gitbot(path, text, findings, offset=0):
     """The CSS findings GitBot raised on push after the local gate passed.
 
-    Measured on Pique's last 30 days of reviews (Oct 2026): every Minor
+    Measured on one client's last 30 days of reviews (Oct 2026): every Minor
     css-standards finding was a hardcoded length, a physical property or a
     hex; every Major accessibility finding in CSS was `order`, `nowrap`, an
     `outline: none` on `:focus`, or a spinner with no reduced-motion override.
@@ -334,7 +334,7 @@ def scan_schema_t_keys(path, text, findings, offset=0):
     The contract check verifies the SHAPE of a label — that it is a `t:` key
     and not bare English. A key with a typo, a key for a section that was
     renamed, and a key nobody added all read as correct to it, and none shows
-    until a merchant opens the theme editor (Pique, Sep 2026, three sections).
+    until a merchant opens the theme editor (a client rebuild, Sep 2026, three sections).
     """
     tree = locale(LOCALE_SCHEMA)
     if not isinstance(tree, dict):
@@ -389,14 +389,14 @@ def scan_schema(path, text, findings):
                                             f'id "{s.get("id")}" min {s.get("min")} max {s.get("max")} step {s.get("step", 1)}'))
             if s.get("type") == "product":
                 products.append(str(s.get("id")))
-            # Only the two types Shopify has been seen to reject (Pique, Sep
-            # 2026). Other resource pickers were not tested; do not widen this
+            # Only the two types Shopify has been seen to reject (a client
+            # rebuild, Sep 2026). Other resource pickers were not tested; do not widen this
             # on a guess — a check that fails valid code is switched off.
             if s.get("type") in ("article_list", "blog") and "visible_if" in s:
                 findings.append(Finding(path, offset, "schema-visible-if-resource",
                                         f'{where}: id "{s.get("id")}" ({s.get("type")})'))
         # Section-level only. Base's shop-the-look block carries four product
-        # settings and uploads; Pique's rejection was in the section's own
+        # settings and uploads; the client's rejection was in the section's own
         # settings array, and moving the picker into a block was the fix.
         if section_level and len(products) > 1:
             findings.append(Finding(path, offset, "schema-product-setting-twice",
@@ -533,7 +533,7 @@ def scan_template_settings(path, text, findings):
     Shopify validates a template against the schema the store holds at that
     moment; `theme dev` syncs files in watcher order, so a new setting and its
     template value in one change lose the value silently when the template
-    goes up first (Pique, twice). A typo in a key is the same finding.
+    goes up first (seen twice on one rebuild). A typo in a key is the same finding.
     """
     data = parse_json_tolerant(text)
     if not isinstance(data, dict):
@@ -582,7 +582,7 @@ def scan_docs_orphans(deleted, findings, sweep=False):
 
     Pure filename arithmetic: docs/sections/x.md needs sections/x.liquid.
     Reported for the files this change deletes, or for every orphan on a
-    sweep. Four consecutive Pique pull requests left such pages behind; each
+    sweep. Four consecutive client pull requests left such pages behind; each
     was caught by a reviewer reading docs/ against the diff, never by a check.
     """
     for kind in ("sections", "snippets"):

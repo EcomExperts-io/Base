@@ -183,7 +183,7 @@ principle upstream, measured specifics downstream. New client repos start from
    `/verify-against-reference`'s report on disk, never by an assertion.
 
 A page can match a design pixel-for-pixel and still fail every convention in
-this file. That is what happened on Bites Vitamins. Check them separately and
+this file. That is what happened on one client build. Check them separately and
 report them separately, with the evidence for each.
 
 ## Commands
@@ -217,7 +217,7 @@ npx prettier --config .prettierrc.json --write path/to/file.liquid
 ```
 
 Name the files. Never pass a glob to `--write`: the theme is not uniformly
-formatted, and one glob put 48 untouched files into a Pique commit.
+formatted, and one glob put 48 untouched files into a client commit.
 
 There is no test suite — `npm test` is a stub. Verification is the gate, the
 verifier's report, and the theme editor.

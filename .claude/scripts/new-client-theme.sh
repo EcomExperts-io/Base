@@ -78,7 +78,7 @@ Before you build anything, in this order:
   1. npm install && npm run setup      — deps, hooks, cursor mirror, and doctor
      tells you what this machine still lacks (Node 22+, MCP sign-in, store handle)
   2. Confirm rule injection works. Open any .liquid file in Claude Code or
-     Cursor and check the rules are actually in context. On Bites Vitamins the
+     Cursor and check the rules are actually in context. On one client build the
      conventions sat where the tool could not read them for 18 days and nothing
      reported it.
   3. Confirm the hook BLOCKS. Add a section with no padding settings and try to

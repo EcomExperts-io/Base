@@ -103,7 +103,7 @@ and it still scrolls on mobile where `per_view_mobile` is smaller.
 
 ## 6. Min-content width silently inflates carousel cards (two layers)
 
-Symptom on the MiLB homepage: product titles spilled out of their card into the
+Symptom on one client's homepage: product titles spilled out of their card into the
 next slide, and the card's image rendered *wider than the card itself*. Both are
 the same root cause at two different levels — an item's **automatic minimum
 size** overriding the width you set — and fixing only one leaves the other.

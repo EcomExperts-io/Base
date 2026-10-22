@@ -4,7 +4,7 @@
 # Why this exists
 # ---------------
 # On a landing-page batch five agents push to one shared development theme.
-# Pique's first batch hand-rolled this and learned four things the hard way:
+# One rebuild's first batch hand-rolled this and learned four things the hard way:
 #   * a push to the wrong theme id is the one mistake nobody can take back —
 #     the live theme and the GitHub-synced QA theme are read-only, always;
 #   * two pushes at once interleave and one of them loses;

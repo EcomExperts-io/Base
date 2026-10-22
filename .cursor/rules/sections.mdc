@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/sections.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 975938345 -->
+<!-- checksum: 2598884444 -->
 
 
 # Section Development Standards
@@ -30,7 +30,7 @@ Plus a `presets` entry, so a merchant can actually add the section.
 
 ### Why this rule exists
 
-On the Bites Vitamins build, 30 of 31 new sections shipped without any of
+On one client build, 30 of 31 new sections shipped without any of
 this — spacing and colour were hardcoded into the CSS instead. The cause is
 worth understanding, because it will recur: **a Figma frame specifies exactly
 one spacing value and one background colour.** An agent building to match a
@@ -173,7 +173,7 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 > `rules-of-engagement.md`.
 
 > **Mobile padding is its own merchant setting, not a multiple of the desktop
-> one.** Ruled 2026-09-17 on the Pique rebuild and adopted here 2026-09-21; it
+> one.** Ruled 2026-09-17 on a client rebuild and adopted here 2026-09-21; it
 > replaces the `padding_top | times: 0.75` boilerplate inherited from Dawn.
 >
 > The multiplier was measured wrong three ways on one build. Seven homepage
@@ -218,7 +218,7 @@ nothing when none survives; pre-scan the way `shop-the-look.liquid` does:
 {%- endfor -%}
 ```
 
-Four sections on one Pique pull request shipped the empty band.
+Four sections on one client pull request shipped the empty band.
 `check-section-contract.py` notes a section whose preset seeds blocks and whose
 markup never tests `blank`.
 
@@ -269,8 +269,8 @@ against the list above, or start from
 
 Name sections by **function**, not by the page they first appear on. `hero`,
 `faq`, `selling-points` — not `home-hero` or `about-values`. A page-prefixed
-name stops being descriptive the first time the section is reused, and on the
-Bites build that happened immediately.
+name stops being descriptive the first time the section is reused, and on one
+client build that happened immediately.
 
 `main-` is reserved for template main sections. Do not use it for new sections.
 

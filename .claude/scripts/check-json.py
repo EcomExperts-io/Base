@@ -13,8 +13,8 @@ broken locale file renders key paths to the customer, and a broken template
 
 A locale file is also counted. Shopify rejects one with more than 3,400 keys
 ("Too many translation keys") and the failed upload takes every page of the
-theme down; Theme Check, Prettier and a JSON parse all pass the file. Pique's
-schema locale hit the cap exactly in Oct 2026 with 16 keys for one block, so
+theme down; Theme Check, Prettier and a JSON parse all pass the file. One client
+store's schema locale hit the cap exactly in Oct 2026 with 16 keys for one block, so
 the warning starts 100 keys early.
 
 Usage: check-json.py <paths...> [--quiet]

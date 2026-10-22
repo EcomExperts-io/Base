@@ -10,7 +10,7 @@ Theme Architecture Reference. Use it two ways:
   against the actual files. This is what "does the code follow the Base
   Theme standard" should mean in practice — not a vague impression.
 This checklist is durable and cross-project — it should work the same
-way on Bites Vitamins as on any future client store.
+way on every client store, present and future.
  
 ---
  
@@ -96,7 +96,7 @@ way on Bites Vitamins as on any future client store.
       tradeoff — not an oversight.
 ## E. Schema & Merchant Controls
 
-The section that did not exist when the Bites Vitamins audits were run,
+The section that did not exist when the first client audits were run,
 which is part of why they missed this. A page can pass every item in
 A–E and still ship sections a merchant cannot edit at all.
 
@@ -133,7 +133,7 @@ A–E and still ship sections a merchant cannot edit at all.
 **Why this section is weighted heavily on design-driven work:** a Figma
 frame carries exactly one spacing value and one background colour, so a
 pass that matches the design has no reason to invent a merchant control.
-On Bites Vitamins, 30 of 31 new sections shipped without any of the
+On one client build, 30 of 31 new sections shipped without any of the
 above while looking entirely finished. The pre-commit gate
 (`.claude/scripts/check-section-contract.py`) checks the mechanical
 subset of this list; passing the gate is not the same as passing the list.

@@ -7,9 +7,9 @@ When the brief is "match the live site", the reference is a storefront, not a
 Figma frame: it moves, it lazy-loads, it has popups and a preview cookie that
 can make "live" render our own theme. Base's verify skill compared a frame PNG
 against a render; this compares two renders of the same page, section by
-section, with every trap the Pique rebuild fell into closed below. Ported from
-Pique's landing-page workspace (Oct 2026), where it took 21 batches of pages to
-0%. The verify-against-reference skill carries the copy-paste examples.
+section, with every trap one client rebuild fell into closed below. Ported from
+that rebuild's landing-page workspace (Oct 2026), where it took 21 batches of
+pages to 0%. The verify-against-reference skill carries the copy-paste examples.
 
 Laptop rules are built in: one live+ours Chrome pair per run, reused for every
 width, loaded one after the other; at most LIVE_PARITY_SLOTS (default 2) runs

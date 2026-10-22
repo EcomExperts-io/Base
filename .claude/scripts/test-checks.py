@@ -88,7 +88,7 @@ def liquid(text, path="sections/x.liquid"):
     return f
 
 
-# --- what GitBot reports (Pique, Oct 2026) ---
+# --- what GitBot reports (a client rebuild, Oct 2026) ---
 f = css(".a { gap: 16px; padding-inline: 2.4rem; }\n.b { inline-size: 51.2rem; }\n")
 case("css: hardcoded lengths are ONE finding per file with a count",
      rules(f) == ["css-hardcoded-length"] and f[0].detail.startswith("3 declaration"), [(x.rule, x.detail) for x in f])

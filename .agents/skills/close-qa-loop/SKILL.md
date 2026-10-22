@@ -1,6 +1,7 @@
 ---
 name: close-qa-loop
 description: Pick up QA/QI issues logged in Notion, fix them against Base Theme standards, and close them back with a comment. Use when asked to work through QA feedback, QI issues, or a review list from Notion.
+argument-hint: <notion-task-or-page>
 ---
 
 # close-qa-loop

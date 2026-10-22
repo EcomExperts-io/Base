@@ -113,8 +113,8 @@ Build it with `capture` and `raw`:
 ```
 
 This comes up whenever a translated string is handed to JavaScript as a
-template — a placeholder the client-side code substitutes later. Found on the
-BPN Quick-Shop build, where the bundle-picker snippet still carries the
+template — a placeholder the client-side code substitutes later. Found on a
+client's Quick-Shop build, where the bundle-picker snippet still carries the
 broken form.
 
 **One `}` is enough to end it.** Shopify's tokenizer cuts an output tag at the
@@ -128,7 +128,7 @@ brace — a JSON object built for a `data-` attribute — fails the whole file w
 data-properties="{{ props | escape }}"
 ```
 
-Pique, Oct 2026: one such attribute 500'd the product page on first render.
+A client rebuild, Oct 2026: one such attribute 500'd the product page on first render.
 
 ### Filters are not applied to `{% render %}` arguments
 
@@ -214,7 +214,7 @@ on it is blank, so a guard like `pool.size > 0` renders the empty state with
 every post picked. Shopify documents `.count` for these settings. A section
 with two sources hides it: `blog.articles` (or a `concat` of two) is a real
 array where `.size` works, so the picked branch reads right until it meets
-data. Pique, Sep 2026: four picked posts rendered "No articles found".
+data. A client rebuild, Sep 2026: four picked posts rendered "No articles found".
 
 ### A typed metafield's `.value` is a drop, and its numbers are strings
 
@@ -222,8 +222,8 @@ data. Pique, Sep 2026: four picked posts rendered "No articles found".
 gives `0.0`: it is a Rating drop whose `to_s` is the number. The number is
 `.value.rating`, and it arrives as a JSON string, so `"4.8" > 0` is false.
 Coerce with `| times: 1.0` before any comparison or arithmetic. `money`,
-`dimension` and `volume` metafields have the same shape. Pique, Sep 2026:
-every product card drew empty stars beside a correct review count.
+`dimension` and `volume` metafields have the same shape. A client rebuild, Sep
+2026: every product card drew empty stars beside a correct review count.
 
 ### Multi-tag collection URLs are alphabetical
 

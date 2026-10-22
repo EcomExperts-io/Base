@@ -117,7 +117,7 @@ name like `Rectangle 47` tells us a box exists and nothing else — we then gues
 what it is, and a guess is a question sent back to you.
 
 There is a second-order effect worth knowing about. **We tend to name code after
-whatever the design called it.** On the Bites Vitamins build, the Figma file was
+whatever the design called it.** On one client build, the Figma file was
 organised by page, so sections ended up named `home-hero`, `about-values`,
 `focus-causes` — named for the page they first appeared on rather than what they
 do. That naming stopped being accurate the first time a section was reused, and
@@ -237,7 +237,7 @@ wrong in a way that shows up on every single section.
 Concretely, we want: *content maxes out at 1280px, 60px side margins on desktop,
 16px on mobile.* Three numbers, and the whole page frame is settled.
 
-**What happened without it:** on Bites Vitamins the side gutters were
+**What happened without it:** on one client build the side gutters were
 inconsistent across sections because each was measured independently from its own
 frame. It eventually needed a dedicated pass to unify them into a single value
 the whole theme reads from.

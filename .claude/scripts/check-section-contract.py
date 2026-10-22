@@ -3,7 +3,7 @@
 
 Why this exists
 ---------------
-On the Bites Vitamins build, 30 of 31 new sections shipped with spacing and
+On one client build, 30 of 31 new sections shipped with spacing and
 colour hardcoded into CSS and no merchant settings behind them. Nothing caught
 it: the pre-commit hook logged to a file and carried on, `shopify theme check`
 was commented out, and the review agents did not look for it. The pages looked
@@ -199,7 +199,7 @@ def check(path, src):
     # A preset that seeds blocks hands the merchant blocks whose content is
     # blank (design copy must not be a schema default), so unless the loop
     # skips an empty block the section renders a coloured band around nothing.
-    # Four sections on one Pique pull request shipped that. Advisory: the
+    # Four sections on one client pull request shipped that. Advisory: the
     # markup may test emptiness some other way.
     seeded = sum(len(p.get("blocks") or []) for p in (schema.get("presets") or []) if isinstance(p, dict))
     markup = markup_only(src)
@@ -234,7 +234,7 @@ def check(path, src):
             "      These are theme-authored strings, so they need a locale key:\n"
             '      aria-label="{{ \'sections.example.label\' | t }}"\n'
             "      Keys go in locales/en.default.json. Five of these shipped to a\n"
-            "      client on the Bites Vitamins build."
+            "      client on one build."
         )
         (problems if BLOCK_ON_HARDCODED_STRINGS else advisory).append(msg)
 

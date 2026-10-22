@@ -3,7 +3,7 @@
 Build one page of a Figma design by giving each section to its own agent, running
 them concurrently, then assembling and verifying the page yourself.
 
-Used on the BPN PDP: 9 sections, ~1.5 hours wall-clock, reviewed by the team lead as
+Used on one client's PDP: 9 sections, ~1.5 hours wall-clock, reviewed by the team lead as
 "could be more than 60%" saved against a 40-hour estimate. This file is what made
 that repeatable rather than lucky. It is not a skill — skills only run when invoked,
 and this is a procedure a human chooses to start.
@@ -25,8 +25,8 @@ record the **desktop node id and the mobile node id**. One agent per row.
 Then — and this is the step that is skipped and always costs the most — **check what
 already exists.** A section that another page already ships is a `templates/*.json`
 entry, not a build. Grep `sections/`, and read whatever estimate or scope doc the
-lead has written. On BPN, seven of the PDP's sections had already been delivered by
-the homepage build.
+lead has written. On that build, seven of the PDP's sections had already been delivered
+by the homepage build.
 
 Do not trust a name match. "Collections strip → Shop By Goal cards" looked like the
 same component in a scope doc and was not remotely the same component. Open both and
@@ -58,7 +58,7 @@ one only its own two node ids and its own file ownership list.
 
 ### 5. Verify — and read this before you report anything
 
-Agents report their own fidelity. Two of three "X is broken" reports on the BPN build
+Agents report their own fidelity. Two of three "X is broken" reports on one client build
 were false, both from agents measuring inside their own static harness rather than in
 the theme. Re-verify anything load-bearing yourself.
 

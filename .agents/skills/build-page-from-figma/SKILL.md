@@ -1,6 +1,7 @@
 ---
 name: build-page-from-figma
 description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states. When the reference is the live site instead, Step 1 routes to build-section-from-live.
+argument-hint: <figma-url-or-nodeId> [notion-task]
 ---
 
 # build-page-from-figma
@@ -11,16 +12,13 @@ QA checklist written for a non-technical reviewer.
 ## Not everything from Figma is a page
 
 This skill is named for pages because pages came first, but on a full rebuild
-**most of the work is not a page**. One client rebuild ran nine builds: four were
-pages, and five were a footer, a site header with five mega-menu panels, a cart
-drawer, a search overlay with four states, and a set of filter and quick-add
-drawers. The skill was bypassed on all five, because Step 1 asks which template
-the result belongs to and there is no answer for a footer.
-
-That was the wrong call — the parts that mattered most (the settings contract,
-translation keys, verifying both criteria separately, the Notion handoff) apply
-just as much. Use the skill; substitute the four steps below where the page
-assumptions do not fit.
+**most of the work is not a page**: a footer, a site header with mega-menu
+panels, a cart drawer, a search overlay with several states, filter and
+quick-add drawers. Step 1 asks which template the result belongs to, and there
+is no answer for a footer — which is how the skill gets bypassed on exactly
+the work where the settings contract, translation keys, separate verification
+of both criteria and the Notion handoff matter most. Use the skill; substitute
+the four rows below where the page assumptions do not fit.
 
 | The skill says | For a component, overlay or state, instead |
 |---|---|
@@ -42,9 +40,8 @@ Two extra hazards that only appear in this kind of work:
   status into it. Do **not** make the whole drawer or result list live: a screen
   reader would re-announce the entire region on every quantity tick or keystroke.
 
-**This is v1.** It reflects how we actually work today, not a finished process.
-Expect to hit cases it doesn't cover — when that happens, record it in the
-project's mistake log (see step 6) rather than working around it silently.
+Expect to hit cases this skill does not cover. When that happens, record it
+with `/record-incident` (Step 7) rather than working around it silently.
 
 ## Two success criteria, judged separately
 
@@ -56,8 +53,8 @@ other:
 | **1** | **Code style and architecture** | `.claude/rules/` — does it look like Base? |
 | **2** | **Visual fidelity** | The Figma frame — does it match the design? |
 
-Keep them separate in your work and in your reporting. On the Bites Vitamins
-build, visual fidelity was good while the merchant-facing settings contract was
+Keep them separate in your work and in your reporting. On one client build
+visual fidelity was good while the merchant-facing settings contract was
 near-zero — a page can be pixel-perfect and fail every convention we have.
 Never report "matches the design" as if it covered both.
 
@@ -66,30 +63,27 @@ Never report "matches the design" as if it covered both.
 Before any Figma call, establish and state back:
 
 - **Which project / store** this is
-- **Which project / store** this is
 - **Which reference** — **Figma**, **live**, or **both**. Figma is the
   source of the look and never of data; live is the source of what the
-  section does, says and holds today, and never of code. On Pique the brief
-  switched from Figma to live in week two and nothing asked; 532 of 1,363
-  commits were fixes. Record the answer per band in
+  section does, says and holds today, and never of code. A brief can switch
+  from Figma to live mid-build; when nothing asks, the fixes pile up (on one
+  rebuild 532 of 1,363 commits were fixes). Record the answer per band in
   `docs/ai-workflow/reference-map.md`.
   - **Live** → `/build-section-from-live` from here; its §4 verifies against
     live and its §5 returns to Steps 5–7 of this skill.
   - **Both** → design values from the frame, behaviour, copy and data shape
     from live; verify the look against the frame and the behaviour with
     `live-parity.py states`.
-- **Which Figma file** — the file key, confirmed for this project
 - **Which Figma file** — the file key, confirmed for this project (Figma or both)
 - **Which frame** — a node ID, and whether it is the desktop or mobile variant
 - **Which template** the result belongs to
-
 - **The Notion sub-task**, if one was given — it carries the functional
   requirements
 
 If any of these is missing or ambiguous, **ask**. Do not infer a file key from
-repo documentation without checking it — on Bites Vitamins a stale file key
+repo documentation without checking it — on one build a stale file key
 appeared in 10 places across the docs against 3 for the correct one, and the
-stale one is not readable by the connected account.
+stale one was not readable by the connected account.
 
 ### Notion is the functional source; Figma is not
 
@@ -124,10 +118,10 @@ minutes of renaming on their side is a day on ours.
 
 **Always pass an explicit `nodeId`.** Never rely on file-wide page listing.
 
-`get_metadata` with no `nodeId` is unreliable on our files — on the Bites
-Vitamins file it returns only a single "Cover" page, while frames on other pages
-fetch perfectly well when addressed directly by ID. That is a tool limitation,
-not a permissions problem, and it has already blocked one audit. Get node IDs
+`get_metadata` with no `nodeId` is unreliable on our files — it has returned
+only a single "Cover" page while frames on other pages fetched perfectly well
+when addressed directly by ID. That is a tool limitation, not a permissions
+problem, and it has already blocked one audit. Get node IDs
 from a human, from a Figma share link (`?node-id=`), or from a registry the
 project keeps.
 

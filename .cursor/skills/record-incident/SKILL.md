@@ -1,19 +1,19 @@
 ---
 name: record-incident
 description: Record an incident — a fix that a rule, gate or check should have prevented — as a structured, committed file in docs/ai-workflow/incidents/ while the details are still in context. Use proactively the moment such a fix lands (a theme 500, a skipped Theme Check, a convention breach that reached review, a design misread, a trap that cost more than a few minutes), and whenever asked to record, log or note a mistake, trap or lesson.
+argument-hint: <slug> "<what went wrong>"
 ---
 
 # record-incident
 
 Write it down now, in the shape the harvest can read.
 
-**Why this exists.** The v1 workflow asked for a "mistake log" — gitignored, in
-the client repo, created only if the AI offered and someone said yes. Across
-four client builds the count of logs was zero, and every incident that mattered
-became a Base rule anyway: weeks later, by one person, as archaeology. The
-record has to be made at the moment of failure, because that is the only moment
-all the details are in context, and it has to be committed, because a file
-nobody can see in a pull request does not exist.
+**Why this exists.** A gitignored "mistake log", created only if the AI offered
+and someone said yes, was asked for on four client builds and created on none;
+every incident that mattered became a Base rule anyway, weeks later, by one
+person, as archaeology. The record has to be made at the moment of failure,
+because that is the only moment all the details are in context, and it has to
+be committed, because a file nobody can see in a pull request does not exist.
 
 ## When to record
 

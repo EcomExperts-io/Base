@@ -14,7 +14,7 @@ status: harvested
 
 Step 7 of the build skill specified a mistake log: in the client repo,
 excluded from version control, created only when the AI offered and a human
-agreed. Four client builds later — Bites, BPN, MiLB, Furbish — no such file
+agreed. Four client builds later, no such file
 existed anywhere, while every incident that mattered had become a Base rule by
 a different route: one person reading the code weeks later.
 

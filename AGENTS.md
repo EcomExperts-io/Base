@@ -1,7 +1,7 @@
 # AGENTS.md
 
 <!-- GENERATED from CLAUDE.md by .claude/scripts/sync-ai-config.sh - do not edit here. The files it names live under .claude/; .codex/ holds the Codex wiring and the generated hooks and agents. -->
-<!-- checksum: 19781755 -->
+<!-- checksum: 1590855021 -->
 
 Guidance for Codex (and any AI coding tool) working in the Base Theme
 repository, and in the client themes forked from it.
@@ -186,7 +186,7 @@ principle upstream, measured specifics downstream. New client repos start from
    `/verify-against-reference`'s report on disk, never by an assertion.
 
 A page can match a design pixel-for-pixel and still fail every convention in
-this file. That is what happened on Bites Vitamins. Check them separately and
+this file. That is what happened on one client build. Check them separately and
 report them separately, with the evidence for each.
 
 ## Commands
@@ -220,7 +220,7 @@ npx prettier --config .prettierrc.json --write path/to/file.liquid
 ```
 
 Name the files. Never pass a glob to `--write`: the theme is not uniformly
-formatted, and one glob put 48 untouched files into a Pique commit.
+formatted, and one glob put 48 untouched files into a client commit.
 
 There is no test suite — `npm test` is a stub. Verification is the gate, the
 verifier's report, and the theme editor.

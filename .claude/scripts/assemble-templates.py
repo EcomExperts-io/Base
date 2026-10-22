@@ -5,8 +5,8 @@ Why this exists
 ---------------
 A landing-page batch builds a template with several agents: each owns a few
 sections and writes its content as a fragment, and the orchestrator assembles
-the page in live's section order. Done by hand on Pique's first batch, the
-assembly was where the silent defects lived — a `t:` value left in a template
+the page in live's section order. Done by hand on one rebuild's first batch,
+the assembly was where the silent defects lived — a `t:` value left in a template
 renders the key path to the shopper, a range off its step or a `<br>` in an
 `inline_richtext` is rejected on upload and 500s every route, and an unknown
 setting is dropped without a word. Shopify reports none of it before the push.

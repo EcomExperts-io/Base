@@ -100,7 +100,7 @@ the current code as gospel.
   across any future client build).
 - **Base Theme Decisions Log** — cross-project architecture questions
   and Moemen's rulings, resolved and open.
-- **Bites Vitamins — Project Status** — page-by-page tracker for the
+- **[Client] — Project Status** — page-by-page tracker for the
   current client project.
-- **Bites Vitamins — Collection Page Audit** — compliance check of the
+- **[Client] — Collection Page Audit** — compliance check of the
   already-built Collection page against the architecture reference.
