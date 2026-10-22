@@ -52,6 +52,15 @@ EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/"
 # Base had (Pique incident 2026-09-15-dangling-paths-block-first-fork-commit).
 INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
+# Paths Base has renamed or removed, old -> new (or None). The overlay only
+# ever wrote files, so a renamed skill lived on in every fork as two skills
+# with overlapping descriptions. A fork that still has the old path and never
+# edited it (its bytes equal what Base shipped at the stamp) loses it on the
+# next pull; an edited copy is kept and listed for a hand merge.
+RETIRED = {
+    ".claude/skills/verify-against-figma/SKILL.md": ".claude/skills/verify-against-reference/SKILL.md",
+}
+
 
 def sh(*args, cwd=None, check=True):
     r = subprocess.run(args, capture_output=True, text=True, cwd=cwd)

@@ -58,7 +58,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pull_base_tooling_lib import STAMP, Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
+from pull_base_tooling_lib import RETIRED, STAMP, Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
 
 KNOWN_FLAGS = {"--ref": True, "--base-path": True, "--dry-run": False, "--force": False, "--stamp-only": False}
 USAGE = __doc__.split("Usage\n-----\n", 1)[1]
@@ -162,9 +162,27 @@ def main(argv):
             with open(dest, "wb") as f:
                 f.write(new)
 
+    retired, retired_kept = [], []
+    for old_path, new_path in RETIRED.items():
+        cur = read_local(old_path)
+        if cur is None:
+            continue
+        old = source.read(old_path, old_sha) if old_sha else None
+        label = f"{old_path} -> {new_path or '(removed)'}"
+        if old is not None and cur == old:
+            retired.append(label)
+            if not dry:
+                os.remove(old_path)
+                try:
+                    os.removedirs(os.path.dirname(old_path))
+                except OSError:
+                    pass
+        else:
+            retired_kept.append(label)
+
     base_set = set(source.files())
     fork_only = [p for p in sh("git", "ls-files").split("\n")
-                 if p and is_tooling(p) and p not in base_set]
+                 if p and is_tooling(p) and p not in base_set and p not in RETIRED]
 
     if not dry:
         write_stamp(source)
@@ -185,6 +203,8 @@ def main(argv):
         for p in items:
             print(f"      {p}")
 
+    block(f"{verb}RETIRE", retired, "Base renamed or removed these; this repo never edited them")
+    block("KEEP — retired in Base, edited here", retired_kept, "move the edits to the new path by hand, then delete the old")
     block(f"{verb}ADD", added)
     block(f"{verb}UPDATE", updated, "Base changed, this repo had not touched them")
     block("KEEP — local edits", kept, "this repo edited them, Base did not: harvest candidates")

@@ -209,9 +209,9 @@ def check_store():
 def check_pillow():
     try:
         import PIL  # noqa: F401
-        return ("OK", "pillow", "available (verify-against-figma pixel diff)", "")
+        return ("OK", "pillow", "available (verify-against-reference pixel diff)", "")
     except ImportError:
-        return ("WARN", "pillow", "missing — verify-against-figma cannot compute a pixel diff",
+        return ("WARN", "pillow", "missing — verify-against-reference cannot compute a pixel diff",
                 "python3 -m pip install --user pillow")
 
 
@@ -220,7 +220,7 @@ def check_chrome():
               shutil.which("google-chrome") or "", shutil.which("chromium") or "",
               os.environ.get("CHROME_BIN", "")):
         if c and os.path.exists(c):
-            return ("OK", "chrome", "found (headless screenshots for verify-against-figma)", "")
+            return ("OK", "chrome", "found (headless screenshots for verify-against-reference)", "")
     return ("WARN", "chrome", "no Chrome/Chromium binary — the verify skill falls back to the browser tool",
             "install Google Chrome or set CHROME_BIN")
 

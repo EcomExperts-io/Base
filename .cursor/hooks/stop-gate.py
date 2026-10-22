@@ -18,10 +18,10 @@ Blocks (exit 2):  a new section missing the settings contract; a convention
                   a Theme Check error in any file changed this session.
 Reports (JSON):   convention warnings in modified files; a Theme Check that
                   could not run; section or snippet work with no newer
-                  verify-against-figma report.
+                  verify-against-reference report.
 Reports (JSON):   convention warnings in modified files; a Theme Check that
                   could not run; section or snippet work with no newer
-                  verify-against-figma report; a client branch whose GitBot
+                  verify-against-reference report; a client branch whose GitBot
                   findings have not been read since its last commit.
 
 "New" means untracked or added since HEAD. Modified legacy is never gated here

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pixel-compare a Figma frame export against a rendered screenshot, as a number.
+"""Pixel-compare a reference image — a Figma frame export, or a live-site render — against ours, as a number.
 
 Why this exists
 ---------------
@@ -22,9 +22,13 @@ and those pixels are excluded on both sides.
 
 Usage
 -----
-  compare.py --figma figma-1440.png --rendered rendered-1440.png --out .claude/verify/<slug>
-             [--width 1440] [--rendered-offset-y 0] [--mask x,y,w,h ...]
-             [--threshold 32] [--slug name]
+  compare.py --reference figma-1440.png --rendered rendered-1440.png --out .claude/verify/<slug>
+             [--reference-label Figma] [--width 1440] [--rendered-offset-y 0]
+             [--mask x,y,w,h ...] [--threshold 32] [--slug name]
+
+--figma is accepted as a synonym for --reference. For a live section the
+verify skill uses live-parity.py instead, which renders both sides itself;
+this script is for a reference that already exists as an image.
 
 Writes <out>/diff-<width>.png, <out>/side-by-side-<width>.png (and a -preview
 scaled for reading), <out>/compare-<width>.json; prints the JSON summary.
@@ -80,7 +84,8 @@ def bands(mask, min_row_pct=20.0, min_rows=6):
 
 
 def main(argv):
-    figma_path = arg(argv, "--figma")
+    figma_path = arg(argv, "--reference") or arg(argv, "--figma")
+    ref_label = arg(argv, "--reference-label", "Figma")
     rendered_path = arg(argv, "--rendered")
     out_dir = arg(argv, "--out", ".claude/verify/unnamed")
     if not figma_path or not rendered_path:
@@ -139,7 +144,7 @@ def main(argv):
     gap = 24
     sbs = Image.new("RGB", (a.width * 3 + gap * 2, h + 40), (238, 241, 244))
     draw = ImageDraw.Draw(sbs)
-    for i, (im, label) in enumerate(((a2, f"Figma {width_label}"), (b2, "Rendered"),
+    for i, (im, label) in enumerate(((a2, f"{ref_label} {width_label}"), (b2, "Rendered"),
                                      (heat, f"Mismatch {diff_pct}%"))):
         x0 = i * (a.width + gap)
         sbs.paste(im, (x0, 40))
@@ -160,6 +165,7 @@ def main(argv):
     result = {
         "slug": slug,
         "width": width_label,
+        "reference": {"kind": ref_label, "path": figma_path, "size": [a.width, a.height]},
         "figma": {"path": figma_path, "size": [a.width, a.height]},
         "rendered": {"path": rendered_path, "size_original": list(Image.open(rendered_path).size),
                      "scaled_to_figma_width": scaled, "offset_y": offset_y},

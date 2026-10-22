@@ -33,7 +33,7 @@ does this), not in Base.
 
 | Stage | Build | Why here | Review emphasis |
 |---|---|---|---|
-| **0 · Recon** | `/recon-theme`, `/store-recon`, the Figma frame map (one row per frame: node id, what it is, exact size, per-frame link) | You cannot wire a value to a field that does not exist, or verify against a frame you cannot address | The gap table is complete; every frame has an id |
+| **0 · Recon** | `/recon-theme --live-url` (the live feature inventory: apps, popups, markets, page builder), `/store-recon`, the reference map (one row per band: which reference — Figma, live or both — node ids with exact size, live URL and section key) | You cannot wire a value to a field that does not exist, verify against a frame you cannot address, or build a product form an app will inject into | The gap table is complete; every band names its reference |
 | **1 · Foundations** | Tokens (`css-variables.liquid`), typography, container width and gutters, breakpoints, colour schemes, `settings_schema.json` | Every section reads these; a wrong container costs a pass over every section later | `get_variable_defs` mapped to tokens; one breakpoint set, `min-width` only; no raw hex |
 | **2 · Global chrome** | Header + navigation, footer, cart drawer, search overlay, announcement bar | On every page, the largest accessibility surface, the first thing the client sees on every preview | The header/cart/search reference; overlay a11y (dialog role, focus in and back, Escape, live region outside the swapped region); the cart engine untouched |
 | **3 · Shared components** | Product card, price, buttons, badges, forms, quick-add, pagination | Consumed by PDP, collection, search, recommendations — build once here or four times later | Shared-vs-section decision test; `data-verify-mask` on live values; renamed if scope widened |
@@ -48,7 +48,7 @@ Stages 1–3 decide what can be carried. Put the review agents on them hardest.
 - **One brief per build**, from `multi-session-rebuild.md` Part 2 (whole
   rebuild) or `parallel-section-build.md` Part 2 (one page's sections). Both
   start with `/build-page-from-figma`, which starts with `/figma-readiness`.
-- **Verify before hand-off**: `/verify-against-figma` per frame, report on
+- **Verify before hand-off**: `/verify-against-reference` per frame, report on
   disk, numbers quoted in the handoff. The Stop hook reminds; the reviewer
   reads the report.
 - **Record as you go**: `/record-incident` the moment a fix lands that a rule

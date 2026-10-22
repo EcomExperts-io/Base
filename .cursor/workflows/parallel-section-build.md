@@ -74,7 +74,7 @@ get a usable screenshot, the honest report is "unverified" — not the number yo
 manage to measure.
 
 Since v2 this is a skill, not a habit: once the template is assembled and the theme is
-running (`/run-theme`), run `/verify-against-figma` for each band with its desktop and
+running (`/run-theme`), run `/verify-against-reference` for each band with its desktop and
 mobile node ids and a `--section` selector. It renders at the exact widths, diffs
 against the frame's export, masks `data-verify-mask` regions, computes the box table,
 and writes `.claude/verify/<band>/report.json`. The agents cannot run it — their

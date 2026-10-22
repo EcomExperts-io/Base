@@ -1,6 +1,6 @@
 ---
 name: build-page-from-figma
-description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states.
+description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states. When the reference is the live site instead, Step 1 routes to build-section-from-live.
 ---
 
 # build-page-from-figma
@@ -66,7 +66,20 @@ Never report "matches the design" as if it covered both.
 Before any Figma call, establish and state back:
 
 - **Which project / store** this is
+- **Which project / store** this is
+- **Which reference** — **Figma**, **live**, or **both**. Figma is the
+  source of the look and never of data; live is the source of what the
+  section does, says and holds today, and never of code. On Pique the brief
+  switched from Figma to live in week two and nothing asked; 532 of 1,363
+  commits were fixes. Record the answer per band in
+  `docs/ai-workflow/reference-map.md`.
+  - **Live** → `/build-section-from-live` from here; its §4 verifies against
+    live and its §5 returns to Steps 5–7 of this skill.
+  - **Both** → design values from the frame, behaviour, copy and data shape
+    from live; verify the look against the frame and the behaviour with
+    `live-parity.py states`.
 - **Which Figma file** — the file key, confirmed for this project
+- **Which Figma file** — the file key, confirmed for this project (Figma or both)
 - **Which frame** — a node ID, and whether it is the desktop or mobile variant
 - **Which template** the result belongs to
 
@@ -153,7 +166,7 @@ theme token, use the token.
 **Code:** run the standards coach agent for advisory feedback, then fix what it
 finds. Confirm the gate would pass.
 
-**Visual:** run `/verify-against-figma` — start the theme with `/run-theme`,
+**Visual:** run `/verify-against-reference` — start the theme with `/run-theme`,
 then give the skill the page URL, the file key and each node id with the width
 it was designed at. It renders the page at exactly that width, diffs it
 against the frame's own export, masks the regions marked `data-verify-mask`,

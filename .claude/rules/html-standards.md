@@ -207,7 +207,7 @@ Write CSS where animations can be disabled if reduced motion is preferred.
 Live values — product titles, prices, review counts, images the store
 supplies — never match a design mock, so a pixel comparison of the rendered
 page against its Figma frame lights them up as differences that are not
-defects. The `verify-against-figma` skill masks those regions before it diffs,
+defects. The `verify-against-reference` skill masks those regions before it diffs,
 and it finds them by one attribute:
 
 ```liquid

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Has the section or snippet work in this change been verified against its design?
+"""Has the section or snippet work in this change been verified against its reference?
 
-verify-against-figma writes `.claude/verify/<slug>/report.json` when it runs.
+verify-against-reference writes `.claude/verify/<slug>/report.json` when it runs.
 This compares the newest such report against the newest change to a section or
 snippet and says, in one paragraph, whether the evidence is current. It never
 blocks: a bug fix or a refactor legitimately has no frame to verify against,
@@ -55,9 +55,9 @@ def main(argv):
     if current:
         return 0
 
-    print(f"verify: {len(files)} section/snippet file(s) changed since the last verify-against-figma "
-          f"report ({len(reports)} report(s) on disk). If this work came from a Figma frame, run "
-          "/verify-against-figma before reporting it done — a report is the evidence, not the "
+    print(f"verify: {len(files)} section/snippet file(s) changed since the last verify-against-reference "
+          f"report ({len(reports)} report(s) on disk). If this work came from a Figma frame or a live page, run "
+          "/verify-against-reference before reporting it done — a report is the evidence, not the "
           "assertion. If it did not (a fix, a refactor), ignore this line.")
     return 0
 

@@ -93,7 +93,7 @@ What you should see happen, in order:
    findings appears in the conversation if anything is off. It is normal to
    see one or two on the first pass; it is not normal to see "missing
    padding_top" survive to the end.
-4. **Verification** — `/run-theme` starts the dev server, `/verify-against-figma`
+4. **Verification** — `/run-theme` starts the dev server, `/verify-against-reference`
    renders the section at 1440 and 390, diffs it against the frame, and writes
    `.claude/verify/<slug>/report.md`. Open the side-by-side preview it names
    and look at it yourself.

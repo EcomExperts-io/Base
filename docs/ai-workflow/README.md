@@ -100,6 +100,11 @@ Scope and order are a human call. The AI does not choose what to work on next.
 
 ### 2. The human supplies the inputs
 
+- **The reference** — Figma, live, or both, per band. Live means the
+  published storefront: the section is rebuilt from what it does and shows
+  (`/build-section-from-live`), never from its code, and verified against it
+  with `live-parity.py` to 0%. The answer lives in
+  `docs/ai-workflow/reference-map.md`.
 - **Figma URL for desktop** and **for mobile** — a specific frame each, with
   `?node-id=` in it. Two different frames with different specs, not one
   responsive artifact.
@@ -132,11 +137,13 @@ verifier can ignore them.
 
 ### 6. The AI verifies — both criteria, separately, with evidence
 
-**Visual:** `/run-theme`, then `/verify-against-figma`: the frame exported at
+**Visual:** `/run-theme`, then `/verify-against-reference`: the frame exported at
 native size, the page rendered at the exact width and height, live regions
 masked, a pixel diff with heatmap and worst bands, a box table computed from
 `get_metadata` and the DOM, one deliberate look at the side-by-side, and
-`report.{json,md}` on disk. The number is read with the heatmap and the
+`report.{json,md}` on disk. Against live, `live-parity.py` renders both
+sides itself — viewport and theme asserted, lazy media forced, overlays
+hidden, animations frozen — and pairs every element with its computed style. The number is read with the heatmap and the
 table; it is a report, not yet a gate.
 
 **Code:** the gate has already run on every file; the standards coach gives
@@ -218,7 +225,7 @@ Stated plainly, so v2 does not become permanent either:
 | Build a page or component | `/build-page-from-figma` |
 | New section | `/scaffold-section` |
 | Run the theme | `/run-theme` |
-| Verify against the design | `/verify-against-figma` |
+| Verify against the design | `/verify-against-reference` |
 | Record / send up | `/record-incident` · `/harvest` |
 | Close QA issues | `/close-qa-loop` |
 | Machine and repo health | `python3 .claude/scripts/doctor.py` · `check-tooling-drift.py` · `report-compliance.py` · `check-conventions.py --all` |

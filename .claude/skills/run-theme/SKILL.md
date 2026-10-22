@@ -1,6 +1,6 @@
 ---
 name: run-theme
-description: Start or reuse the Shopify theme dev server for this checkout so the theme can be opened, screenshotted and verified. Use when the theme needs to be running — before verify-against-figma, before /verify or /run, or when asked to preview, launch or open the theme.
+description: Start or reuse the Shopify theme dev server for this checkout so the theme can be opened, screenshotted and verified. Use when the theme needs to be running — before verify-against-reference, before /verify or /run, or when asked to preview, launch or open the theme.
 ---
 
 # run-theme
@@ -71,7 +71,7 @@ with it, or leave it for the developer if they started it.
   keeps a stream open, so a headless render that waits for the network to
   settle never returns. `.claude/launch.json` has a `theme-verify`
   configuration on port 9293 with `--live-reload off` for
-  `/verify-against-figma`; day-to-day work stays on 9292. Same command
+  `/verify-against-reference`; day-to-day work stays on 9292. Same command
   otherwise: `shopify theme dev --port 9293 --live-reload off`.
 - With live reload off, an upload error latches: after the offending file is
   fixed the server keeps serving the failed state (a 500 on every route),

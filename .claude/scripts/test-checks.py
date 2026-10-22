@@ -252,6 +252,56 @@ with tempfile.TemporaryDirectory() as d:
          r.returncode == 0 and ":1 trailing comma" in r.stdout, r.stdout.strip()[:80])
 
 # ---------------------------------------------------------------------------
+# compare.py, live-parity.py, recon-theme.py — the reference-aware tools
+# ---------------------------------------------------------------------------
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
+if Image is not None:
+    with tempfile.TemporaryDirectory() as d:
+        a = Image.new("RGB", (100, 60), (255, 255, 255)); a.save(os.path.join(d, "ref.png"))
+        b = Image.new("RGB", (100, 60), (255, 255, 255))
+        for x in range(50):
+            for y in range(60):
+                b.putpixel((x, y), (0, 0, 0))
+        b.save(os.path.join(d, "ours.png"))
+        r = subprocess.run([sys.executable, os.path.join(HERE, "compare.py"), "--reference", os.path.join(d, "ref.png"),
+                            "--rendered", os.path.join(d, "ours.png"), "--out", d, "--width", "100", "--reference-label", "Live"],
+                           capture_output=True, text=True)
+        try:
+            res = json.loads(r.stdout)
+        except ValueError:
+            res = {}
+        case("compare: --reference is accepted and a half-black image diffs at 50%",
+             r.returncode == 0 and res.get("diff_pct") == 50.0 and res.get("reference", {}).get("kind") == "Live",
+             (r.returncode, r.stdout[:120], r.stderr[:120]))
+else:
+    case("compare: Pillow present for the fixture", False, "Pillow missing — doctor.py says how to install it")
+
+r = subprocess.run([sys.executable, os.path.join(HERE, "live-parity.py"), "--help"], capture_output=True, text=True)
+case("live-parity: --help lists the six subcommands", r.returncode == 0 and all(s in r.stdout for s in ("section", "regress", "states", "page", "hoverstyles", "motion")), r.stdout[:80])
+r = subprocess.run([sys.executable, os.path.join(HERE, "live-parity.py"), "regress", "--out", "/tmp/x", "--url", "https://example.com"],
+                   capture_output=True, text=True)
+case("live-parity: regress without --main-theme is a usage error, not a run", r.returncode == 2 and "--main-theme" in r.stderr, (r.returncode, r.stderr[:80]))
+r = subprocess.run([sys.executable, os.path.join(HERE, "live-parity.py"), "section", "--out", "/tmp/x", "--live-url", "https://example.com",
+                    "--ours-url", "https://example.com/?preview_theme_id=123"], capture_output=True, text=True)
+case("live-parity: section without a selector is a usage error", r.returncode == 2 and "--key" in r.stderr, (r.returncode, r.stderr[:80]))
+
+recon = load("recon-theme")
+inv = recon.inventory_html('''<html><head><script src="https://cdn.shopify.com/extensions/abc/app.js"></script>
+<script src="https://static.klaviyo.com/onsite/js/klaviyo.js"></script><script>window.Shopify={};Shopify.theme={"id":1,"role":"main"};</script>
+<script src="https://www.googletagmanager.com/gtm.js?id=GTM-1"></script><script src="https://static.rechargecdn.com/static/js/recharge.js"></script>
+<link rel="alternate" hreflang="en-gb" href="/"><style>.replo{}</style></head><body><div id="shopify-section-header"></div>
+<div id="shopify-section-template--1__hero"></div><form action="/localization"></form><div class="metafield-rich_text_field"></div></body></html>''', "https://x.test")
+case("recon: the live inventory names the vendors it sees",
+     "Google Tag Manager" in inv["vendors"]["tracking"] and "Klaviyo" in inv["vendors"]["tracking"]
+     and "Recharge" in inv["vendors"]["apps acting on the theme"] and "Replo" in inv["vendors"]["page builders"], inv["vendors"])
+case("recon: the live inventory counts sections, embeds, markets and rich text",
+     inv["counts"]["sections"] == 2 and inv["counts"]["app_embeds"] == 1 and inv["counts"]["hreflang_alternates"] == 1
+     and inv["counts"]["localization_forms"] == 1 and inv["counts"]["rich_text_metafields"] == 1 and inv["theme"], inv["counts"])
+
+# ---------------------------------------------------------------------------
 # preflight-status.py — in a throwaway client repo
 # ---------------------------------------------------------------------------
 def preflight(cwd, *args):

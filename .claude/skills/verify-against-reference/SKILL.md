@@ -1,14 +1,14 @@
 ---
-name: verify-against-figma
-description: Compare a rendered theme page or section against its Figma frames at the exact breakpoint widths and produce a measured fidelity report — pixel diff percentage, heatmap, box-by-box table, and what was actually seen. Use proactively after building or changing anything from a Figma design and before reporting it done; also when asked to check fidelity, compare against the design, or audit parity.
+name: verify-against-reference
+description: Compare a rendered theme page or section against its reference — a Figma frame at the exact breakpoint widths, or the live storefront section by section — and produce a measured fidelity report: pixel diff percentage, heatmap, box-by-box table, and what was actually seen. Use proactively after building or changing anything from a design or from a live page and before reporting it done; also when asked to check fidelity, compare against the design or against live, or audit parity.
 ---
 
-# verify-against-figma
+# verify-against-reference
 
 Evidence, not assertion. This skill ends with files on disk that say how far
-the rendered page is from the frame — a number, a heatmap, a table — and one
-deliberate look at the side-by-side image. A build is not done until this has
-run and its report is newer than the last change to the section.
+the rendered page is from its reference — a number, a heatmap, a table — and
+one deliberate look at the side-by-side image. A build is not done until this
+has run and its report is newer than the last change to the section.
 
 **Why this exists.** Verification used to be "screenshot both and look", and
 the worst failure the workflow has recorded came from it: a section reported as
@@ -19,31 +19,50 @@ that count are files this skill wrote.
 **The number is a report, not a gate.** Font rasterisation and anti-aliasing
 differ between Figma and Chrome; a 4% diff can be a perfect build and a 1%
 diff can hide an empty column. Read the percentage with the heatmap and the
-table. Gating on a threshold comes later, once two or three builds have shown
-what a good number looks like for this theme.
+table. Against live the bar is different: two Chrome renders of the same store
+should reach **0%**, and every remaining pixel is explained by locating it.
+
+## The reference
+
+A page or section has one of three references, named in the brief and in the
+repo's reference map (`docs/ai-workflow/reference-map.md`; the older
+`figma-frame-map.md` is the same thing with only the Figma columns):
+
+| Reference | What it is the source of | Verified by |
+|---|---|---|
+| **Figma** | layout, spacing, type, colour, states — never data | the per-breakpoint steps below |
+| **Live** | what the section does and looks like today, its copy and its data shape — never its code | `live-parity.py`, section by section |
+| **Both** | Figma for the look, live for behaviour, copy and data | the Figma steps for the look; `live-parity.py states` for behaviour |
+
+If the brief does not say which, ask. Guessing verifies against the wrong
+thing, which is worse than not verifying.
 
 ## Inputs — ask, do not guess
 
 - **URL** of the rendered page: the dev server (`/run-theme`, normally
-  `http://127.0.0.1:9292/…`) or a preview URL. Confirm it responds:
-  `curl -sI <url> | head -1`.
-- **Figma file key** and **one node id per breakpoint**, each with the width
-  it was designed at: `27:3681@1440 27:5246@390`. Never guess a node id; a
-  wrong guess verifies against the wrong design, which is worse than not
-  verifying.
-- **Slug** for the report directory: the section or page name, e.g.
-  `product-ingredients`.
-- Optional: a **section selector** when verifying one band of a longer page.
+  `http://127.0.0.1:9292/…`) or the development theme's preview URL
+  (`https://<store>/<path>?preview_theme_id=<id>`, id from `shopify theme
+  list`). Confirm it responds: `curl -sI <url> | head -1`.
+- **Figma:** the **file key** and **one node id per breakpoint**, each with
+  the width it was designed at: `27:3681@1440 27:5246@390`. Never guess a
+  node id.
+- **Live:** the **live page URL** and the **section** on each side — a
+  section key (`--key`, matching `[id$="__KEY"]` on live and `[id$="KEY"]`
+  on ours) or two CSS selectors.
+- **Slug** for the report directory: the section or page name.
+- Optional: a **section selector** when verifying one band of a longer page
+  against Figma.
 - A band you mean to scope out — "Header", "Footer" — gets `get_metadata`
   first: list its children and confirm each exists elsewhere. A blog frame's
   "Header" held the blog's own category nav, which was then built nowhere.
 
-`$ARGUMENTS` may carry all of these: `<url> <fileKey> <node>@<width> [<node>@<width>] --slug <name> [--section <css-selector>]`.
-
-## Steps — per breakpoint
+`$ARGUMENTS` may carry all of these: `<url> <fileKey> <node>@<width> [<node>@<width>] --slug <name> [--section <css-selector>]`
+or `--live <live-url> --key <section-key> --widths 1440,393 --slug <name>`.
 
 Work in `.claude/verify/<slug>/`. It is gitignored; the report is copied out
 at the end if it should be kept.
+
+## Against a Figma frame — per breakpoint
 
 ### 1. The frame, at native size
 
@@ -125,7 +144,7 @@ product grid is inflated, and the report must say by what.
 
 ```bash
 python3 .claude/scripts/compare.py \
-  --figma .claude/verify/<slug>/figma-<width>.png \
+  --reference .claude/verify/<slug>/figma-<width>.png \
   --rendered .claude/verify/<slug>/rendered-<width>.png \
   --out .claude/verify/<slug> --width <width> --slug <slug> \
   [--rendered-offset-y <top>] [--mask x,y,w,h ...]
@@ -180,6 +199,72 @@ A hot band sitting on a single line of text is the face before the layout: a
 weight the library has no face for renders synthesised, and `getComputedStyle`
 reports the weight you asked for (`.claude/references/layout-pitfalls.md`).
 
+## Against live — per section
+
+One command renders both sides in headless Chrome, at every width, and writes
+the report. It closes every trap the Pique rebuild fell into: the viewport is
+emulated and asserted (never `--window-size`), each side has its own Chrome
+profile and the theme it rendered is read from `Shopify.theme` and asserted
+(a leaked preview cookie makes "live" render our theme), lazy media is forced
+and waited for, fixed overlays and popups are hidden, animations finished,
+carousels reset, ours is shifted to live's sub-pixel fraction, and each side
+is captured twice so motion the freeze did not stop is reported rather than
+averaged away.
+
+```bash
+python3 .claude/scripts/live-parity.py section \
+  --live-url "https://<store>/pages/<handle>" \
+  --ours-url "https://<store>/pages/<handle>?preview_theme_id=<dev-theme-id>&view=<suffix>" \
+  --key <section-key> --widths 1440,393 --out .claude/verify/<slug>
+```
+
+- Our side is the **development theme's preview URL** on the store's own
+  domain, so fonts, apps and cookies match. The local dev server works too
+  (`--ours-url http://127.0.0.1:9292/…`) with `--ours-theme any`, and the
+  report then says our theme was not asserted.
+- `--key` is the live section's key; static sections (`#shopify-section-header`)
+  take `--live-sel` and `--ours-sel`. A fixed or sticky section also needs
+  `--keep-fixed`.
+- Iterate at `--widths 1440,393` plus the pair either side of each breakpoint
+  live uses (`749,750`); run the full default list once, at the end. Budget
+  15–20 s per width.
+- **Laptop rules are built in:** one Chrome pair per run, reused for every
+  width; at most two runs on the machine (`LIVE_PARITY_SLOTS`); both browsers
+  closed on exit. Never start runs in parallel or in the background.
+
+Read `report.md` in `--out`, per width:
+
+- **diff %** and **worst bands** (section-relative y ranges), with
+  `status`: `compared`, `hidden-both` (fine — a desktop-only band at 393), or
+  `hidden-one-side` (a real difference, 100%).
+- **The element table:** every text element and media box, paired live↔ours
+  by text or image file, with the box delta and the computed-style delta
+  (family, size, line height, weight, letter spacing, colour, transform,
+  decoration, background, border, radius, shadow, object-fit, wrap count,
+  image file, srcset candidate, and the font Chrome actually painted with).
+  Chase layout-style deltas only when a box is off.
+- **Unpaired live / ours:** missing copy, changed text, an extra element.
+- **unstable L/O:** something still moves on that side; explain it.
+- **Notes:** images that never loaded, failed fonts, content painted outside
+  the section box (`--include-overflow` captures it).
+
+**Target 0%.** Explain every remaining pixel by locating it — a chat bubble, a
+font-fallback glyph. Never wave it off as noise.
+
+The other subcommands, when the section has behaviour:
+
+| Subcommand | Answers |
+|---|---|
+| `states --steps '[{"do":"click","sel_live":"…","sel_ours":"…"},{"do":"wait","ms":700}]'` | does it match after an interaction (accordion open, slide 2, modal, focus)? A pointer step whose target is covered is refused, so a state never entered is never compared |
+| `hoverstyles` | what `:hover` / `:focus-visible` / `:active` change on live, and do we change the same things |
+| `motion --trigger click:SEL --el-live … --el-ours … --keyframes` | the same transitions and animations — exact timing from the Web Animations seen, and the sampled curve |
+| `page --live-url … --ours-url …` | where on the whole page live and ours start to diverge: per-section top and height, the first section whose top moves |
+| `regress --url … --main-theme <id> --ours-theme <id>` | did extending an existing section change it at its defaults, QA-approved theme against ours |
+
+`page` is the one to run first on a page that drifts: it names the first
+section whose top diverges, and the per-section spans find the negative and
+collapsing margins a height comparison hides.
+
 ## The report
 
 Write both files. `report.json` is what the Stop hook and `/goal` read;
@@ -190,6 +275,7 @@ Write both files. `report.json` is what the Stop hook and `/goal` read;
 ```json
 {
   "slug": "product-ingredients",
+  "reference": "figma",
   "url": "http://127.0.0.1:9292/products/example",
   "fileKey": "…",
   "generated": "2026-09-15T10:42:00",
@@ -207,6 +293,12 @@ Write both files. `report.json` is what the Stop hook and `/goal` read;
 }
 ```
 
+Against live, `"reference": "live"`, `"liveUrl"` in place of `fileKey`, and one
+`frames` entry per width copied from `live-parity.py`'s own `report.json`:
+`width`, `diff_pct`, `status`, `box_off` (paired elements outside tolerance),
+`unpaired`, `unstable`, `worst_bands`, plus `seen` and `unverified` as above.
+One shape, so `verify-status.py` and a `/goal` read either.
+
 `report.md`: the same, readable — one section per breakpoint with the
 numbers, the table, the **seen** list, the **unverified** list, and the
 verdict. If you fixed something and re-ran, keep both runs; the second is the
@@ -218,18 +310,21 @@ If the report belongs in the repo (a page handoff, a parity audit), copy
 ## Reporting back
 
 Say the numbers. "1440: 3.4% diff, 1 box off (grid gap 20 vs 24), media column
-renders; 390: 2.1%, table clean." Never "matches the design". Never a
-percentage without the heatmap having been looked at. List what you could not
-verify and why — a report that says "box table unverified: no browser tools"
-is worth more than a table typed from memory.
+renders; 390: 2.1%, table clean." Against live: "1440: 0.0%, 393: 0.4% — the
+chat bubble, masked on neither side." Never "matches the design" or "matches
+live". Never a percentage without the heatmap having been looked at. List what
+you could not verify and why — a report that says "box table unverified: no
+browser tools" is worth more than a table typed from memory.
 
 ## Where this runs
 
-- `build-page-from-figma` Step 4 calls it before the Notion handoff.
+- `build-page-from-figma` Step 4 calls it before the Notion handoff;
+  `build-section-from-live` §4 calls the live half.
 - The parallel-section-build orchestrator runs it per section band after
   assembly — agents cannot, because their section is not on a page yet.
 - The Stop hook warns when section or snippet files changed and no report is
-  newer than the change. It does not block; a refactor has no frame.
+  newer than the change. It does not block; a refactor has no reference.
 - A `/goal` for a build session can reference `diff_pct` and the table
   directly: *"report.json exists for product-ingredients with diff_pct under 5
-  at 1440 and 390 and table_off 0, and the pre-commit gate passes"*.
+  at 1440 and 390 and table_off 0, and the pre-commit gate passes"* — or, for
+  live, *"diff_pct 0 at every width and unpaired 0"*.

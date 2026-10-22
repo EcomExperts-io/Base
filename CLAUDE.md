@@ -64,6 +64,9 @@ first three are checked by a hook the moment a file is written.
   sync, and cross-region DOM updates.** Don't mix both in one section.
 - **Figma is design-only.** Values come from Shopify; absent values render
   nothing. Mark live values with `data-verify-mask` so the verifier ignores them.
+- **Live is a reference for behaviour, copy and data, never for code.** A
+  section that matches live and carries live's markup has failed the
+  migration. The brief names the reference — Figma, live or both — per band.
 - **No commented-out code.** `layout/theme.liquid` stays thin.
 
 ## Rules
@@ -120,9 +123,10 @@ client's, and the tooling pull does not touch it).
 ## Skills, agents and workflows
 
 - `.claude/skills/` — `build-page-from-figma`, `scaffold-section`,
-  `figma-readiness`, `run-theme`, `verify-against-figma`, `record-incident`,
+  `figma-readiness`, `run-theme`, `verify-against-reference`, `record-incident`,
   `harvest`, `recon-theme`, `store-recon`, `close-qa-loop`,
-  `accessibility-review`. Also `gitbot-preflight`, which reads GitBot's
+  `accessibility-review`. With `build-section-from-live` for a band whose
+  reference is the store rather than a frame. Also `gitbot-preflight`, which reads GitBot's
   review of a pushed client branch from inside the session. Skills auto-invoke from their descriptions; `harvest`
   is human-only because it pushes to Base.
 - `.claude/agents/` — `shopify-standards-coach` (advisory) and
@@ -171,7 +175,7 @@ principle upstream, measured specifics downstream. New client repos start from
 1. **Code style and architecture** — does it look like Base? Judged by the
    gate and the rules.
 2. **Visual fidelity** — does it match the Figma frame? Judged by
-   `/verify-against-figma`'s report on disk, never by an assertion.
+   `/verify-against-reference`'s report on disk, never by an assertion.
 
 A page can match a design pixel-for-pixel and still fail every convention in
 this file. That is what happened on Bites Vitamins. Check them separately and
