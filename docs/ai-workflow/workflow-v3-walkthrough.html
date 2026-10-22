@@ -63,6 +63,7 @@ button.primary { background: var(--hi); color: #15191c; border-color: var(--hi);
     <button type="button" id="btn-play" class="primary" aria-label="Play through the steps">Play</button>
     <button type="button" id="btn-next" aria-label="Next step">Next</button>
     <button type="button" id="btn-all" aria-label="Show the whole board">Show all</button>
+    <button type="button" id="btn-voice" aria-pressed="false" aria-label="Read each step aloud">Voice off</button>
   </div>
 </div>
 <div class="caption" aria-live="polite"><div class="step-no" id="step-no">step 0 of 0</div><p id="step-text">Press Play.</p></div>
@@ -510,13 +511,35 @@ button.primary { background: var(--hi); color: #15191c; border-color: var(--hi);
 <span><i class="sw gate"></i> a gate that fires on its own</span>
 <span><i class="sw outside"></i> outside the repo</span>
 </div>
-<p class="hint">Keys: Space plays and pauses, the arrow keys step, 1 2 3 switch scenario. The board scrolls sideways on a narrow screen; the lit box is scrolled into view at each step.</p>
+<p class="hint">Voice reads each step aloud with the voice built into your browser; with it on, Play waits for the sentence to finish before the next step. Keys: Space plays and pauses, the arrow keys step, 1 2 3 switch scenario, V toggles the voice. The board scrolls sideways on a narrow screen; the lit box is scrolled into view at each step.</p>
 </div>
 <script>
 (function () {
   var STEPS = {"a": [{"ids": ["start"], "text": "You start the repo from Base with one script. It clones the development branch and stamps which Base version the tooling came from."}, {"ids": ["ssh"], "text": "The moment a session opens, a hook injects the state: doctor status, drift from Base, the compliance number, open incidents and the three most-missed rules. Nobody runs it."}, {"ids": ["recon", "live"], "text": "You run recon with the live URL. It measures the theme and lists what the live store loads: apps, popups, markets, a page builder. It reads; it never writes."}, {"ids": ["map"], "text": "Recon writes the state of the theme and the reference map, one row per band."}, {"ids": ["ref"], "text": "You name the reference per band: Figma for the look, live for what the band does and says today, or both. Pique never got asked; that is where its fix commits came from."}, {"ids": ["order"], "text": "The playbook sets the order: foundations, then the commerce path, then chrome, shared parts, templates, content, the long tail. Commerce comes second because it shipped last on Pique and the client found the bug."}, {"ids": ["build", "src"], "text": "Each band is built from its reference: the Figma frame, or the live page through the live-build skill, which pulls the live theme from the store and cleans its code to the rules."}, {"ids": ["write", "post"], "text": "Every file written is checked as it is written: the settings contract, the conventions, JSON validity, the locale key cap. The findings come back in the same turn."}, {"ids": ["verify", "dev", "stop"], "text": "Verification renders the band and diffs it against its reference; a change to the purchase path gets the commerce check. When the turn ends, the Stop gate runs everything again plus Theme Check, and names what has no report."}, {"ids": ["commit", "pre"], "text": "A commit runs eight checks, regenerates both mirrors, and runs the checks' own self-tests. A new file that fails blocks the commit; legacy is reported, never gated."}, {"ids": ["push", "nudge", "gitbot"], "text": "A push is reviewed by GitBot within two minutes and posted to the client's Slack. The session is told so at once."}, {"ids": ["preflight"], "text": "The preflight reads GitBot's findings from inside the session and settles each one: fixed, or flagged with your reason in your words. Then push again, until nothing is open."}, {"ids": ["ci", "pr"], "text": "CI runs the same checks on the pull request plus the drift report. You review and say merge."}, {"ids": ["hand", "notion"], "text": "The handoff goes to Notion: what was built, the decisions, and a QA checklist in plain English with the purchase-path rows."}, {"ids": ["inc", "base"], "text": "Anything a rule should have caught is recorded the moment it happens. The generic ones go up to Base and reach every fork on the next pull."}], "b": [{"ids": ["arrive"], "text": "You arrive on a repo someone else started. Measurement comes before code."}, {"ids": ["link", "basew"], "text": "Two scripts link Base as a remote and overlay the tooling three-way against the stamp: files the fork never had are added, Base's changes land where the fork never touched them, and the fork's own edits are kept and listed."}, {"ids": ["ssh"], "text": "The overlay sorts every file: ADD, UPDATE, KEEP, RETIRE. A renamed skill is retired, not duplicated. The next session start prints the drift and the compliance number."}, {"ids": ["recon", "live"], "text": "Recon measures the theme and the live store, and reads what the previous team wrote into the rule copies: their breakpoints, their container, their decisions."}, {"ids": ["verdict"], "text": "It ends with a carry verdict: carry as-is, carry with fixes, rebuild, or missing."}, {"ids": ["decide"], "text": "You argue with the verdict in the state document, never in code, and take the three decisions: the breakpoint, the container, and which conventions to keep."}, {"ids": ["order"], "text": "The missing list becomes the build order, sorted by the stage table. If the homepage exists and the cart does not, the cart comes next, whatever the tracker says."}, {"ids": ["xlog"], "text": "If another session runs in parallel, a shared log records every planned edit to a shared file before it is made, so the two reuse each other's settings instead of adding twins."}, {"ids": ["build", "post"], "text": "From here it is the same loop as a fresh rebuild: every file checked as it is written, every turn checked as it ends. Legacy is reported, never gated."}, {"ids": ["regress"], "text": "Every shared section the batch touches is proved unchanged for the pages built before it: a consumer page outside the batch, on the QA theme against the dev theme, at 0.0%."}, {"ids": ["commerce", "dev"], "text": "The commerce check runs green at the close of every stage. Nothing after stage two may break the cart."}, {"ids": ["merge", "gitbot"], "text": "The project branch is merged in early, not only at the end; then push, pull request, and the GitBot preflight."}, {"ids": ["harvest", "base2", "done"], "text": "Incidents recorded along the way are harvested to Base. You merge on your word, with the preview links in hand first."}], "c": [{"ids": ["qi", "ask"], "text": "Quality inspection logs issues on the Notion card and you ask for the round."}, {"ids": ["close", "ssh"], "text": "The QA loop skill picks each issue up. The session start already printed the open incidents and the compliance number."}, {"ids": ["ref"], "text": "The reference map says which reference each band has, so the fix is checked against the right thing."}, {"ids": ["fix", "post"], "text": "The fix is made against the standards, not around them. Each write is gated as it lands."}, {"ids": ["verify", "src"], "text": "The changed band is verified against its reference: a diff and a box table against the frame, or the live section at the same widths."}, {"ids": ["stop"], "text": "The Stop gate carries three advisories for exactly this case: a changed band with no newer verify report, a purchase-path change with no commerce report, and GitBot findings nobody has read since the last commit."}, {"ids": ["commerce"], "text": "If the purchase path moved, the commerce check walks add, change, discount, remove and the market switch again."}, {"ids": ["regress", "dev"], "text": "The other pages that share the section are shown unchanged at defaults: 0.0% on the QA theme against the dev theme."}, {"ids": ["push", "pre", "gitbot"], "text": "Push. The pre-commit and the push nudge ran; GitBot's follow-up review says whether each earlier finding is fixed or still open."}, {"ids": ["preflight", "ci"], "text": "The preflight settles what is still open, fixed or flagged in your words, and CI runs on the pull request."}, {"ids": ["merge", "closen", "notion2"], "text": "You say merge. The issue closes in Notion with the evidence quoted: the numbers, not an assertion."}, {"ids": ["inc", "base"], "text": "A fix that a rule should have prevented becomes an incident, then a Base pull request, so the gate learns."}]};
   var EDGES = {"a": [["start", "ssh"], ["ssh", "recon"], ["recon", "live"], ["recon", "map"], ["map", "ref"], ["ref", "order"], ["order", "build"], ["build", "src"], ["build", "write"], ["write", "post"], ["write", "verify"], ["verify", "dev"], ["verify", "stop"], ["verify", "commit"], ["commit", "pre"], ["commit", "push"], ["push", "gitbot"], ["push", "nudge"], ["push", "preflight"], ["preflight", "gitbot"], ["preflight", "ci"], ["ci", "pr"], ["pr", "hand"], ["hand", "notion"], ["hand", "inc"], ["inc", "base"], ["preflight", "write"]], "b": [["arrive", "link"], ["link", "basew"], ["link", "ssh"], ["ssh", "recon"], ["recon", "live"], ["recon", "verdict"], ["verdict", "decide"], ["decide", "order"], ["order", "xlog"], ["xlog", "build"], ["build", "post"], ["build", "regress"], ["regress", "commerce"], ["commerce", "dev"], ["commerce", "merge"], ["merge", "gitbot"], ["merge", "harvest"], ["merge", "done"], ["harvest", "base2"], ["regress", "build"]], "c": [["ask", "close"], ["qi", "close"], ["close", "ssh"], ["close", "ref"], ["ref", "fix"], ["fix", "post"], ["fix", "verify"], ["verify", "src"], ["verify", "stop"], ["verify", "commerce"], ["commerce", "regress"], ["regress", "dev"], ["regress", "push"], ["push", "pre"], ["push", "gitbot"], ["push", "preflight"], ["preflight", "gitbot"], ["preflight", "ci"], ["ci", "merge"], ["merge", "closen"], ["closen", "notion2"], ["closen", "inc"], ["inc", "base"], ["preflight", "fix"]]};
-  var fig = 'a', i = -1, timer = null;
+  var fig = 'a', i = -1, timer = null, voice = false, speaking = null;
+  var voiceBtn = document.getElementById('btn-voice');
+  var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+  if (!canSpeak) { voiceBtn.disabled = true; voiceBtn.textContent = 'No voice here'; }
+  try { if (canSpeak && localStorage.getItem('wf3-voice') === '1') voice = true; } catch (e) {}
+  function pickVoice() {
+    var vs = window.speechSynthesis.getVoices();
+    var en = vs.filter(function (v) { return /^en/i.test(v.lang); });
+    var pref = en.filter(function (v) { return /Samantha|Daniel|Google UK English|Google US English|Microsoft (Aria|Guy|Ryan)/.test(v.name); });
+    return pref[0] || en[0] || vs[0] || null;
+  }
+  function say(txt, done) {
+    if (!voice || !canSpeak) { if (done) done(false); return; }
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(txt);
+    var v = pickVoice(); if (v) u.voice = v;
+    u.rate = 0.98; u.pitch = 1;
+    var finished = false;
+    u.onend = u.onerror = function () { if (finished) return; finished = true; speaking = null; if (done) done(true); };
+    speaking = u;
+    window.speechSynthesis.speak(u);
+  }
+  function paintVoice() { voiceBtn.setAttribute('aria-pressed', String(voice)); voiceBtn.textContent = voice ? 'Voice on' : 'Voice off'; }
   var svgs = {};
   document.querySelectorAll('#board svg').forEach(function (s) { svgs[s.dataset.fig] = s; });
   var no = document.getElementById('step-no'), text = document.getElementById('step-text'), play = document.getElementById('btn-play');
@@ -537,17 +560,31 @@ button.primary { background: var(--hi); color: #15191c; border-color: var(--hi);
       if (el) el.classList.toggle('seen', (!!seen[e[0]] && !!seen[e[1]]) || i >= steps.length);
     });
     if (i < 0) { no.textContent = 'step 0 of ' + steps.length; text.textContent = 'Press Play, or Next.'; }
-    else if (i >= steps.length) { no.textContent = 'all ' + steps.length + ' steps'; text.textContent = 'The whole board. Pick another situation, or press Back to walk it again.'; }
+    else if (i >= steps.length) { no.textContent = 'all ' + steps.length + ' steps'; text.textContent = 'The whole board. Pick another situation, or press Back to walk it again.'; if (canSpeak) window.speechSynthesis.cancel(); }
     else {
       no.textContent = 'step ' + (i + 1) + ' of ' + steps.length; text.textContent = steps[i].text;
+      say(steps[i].text, function (spoke) { if (spoke && timer === 'voice') { var n = STEPS[fig].length; if (i < n) setTimeout(function () { if (timer === 'voice') step(1); }, 700); } });
       var first = s.getElementById(fig + '-n-' + steps[i].ids[0]);
       if (first && first.scrollIntoView) first.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
     }
   }
   function step(d) { var n = STEPS[fig].length; i = Math.max(-1, Math.min(n, i + d)); paint(); if (i >= n) stop(); }
-  function stop() { if (timer) clearInterval(timer); timer = null; play.textContent = 'Play'; }
-  function start() { if (i >= STEPS[fig].length) i = -1; step(1); timer = setInterval(function () { step(1); }, 5200); play.textContent = 'Pause'; }
+  function stop() { if (timer && timer !== 'voice') clearInterval(timer); timer = null; play.textContent = 'Play'; if (canSpeak) window.speechSynthesis.cancel(); }
+  function start() {
+    if (i >= STEPS[fig].length) i = -1;
+    play.textContent = 'Pause';
+    if (voice && canSpeak) { timer = 'voice'; step(1); }
+    else { timer = setInterval(function () { step(1); }, 5200); step(1); }
+  }
   function setFig(f) { stop(); fig = f; i = -1; try { localStorage.setItem('wf3-fig', f); } catch (e) {} paint(); }
+  voiceBtn.addEventListener('click', function () {
+    voice = !voice; paintVoice(); try { localStorage.setItem('wf3-voice', voice ? '1' : '0'); } catch (e) {}
+    if (!voice && canSpeak) window.speechSynthesis.cancel();
+    if (voice && i >= 0 && i < STEPS[fig].length) say(STEPS[fig][i].text);
+    if (timer) { var wasOn = true; stop(); if (wasOn) start(); }
+  });
+  if (canSpeak && window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = function () {};
+  paintVoice();
   document.querySelectorAll('[role=tab]').forEach(function (b) { b.addEventListener('click', function () { setFig(b.dataset.fig); }); });
   document.getElementById('btn-next').addEventListener('click', function () { stop(); step(1); });
   document.getElementById('btn-prev').addEventListener('click', function () { stop(); step(-1); });
@@ -559,6 +596,7 @@ button.primary { background: var(--hi); color: #15191c; border-color: var(--hi);
     else if (ev.key === 'ArrowRight') { stop(); step(1); }
     else if (ev.key === 'ArrowLeft') { stop(); step(-1); }
     else if (ev.key === '1' || ev.key === '2' || ev.key === '3') setFig('abc'[Number(ev.key) - 1]);
+    else if (ev.key === 'v' || ev.key === 'V') voiceBtn.click();
   });
   paint();
 })();

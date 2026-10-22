@@ -352,6 +352,50 @@ with tempfile.TemporaryDirectory() as d:
     case("push-dev-theme: the protected list matches whole ids only", "123456" in lines and "12345" not in lines, lines)
 
 # ---------------------------------------------------------------------------
+# where-are-we.py — the three situations, in throwaway repos
+# ---------------------------------------------------------------------------
+def www(cwd, *args):
+    r = subprocess.run([sys.executable, os.path.join(HERE, "where-are-we.py"), *args], capture_output=True, text=True, cwd=cwd)
+    return r.stdout.strip()
+
+
+def fork(d, commits=1, subject="[BUILD]: Add a section"):
+    g = lambda *a: subprocess.run(["git", *a], cwd=d, capture_output=True, text=True, check=True)
+    g("init", "-q", "-b", "Develop"); g("config", "user.email", "t@example.com"); g("config", "user.name", "t")
+    g("remote", "add", "origin", "https://github.com/EcomExperts-io/Example-Client.git")
+    for k in range(commits):
+        open(os.path.join(d, "a.txt"), "a").write(str(k) + "\n"); g("add", "."); g("commit", "-q", "-m", subject)
+    return g
+
+
+with tempfile.TemporaryDirectory() as d:
+    fork(d, 3)
+    case("where-are-we: a bare fork with no state document reads as A", www(d).startswith("where-are-we: looks like A"), www(d)[:90])
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 2)
+    os.makedirs(os.path.join(d, "docs/ai-workflow/verify/hero"))
+    open(os.path.join(d, "docs/ai-workflow/verify/hero/report.md"), "w").write("x")
+    open(os.path.join(d, "docs/ai-workflow/state-of-the-theme.md"), "w").write("# State\n\nMeasured by `recon-theme.py` on 2026-09-01 at `abc`.\n")
+    open(os.path.join(d, "docs/ai-workflow/reference-map.md"), "w").write("| Page | Band | Reference | a | b | c | d | e |\n|---|---|---|---|---|---|---|---|\n| Home | Hero | figma | | | | yes | |\n| Home | Offer | live | | | | yes | |\n")
+    www(d, "--close-stage", "3", "chrome")
+    out = www(d)
+    case("where-are-we: an old state document, reports, a closed stage read as B", out.startswith("where-are-we: looks like B") and "last stage closed 3" in out and "2 band(s)" in out, out[:160])
+    case("where-are-we: --close-stage wrote progress.json", os.path.exists(os.path.join(d, "docs/ai-workflow/progress.json")))
+with tempfile.TemporaryDirectory() as d:
+    fork(d, 8, "[FIX]: Something the client found")
+    case("where-are-we: a history of fixes reads as C", www(d).startswith("where-are-we: looks like C"), www(d)[:90])
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 2); g("checkout", "-q", "-b", "304.1/Task-QiRoundTwo")
+    case("where-are-we: a QA-named branch reads as C", www(d).startswith("where-are-we: looks like C"), www(d)[:90])
+with tempfile.TemporaryDirectory() as d:
+    fork(d, 2); www(d, "--qa-round", "5")
+    out = www(d)
+    case("where-are-we: a recorded QA round reads as C with the count", out.startswith("where-are-we: looks like C") and "5 open issue" in out, out[:120])
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 1); g("remote", "set-url", "origin", "git@github.com:EcomExperts-io/Base.git")
+    case("where-are-we: Base reads as Base itself", www(d).startswith("where-are-we: Base itself"), www(d)[:60])
+
+# ---------------------------------------------------------------------------
 # preflight-status.py — in a throwaway client repo
 # ---------------------------------------------------------------------------
 def preflight(cwd, *args):

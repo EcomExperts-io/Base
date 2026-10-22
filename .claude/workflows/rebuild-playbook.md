@@ -61,7 +61,14 @@ python3 .claude/scripts/commerce-check.py --url "<dev theme product URL>" --disc
 Green at 393, 768, 1024 and 1440, then the two rows it cannot automate — a
 person logged in, and Safari on an iPhone and a Mac — walked and recorded in
 the stage's handoff. The Stop hook names a change to the purchase path that
-has no commerce report newer than it.
+has no commerce report newer than it. Then record the close, so the next
+session is told where the rebuild stands:
+
+```bash
+python3 .claude/scripts/where-are-we.py --close-stage 2 "commerce path"
+```
+
+It writes the progress record (`progress.json` under `docs/ai-workflow/`); commit it with the stage's work.
 
 ## Per stage
 
@@ -79,7 +86,12 @@ has no commerce report newer than it.
 
 ## Inheriting mid-rebuild
 
-Everything above applies; two things change.
+Every session start prints one line from `where-are-we.py`: which of the
+three situations the repo looks like — a fresh rebuild, joining midway,
+correcting after QA — and why, from the state document's age, the verify
+reports, the stages recorded as closed, the branch name and the recent
+commits. It is a reading, not a ruling; the person who knows better runs
+what fits. Everything above applies; two things change.
 
 1. **Stage 0 produces a "carry" verdict, not a plan** — `/recon-theme` ends
    with carry-as-is / carry-with-fixes / rebuild / missing. Argue with it in

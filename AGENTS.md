@@ -1,7 +1,7 @@
 # AGENTS.md
 
 <!-- GENERATED from CLAUDE.md by .claude/scripts/sync-ai-config.sh - do not edit here. The files it names live under .claude/; .codex/ holds the Codex wiring and the generated hooks and agents. -->
-<!-- checksum: 1933715148 -->
+<!-- checksum: 19781755 -->
 
 Guidance for Codex (and any AI coding tool) working in the Base Theme
 repository, and in the client themes forked from it.
@@ -106,7 +106,9 @@ Configured in `.claude/settings.json`, so it travels with the tooling into
 every fork:
 
 - **SessionStart** injects doctor status, tooling drift from Base, the
-  compliance number, open incidents and the three most-missed rules.
+  compliance number, open incidents, the three most-missed rules, and one
+  line saying which situation the repo looks like — a fresh rebuild, joining
+  midway, correcting after QA — and why (`where-are-we.py`).
 - **PostToolUse** on every theme-file write runs the settings contract, the
   conventions and JSON validity on that file and hands the findings back.
 - **Stop** refuses to end a turn while a *new* theme file fails the contract, a

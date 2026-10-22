@@ -61,7 +61,7 @@ them depend on a person remembering.
 
 | When | What | Where it is configured |
 |---|---|---|
-| Session starts | Doctor status, tooling drift from Base, compliance number, open incidents, the three most-missed rules — injected as context | `SessionStart` hook |
+| Session starts | Doctor status, tooling drift from Base, compliance number, open incidents, the three most-missed rules, and one line naming which of the three situations the repo looks like (fresh rebuild, joining midway, correcting after QA) with the evidence — injected as context | `SessionStart` hook |
 | Claude writes a theme file | Settings contract, grep-level conventions, JSON validity on that one file, findings handed straight back | `PostToolUse` hook (~100 ms) |
 | Claude tries to end a turn | The same gate over everything changed this turn, plus Theme Check; a **new** file that fails blocks the turn; a section changed with no verify report newer than the change is flagged; a client branch whose GitBot findings have not been read since its last commit is named | `Stop` hook |
 | A Shopify command fails | A nudge to `/record-incident` while the details are in context | `PostToolUseFailure` hook |

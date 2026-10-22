@@ -185,6 +185,7 @@ button.primary {{ background: var(--hi); color: #15191c; border-color: var(--hi)
     <button type="button" id="btn-play" class="primary" aria-label="Play through the steps">Play</button>
     <button type="button" id="btn-next" aria-label="Next step">Next</button>
     <button type="button" id="btn-all" aria-label="Show the whole board">Show all</button>
+    <button type="button" id="btn-voice" aria-pressed="false" aria-label="Read each step aloud">Voice off</button>
   </div>
 </div>
 <div class="caption" aria-live="polite"><div class="step-no" id="step-no">step 0 of 0</div><p id="step-text">Press Play.</p></div>
@@ -199,13 +200,35 @@ button.primary {{ background: var(--hi); color: #15191c; border-color: var(--hi)
 <span><i class="sw gate"></i> a gate that fires on its own</span>
 <span><i class="sw outside"></i> outside the repo</span>
 </div>
-<p class="hint">Keys: Space plays and pauses, the arrow keys step, 1 2 3 switch scenario. The board scrolls sideways on a narrow screen; the lit box is scrolled into view at each step.</p>
+<p class="hint">Voice reads each step aloud with the voice built into your browser; with it on, Play waits for the sentence to finish before the next step. Keys: Space plays and pauses, the arrow keys step, 1 2 3 switch scenario, V toggles the voice. The board scrolls sideways on a narrow screen; the lit box is scrolled into view at each step.</p>
 </div>
 <script>
 (function () {{
   var STEPS = {json.dumps(steps_json)};
   var EDGES = {json.dumps(edges_json)};
-  var fig = 'a', i = -1, timer = null;
+  var fig = 'a', i = -1, timer = null, voice = false, speaking = null;
+  var voiceBtn = document.getElementById('btn-voice');
+  var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+  if (!canSpeak) {{ voiceBtn.disabled = true; voiceBtn.textContent = 'No voice here'; }}
+  try {{ if (canSpeak && localStorage.getItem('wf3-voice') === '1') voice = true; }} catch (e) {{}}
+  function pickVoice() {{
+    var vs = window.speechSynthesis.getVoices();
+    var en = vs.filter(function (v) {{ return /^en/i.test(v.lang); }});
+    var pref = en.filter(function (v) {{ return /Samantha|Daniel|Google UK English|Google US English|Microsoft (Aria|Guy|Ryan)/.test(v.name); }});
+    return pref[0] || en[0] || vs[0] || null;
+  }}
+  function say(txt, done) {{
+    if (!voice || !canSpeak) {{ if (done) done(false); return; }}
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(txt);
+    var v = pickVoice(); if (v) u.voice = v;
+    u.rate = 0.98; u.pitch = 1;
+    var finished = false;
+    u.onend = u.onerror = function () {{ if (finished) return; finished = true; speaking = null; if (done) done(true); }};
+    speaking = u;
+    window.speechSynthesis.speak(u);
+  }}
+  function paintVoice() {{ voiceBtn.setAttribute('aria-pressed', String(voice)); voiceBtn.textContent = voice ? 'Voice on' : 'Voice off'; }}
   var svgs = {{}};
   document.querySelectorAll('#board svg').forEach(function (s) {{ svgs[s.dataset.fig] = s; }});
   var no = document.getElementById('step-no'), text = document.getElementById('step-text'), play = document.getElementById('btn-play');
@@ -226,17 +249,31 @@ button.primary {{ background: var(--hi); color: #15191c; border-color: var(--hi)
       if (el) el.classList.toggle('seen', (!!seen[e[0]] && !!seen[e[1]]) || i >= steps.length);
     }});
     if (i < 0) {{ no.textContent = 'step 0 of ' + steps.length; text.textContent = 'Press Play, or Next.'; }}
-    else if (i >= steps.length) {{ no.textContent = 'all ' + steps.length + ' steps'; text.textContent = 'The whole board. Pick another situation, or press Back to walk it again.'; }}
+    else if (i >= steps.length) {{ no.textContent = 'all ' + steps.length + ' steps'; text.textContent = 'The whole board. Pick another situation, or press Back to walk it again.'; if (canSpeak) window.speechSynthesis.cancel(); }}
     else {{
       no.textContent = 'step ' + (i + 1) + ' of ' + steps.length; text.textContent = steps[i].text;
+      say(steps[i].text, function (spoke) {{ if (spoke && timer === 'voice') {{ var n = STEPS[fig].length; if (i < n) setTimeout(function () {{ if (timer === 'voice') step(1); }}, 700); }} }});
       var first = s.getElementById(fig + '-n-' + steps[i].ids[0]);
       if (first && first.scrollIntoView) first.scrollIntoView({{ block: 'nearest', inline: 'center', behavior: 'smooth' }});
     }}
   }}
   function step(d) {{ var n = STEPS[fig].length; i = Math.max(-1, Math.min(n, i + d)); paint(); if (i >= n) stop(); }}
-  function stop() {{ if (timer) clearInterval(timer); timer = null; play.textContent = 'Play'; }}
-  function start() {{ if (i >= STEPS[fig].length) i = -1; step(1); timer = setInterval(function () {{ step(1); }}, 5200); play.textContent = 'Pause'; }}
+  function stop() {{ if (timer && timer !== 'voice') clearInterval(timer); timer = null; play.textContent = 'Play'; if (canSpeak) window.speechSynthesis.cancel(); }}
+  function start() {{
+    if (i >= STEPS[fig].length) i = -1;
+    play.textContent = 'Pause';
+    if (voice && canSpeak) {{ timer = 'voice'; step(1); }}
+    else {{ timer = setInterval(function () {{ step(1); }}, 5200); step(1); }}
+  }}
   function setFig(f) {{ stop(); fig = f; i = -1; try {{ localStorage.setItem('wf3-fig', f); }} catch (e) {{}} paint(); }}
+  voiceBtn.addEventListener('click', function () {{
+    voice = !voice; paintVoice(); try {{ localStorage.setItem('wf3-voice', voice ? '1' : '0'); }} catch (e) {{}}
+    if (!voice && canSpeak) window.speechSynthesis.cancel();
+    if (voice && i >= 0 && i < STEPS[fig].length) say(STEPS[fig][i].text);
+    if (timer) {{ var wasOn = true; stop(); if (wasOn) start(); }}
+  }});
+  if (canSpeak && window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = function () {{}};
+  paintVoice();
   document.querySelectorAll('[role=tab]').forEach(function (b) {{ b.addEventListener('click', function () {{ setFig(b.dataset.fig); }}); }});
   document.getElementById('btn-next').addEventListener('click', function () {{ stop(); step(1); }});
   document.getElementById('btn-prev').addEventListener('click', function () {{ stop(); step(-1); }});
@@ -248,6 +285,7 @@ button.primary {{ background: var(--hi); color: #15191c; border-color: var(--hi)
     else if (ev.key === 'ArrowRight') {{ stop(); step(1); }}
     else if (ev.key === 'ArrowLeft') {{ stop(); step(-1); }}
     else if (ev.key === '1' || ev.key === '2' || ev.key === '3') setFig('abc'[Number(ev.key) - 1]);
+    else if (ev.key === 'v' || ev.key === 'V') voiceBtn.click();
   }});
   paint();
 }})();
