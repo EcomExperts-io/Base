@@ -19,6 +19,10 @@ Blocks (exit 2):  a new section missing the settings contract; a convention
 Reports (JSON):   convention warnings in modified files; a Theme Check that
                   could not run; section or snippet work with no newer
                   verify-against-figma report.
+Reports (JSON):   convention warnings in modified files; a Theme Check that
+                  could not run; section or snippet work with no newer
+                  verify-against-figma report; a client branch whose GitBot
+                  findings have not been read since its last commit.
 
 "New" means untracked or added since HEAD. Modified legacy is never gated here
 — see check-conventions.py for why.
@@ -132,6 +136,12 @@ def main():
         rc, out = run([py, ".claude/scripts/verify-status.py", "--changed"])
         if out.strip():
             warnings.append(out.strip())
+
+    # Client branches only (the script is silent in Base and on a trunk): has
+    # GitBot's review of this branch been read since its last commit?
+    rc, out = run([py, ".claude/scripts/preflight-status.py", "--changed"])
+    if out.strip():
+        warnings.append(out.strip())
 
     os.makedirs(os.path.dirname(CACHE), exist_ok=True)
     json.dump({"key": key, "result": "fail" if blockers else "pass"}, open(CACHE, "w"))

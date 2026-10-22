@@ -175,6 +175,12 @@ not.
 **Functionality:** walk the Notion requirements one at a time and confirm each.
 Say plainly which ones you could not verify and why.
 
+**GitBot:** in a client repo, every push is reviewed against these same rules
+and the review lands in Slack. After the push, run `/gitbot-preflight`: it
+reads the findings from here and settles each one — fixed, or flagged with
+the developer's reason — before the pull request. The handoff quotes its
+three numbers (open, fixed, flagged).
+
 Report all three separately, each with what you actually checked, quoting the
 verify report's numbers rather than "matches the design".
 

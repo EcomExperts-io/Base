@@ -45,9 +45,11 @@ import sys
 THEME_DIRS = ("sections/", "snippets/", "assets/", "layout/", "templates/",
               "locales/", "config/", "blocks/")
 
-# Files whose whole job is to define raw values. Hex is not a finding there.
-TOKEN_FILES = {"snippets/css-variables.liquid", "config/settings_schema.json",
-               "config/settings_data.json"}
+# Files whose whole job is to hold the merchant's raw values. Hex is not a
+# finding there. snippets/css-variables.liquid is deliberately NOT here any
+# more: a literal hex in it is a brand colour no merchant setting controls,
+# and GitBot reports it (Pique, Oct 2026, `--brand-rule-silver: #c8c8c8`).
+TOKEN_FILES = {"config/settings_schema.json", "config/settings_data.json"}
 
 # ---------------------------------------------------------------------------
 # rule definitions — id, severity, one-line reason, and the rule file it serves
@@ -73,6 +75,18 @@ RULES = {
     "schema-visible-if-resource": ("error", "Shopify rejects `visible_if` on an `article_list` or `blog` setting at upload; Theme Check passes it", "schemas.md"),
     "template-setting-unknown": ("warn", "a template sets a key its section or block schema does not define — Shopify drops it silently on upload", "templates.md"),
     "docs-orphan-page": ("warn", "a docs page describes a section or snippet that no longer exists — delete or rewrite it", "living-documents.md"),
+    # --- what GitBot reports on every push that the gate did not (Pique, Oct 2026).
+    # Severity follows GitBot's: its Minor is a warning here, its Major and
+    # Critical are errors. Errors still block only in a file the change adds.
+    "css-hardcoded-length": ("warn", "px/rem values are set on a namespaced custom property first, then used (`--x-gap: 16px;` … `gap: var(--x-gap)`)", "css-standards.md"),
+    "css-physical-property": ("warn", "use the logical property (`padding-inline`, `margin-block-start`, `inset-inline-end`, `text-align: start`) for RTL", "css-standards.md"),
+    "a11y-css-order": ("error", "`order` makes visual order differ from DOM and tab order (WCAG 2.4.3); reorder the markup instead", "accessibility.md"),
+    "a11y-nowrap": ("warn", "`white-space: nowrap` on text can overflow at 200% zoom or in a longer locale (WCAG 1.4.10); let it wrap or justify why", "accessibility.md"),
+    "a11y-focus-outline-none": ("error", "a `:focus` rule removes the outline and replaces it with nothing (WCAG 2.4.7); style `:focus-visible` with a visible outline", "accessibility.md"),
+    "a11y-motion-no-reduced-motion": ("warn", "an infinite animation with no `prefers-reduced-motion: reduce` override in the file (WCAG 2.3.3)", "accessibility.md"),
+    "a11y-div-as-button": ("error", "a click handler on a div, span, li or href-less `<a>`: not focusable, not keyboard-operable — use `<button type=\"button\">`", "accessibility.md"),
+    "a11y-img-no-alt": ("error", "an `<img>` with no `alt` attribute at all; `alt=\"\"` when decorative, the merchant value escaped otherwise", "accessibility.md"),
+    "security-unescaped-metafield-attr": ("error", "a metafield output inside a quoted attribute without `| escape` can inject markup", "accessibility.md"),
 }
 
 # A locale file that cannot be read or parsed switches the key checks off
@@ -170,6 +184,72 @@ def scan_css(path, text, findings, offset=0, hex_check=True):
                 findings.append(Finding(path, offset + i + 1, "css-important"))
 
     scan_css_duplicates(path, raw_lines, findings, offset)
+    scan_css_gitbot(path, text, findings, offset)
+
+
+LENGTH_RE = re.compile(r"(?<![\w.-])(\d*\.?\d+)(px|rem)\b")
+DECL_RE = re.compile(r"(?<![\w-])([a-zA-Z-]+)\s*:\s*([^;{}]+);")
+PHYSICAL_RE = re.compile(
+    r"^(?:(?:margin|padding)-(?:top|bottom|left|right)|border-(?:top|bottom|left|right)(?:-(?:width|color|style))?"
+    r"|top|bottom|left|right)$")
+BLOCK_RE = re.compile(r"([^{}]+)\{([^{}]*)\}")
+
+
+def scan_css_gitbot(path, text, findings, offset=0):
+    """The CSS findings GitBot raised on push after the local gate passed.
+
+    Measured on Pique's last 30 days of reviews (Oct 2026): every Minor
+    css-standards finding was a hardcoded length, a physical property or a
+    hex; every Major accessibility finding in CSS was `order`, `nowrap`, an
+    `outline: none` on `:focus`, or a spinner with no reduced-motion override.
+    The high-volume pair (lengths, physical) is ONE finding per file with a
+    count, the way the review policy asks a reviewer to report them.
+    """
+    hard, phys = [], []
+    for m in DECL_RE.finditer(text):
+        prop, value = m.group(1).lower(), m.group(2).strip()
+        line = offset + line_of(text, m.start())
+        if prop.startswith("--") or prop in ("content",):
+            continue
+        # Lengths: anything over 2px. Hairlines, 1px borders and a 2px
+        # outline-offset are universal values, not design tokens, and GitBot's
+        # own suggested fixes use them.
+        lengths = [(float(n), u) for n, u in LENGTH_RE.findall(value)]
+        if any(u == "rem" or n > 2 for n, u in lengths):
+            hard.append((line, f"{prop}: {value}"))
+        if prop == "order":
+            findings.append(Finding(path, line, "a11y-css-order", f"{prop}: {value}"))
+        elif prop == "white-space" and "nowrap" in value:
+            findings.append(Finding(path, line, "a11y-nowrap"))
+        elif PHYSICAL_RE.match(prop):
+            phys.append((line, f"{prop}: {value}"))
+        elif prop == "text-align" and re.match(r"(left|right)\b", value):
+            phys.append((line, f"{prop}: {value}"))
+        elif prop in ("margin", "padding"):
+            # A one-value shorthand is symmetric and RTL-safe. Two or more
+            # values set sides by physical position. (GitBot has also flagged
+            # the one-value form; this check does not, on purpose.)
+            parts = [p for p in value.split() if p != "!important"]
+            if len(parts) >= 2:
+                phys.append((line, f"{prop}: {value}"))
+    for items, rule in ((hard, "css-hardcoded-length"), (phys, "css-physical-property")):
+        if items:
+            shown = "; ".join(v for _, v in items[:3])
+            more = f" … and {len(items) - 3} more" if len(items) > 3 else ""
+            findings.append(Finding(path, items[0][0], rule, f"{len(items)} declaration(s): {shown}{more}"))
+
+    for m in BLOCK_RE.finditer(text):
+        selector, body = m.group(1), m.group(2)
+        if ":focus" not in selector or "focus-visible)" in selector:
+            continue
+        outlines = [v.strip() for v in re.findall(r"(?<![\w-])outline\s*:\s*([^;]+)", body)]
+        if outlines and all(v in ("none", "0") for v in outlines) and "box-shadow" not in body:
+            findings.append(Finding(path, offset + line_of(text, m.start(2)), "a11y-focus-outline-none",
+                                    selector.strip().splitlines()[-1].strip()[:60]))
+
+    m = re.search(r"animation[^;{}]*\binfinite\b", text)
+    if m and "prefers-reduced-motion" not in text:
+        findings.append(Finding(path, offset + line_of(text, m.start()), "a11y-motion-no-reduced-motion"))
 
 
 def scan_css_duplicates(path, lines, findings, offset=0):
@@ -352,11 +432,47 @@ def scan_liquid(path, text, findings):
 
     if path.startswith(("sections/", "blocks/", "snippets/")):
         scan_runtime_t_keys(path, text, findings)
+    if path.startswith(("sections/", "blocks/", "snippets/", "layout/")):
+        scan_markup_a11y(path, text, findings)
     if path.startswith(("sections/", "blocks/")):
         scan_schema(path, text, findings)
 
 
+DIV_AS_BUTTON_RE = re.compile(
+    r"""<(?:div|span|li|p)\b[^>]*?(?:\sonclick=|\srole=["']button["']|\s@click|\sx-on:click)""", re.I)
+A_NO_HREF_CLICK_RE = re.compile(r"""<a\b(?![^>]*\bhref=)[^>]*?(?:\sonclick=|\s@click|\sx-on:click)""", re.I)
+IMG_RE = re.compile(r"<img\b[^>]*>", re.S)
+METAFIELD_ATTR_RE = re.compile(r"""=\s*(["'])\s*\{\{([^}]*\bmetafields\b[^}]*)\}\}\s*\1""")
+SAFE_FILTERS_RE = re.compile(r"\|\s*(escape|escape_once|image_url|file_url|url|asset_url|metafield_tag|strip_html|handleize|json|img_url)\b")
+
+
+def blank_liquid_prose(text):
+    """Liquid comments and the schema block, blanked with line breaks kept."""
+    text = COMMENT_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
+    return SCHEMA_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
+
+
+def scan_markup_a11y(path, text, findings):
+    """The markup findings GitBot raises as Critical or Major (accessibility.md
+    sections 1, 2, 5 and 11). Each is decidable from the tag alone."""
+    body = blank_liquid_prose(text)
+    for rx in (DIV_AS_BUTTON_RE, A_NO_HREF_CLICK_RE):
+        for m in rx.finditer(body):
+            findings.append(Finding(path, line_of(body, m.start()), "a11y-div-as-button",
+                                    re.sub(r"\s+", " ", m.group(0))[:50]))
+    for m in IMG_RE.finditer(body):
+        if not re.search(r"\salt\s*=", m.group(0)):
+            findings.append(Finding(path, line_of(body, m.start()), "a11y-img-no-alt"))
+    for m in METAFIELD_ATTR_RE.finditer(body):
+        if not SAFE_FILTERS_RE.search(m.group(2)):
+            findings.append(Finding(path, line_of(body, m.start()), "security-unescaped-metafield-attr",
+                                    m.group(2).strip()[:60]))
+
+
 def scan_js(path, text, findings):
+    for m in DIV_AS_BUTTON_RE.finditer(text):
+        findings.append(Finding(path, line_of(text, m.start()), "a11y-div-as-button",
+                                re.sub(r"\s+", " ", m.group(0))[:50]))
     for m in re.finditer(r"DOMContentLoaded", text):
         findings.append(Finding(path, line_of(text, m.start()), "js-domcontentloaded"))
     for m in re.finditer(r"\bjQuery\b|(?<![\w$.])\$\(", text):
@@ -463,8 +579,9 @@ def scan_file(path, findings):
     if text is None:
         return
     if path.endswith(".css"):
-        scan_css(path, text, findings, hex_check=path not in TOKEN_FILES
-                 and bool(re.match(r"assets/(section|component)-", path)))
+        # Every stylesheet the theme wrote, not only section-*/component-*:
+        # GitBot reports a hex anywhere (cart.css, critical.css included).
+        scan_css(path, text, findings, hex_check=not re.search(r"(\.min\.|swiper|alpine)", path))
     elif path.endswith(".liquid"):
         scan_liquid(path, text, findings)
     elif path.endswith(".js") and path.startswith("assets/") and not re.search(r"(\.min\.js|@|swiper|alpine)", path):

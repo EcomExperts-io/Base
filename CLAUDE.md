@@ -105,6 +105,9 @@ every fork:
   convention, JSON validity or Theme Check, and flags section work with no
   verify report newer than the change. Modified legacy is reported, not gated.
 - **PostToolUseFailure** on a Shopify command points at `/record-incident`.
+- **PostToolUse** on a `git push` in a client repo points at
+  `/gitbot-preflight`; the Stop hook says, once per turn, when a client
+  branch's GitBot findings have not been read since its last commit.
 
 The pre-commit (`.githooks/pre-commit`, called from husky in forks) and the
 reusable CI workflow run the same checks. Both also run
@@ -119,7 +122,8 @@ client's, and the tooling pull does not touch it).
 - `.claude/skills/` — `build-page-from-figma`, `scaffold-section`,
   `figma-readiness`, `run-theme`, `verify-against-figma`, `record-incident`,
   `harvest`, `recon-theme`, `store-recon`, `close-qa-loop`,
-  `accessibility-review`. Skills auto-invoke from their descriptions; `harvest`
+  `accessibility-review`. Also `gitbot-preflight`, which reads GitBot's
+  review of a pushed client branch from inside the session. Skills auto-invoke from their descriptions; `harvest`
   is human-only because it pushes to Base.
 - `.claude/agents/` — `shopify-standards-coach` (advisory) and
   `shopify-pr-reviewer` (gates). Both keep project memory of what recurs.
