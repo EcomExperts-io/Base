@@ -107,7 +107,8 @@ every fork:
 - **PostToolUseFailure** on a Shopify command points at `/record-incident`.
 
 The pre-commit (`.githooks/pre-commit`, called from husky in forks) and the
-reusable CI workflow run the same checks. `python3 .claude/scripts/doctor.py`
+reusable CI workflow run the same checks. Both also run
+`test-checks.py`, one fixture per promise a gate script makes. `python3 .claude/scripts/doctor.py`
 says whether any of it is wired on this machine; `npm run setup` wires it
 (`sh .claude/scripts/setup.sh` is the same thing, for a fork whose
 `package.json` has no `setup` script — a client's `package.json` is the
@@ -201,6 +202,9 @@ python3 .claude/scripts/check-conventions.py --all
 ```bash
 npx prettier --config .prettierrc.json --write path/to/file.liquid
 ```
+
+Name the files. Never pass a glob to `--write`: the theme is not uniformly
+formatted, and one glob put 48 untouched files into a Pique commit.
 
 There is no test suite — `npm test` is a stub. Verification is the gate, the
 verifier's report, and the theme editor.

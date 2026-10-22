@@ -90,4 +90,13 @@ if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-conventions.py --staged || FAILED=1
 fi
 
+# --- 8. The checks check themselves ------------------------------------------
+# Every gate script above had at least one error path nobody had run until a
+# client build hit it: the JSON check crashed on the file its docstring named,
+# the `!important` rule became unsatisfiable for ten days. One fixture per
+# promise, a second to run.
+if command -v python3 >/dev/null 2>&1; then
+  python3 .claude/scripts/test-checks.py || FAILED=1
+fi
+
 exit $FAILED

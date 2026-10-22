@@ -271,6 +271,8 @@ Cart.refresh();
 - All mutations are serialized through an internal queue, so rapid calls can't race.
 - Success dispatches `cart:change` on `document`; failures dispatch `cart:error` with `detail.error: { status, message, description }`.
 - Current cart state is always available at `window.Cart.state`.
+- `Cart.state` is seeded from Liquid's `{{ cart | json }}` in `layout/theme.liquid` and replaced by a `/cart.js` or `/cart/*.js` response after the first mutation or `Cart.refresh()`. The two differ: Liquid's cart JSON has no `discount_codes` and no `token`, so anything that needs them reads `/cart.js` first (Pique, Oct 2026: a line's discount code was never applied because the seeded state had no codes array).
+- A test of a cart mutation awaits `cart:change`, never a fixed sleep: mutations queue and each carries a section render, so a stale read looks exactly like a broken cart.
 
 **Page context awareness:**
 
@@ -473,6 +475,37 @@ class ProductInfo extends HTMLElement {
   }
 }
 ```
+
+**Whatever closes a UI state must abort the request that state started** — in
+the one method every dismissal routes through, and *before* its `isOpen` early
+return, because a `close()` on an already-closed panel is exactly a redundant
+dismissal and must still cancel. Pique, Sep 2026: predictive search aborted on
+every input path and not on `close()`, so a late response reopened a
+full-height results sheet seconds after the shopper dismissed it. The cart
+drawer, quick-add and a variant re-render have the same shape.
+
+```javascript
+close(returnFocus = false) {
+  this.abortController?.abort();
+  window.clearTimeout(this.debounceTimer);
+  this.removeAttribute('data-loading');
+  if (!this.isOpen) return;
+  // …
+}
+```
+
+## Product forms
+
+- **Read a form's attributes with `getAttribute`.** A product form holds
+  `<input name="id">` (the variant), and named controls shadow the form
+  element's own properties: `form.id` is that input, so a selector built from
+  it matches nothing and nothing throws. The same holds for controls named
+  `action`, `method`, `name` or `submit`.
+- **A section that renders its own selling-plan UI on a product page must turn
+  off the subscription app's auto-inject.** Recharge's legacy widget injects
+  into the first `form[action*="/cart/add"]` it finds; its documented switch is
+  `window.DISABLE_RECHARGE = true`, set inline before window load. Pique, Sep
+  2026: two purchase UIs on one product page.
 
 ## Error Handling
 

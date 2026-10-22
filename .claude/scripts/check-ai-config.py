@@ -79,9 +79,19 @@ ALWAYS_APPLY_ALLOWLIST = {
 # is to scope the two review policies to review time only and have the
 # reviewer agents read them by path — authoring a section does not need 135
 # lines on how a finding is written up.
+#
+# Re-measured 2026-10-22 after the Pique harvest (42 generic incidents into
+# liquid.md, schemas.md, sections.md, templates.md, css-standards.md and
+# javascript-standards.md — platform limits the upload enforces, Liquid
+# drops that print as numbers, a preset block that renders an empty band):
+# 2591 / 2988 / 1782 / 1355. The section target was raised by 100; the other
+# three still fit. The measured CSS and browser traps went to
+# `.claude/references/layout-pitfalls.md`, which is not injected, with six
+# one-line pointers in the rule — that is the shape to keep using: the rule
+# says what to do, the reference says what it cost.
 INJECTION_CAPS = {
     "snippets/component-example.liquid": 2600,
-    "sections/example.liquid": 2950,
+    "sections/example.liquid": 3050,
     "assets/section-example.css": 1800,
     "assets/section-example.js": 1400,
 }

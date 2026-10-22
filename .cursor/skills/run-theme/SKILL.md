@@ -76,3 +76,15 @@ with it, or leave it for the developer if they started it.
 - With live reload off, an upload error latches: after the offending file is
   fixed the server keeps serving the failed state (a 500 on every route),
   because nothing re-uploads it. Restart that server; the next request is 200.
+- **A theme-wide 500 whose body names a file you were not editing is an
+  invalid schema somewhere else in the theme.** One rejected upload fails every
+  route. Read the filename in the error, not the URL you requested, and restart
+  once to tell a real failure from a latched one.
+- **An upload rejection is silent from the agent's side.** It shows in this
+  terminal and on the 500 page only. After writing a schema, or a template with
+  dynamic sources, `curl -s <url> | grep -c "Upload Errors"` before measuring.
+- **A change that adds a setting and sets it in a template needs a restart.**
+  The watcher may sync the template before the schema and Shopify drops the
+  key; see `templates.md`.
+- **Do not verify against a server another session started.** Its branch,
+  live-reload state and upload history are not yours.

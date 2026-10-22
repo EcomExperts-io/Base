@@ -196,6 +196,21 @@ def check(path, src):
             "      add a Liquid comment mentioning `color_scheme` that says why."
         )
 
+    # A preset that seeds blocks hands the merchant blocks whose content is
+    # blank (design copy must not be a schema default), so unless the loop
+    # skips an empty block the section renders a coloured band around nothing.
+    # Four sections on one Pique pull request shipped that. Advisory: the
+    # markup may test emptiness some other way.
+    seeded = sum(len(p.get("blocks") or []) for p in (schema.get("presets") or []) if isinstance(p, dict))
+    markup = markup_only(src)
+    if seeded and "section.blocks" in markup and "blank" not in markup:
+        advisory.append(
+            f"the preset seeds {seeded} block(s) with no content and the markup never tests `blank`:\n"
+            "      a merchant who adds this section sees an empty coloured band. Skip a block whose\n"
+            "      content settings are blank and render nothing when none survives (sections.md,\n"
+            "      'A preset-seeded block renders nothing until it has content')."
+        )
+
     bare = BARE_LABEL_RE.findall(schema_raw)
     if bare:
         shown = ", ".join(f'"{b}"' for b in bare[:3])
@@ -256,12 +271,14 @@ def main(argv=None):
             notes[p] = advisory
 
     if not failures:
+        # --quiet silences the all-clear, not a note: the runtime hooks run
+        # with it, and a note nobody can see is not advisory, it is absent.
         if not quiet:
             print(f"Section contract OK ({len(paths)} new section(s) checked).")
-            for path, advisory in notes.items():
-                print(f"  note — {path}")
-                for a in advisory:
-                    print(f"    {a}")
+        for path, advisory in notes.items():
+            print(f"  note — {path}")
+            for a in advisory:
+                print(f"    {a}")
         return 0
 
     n = sum(len(v) for v in failures.values())

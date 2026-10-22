@@ -50,7 +50,9 @@ current `base/development`. It refuses if the worktree has uncommitted work.
 Make the change under `WORKTREE`. Read the target rule first and match its
 voice: what to do, then the incident that earned it, in a few lines. If the
 learning is a check, add it to `check-conventions.py` (or the relevant script),
-wire it, and test it against Base's own tree. Regenerate the mirror there:
+wire it, and test it against Base's own tree. Add a fixture for it to
+`.claude/scripts/test-checks.py` — the gate scripts had no tests, and four
+Pique incidents were untested error paths in the tooling itself. Regenerate the mirror there:
 
 ```bash
 sh <WORKTREE>/.claude/scripts/sync-ai-config.sh

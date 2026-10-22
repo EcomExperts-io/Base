@@ -197,6 +197,27 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 The six `t:` keys above all resolve in `locales/en.default.schema.json` today —
 use them rather than inventing new ones.
 
+## A preset-seeded block renders nothing until it has content
+
+A `presets` entry that seeds blocks hands the merchant blocks whose content
+settings are blank — design copy must not become a schema `default` — so the
+first thing they see after adding the section is a coloured band around an
+empty element. Skip a block whose content settings are all blank, and render
+nothing when none survives; pre-scan the way `shop-the-look.liquid` does:
+
+```liquid
+{%- assign has_message = false -%}
+{%- for block in section.blocks -%}
+  {%- if block.settings.text != blank or block.settings.link_text != blank -%}
+    {%- assign has_message = true -%}{%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+```
+
+Four sections on one Pique pull request shipped the empty band.
+`check-section-contract.py` notes a section whose preset seeds blocks and whose
+markup never tests `blank`.
+
 ## Section Requirements
 
 - `{% schema %}` with valid JSON, and a `presets` entry

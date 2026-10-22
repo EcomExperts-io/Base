@@ -261,6 +261,12 @@ jobs:
           git reset --soft "${ORIG_HEAD}"
           [ "${contract}" -eq 0 ] && [ "${conventions}" -eq 0 ]
 
+      - name: The checks check themselves
+        if: ${{ !cancelled() && hashFiles('.claude/scripts/test-checks.py') != '' }}
+        # One fixture per behaviour a gate script promises. Four incidents on
+        # one client build were untested error paths in the tooling itself.
+        run: python3 "${SCRIPTS}/test-checks.py"
+
       - name: Rule cross-references
         if: ${{ !cancelled() && hashFiles('.claude/rules/*.md') != '' }}
         # --all, not the hook's staged scope: on a pull request a broken link

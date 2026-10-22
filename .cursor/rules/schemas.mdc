@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/schemas.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2515143345 -->
+<!-- checksum: 332875205 -->
 
 
 # Schema Standards
@@ -94,6 +94,31 @@ judgement, not a validation or deploy risk, and must never be reported as one.
 The distinction matters because the two are easy to conflate. A wrongly claimed
 limit sends someone chasing a failure that cannot happen, and they lose more time
 proving it is fine than they would have spent on a real defect.
+
+## Limits the upload enforces and Theme Check does not
+
+Each of these passes Theme Check and every local gate, then fails on upload —
+and one rejected file leaves `theme dev` serving a 500 on every route, or the
+old file, with the error only in the dev-server terminal. All found on Pique,
+Sep–Oct 2026.
+
+| Rejected on upload | Do instead |
+|---|---|
+| A second `product` setting in the section's own `settings` ("can only be inserted once"); a block's settings are not limited — Base's shop-the-look block carries four | put the second picker in a block's settings |
+| `visible_if` on an `article_list` or `blog` setting ("not a valid attribute"); other resource pickers untested | drop the condition, name the source in the label |
+| A multi-line text metafield as the dynamic source of a `text` setting; a `textarea` takes no dynamic source at all | a `richtext` setting, connected as `"<p>{{ … \| metafield_tag }}</p>"` |
+| More than 3,400 keys in a locale file | see `locales.md` |
+
+`check-conventions.py` flags the first two. The third depends on the store's
+metafield type, so after writing a template with dynamic sources, curl the page
+and grep for "Upload Errors" before measuring anything.
+
+**Two things that upload fine and render nothing.** A `shopify://shop_images/…`
+value on an `image_picker` resolves blank when the file is an older generic
+upload the picker never lists, although `'<name>' | file_url` finds it — give
+the setting a `text` fallback that takes the file name. And a template setting
+uploaded before its section's schema defines it is dropped silently and not
+re-uploaded when the schema lands; see `templates.md`.
 
 ## Schema Structure
 ```json

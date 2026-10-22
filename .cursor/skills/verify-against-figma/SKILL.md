@@ -34,6 +34,9 @@ what a good number looks like for this theme.
 - **Slug** for the report directory: the section or page name, e.g.
   `product-ingredients`.
 - Optional: a **section selector** when verifying one band of a longer page.
+- A band you mean to scope out — "Header", "Footer" — gets `get_metadata`
+  first: list its children and confirm each exists elsewhere. A blog frame's
+  "Header" held the blog's own category nav, which was then built nowhere.
 
 `$ARGUMENTS` may carry all of these: `<url> <fileKey> <node>@<width> [<node>@<width>] --slug <name> [--section <css-selector>]`.
 
@@ -71,6 +74,12 @@ If Chrome is unavailable the script says so; fall back to the browser tools —
 set the viewport to exactly `<width>` wide, take the screenshot, save it to the
 same path — and note in the report that the render came from the browser tool.
 
+The renderer refuses to write a file when the page's `clientWidth` is not the
+width requested, or when the capture is one flat colour. Both happened silently
+before it did — a 393 request laid out at 501 and cropped, a blank PNG that
+diffed at 40% — so a diff that is good at one breakpoint and bad at the other
+is a reason to open the screenshot before the code.
+
 **Verifying one section of a page:** open the page in the browser tools, run
 `document.querySelector('<section-selector>').getBoundingClientRect().top +
 window.scrollY` to get the section's top, and pass it to `compare.py` as
@@ -96,6 +105,12 @@ python3 .claude/scripts/render-screenshot.py "<url>" <width> <frame-height> \
 If the expression throws, the script writes nothing and exits non-zero — a
 state that was never entered must not be diffed as though it had been. The
 frame for that state has its own node id; treat it as one more breakpoint.
+
+A `<dialog>` carrying the theme's `scroll-lock` attribute stalls the capture
+(`overflow: hidden` on `html` against `captureBeyondViewport`); remove the
+attribute in the `--eval` before opening it. A cart mutation in an `--eval` is
+awaited on `cart:change`, never a fixed sleep — mutations queue and each
+carries a section render, so a stale read looks exactly like a broken cart.
 
 ### 3. Mask what the store supplied
 
@@ -147,6 +162,10 @@ python3 .claude/scripts/fidelity-table.py \
 Without the browser tools the table cannot be produced; the report then lists
 the box comparison under **unverified**, not as passed.
 
+Compare spans as well as heights: each band's top to the next band's top.
+Negative and collapsing margins move a band whose own height matches — on
+Pique two exact bands hid a 96px drift of everything below them.
+
 ### 6. Look, once
 
 Open `side-by-side-<width>-preview.png` with the Read tool and write down what
@@ -157,6 +176,9 @@ ratio, a colour that reads warmer than the frame. Then compare your list with
 finding. Custom elements are a trap here: they default to `display: inline`,
 which drops background and vertical padding on screen while `getComputedStyle`
 still reports both — the heatmap catches it, the table does not.
+A hot band sitting on a single line of text is the face before the layout: a
+weight the library has no face for renders synthesised, and `getComputedStyle`
+reports the weight you asked for (`.claude/references/layout-pitfalls.md`).
 
 ## The report
 
