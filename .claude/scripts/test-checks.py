@@ -133,6 +133,26 @@ f = []
 conv.scan_js("assets/section-x.js", 'el.innerHTML = `<div class="close" onclick="c()">x</div>`;\n', f)
 case("js: a div with onclick in a template string is an error", rules(f) == ["a11y-div-as-button"], rules(f))
 
+# --- commerce first: the cart engine owns every mutation ---
+def js(text, path="assets/component-x.js"):
+    f = []
+    conv.scan_js(path, text, f)
+    return f
+
+
+f = js("await fetch(`${window.Shopify.routes.root}cart/add.js`, { method: 'POST', body: fd });\n")
+case("js: fetch to /cart/add outside cart.js is an error", rules(f) == ["js-raw-cart-request"] and f[0].severity == "error", rules(f))
+f = js("const r = await fetch('/cart/change.js', { method: 'POST' });\nxhr.open('POST', '/cart/clear.js');\n")
+case("js: change and clear requests are errors too", rules(f) == ["js-raw-cart-request"] * 2, rules(f))
+f = js("const res = await fetch(`${window.Shopify.routes.root}cart/update.js`, { method: 'POST' });\n")
+case("js: a /cart/update request is a warning (the discount-form pattern)", rules(f) == ["js-raw-cart-update"] and f[0].severity == "warn", rules(f))
+f = js("return this.rootElement.querySelectorAll('[action*=\"/cart/add\"]');\nif (!(form.getAttribute('action') || '').includes('/cart/add')) return;\nCart.add(new FormData(form), form);\n")
+case("js: cart URLs in selectors and Cart.add() calls are not requests", not f, rules(f))
+f = js("fetch('/cart/add.js')", path="assets/cart.js")
+case("js: cart.js itself is exempt", not f, rules(f))
+f = liquid("<script>fetch('/cart/add.js', {method: 'POST'})</script>\n", path="sections/x.liquid")
+case("liquid: an inline script with a raw cart request is an error", "js-raw-cart-request" in rules(f), rules(f))
+
 # ---------------------------------------------------------------------------
 # check-conventions.py — Liquid schema and locale keys
 # ---------------------------------------------------------------------------

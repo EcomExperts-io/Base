@@ -151,7 +151,11 @@ advisory feedback; `shopify-pr-reviewer` gates before a human sees the PR and
 quotes the verify report.
 
 **Functionality:** each Notion requirement walked and confirmed, or named as
-unverified.
+unverified. When the change touches the purchase path, `commerce-check.py`
+walks add, change, discount, remove and market switch at four widths on the
+development theme, reading each result from the cart engine's own event; the
+three rows it cannot automate — logged in, Safari, checkout — are walked by a
+person and written down.
 
 A `/goal` set at the start lets a fresh evaluator — not the model doing the
 work — decide when all three hold.

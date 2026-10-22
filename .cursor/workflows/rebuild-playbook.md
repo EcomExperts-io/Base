@@ -12,6 +12,14 @@ page. A store where the foundations and the chrome are right can have its pages
 rebuilt in any order; a store where they are wrong makes every page a
 renegotiation.
 
+**And commerce before content.** The second rebuild (Pique, Sep–Oct 2026)
+got the chrome right and still shipped its purchase path last: the cart
+drawer, discount codes and subscription plans were built after the landing
+pages, and the client reopened the largest bundle as "doesn't add with the
+correct discount" after its card was marked done. A storefront is a shop. The
+purchase path is stage 2, it has its own check, and that check runs green at
+the close of every stage after it — a page that breaks the cart is not done.
+
 ## Arriving — the same three commands whether the repo is new or six months old
 
 ```bash
@@ -35,13 +43,25 @@ does this), not in Base.
 |---|---|---|---|
 | **0 · Recon** | `/recon-theme --live-url` (the live feature inventory: apps, popups, markets, page builder), `/store-recon`, the reference map (one row per band: which reference — Figma, live or both — node ids with exact size, live URL and section key) | You cannot wire a value to a field that does not exist, verify against a frame you cannot address, or build a product form an app will inject into | The gap table is complete; every band names its reference |
 | **1 · Foundations** | Tokens (`css-variables.liquid`), typography, container width and gutters, breakpoints, colour schemes, `settings_schema.json` | Every section reads these; a wrong container costs a pass over every section later | `get_variable_defs` mapped to tokens; one breakpoint set, `min-width` only; no raw hex |
-| **2 · Global chrome** | Header + navigation, footer, cart drawer, search overlay, announcement bar | On every page, the largest accessibility surface, the first thing the client sees on every preview | The header/cart/search reference; overlay a11y (dialog role, focus in and back, Escape, live region outside the swapped region); the cart engine untouched |
-| **3 · Shared components** | Product card, price, buttons, badges, forms, quick-add, pagination | Consumed by PDP, collection, search, recommendations — build once here or four times later | Shared-vs-section decision test; `data-verify-mask` on live values; renamed if scope widened |
-| **4 · Transactional templates** | PDP, Collection, Search, Cart page | They exercise every component from stage 3 and the Section Rendering pattern | The Collection & PDP reference; filters as real forms; `pushState` vs `replaceState` |
-| **5 · Homepage and content** | Homepage, landing pages, about, FAQ | *Assembly*, not construction — Base ships 20+ content sections; building the homepage first is how page-named sections happen | Presets reused via `templates/*.json` before anything new is written; name by function |
-| **6 · Long tail** | Blog, article, account, 404, password, gift card | Template main sections, low design variance, often Base's as-is | Contract exemptions declared with a Liquid comment mentioning `presets` |
+| **2 · Commerce path** | The cart engine (untouched), cart drawer and cart page, the product form and buy box (variants, quantity, selling plans), quick add, discount codes, localization and markets, the checkout handoff | It is the shop. Every later stage renders on top of it, and a bug here reaches the client as "doesn't add" — the one class of defect a storefront cannot carry | `commerce-check.py` green at every width; `window.Cart` for every mutation (the gate flags a raw `/cart/add`); line properties survive a change; `cart:change` awaited, never a sleep; logged in and out walked by hand; the cart reference |
+| **3 · Global chrome** | Header + navigation, footer, search overlay, announcement bar | On every page, the largest accessibility surface, the first thing the client sees on every preview | The header/cart/search reference; overlay a11y (dialog role, focus in and back, Escape, live region outside the swapped region) |
+| **4 · Shared components** | Product card, price, buttons, badges, forms, pagination | Consumed by PDP, collection, search, recommendations — build once here or four times later | Shared-vs-section decision test; `data-verify-mask` on live values; renamed if scope widened |
+| **5 · Transactional templates** | PDP (the bands around the buy box), Collection, Search | They exercise every component from stage 4 and the Section Rendering pattern | The Collection & PDP reference; filters as real forms; `pushState` vs `replaceState`; the commerce check still green |
+| **6 · Homepage and content** | Homepage, landing pages, about, FAQ | *Assembly*, not construction — Base ships 20+ content sections; building the homepage first is how page-named sections happen | Presets reused via `templates/*.json` before anything new is written; name by function; a landing page that adds to cart runs the commerce check |
+| **7 · Long tail** | Blog, article, account, 404, password, gift card | Template main sections, low design variance, often Base's as-is | Contract exemptions declared with a Liquid comment mentioning `presets` |
 
-Stages 1–3 decide what can be carried. Put the review agents on them hardest.
+Stages 1–4 decide what can be carried. Put the review agents on them hardest.
+
+**Closing a stage, from 2 onward:**
+
+```bash
+python3 .claude/scripts/commerce-check.py --url "<dev theme product URL>" --discount-code <a real code> --market <a second market>
+```
+
+Green at 393, 768, 1024 and 1440, then the two rows it cannot automate — a
+person logged in, and Safari on an iPhone and a Mac — walked and recorded in
+the stage's handoff. The Stop hook names a change to the purchase path that
+has no commerce report newer than it.
 
 ## Per stage
 

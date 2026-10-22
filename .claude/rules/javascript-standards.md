@@ -271,6 +271,7 @@ Cart.refresh();
 - All mutations are serialized through an internal queue, so rapid calls can't race.
 - Success dispatches `cart:change` on `document`; failures dispatch `cart:error` with `detail.error: { status, message, description }`.
 - Current cart state is always available at `window.Cart.state`.
+- Every mutation goes through `window.Cart`. A `fetch` to `/cart/add`, `/cart/change` or `/cart/clear` anywhere else is an error the gate reports: it skips the queue, the section render and `cart:change`, so nothing else on the page re-renders. The one documented exception is a form that does its own `/cart/update` request and then calls `Cart.refresh()`, as the discount form does.
 - `Cart.state` is seeded from Liquid's `{{ cart | json }}` in `layout/theme.liquid` and replaced by a `/cart.js` or `/cart/*.js` response after the first mutation or `Cart.refresh()`. The two differ: Liquid's cart JSON has no `discount_codes` and no `token`, so anything that needs them reads `/cart.js` first (Pique, Oct 2026: a line's discount code was never applied because the seeded state had no codes array).
 - A test of a cart mutation awaits `cart:change`, never a fixed sleep: mutations queue and each carries a section render, so a stale read looks exactly like a broken cart.
 

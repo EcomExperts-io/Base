@@ -186,7 +186,11 @@ measurement. Custom elements remain the specific trap: they default to
 not.
 
 **Functionality:** walk the Notion requirements one at a time and confirm each.
-Say plainly which ones you could not verify and why.
+Say plainly which ones you could not verify and why. If the change touches the
+purchase path — product form, quick add, selling plans, cart drawer or page,
+discount codes, localization — run `commerce-check.py` (the functional half of
+`/verify-against-reference`) at 393, 768, 1024 and 1440 and quote its report;
+then a person walks the three rows it cannot: logged in, Safari, checkout.
 
 **GitBot:** in a client repo, every push is reviewed against these same rules
 and the review lands in Slack. After the push, run `/gitbot-preflight`: it
@@ -247,6 +251,14 @@ Never mention code, settings, schema, tokens, or file names.
 - ~~Verify `color_scheme` is exposed in the schema~~
 - ~~Confirm `padding_top_mobile` is read outside the media query~~
 - ~~Check `component-product-card` snippet is used~~
+
+**Always include the purchase path when the page sells anything**, in the
+reviewer's words: "Add the product to the cart from this page — the cart
+opens and shows it with the right price." "Change the quantity to 2 — the
+total updates." "Remove it — the cart says it is empty." "Enter the discount
+code <code> — the total drops." "Switch the country at the bottom of the page
+— prices show in that currency." "Do the add, change and remove again while
+logged in." "Do them on an iPhone in Safari."
 
 Group by what the reviewer is looking at — Desktop, Mobile, Links and buttons,
 Text and images. Cover both what should happen and the obvious ways it could be

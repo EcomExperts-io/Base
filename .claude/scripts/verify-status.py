@@ -14,6 +14,7 @@ Prints nothing when the evidence is current or nothing relevant changed.
 import glob
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -30,6 +31,31 @@ def changed_ui_files():
                   and p.endswith(".liquid") and os.path.isfile(p))
 
 
+COMMERCE_RE = re.compile(r"^(assets/cart\.js|assets/component-(cart|quick-add|selling-plans|localization|product-card)[^/]*|"
+                         r"sections/(cart|product)\.liquid|snippets/component-(cart|quick-add|localization|product-card|selling)[^/]*)$")
+
+
+def changed_commerce_files():
+    paths = set(p for p in git("ls-files", "--others", "--exclude-standard").split("\n") if p)
+    paths |= set(p for p in git("diff", "--name-only", "HEAD").split("\n") if p)
+    return sorted(p for p in paths if COMMERCE_RE.match(p) and os.path.isfile(p))
+
+
+def commerce_status():
+    """A change to the purchase path with no commerce-check report newer than it."""
+    files = changed_commerce_files()
+    if not files:
+        return None
+    newest_change = max(os.stat(p).st_mtime for p in files)
+    reports = [r for r in glob.glob(".claude/verify/commerce*/report.json") if os.stat(r).st_mtime >= newest_change]
+    if reports:
+        return None
+    return (f"commerce: {len(files)} purchase-path file(s) changed ({', '.join(os.path.basename(p) for p in files[:4])}"
+            f"{', …' if len(files) > 4 else ''}) with no commerce-check report newer than the change. Run "
+            "python3 .claude/scripts/commerce-check.py --url <dev theme product URL> before reporting it done — "
+            "on Pique the cart shipped last and the client found the discount bug.")
+
+
 def main(argv):
     root = git("rev-parse", "--show-toplevel").strip()
     if root:
@@ -38,6 +64,9 @@ def main(argv):
         files = [p for p in argv[argv.index("--files") + 1:] if not p.startswith("--") and os.path.isfile(p)]
     else:
         files = changed_ui_files()
+        line = commerce_status()
+        if line:
+            print(line)
     if not files:
         return 0
 

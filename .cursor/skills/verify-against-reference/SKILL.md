@@ -265,6 +265,34 @@ The other subcommands, when the section has behaviour:
 section whose top diverges, and the per-section spans find the negative and
 collapsing margins a height comparison hides.
 
+## Functional — the purchase path
+
+A pixel report cannot say whether the cart works. When the change touches the
+purchase path — the product form, quick add, selling plans, the cart drawer
+or page, discount codes, localization — run the commerce check against the
+development theme and quote its numbers:
+
+```bash
+python3 .claude/scripts/commerce-check.py --url "<dev theme product page URL>" \
+  --widths 393,768,1024,1440 [--discount-code <code>] [--market <CC>] --out .claude/verify/commerce
+```
+
+Per width it submits the real product form and reads the result from the
+engine's `cart:change` (never a sleep), checks the drawer opened and the count
+updated, changes the quantity through the stepper link and asserts the line's
+properties and plan survived, applies a discount code and reads `/cart.js`
+for it, removes the line and expects the empty state, and switches market
+through the localization form and back. It refuses a page that rendered the
+live theme, blocks analytics hosts, never reaches checkout, and empties the
+cart at the end.
+
+Three rows it cannot automate are written into the report as such, and a
+person walks them: **logged in** (add, change, remove as a customer — log in
+once in the browser pane; the script enters no credentials), **Safari** on an
+iPhone and a Mac (WebKit: `dvh`, date inputs, `:has()`, sticky bars), and
+the **checkout handoff**. The QA checklist carries the same three rows in
+plain English.
+
 ## The report
 
 Write both files. `report.json` is what the Stop hook and `/goal` read;
@@ -323,7 +351,8 @@ browser tools" is worth more than a table typed from memory.
 - The parallel-section-build orchestrator runs it per section band after
   assembly — agents cannot, because their section is not on a page yet.
 - The Stop hook warns when section or snippet files changed and no report is
-  newer than the change. It does not block; a refactor has no reference.
+  newer than the change, and when a purchase-path file changed and no commerce
+  report is newer than it. It does not block; a refactor has no reference.
 - A `/goal` for a build session can reference `diff_pct` and the table
   directly: *"report.json exists for product-ingredients with diff_pct under 5
   at 1440 and 390 and table_off 0, and the pre-commit gate passes"* — or, for

@@ -87,6 +87,9 @@ RULES = {
     "a11y-div-as-button": ("error", "a click handler on a div, span, li or href-less `<a>`: not focusable, not keyboard-operable — use `<button type=\"button\">`", "accessibility.md"),
     "a11y-img-no-alt": ("error", "an `<img>` with no `alt` attribute at all; `alt=\"\"` when decorative, the merchant value escaped otherwise", "accessibility.md"),
     "security-unescaped-metafield-attr": ("error", "a metafield output inside a quoted attribute without `| escape` can inject markup", "accessibility.md"),
+    # --- commerce first (v3 step 4): the cart engine owns every cart mutation.
+    "js-raw-cart-request": ("error", "a request to /cart/add, /cart/change or /cart/clear outside assets/cart.js bypasses the queue, the section render and `cart:change`; use `window.Cart.add/change`", "javascript-standards.md"),
+    "js-raw-cart-update": ("warn", "a request to /cart/update outside assets/cart.js: allowed for a form that then calls `Cart.refresh()` (the discount form), wrong anywhere else", "javascript-standards.md"),
 }
 
 # A locale file that cannot be read or parsed switches the key checks off
@@ -423,6 +426,7 @@ def scan_liquid(path, text, findings):
         findings.append(Finding(path, line_of(text, m.start()), "js-domcontentloaded"))
     for m in re.finditer(r"\bjQuery\b|(?<![\w$.])\$\(", text):
         findings.append(Finding(path, line_of(text, m.start()), "js-jquery"))
+    scan_js_cart_requests(path, text, findings)
 
     for m in OUTPUT_IN_STRING_RE.finditer(text):
         findings.append(Finding(path, line_of(text, m.start()), "liquid-output-in-string"))
@@ -469,7 +473,23 @@ def scan_markup_a11y(path, text, findings):
                                     m.group(2).strip()[:60]))
 
 
+# A cart URL inside a request call — fetch(), XMLHttpRequest.open(), axios,
+# $.ajax — on the same statement. A cart URL in a selector string
+# (`[action*="/cart/add"]`, the engine's own delegation) is not a request.
+RAW_CART_RE = re.compile(
+    r"""(?:\bfetch\s*\(|\.open\s*\(\s*['"`][A-Z]+['"`]\s*,|\baxios\s*[.(]|\$\.(?:ajax|post|get)\s*\()[^;]{0,160}?cart/(add|change|clear|update)(?:\.js)?\b""")
+
+
+def scan_js_cart_requests(path, text, findings):
+    if path == "assets/cart.js":
+        return
+    for m in RAW_CART_RE.finditer(text):
+        rule = "js-raw-cart-update" if m.group(1) == "update" else "js-raw-cart-request"
+        findings.append(Finding(path, line_of(text, m.start()), rule, f"cart/{m.group(1)}"))
+
+
 def scan_js(path, text, findings):
+    scan_js_cart_requests(path, text, findings)
     for m in DIV_AS_BUTTON_RE.finditer(text):
         findings.append(Finding(path, line_of(text, m.start()), "a11y-div-as-button",
                                 re.sub(r"\s+", " ", m.group(0))[:50]))
