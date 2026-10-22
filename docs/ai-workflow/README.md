@@ -225,6 +225,7 @@ Stated plainly, so v2 does not become permanent either:
 | Conventions | `.claude/rules/` — start with `CLAUDE.md` |
 | Arrive on a repo | `base-link.sh`, `pull-base-tooling.py`, `npm run setup` (or `setup.sh`), `/recon-theme`, `/store-recon` |
 | Order of attack | `.claude/workflows/rebuild-playbook.md` |
+| A batch of landing pages matched to live | `.claude/workflows/landing-batch.md` — assembly with `assemble-templates.py`, pushes through `push-dev-theme.sh` |
 | Check a frame | `/figma-readiness` · designers: [`figma-handoff-checklist.md`](./figma-handoff-checklist.md) |
 | Build a page or component | `/build-page-from-figma` |
 | New section | `/scaffold-section` |

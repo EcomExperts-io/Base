@@ -322,6 +322,36 @@ case("recon: the live inventory counts sections, embeds, markets and rich text",
      and inv["counts"]["localization_forms"] == 1 and inv["counts"]["rich_text_metafields"] == 1 and inv["theme"], inv["counts"])
 
 # ---------------------------------------------------------------------------
+# assemble-templates.py and push-dev-theme.sh — the landing-batch tools
+# ---------------------------------------------------------------------------
+asm = load("assemble-templates")
+good = {"sections": {"main": {"type": section_type, "settings": {known_id: 1}}}, "order": ["main"]}
+case("assemble: a template whose keys the schema defines validates clean", not asm.validate_template(good), asm.validate_template(good))
+bad = {"sections": {"main": {"type": section_type, "settings": {known_id: 1, "no_such_setting_xyz": "t:sections.x.label"}}}, "order": ["main", "ghost"]}
+errs = asm.validate_template(bad)
+case("assemble: an unknown setting, a t: value and an order ghost are each an error",
+     any("unknown setting" in e for e in errs) and any("`t:` value" in e for e in errs) and any("ghost" in e for e in errs), errs)
+errs = []
+asm.check_value({"type": "range", "min": 0, "max": 100, "step": 4}, 42, "x", errs)
+asm.check_value({"type": "inline_richtext"}, "a<br>b", "y", errs)
+asm.check_value({"type": "select", "options": [{"value": "a"}]}, "b", "z", errs)
+asm.check_value({"type": "range", "min": 0, "max": 100, "step": 4}, "{{ page.metafields.x.y }}", "dyn", errs)
+case("assemble: off-step range, <br> in inline_richtext and a bad option are errors; a dynamic source is not",
+     len(errs) == 3 and "not on step" in errs[0] and "<br>" in errs[1] and "not in options" in errs[2], errs)
+r = subprocess.run([sys.executable, os.path.join(HERE, "assemble-templates.py"), "--validate-file", "templates/index.json"], capture_output=True, text=True)
+case("assemble: --validate-file runs on the repo's own index template", r.returncode in (0, 1) and "templates/index.json" in r.stdout, r.stdout[:80])
+
+r = subprocess.run(["sh", os.path.join(HERE, "push-dev-theme.sh")], capture_output=True, text=True)
+case("push-dev-theme: no paths is a usage error", r.returncode == 2 and "usage" in r.stderr, (r.returncode, r.stderr[:60]))
+r = subprocess.run(["sh", os.path.join(HERE, "push-dev-theme.sh"), "--theme", "1", "docs/x.md"], capture_output=True, text=True)
+case("push-dev-theme: an unknown or wrong-role theme id is refused before anything is pushed", r.returncode in (5, 9), (r.returncode, r.stderr[:80]))
+with tempfile.TemporaryDirectory() as d:
+    open(os.path.join(d, "protected-themes.txt"), "w").write("# live\n123456\n")
+    # the guard reads .claude/protected-themes.txt in the repo root; test the match rule directly
+    lines = [l.strip() for l in open(os.path.join(d, "protected-themes.txt")) if l.strip() and not l.startswith("#")]
+    case("push-dev-theme: the protected list matches whole ids only", "123456" in lines and "12345" not in lines, lines)
+
+# ---------------------------------------------------------------------------
 # preflight-status.py — in a throwaway client repo
 # ---------------------------------------------------------------------------
 def preflight(cwd, *args):

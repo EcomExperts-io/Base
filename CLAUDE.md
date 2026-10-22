@@ -134,7 +134,8 @@ client's, and the tooling pull does not touch it).
 - `.claude/workflows/` — `rebuild-playbook.md` (the dependency order for a
   whole store, and the three commands on arrival), `parallel-section-build.md`
   (one page, one agent per section), `multi-session-rebuild.md` (a storefront
-  across sessions). Point an agent at the file; none is auto-loaded.
+  across sessions), `landing-batch.md` (a card of landing pages matched to
+  live, with its three agent briefs). Point an agent at the file; none is auto-loaded.
 - `.claude/references/` — debugging accounts of traps that already cost hours.
   Rules stay short because these exist.
 - `docs/base-theme-standards/` — the architecture references (Collection &
