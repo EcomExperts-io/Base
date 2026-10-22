@@ -53,8 +53,8 @@ re-uploads files as they change. Nothing here touches the published theme.
 
 6. **Open a page** by path: `/`, `/products/<handle>`,
    `/collections/<handle>`, `/pages/<handle>`. A page template renders nothing
-   until a page with that handle and template exists in admin — four pages
-   404'd on a client build for that reason alone, which is not a code defect.
+   until a page with that handle and template exists in admin; that 404 is
+   not a code defect.
 
 ## Stopping
 

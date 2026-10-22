@@ -1,126 +1,72 @@
 # Overriding a shared component from a section stylesheet
 
+`stylesheet_tag` does not deduplicate, so a section rule cannot rely on loading after a shared component's rule.
+
 ## The trap
 
-`stylesheet_tag` does **not** deduplicate. Every section that renders a
-`button` emits `component-button.css` again, so the homepage loads it
-**nine times**:
-
-```
-0: critical.css
-5: component-button.css
-7: component-quick-add.css
-8: section-hero-split.css      <-- the section's own rules
-9: component-button.css  <-- and here comes the component again
-12, 14, 18, 22, 24, 26, 35: component-button.css
-```
-
-A section stylesheet therefore sits **before** most copies of the component's
-stylesheet, not after it. Any section rule that tries to beat a component rule
-at equal specificity loses to the next section's copy.
-
-This is what made the hero strip's Add-to-Cart buttons render as white filled
-pills when the section CSS clearly said otherwise:
-
-```css
-/* assets/section-hero-split.css - link index 8 */
-.hero-strip-card__button {
-  --button-background: transparent;   /* (0,1,0) */
-}
-```
-
-```css
-/* assets/component-button.css - link indexes 9, 12, 14, 18, 22, 24, 26, 35 */
-.button--outline {
-  --button-background: #fff;          /* (0,1,0), later in the document */
-}
-```
-
-Both are one class. The component copy at index 9 wins, and seven more copies
-follow it.
+- **Symptom.** A section's override of a shared component's custom property has no effect — buttons render as white filled pills while the section CSS sets `--button-background: transparent`.
+- **Cause.** Every section that renders the component emits its stylesheet again, so a page loads `component-button.css` nine times and the section stylesheet sits *before* most copies. Equal specificity, so the copy at index 9 wins, and seven more copies follow it.
+  ```
+  0: critical.css
+  5: component-button.css
+  7: component-quick-add.css
+  8: section-hero-split.css      <-- the section's own rules
+  9: component-button.css        <-- and here comes the component again
+  12, 14, 18, 22, 24, 26, 35: component-button.css
+  ```
+  ```css
+  /* assets/section-hero-split.css - link index 8 */
+  .hero-strip-card__button { --button-background: transparent; }   /* (0,1,0) */
+  /* assets/component-button.css - link indexes 9, 12, 14, 18, 22, 24, 26, 35 */
+  .button--outline { --button-background: #fff; }                   /* (0,1,0), later in the document */
+  ```
 
 ### Why it is easy to misdiagnose
 
-- The section's `stylesheet_tag` order *inside its own file* looks correct —
-  the component is loaded first, the section second. The duplicates come from
-  **other sections** further down the page, so nothing in the file you are
-  reading explains it.
-- Adding a section to, or removing one from, `templates/index.json` can change
-  the outcome, because it changes how many later copies exist.
-- `document.styleSheets` cannot be introspected to find the winning rule:
-  assets are served from `cdn.shopify.com`, so `sheet.cssRules` throws
-  `SecurityError` and a CSSOM walk silently returns nothing. Read the
-  `<link>` order instead:
-
-```js
-[...document.querySelectorAll('link[rel=stylesheet]')].map(
-  (l, i) => i + ': ' + l.href.split('/').pop().split('?')[0]
-);
-```
+- The `stylesheet_tag` order inside the section's own file looks correct; the duplicates come from other sections further down the page.
+- Adding or removing a section in `templates/index.json` changes the outcome, because it changes how many later copies exist.
+- `sheet.cssRules` throws `SecurityError` for assets served from `cdn.shopify.com`, so a `document.styleSheets` walk silently returns nothing.
+- **Check.** Read the `<link>` order instead.
+  ```js
+  [...document.querySelectorAll('link[rel=stylesheet]')].map(
+    (l, i) => i + ': ' + l.href.split('/').pop().split('?')[0]
+  );
+  ```
 
 ## What to do instead
 
-**Put the change in the component, as a variant.** The component's own file has
-a single internal source order, identical in every copy, so intra-file cascade
-is stable. The strip button became a new variant rather than a local override:
-
-```css
-.button--ghost {
-  --button-background: transparent;
-  --button-background-hover: #fff;
-  --button-color: #fff;
-  --button-color-hover: var(--color-foreground);
-  --button-border: #fff;
-  --button-border-hover: #fff;
-}
-```
-
-The section stylesheet then declares nothing about the button at all, and both
-`.hero-strip-card__button` override blocks were deleted.
+- **Fix.** Put the change in the component as a variant — its own file has one internal source order, identical in every copy — and delete the section's override block.
+  ```css
+  .button--ghost {
+    --button-background: transparent;
+    --button-background-hover: #fff;
+    --button-color: #fff;
+    --button-color-hover: var(--color-foreground);
+    --button-border: #fff;
+    --button-border-hover: #fff;
+  }
+  ```
 
 Ranked options when a section needs a shared component to look different:
 
-1. **Add or use a variant on the component** — correct when the design is a
-   reusable treatment ("transparent on a photo"). Document it in the snippet's
-   `@param` list.
-2. **Set a custom property the component already reads** — but only one the
-   component does **not** redeclare on the element itself. A custom property
-   declared on the element (`.button--outline { --button-background: #fff }`)
-   beats an inherited value from any ancestor, regardless of the ancestor
-   selector's specificity or source order — inheritance loses to a declaration
-   on the target every time. So: if the component sets the property on its own
-   element, an ancestor override does nothing and you need a variant (option 1)
-   or a more specific selector on the element itself (option 3). If the
-   component only *reads* the property and leaves it for the consumer to
-   supply, an ancestor declaration is safe and immune to stylesheet order.
-3. **Double the class for specificity** — `.hero-strip-card__button.button`
-   (0,2,0) beats any single-class component rule regardless of order. A last
-   resort: it works, but it hides the reason and the next person will not know
-   why the selector is doubled. If you use it, say why in a comment.
-
-Never rely on "my section CSS loads later" — for shared components it does not.
+1. **A variant on the component** — for a reusable treatment ("transparent on a photo"). Document it in the snippet's `@param` list.
+2. **A custom property the component reads but does not redeclare on its own element.** A property declared on the element beats an inherited value from any ancestor, whatever the ancestor selector's specificity or source order — so if the component sets it on itself (`.button--outline { --button-background: #fff }`), an ancestor override does nothing; use option 1 or 3. If the component only reads it, an ancestor declaration is immune to stylesheet order.
+3. **Double the class** — `.hero-strip-card__button.button` (0,2,0) beats any single-class component rule regardless of order. Last resort; say why in a comment.
 
 ## Related: a size modifier reset by the responsive block
 
-Same cascade family, inside one file. `component-button.css` had:
+- **Symptom.** Below 750px every size modifier renders at the default box — the pill 36px tall instead of its documented 26px.
+- **Cause.** A responsive rule on the base class, later in the same file at equal specificity, resets the modifier's declarations.
+  ```css
+  .button--pill { padding: 4px 8px 4px 4px; }   /* line 148 */
 
-```css
-.button--pill { padding: 4px 8px 4px 4px; }   /* line 148 */
-
-@media screen and (max-width: 749px) {
-  .button { padding: 9px 16px 9px 14px; }     /* line 165 - later, same specificity */
-  .button__icon svg { width: 12px; }
-}
-```
-
-The responsive rule targets the **base** class, so below 750px every size
-modifier was silently reset to the default box — the pill rendered 36px tall
-instead of its documented 26px. Restate the modifier inside the media query, or
-place the size modifiers after it.
-
-Check for this whenever a modifier's declarations are also declared on the base
-class in a later block:
-
-```bash
-grep -n "button--pill\|^\s*\.button {" assets/component-button.css
-```
+  @media screen and (max-width: 749px) {
+    .button { padding: 9px 16px 9px 14px; }     /* line 165 - later, same specificity */
+    .button__icon svg { width: 12px; }
+  }
+  ```
+- **Fix.** Restate the modifier inside the media query, or place the size modifiers after it.
+- **Check.** Whenever a modifier's declarations are also on the base class in a later block.
+  ```bash
+  grep -n "button--pill\|^\s*\.button {" assets/component-button.css
+  ```

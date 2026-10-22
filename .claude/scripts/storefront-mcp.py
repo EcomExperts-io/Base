@@ -2,8 +2,7 @@
 """Pretty-print a Storefront MCP JSON-RPC response handed over in $RESP.
 
 The companion of storefront-mcp.sh, which does the HTTP. Kept as a file rather
-than an inline `python3 -c` because the quoting inside a shell script made the
-first version unreadable and, once, syntactically wrong.
+than an inline `python3 -c` because of the quoting inside a shell script.
 """
 
 import json

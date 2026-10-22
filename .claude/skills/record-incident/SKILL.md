@@ -8,12 +8,9 @@ argument-hint: <slug> "<what went wrong>"
 
 Write it down now, in the shape the harvest can read.
 
-**Why this exists.** A gitignored "mistake log", created only if the AI offered
-and someone said yes, was asked for on four client builds and created on none;
-every incident that mattered became a Base rule anyway, weeks later, by one
-person, as archaeology. The record has to be made at the moment of failure,
-because that is the only moment all the details are in context, and it has to
-be committed, because a file nobody can see in a pull request does not exist.
+The record is made at the moment of failure, because that is the only moment
+all the details are in context, and it is committed, because a file nobody can
+see in a pull request does not exist.
 
 ## When to record
 

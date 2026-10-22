@@ -1,31 +1,19 @@
 #!/bin/sh
 # Start a new client theme from Base, keeping the link back to Base intact.
 #
-# Why this exists
-# ---------------
-# BarePerformanceNutritionRebuild was created by copying Base's files into a
-# fresh repository. Its root commit is 9475a56; Base's is 0853346. They share no
-# history, so there is no `git pull base development` — every Base improvement
-# has to be reapplied by hand, forever, and every client fix that belongs
-# upstream has to be retyped rather than cherry-picked.
+# Usage, run from a Base clone:
+#   sh .claude/scripts/new-client-theme.sh git@github.com:EcomExperts-io/<Repo>.git ../<Dir>
 #
-# That is the mechanical reason nothing had ever flowed back to Base, and it
-# cannot be retrofitted cheaply: merging unrelated histories after the fact
-# conflicts on essentially every file.
-#
-# So the link is established at commit zero, here, or not at all.
-#
-# What you get
-# ------------
+# What you get:
 #   origin  the client repo, your day-to-day remote
 #   base    EcomExperts-io/Base, read-only upstream
 #
-# Then, forever after:
 #   git fetch base && git merge base/development     # pull Base improvements down
 #   git cherry-pick <sha>                            # send a generic fix up
 #
-# Usage, run from a Base clone:
-#   sh .claude/scripts/new-client-theme.sh git@github.com:EcomExperts-io/<Repo>.git ../<Dir>
+# Notes:
+#   The link is established at commit zero or not at all: merging unrelated
+#   histories after the fact conflicts on essentially every file.
 
 set -e
 
@@ -60,9 +48,8 @@ echo "==> activating the hooks"
 git config core.hooksPath .githooks
 
 echo "==> stamping the tooling version"
-# The tooling is byte-identical to Base right now, so a stamp is all the record
-# needs. From here check-tooling-drift.py can say what this repo edited and what
-# Base changed, and pull-base-tooling.py can update without clobbering either.
+# The tooling is byte-identical to Base at this point, so a stamp is all the
+# record needs.
 python3 .claude/scripts/pull-base-tooling.py --stamp-only \
   || echo "    (could not stamp — run: python3 .claude/scripts/pull-base-tooling.py --stamp-only)"
 
@@ -78,9 +65,8 @@ Before you build anything, in this order:
   1. npm install && npm run setup      — deps, hooks, cursor mirror, and doctor
      tells you what this machine still lacks (Node 22+, MCP sign-in, store handle)
   2. Confirm rule injection works. Open any .liquid file in Claude Code or
-     Cursor and check the rules are actually in context. On one client build the
-     conventions sat where the tool could not read them for 18 days and nothing
-     reported it.
+     Cursor and check the rules are actually in context; nothing reports it
+     when they are not.
   3. Confirm the hook BLOCKS. Add a section with no padding settings and try to
      commit it. If it commits, you inherited the file and not the protection.
   4. Do the measurement pass and write the answers into .claude/rules/sections.md

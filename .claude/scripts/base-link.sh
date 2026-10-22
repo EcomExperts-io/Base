@@ -2,30 +2,18 @@
 # Attach Base to a client repo — as a remote, as a worktree, and as a reference
 # directory — whether or not the two share any git history.
 #
-# Why this exists
-# ---------------
-# The audit of 14 Sep 2026 found that none of the four client forks could pull
-# Base's tooling down or send a fix up: three had no `base` remote at all, and
-# the one that did shared no common ancestor, so `git merge base/development`
-# would conflict on every file. The forks were created by copying files into
-# fresh repositories, and that cannot be repaired after the fact.
-#
-# It does not need repairing. Two things work without shared history:
-#
-#   * A WORKTREE can check out any fetched ref. `git worktree add <dir>
-#     base/development` gives you a real Base checkout beside the client repo
-#     — editable, branchable, pushable — with no merge ever attempted. That is
-#     what /harvest edits and opens Base PRs from.
-#   * `claude --add-dir <that dir>` lets a session read Base as reference
-#     while working in the client. Its rules are NOT loaded from there; the
-#     client's own rule copies carry the measured specifics and must win.
-#
-# The remote itself is what pull-base-tooling.py reads tooling from, and what
-# check-tooling-drift.py compares against. Pushing to it is disabled here so a
-# stray `git push base` cannot happen; /harvest pushes to Base's URL explicitly.
-#
 # Usage, run anywhere inside the client repo:   sh .claude/scripts/base-link.sh
 # Safe to re-run. Writes only: the remote, the worktree, .claude/.cache/base-link.json
+#
+# Notes:
+#   * A worktree can check out any fetched ref, so `git worktree add <dir>
+#     base/development` is a real Base checkout beside the client repo with no
+#     merge attempted. /harvest edits and opens Base PRs from it.
+#   * `claude --add-dir <that dir>` lets a session read Base as reference. Its
+#     rules are NOT loaded from there; the client's own rule copies must win.
+#   * The remote is what pull-base-tooling.py reads from and check-tooling-drift.py
+#     compares against. Pushing to it is disabled so a stray `git push base`
+#     cannot happen; /harvest pushes to Base's URL explicitly.
 
 set -e
 cd "$(git rev-parse --show-toplevel)"

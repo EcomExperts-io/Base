@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 """Have GitBot's findings for this branch been read since its last commit?
 
-GitBot reviews every push of a client branch and posts in Slack. Nothing in
-the session reads Slack, so the review is found on the pull request, by the
-lead. `/gitbot-preflight` reads it from inside the session and records that
-it did, here; the Stop hook asks this script whether that record is current.
-
-It never blocks. In Base (origin EcomExperts-io/Base) and on a trunk branch
-it prints nothing: GitBot does not review Base, and a trunk is reviewed as
-pull requests land on it.
+`/gitbot-preflight` reads GitBot's review from inside the session and records
+that it did, here; the Stop hook asks this script whether that record is
+current. It never blocks. In Base (origin EcomExperts-io/Base) and on a trunk
+branch it prints nothing: GitBot does not review Base, and a trunk is reviewed
+as pull requests land on it.
 
 Usage:
   preflight-status.py --changed                 one advisory line, or nothing

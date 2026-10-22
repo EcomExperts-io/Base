@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 """live-parity.py — compare a section (or a page) on LIVE against OURS, pixel for pixel, in headless Chrome.
 
-Why this exists
----------------
-When the brief is "match the live site", the reference is a storefront, not a
-Figma frame: it moves, it lazy-loads, it has popups and a preview cookie that
-can make "live" render our own theme. Base's verify skill compared a frame PNG
-against a render; this compares two renders of the same page, section by
-section, with every trap one client rebuild fell into closed below. Ported from
-that rebuild's landing-page workspace (Oct 2026), where it took 21 batches of
-pages to 0%. The verify-against-reference skill carries the copy-paste examples.
+Usage: live-parity.py <subcommand> [options] — `--help` on a subcommand lists its options; the
+verify-against-reference skill carries the copy-paste examples.
 
 Laptop rules are built in: one live+ours Chrome pair per run, reused for every
 width, loaded one after the other; at most LIVE_PARITY_SLOTS (default 2) runs
@@ -24,7 +17,7 @@ Subcommands (every one writes report.json + report.md + PNGs into --out):
   hoverstyles  force :hover / :focus-visible / :active on every interactive element, compare the deltas
   motion       sample properties every N ms after a trigger on both sides; --keyframes dumps @keyframes
 
-Guarantees (each one is a trap somebody fell into; see render-screenshot.py and the incidents it cites):
+Guarantees:
   * the viewport is set with Emulation.setDeviceMetricsOverride (never --window-size); the page's own
     innerWidth/clientWidth must equal the requested width or that width is refused;
   * each side runs in its OWN Chrome with its OWN --user-data-dir, and the theme each side rendered is
@@ -352,7 +345,7 @@ def _on_signal(signum, frame):
 
 class Browser:
     """One headless Chrome with its own profile — one per side, so the preview cookie cannot leak. The same pair
-    serves every width of a run (the laptop overheated when every width started new processes)."""
+    serves every width of a run (laptop rules: no new processes per width)."""
 
     def __init__(self, label):
         self.chrome = find_chrome()
@@ -432,8 +425,8 @@ class Browser:
             self._stop_process()
             raise Fatal("Chrome never exposed a page target", EXIT_CHROME)
         self.cdp = CDP(target, timeout=60)
-        # Batch 0: nothing a page fires may reach the store's cart, discount or marketing endpoints (same block as Batch 15):
-        # every run, both sides. A page can apply its discount code on load.
+        # nothing a page fires may reach the store's cart, discount or marketing endpoints: every run, both sides.
+        # A page can apply its discount code on load.
         try:
             self.cdp.call("Network.enable")
             self.cdp.call("Network.setBlockedURLs", {"urls": [
@@ -934,8 +927,8 @@ class Side:
     def fresh(self):
         """Before every load after the first: blank document, no site cookies/storage, and Blink's memory cache
         purged (critical memory-pressure signal). Blink prefers a higher-density srcset candidate it already holds
-        in memory, so without the purge a 390px render after a 1440px one shows the 1440px image (measured: 600w
-        instead of 400w, 0.643% instead of 0.0%). The HTTP disk cache stays warm."""
+        in memory, so without the purge a 390px render after a 1440px one shows the 1440px image. The HTTP disk
+        cache stays warm."""
         if self.loads:
             self.cdp.call("Page.navigate", {"url": "about:blank"})
             self.cdp.wait_event("Page.loadEventFired", timeout=10)
@@ -1073,7 +1066,7 @@ class Side:
         unveil2 = self.ev(JS_UNVEIL, "main")
         self.scroll_to(0)
         # images: the section's must all be complete; the page's must have pixels (carousel clones sit at
-        # complete=false forever — see incidents/2026-09-16-lazy-images-render-as-blank-bands.md)
+        # complete=false forever)
         end = time.time() + a.img_timeout
         img = None
         while time.time() < end:

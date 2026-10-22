@@ -1,27 +1,16 @@
 #!/usr/bin/env python3
 """How far has this repo's AI tooling drifted from Base — in both directions?
 
-Why this exists
----------------
-"After every store we have a new version of the workflow" — true, and the
-problem: the learning happened after the build, by one person, as archaeology.
-Nobody could list which rules a client build had edited, so nothing flowed up
-until someone went digging. And nothing said how many Base improvements the
-fork was missing, so nothing flowed down.
-
-Both lists are one diff away once `.base-version` records the Base commit the
-tooling was last aligned to. This prints them:
+Diffs against the Base commit recorded in `.base-version`:
 
   HARVEST candidates   files this repo edited since the stamp and Base did not
-                       — a local decision that is either a client measurement
-                       (stays) or a generic trap (goes up, via /harvest)
+                       — a client measurement (stays) or a generic trap (goes up, via /harvest)
   PULL-DOWN candidates files Base changed since the stamp and this repo did not
                        — run pull-base-tooling.py
   BOTH changed         needs a human merge; pull-base-tooling.py stashes Base's copy
 
-The client-vs-generic guess is a heuristic on the added lines — pixel values,
-file counts and container classes read as client-specific — and is labelled a
-guess. The decision is the reader's; the list is the point.
+The client-vs-generic guess is a heuristic on the added lines (pixel values,
+file counts and container classes read as client-specific) and is labelled a guess.
 
 Usage
 -----
@@ -30,11 +19,10 @@ Usage
   python3 .claude/scripts/check-tooling-drift.py --help
   --no-fetch  skip `git fetch base` (offline, or in CI where the remote is a checkout)
 
-When the stamped commit is not on the ref being compared against — the fork
-pulled its tooling from a Base feature branch that has not merged yet — every
-file that branch touched shows as BOTH changed and nothing shows as HARVEST.
-That is not drift; it is the branch not having landed. The report says so
-instead of printing "distance unknown".
+When the stamped commit is not on the ref being compared against (the fork
+pulled its tooling from a Base feature branch that has not merged yet), every
+file that branch touched shows as BOTH changed and nothing as HARVEST. The
+report says so instead of printing "distance unknown".
 """
 
 import json

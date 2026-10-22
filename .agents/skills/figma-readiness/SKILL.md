@@ -8,15 +8,10 @@ argument-hint: <fileKey> <nodeId>[@<width>] [<nodeId>@<width>]
 
 Check the frame before spending a day on it.
 
-**Why this exists.** The designer practices document lists sixteen things and
-calls itself aspirational. Every re-prompting cycle it describes traces back to
-a few structural facts a script can see: layers named `Frame 1261153641`,
-hidden old versions, no width in the frame name, no components, text flattened
-to vectors. Without a check before the build starts, the questions go back to
-the designer after the build, one at a time. This sends them back before, all
-at once, with the specific layers named — which is how "this is what the
-workflow requires" gets said to a designer: as a check with numbers, every
-time.
+Every re-prompt cycle traces back to a structural fact a script can see:
+default layer names, hidden old versions, no width in the frame name, no
+components, text flattened to vectors. This finds them before the build, all
+at once, with the layers named.
 
 **Invocation:** `/figma-readiness <fileKey> <nodeId>[@<width>] [<nodeId>@<width>]`
 — runs as Step 1½ of `/build-page-from-figma`; also on its own.

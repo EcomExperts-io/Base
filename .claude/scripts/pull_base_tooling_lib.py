@@ -18,10 +18,7 @@ def check_flags(argv, known, usage):
 
     Returns an exit code to return at once, or None to carry on. `known` maps
     each flag to whether it takes a value. This runs before anything is read or
-    written: a stray `--help` once ran a real overlay and re-stamped a fork to
-    the wrong Base commit, because the script only looked for the flags it
-    recognised and silently ignored the rest (client incident
-    2026-09-15-pull-script-runs-on-unknown-flag).
+    written.
     """
     i = 0
     while i < len(argv):
@@ -47,16 +44,13 @@ EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/"
 # The one file under the excluded incidents directory that does travel. Incidents
 # belong to the repo that recorded them, but the directory itself must exist in
 # a fork on arrival: rules and skills link to it, check-rule-links.py resolves
-# those links, and git cannot carry an empty directory — so the pilot fork's
-# very first commit of the tooling was blocked by three links to a folder only
-# Base had (client incident 2026-09-15-dangling-paths-block-first-fork-commit).
+# those links, and git cannot carry an empty directory.
 INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
-# Paths Base has renamed or removed, old -> new (or None). The overlay only
-# ever wrote files, so a renamed skill lived on in every fork as two skills
-# with overlapping descriptions. A fork that still has the old path and never
-# edited it (its bytes equal what Base shipped at the stamp) loses it on the
-# next pull; an edited copy is kept and listed for a hand merge.
+# Paths Base has renamed or removed, old -> new (or None). A fork that still
+# has the old path and never edited it (its bytes equal what Base shipped at
+# the stamp) loses it on the next pull; an edited copy is kept and listed for
+# a hand merge.
 RETIRED = {
     ".claude/skills/verify-against-figma/SKILL.md": ".claude/skills/verify-against-reference/SKILL.md",
 }

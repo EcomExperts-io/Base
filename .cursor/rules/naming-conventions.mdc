@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 
 <!-- GENERATED from .claude/rules/naming-conventions.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2935887543 -->
+<!-- checksum: 2271519634 -->
 
 
 # Architecture Standards
@@ -173,11 +173,9 @@ A `section-*` file must not be loaded by more than one unrelated section. If
 something turns out to be genuinely shared, it is renamed to `component-*` —
 it does not keep the name of whichever page happened to need it first.
 
-This is the concrete failure it prevents: on one client build,
-a `section-about-carousel.js` ended up loaded by eight sections across four
-pages, keeping a name that implied single-page scope. Generalising the code was
-right; not renaming it was the mistake. **When you widen a file's scope, rename
-it in the same change.**
+The failure it prevents: a `section-about-carousel.js` loaded by eight sections
+across four pages, its name still claiming single-page scope. **When you widen
+a file's scope, rename it in the same change.**
 
 ## Key Rules Summary
 1. **Sections:** No `main-` prefix for new sections; name by function, not by page

@@ -4,14 +4,8 @@
 # Activated by `npm install` (the prepare script sets core.hooksPath), or
 # manually with:  git config core.hooksPath .githooks
 #
-# Design note: this hook BLOCKS on failure. The previous generation of this
-# hook wrote results to TestResults/ and exited 0, then ran `git add .` — so
-# nothing it found ever stopped anything. That is how 30 non-compliant
-# sections reached a client's production theme.
-#
-# Everything here must be objective and fast. No judgment calls: a check that
-# is sometimes wrong teaches people to use --no-verify, which is worse than
-# having no check.
+# This hook BLOCKS on failure. Everything here must be objective and fast: a
+# check that is sometimes wrong teaches people to use --no-verify.
 
 set -e
 cd "$(git rev-parse --show-toplevel)"
@@ -27,14 +21,9 @@ else
 fi
 
 # --- 2. Cursor mirror is regenerated, not policed -----------------------------
-# The two copies existing by hand is what hid our conventions from Claude Code
-# for the first 18 days of a client build. The mirror is a derived artefact of
-# .claude/, so the hook regenerates it and stages the result: it can never be
-# out of date and nobody has to remember a command. (The previous version
-# failed the commit and asked you to run the script by hand.) The sync still
-# REFUSES to overwrite a hand-edited .mdc — that refusal fails the commit with
-# the file named. Unlike the old blanket `git add .`, this stages only the
-# generated tree, and only after the generator succeeded.
+# The mirror is a derived artefact of .claude/, so the hook regenerates it and
+# stages only the generated tree, only after the generator succeeded. The sync
+# REFUSES to overwrite a hand-edited .mdc; that refusal fails the commit.
 if SYNC_OUT=$(sh .claude/scripts/sync-ai-config.sh 2>&1); then
   git add .cursor .agents .codex AGENTS.md
 else
@@ -64,37 +53,25 @@ if command -v python3 >/dev/null 2>&1; then
 fi
 
 # --- 5. The AI configuration itself must stay structurally sound -------------
-# Nothing checked the rules until this existed. Two rules taught opposite things
-# about container queries; editing a snippet had quietly grown to 2,453 injected
-# lines. Both were found by an audit, which is the expensive way to find them.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-ai-config.py || FAILED=1
 fi
 
 # --- 6. Liquid examples in docs must not break the VitePress build ----------
-# VitePress evaluates {{ }} in inline code spans as Vue expressions. The docs
-# build was broken for two and a half months before anyone noticed, and the
-# branch that added this check introduced three more instances while writing
-# documentation about Liquid. Cheap to check, easy to get wrong by hand.
+# VitePress evaluates {{ }} in inline code spans as Vue expressions.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-docs-interpolation.py || FAILED=1
 fi
 
 # --- 7. Conventions a grep can decide ----------------------------------------
-# max-width queries, DOMContentLoaded, {% stylesheet %} in a section, a range
-# with fewer than three steps, a t: key in a template value. Errors block only
-# in files this commit ADDS; in modified files they are printed and let through
-# — you answer for what you add, and Base's own legacy is not your commit's
-# problem. Before this step the gate enforced about five percent of the rules.
+# Errors block only in files this commit ADDS; in modified files they are
+# printed and let through.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-conventions.py --staged || FAILED=1
 fi
 
 # --- 8. The checks check themselves ------------------------------------------
-# Every gate script above had at least one error path nobody had run until a
-# client build hit it: the JSON check crashed on the file its docstring named,
-# the `!important` rule became unsatisfiable for ten days. One fixture per
-# promise, a second to run.
+# One fixture per promise a gate script makes.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/test-checks.py || FAILED=1
 fi

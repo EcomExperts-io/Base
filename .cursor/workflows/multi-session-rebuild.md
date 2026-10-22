@@ -8,13 +8,7 @@ This is a different scale from `parallel-section-build.md`. That one spawns agen
 *inside* one session to build the sections of a single page. This one coordinates
 **separate sessions a human drives**, over days, across a whole rebuild.
 
-Used on a 120-team sports store: nine builds — PDP, FAQ, a three-page collection
-template, teams directory, team homepage, footer, cart drawer, site header with
-five mega-menu panels, search, 404 — plus a parity audit. Eleven sessions, 173
-commits onto one integration branch.
-
-**Read this before starting a rebuild, not during one.** Most of what follows is
-here because it went wrong the first time.
+**Read this before starting a rebuild, not during one.**
 
 ## Part 1 — Set up before the first session
 
@@ -24,14 +18,13 @@ Everything merges here; nothing merges to `development` until the rebuild is don
 Cut it from wherever the current work actually is — on a rebuild already in
 progress that is **the incumbent developer's branch, not `development`**.
 
-Expect that branch to keep moving. On the build this came from, the incumbent
-pushed three more commits mid-rebuild and they had to be merged in twice. Agree
-the topology with them before you cut.
+Expect that branch to keep moving; agree the topology with the incumbent before
+you cut.
 
 ### 2. One worktree per session, not one checkout
 
-The first two sessions shared a checkout and immediately corrupted each other's
-staging — two agents, one `HEAD`, one index.
+Two sessions in one checkout corrupt each other's staging — one `HEAD`, one
+index.
 
 ```bash
 git worktree add ../<repo>-<slug> <branch>
@@ -43,11 +36,10 @@ Verify `git config core.hooksPath` resolves in the new worktree too.
 
 ### 3. Make the commit gate actually work first
 
-Do this before any build session runs, or you will discover it at the worst moment:
+Do this before any build session runs:
 
 - **Test the branch-name pattern against a real branch name you intend to use.** A
-  regex allowing three digits met five-digit ticket ids and rejected every branch,
-  including the one already in flight.
+  regex allowing three digits rejects five-digit ticket ids.
 - **Check which hook the message rule lives in.** A `[TYPE]:` check in
   `prepare-commit-msg` runs *before* the editor opens, so it reads the comment
   template and aborts — meaning only `git commit -m` ever works. It belongs in
@@ -61,8 +53,8 @@ Do this before any build session runs, or you will discover it at the worst mome
 Three files collide across every parallel branch. Decide the convention now:
 
 - **Locale files.** Namespace every key by page — `product_page.*`, `faq.*`,
-  `search.*`. Done this way, three branches produced **zero overlapping keys** and
-  every conflict was additive. Also forbid reordering existing keys, which turns a
+  `search.*`. Done this way, parallel branches produce no overlapping keys and
+  every conflict is additive. Also forbid reordering existing keys, which turns a
   five-line conflict into a whole-file one.
 - **A shared icon set.** Every branch adds icons to the same `case` block. Expect the
   conflict; resolve as a union and keep every arm.
@@ -183,22 +175,18 @@ Merge in due-date order. The first lands clean; the rest need a rebase.
 
 ### Review before merging, and verify the findings
 
-Run the review agents. Then **spot-check what they report** — on this build every
-blocker was real, but one was flagged as inferred rather than measured, and
-verifying it took one command. Two of three branches shipped fabricated content
-that reached rendered pages; a review that had not run would have merged all of it.
+Run `shopify-pr-reviewer`. Then **spot-check what it reports**: a finding flagged
+as inferred rather than measured is verified with one command before it is acted
+on.
 
 ### Merging a git branch does not deploy anything
 
-The most confusing hour of the build was spent on a preview showing "Could not find
-asset" for files that were demonstrably committed. The theme had been connected to
-GitHub minutes earlier and had not finished its first sync. Before debugging code,
-confirm the sync completed — a partially imported theme renders exactly like broken
-code.
+A preview showing "Could not find asset" for committed files is a GitHub-connected
+theme that has not finished its first sync. Before debugging code, confirm the sync
+completed — a partially imported theme renders exactly like broken code.
 
 Separately: a page template does nothing until a page exists in admin with the
-matching handle and that template assigned. Four pages 404'd for that reason alone,
-which is not a code defect.
+matching handle and that template assigned; that 404 is not a code defect.
 
 ### Audit at the end, across everything
 
@@ -208,14 +196,9 @@ everything has merged. Structure it as: how this was checked / what matches / co
 defects / template content / store gaps / design questions / what could not be
 verified.
 
-## What this costs, honestly
+## Harvest as you go
 
-Eleven sessions produced nine builds and a working integration branch. It also
-produced, in the tooling layer, **nine files and one rule** — because nobody
-harvested as they went, and the skills, agents and scripts were never touched
-across 173 commits despite being bypassed and worked around repeatedly.
-
-**Harvest as you go.** A generic trap goes up to Base in the same change that
-found it, per CLAUDE.md's "Flowing changes back to Base". Left to the end it is
-an archaeology project, and the prompts that drove eleven sessions live in
-scratch files that do not survive the session that wrote them.
+A generic trap goes up to Base in the same change that found it, per CLAUDE.md's
+"Flowing changes between Base and the forks". Left to the end it is an archaeology
+project, and the prompts that drove the sessions live in scratch files that do not
+survive them.

@@ -1,11 +1,10 @@
 # Reference map
 
 One row per band of every page in scope, written by `/recon-theme` on arrival
-and kept current by whoever changes the scope. It replaces the Figma frame map
-(`figma-frame-map.md` in older forks is the same table with only the Figma
-columns) because a rebuild has three kinds of reference, and the band's
-reference decides which skill builds it and which half of
-`/verify-against-reference` proves it:
+and kept current by whoever changes the scope. (Older forks carry the same
+table as `figma-frame-map.md`, with only the Figma columns.) A rebuild has
+three kinds of reference, and the band's reference decides which skill builds
+it and which half of `/verify-against-reference` proves it:
 
 | Reference | Source of | Built with | Verified by |
 |---|---|---|---|

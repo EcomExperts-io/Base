@@ -1,13 +1,10 @@
 # Base Theme Architecture Reference — Header, Cart Engine & Search
 
 **What this is:** a read-only recon of the Base Theme (`development` at
-`a24204b`, 15 Sep 2026) covering the header and its navigation, the native
-cart engine and its three consumers, and search — predictive and page. It is
-the durable technical standard for the part of a rebuild that the v1 vision
-scheduled "later" and that a real rebuild turned out to be mostly made of:
-on one client build, five of nine builds were a footer, a header with five
-mega-menu panels, a cart drawer, a search overlay and a set of drawers, and
-none of them had a reference to build against.
+`a24204b`) covering the header and its navigation, the native cart engine and
+its three consumers, and search — predictive and page. It is the durable
+technical standard for the global chrome of a rebuild: the footer, the header
+and its mega-menu panels, the cart drawer, the search overlay and the drawers.
 
 **Audience:** AI coding agents with no prior context on this codebase, and any
 developer checking a build's compliance.
@@ -113,9 +110,9 @@ by the drawer and dropdown heights: `calc(100vh - var(--header-height) - var(--a
 
 **Current state, not the standard:** this is a plain inline script, not a
 custom element, and it binds `window` listeners it never removes. A rebuild
-should put the same logic in a `<header-shell>` custom element with
-`connectedCallback`/`disconnectedCallback` — one client build did exactly this
-and fixed `--header-height` reporting 80 when the header was 110.
+puts the same logic in a `<header-shell>` custom element with
+`connectedCallback`/`disconnectedCallback`, and measures the real height so
+`--header-height` never reports a stale value.
 
 ### Settings contract
 
@@ -129,7 +126,7 @@ section-group member.
 **Current state, not the standard:** `menu_position` and its options carry bare
 English labels; the section uses a `{% style %}` block rather than a
 `section-header.css`; the header's own breakpoint is **1024/1025px**, not the
-750/769 the rest of the theme uses — a client build must pick one and the recon
+750/769 the rest of the theme uses — a rebuild must pick one and the recon
 must measure it, not assume it.
 
 ### Accessibility — what the frames cannot show
@@ -137,10 +134,10 @@ must measure it, not assume it.
 The dropdown's toggles are `<div class="menu-toggle">` (the megamenu's are
 `<button>`); nothing sets `aria-expanded`; there is no Escape handling and no
 focus management on open or close; the `#header-search` panel is shown by class
-with no focus move into it. One client parity audit's three high-severity findings
-were all in this layer (a silent cart count, a drawer that announced nothing, a
-failed variant switch). **For a rebuild these are requirements, not
-inheritances** — see the build skill's overlay checklist: focus moved in on
+with no focus move into it. The high-severity failures of this layer are a
+silent cart count, a drawer that announces nothing and a variant switch that
+fails. **For a rebuild these are requirements, not inheritances** — see the
+build skill's overlay checklist: focus moved in on
 open, returned to the trigger on close, Escape closes, `aria-expanded` on every
 toggle, a small `aria-live="polite"` node for asynchronous status.
 
@@ -255,9 +252,8 @@ constructor.
 
 **Current state, not the standard:** the drawer has no `role="dialog"`, no
 focus trap, no Escape handling and no live region; the notification has
-`role="dialog" aria-modal="true"`. One client build added a live region *inside
-the dialog but outside the swapped region* so the announcement survives the
-innerHTML swap — that placement is the pattern.
+`role="dialog" aria-modal="true"`. Place the live region *inside the dialog but
+outside the swapped region*, so the announcement survives the innerHTML swap.
 
 ---
 
@@ -300,9 +296,8 @@ snippets called with `results: search` and `context: 'search'`, the sort
 `data-render-section-url`, the active-filter group, the product grid rendering
 `component-product-card` / `component-article-card` / an inline page card by
 `item.object_type`, infinite scroll or pagination. It loads
-`section-collection.css` plus its own `section-search.css`. The Decisions Log's
-open question — "does Base consider the search page the same pattern as
-collection?" — is answered by the code: yes, down to the schema name it copied
+`section-collection.css` plus its own `section-search.css`. The search page is
+the collection pattern, down to the schema name it copied
 (`t:sections.main-collection-product-grid.name`).
 
 Padding pair and `color_scheme` present; no presets (template main). Breakpoints

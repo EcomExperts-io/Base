@@ -1,16 +1,6 @@
 #!/bin/sh
 # PostToolUse hook — runs the mechanical gate on the one file Claude just wrote.
 #
-# Why this exists
-# ---------------
-# The pre-commit hook fires when a developer commits, which on an AI build is
-# hours after the file was written and long after it left the model's context.
-# The most-missed rules in this codebase (a section without padding settings,
-# a bare English label, a max-width query) are all decidable the moment the
-# file is saved. Returning the finding here puts it in front of the model while
-# the file is still open, so it is fixed in the same turn rather than found in
-# review — or never.
-#
 # Budget: under two seconds. Only python checks, only this file, no Theme Check
 # (the CLI alone takes longer than that; it runs in the Stop hook instead).
 # Never blocks — PostToolUse cannot — and never fails the tool call.

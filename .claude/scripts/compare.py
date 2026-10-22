@@ -1,25 +1,6 @@
 #!/usr/bin/env python3
 """Pixel-compare a reference image — a Figma frame export, or a live-site render — against ours, as a number.
 
-Why this exists
----------------
-Verification against the design was "screenshot both and look" — and the
-worst failure of the parallel-build workflow was a section reported as built
-because it measured 614px against the frame's 615px while sharing nothing else
-with the design. A height is a check on a screenshot, not a substitute for one;
-so is a diff percentage. This produces both: the percentage, a heatmap that
-says WHERE the mismatch is, a row profile that names the worst bands, and a
-side-by-side image for the one deliberate look the skill then takes.
-
-The number is a report, not a gate. Font rasterisation, anti-aliasing and
-image compression differ between Figma and Chrome, so a 4% diff can be a
-perfect build and a 1% diff can hide an empty column. Read it with the heatmap
-and the box table (fidelity-table.py), never alone.
-
-Live data never matches a mock. Pass --mask for every region that comes from
-the store — the verify skill collects them from `data-verify-mask` attributes —
-and those pixels are excluded on both sides.
-
 Usage
 -----
   compare.py --reference figma-1440.png --rendered rendered-1440.png --out .claude/verify/<slug>
@@ -35,6 +16,15 @@ scaled for reading), <out>/compare-<width>.json; prints the JSON summary.
 Coordinates for --mask are in the compared image's frame: rendered pixels
 after --rendered-offset-y has been applied, which equals the frame's own
 coordinates when the offsets line up.
+
+Notes:
+- The number is a report, not a gate. Font rasterisation, anti-aliasing and
+  image compression differ between Figma and Chrome, so a 4% diff can be a
+  perfect build and a 1% diff can hide an empty column. Read it with the
+  heatmap and the box table (fidelity-table.py), never alone.
+- Live data never matches a mock. Pass --mask for every region that comes from
+  the store (the verify skill collects them from `data-verify-mask`); those
+  pixels are excluded on both sides.
 """
 
 import json
@@ -117,8 +107,7 @@ def main(argv):
     a2, b2 = a.crop((0, 0, a.width, h)), b.crop((0, 0, a.width, h))
     # Count the pixels actually covered rather than adding up rectangle areas.
     # Masks overlap (a carousel's cloned slides) and hang off the edges (a slide
-    # half out of frame), so the sum of w*mh can exceed the compared area — and
-    # that used to drive the denominator to 1 and print a diff of 1065500%.
+    # half out of frame), so the sum of w*mh can exceed the compared area.
     # A coverage bitmap cannot lie about either.
     covered = Image.new("1", (a.width, h), 0)
     cover_draw = ImageDraw.Draw(covered)

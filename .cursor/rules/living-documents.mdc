@@ -5,33 +5,10 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/living-documents.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2055815766 -->
+<!-- checksum: 134480676 -->
 
 
 # Living Documents
-
-## What this replaced, and why
-
-This rule used to be called `prompts-and-references.md`. It was **always-apply**
-— injected into every task on every file type — and it was entirely about the
-Cursor prompts and references directories. Two problems with that:
-
-- Those two directories held **one file each in Base and did not exist at all in
-  a client fork**, so in a client theme the rule spent its always-apply budget
-  describing paths that were not there.
-- It referred to "the Horizon theme". This is Base.
-
-The principle underneath it is worth keeping. The scope was wrong. It now
-applies to the documentation that actually guides the work, and only when you
-are in it.
-
-**References have since earned their place.** A client build accumulated four
-debugging references — hover states, scroll carousels, equal-height columns and
-overriding a shared component — totalling around a thousand lines of measured
-findings. They lived in `.cursor/references/`, which the sync script did not
-mirror and Claude Code does not load, so the most expensive knowledge on that
-build was invisible to the agent that needed it. They now live in
-`.claude/references/` and are mirrored like everything else.
 
 ## The principle
 
@@ -45,9 +22,8 @@ they are wrong the moment something is learned and not written down.
   fix the relevant file in the same change.
 - If something in them does not work as described, correct it immediately
   rather than working around it.
-- Add examples from real implementations. This codebase's rules are written
-  incident-first — "30 of 31 sections shipped without…" — because a rule with
-  the failure attached gets followed and a rule without one gets skimmed.
+- Attach the consequence that makes a rule strict as one clause — what
+  breaks — never the story of which build, who found it or when.
 - Remove information that has gone stale.
 
 **Do not wait to be asked.** Maintaining these is part of completing a task,
@@ -66,16 +42,14 @@ not a follow-up to it.
 | A fix that a rule, gate or check **should have prevented** | `/record-incident` → `docs/ai-workflow/incidents/`, committed, the moment it happens; then `/harvest` if it is generic |
 
 **The incident comes first.** The rule paragraph is written from the incident,
-not the other way round — and an incident recorded at the end of a build is an
-incident not recorded. Four client builds asked for a gitignored mistake log
-and produced none; the committed, structured file replaced it because a script
-can count what is still open and a pull request can show it.
+not the other way round, and an incident recorded at the end of a build is an
+incident not recorded: record it the moment it happens, as a committed file a
+script can count and a pull request can show.
 
 The line between a rule and a reference: a **rule** is what to do, is scoped by
-a `paths` glob and is injected automatically. A **reference** is a debugging
-account of something that already cost someone hours — too long and too
-situational to inject on every task, but the first thing to read when the same
-symptom appears. Rules stay short because references exist.
+a `paths` glob and is injected automatically. A **reference** is symptom, cause
+and fix for a trap too situational to inject on every task — the first thing to
+read when the symptom appears. Rules stay short because references exist.
 
 ## The one hard constraint
 
@@ -96,7 +70,4 @@ that each edited a rule and regenerated its `.mdc` collide on the checksum
 line every time; the `.md` merges cleanly, the mirror does not. Resolve the
 `.md` if git asks, then run `sh .claude/scripts/sync-ai-config.sh` — it
 detects conflict markers in a generated file and regenerates it — and stage
-`.cursor/`. This is how PR #58's only conflict was resolved.
-
-Two hand-maintained copies is how one client build's conventions ended up
-somewhere Claude Code could not read them for the first 18 days of the build.
+`.cursor/`.

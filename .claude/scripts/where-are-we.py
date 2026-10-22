@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 """Which of the three situations is this session in? One line, from what the repo holds.
 
-Why this exists
----------------
-The workflow draws three scenarios — a fresh rebuild, joining a rebuild midway,
-correcting after QA — and until this script a person picked one by what they
-chose to run. Nothing said "this looks like the middle of a rebuild". The
-SessionStart hook prints facts (drift, compliance, incidents); this turns a
-few of them into a verdict with its reasons, so a session starts in the right
-playbook section instead of the one it was last in.
+The three situations: A — a fresh rebuild, B — joining a rebuild midway,
+C — correcting after QA.
 
 What it reads (all local, all cheap)
   * the origin remote — Base itself is none of the three

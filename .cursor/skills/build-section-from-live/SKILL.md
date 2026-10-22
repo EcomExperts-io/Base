@@ -11,13 +11,9 @@ spec for what the section *does and looks like*. They are never the spec for
 how it is written. A section that matches live but carries live's code has
 failed the migration.
 
-**Why this exists.** A rebuild can switch from Figma to "match the live site"
-mid-build, and a Figma-only workflow has nothing to say about it: no way to
-read live, no way to verify against it, and no rule about what carries over.
-This is the method for that case, proven to 0% parity over batches of landing
-pages. `build-page-from-figma` routes here when the reference is live; the
-two share Steps 3–7 of that skill (standards, verification, Notion, QA
-checklist, incidents).
+`build-page-from-figma` routes here when the reference is live; the two share
+Steps 3–7 of that skill (standards, verification, Notion, QA checklist,
+incidents).
 
 ## 0. Before writing anything
 

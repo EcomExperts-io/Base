@@ -10,13 +10,10 @@ Read the repo before writing to it. Arriving on a rebuild — new or someone
 else's — the store depends on what was built first and what can be carried, so
 the first act is measurement, not code.
 
-**Why this exists.** The downstream rule copies are supposed to carry the
-numbers a client theme settled on ("769px, 14 files against 4") so that agents
-build to the theme in front of them rather than to Base's generic text. That was
-done by hand, once, for one fork. Meanwhile a developer landing on one client
-repo found no rules at all, and one landing on another found rules that had
-drifted from Base with no record of which edits were deliberate. The recon
-makes the measurement a script and the judgment a checklist.
+The fork's rule copies carry the numbers the theme settled on ("769px, 14 files
+against 4") so agents build to the theme in front of them, not to Base's
+generic text. The recon makes that measurement a script and the judgment a
+checklist.
 
 **Invocation:** `/recon-theme` — in the client repo, after
 `sh .claude/scripts/base-link.sh` (so lineage can be measured) and
@@ -60,8 +57,7 @@ in the "What the numbers cannot see" section of the document:
 - **What the previous team wrote down.** Their rule edits (the drift report
   lists them), their references, their decisions log, their frame map. Treat
   a doc an AI wrote during a build as a claim, not a ruling, until it is
-  checked against the code — one build's "shared page sections" document
-  turned out to be a post-hoc rationalisation.
+  checked against the code.
 - **Half-built pages.** Templates with no admin page, sections in no template,
   frames in the map with nothing built. This is the "what is left" list.
 - **Three decisions** to make before the next section: the breakpoint to build

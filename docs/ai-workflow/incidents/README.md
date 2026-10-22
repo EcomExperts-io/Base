@@ -1,7 +1,7 @@
 # Incidents
 
-One file per thing that went wrong that a rule, gate or check should have
-prevented. Created by `/record-incident` at the moment it happened; read by
+One file per fix that a rule, gate or check should have prevented. Created by
+`/record-incident` at the moment it happens; read by
 `doctor.py` (the open count in every session), `check-tooling-drift.py`
 (what is waiting to be harvested) and `/harvest` (what goes up to Base).
 
@@ -17,10 +17,9 @@ Each file carries frontmatter a script can read:
 and four sections: what happened, how it surfaced, what fixed it, and which
 rule or check should have caught it and why it did not.
 
-In Base this directory holds the generic incidents Base's own tooling was made
-from — the audit of 14 Sep 2026 and the client builds before it. In a client
-repo it holds that build's. Incidents do not travel with the tooling overlay;
-the rules they produce do.
+In Base this directory holds generic incidents; in a client repo it holds that
+build's. Incidents do not travel with the tooling overlay; the rules they
+produce do.
 
 ```bash
 python3 .claude/scripts/new-incident.py --list --open
@@ -28,9 +27,7 @@ python3 .claude/scripts/new-incident.py --list --open
 
 ## Harvested from client builds
 
-Incidents stay in the client repo; what they taught lands here. One client
-rebuild (Sep–Oct 2026) recorded 48 generic incidents, none harvested during
-the build. This is where each one went, on 22 Oct 2026.
+Incidents stay in the client repo; what they taught lands here. Where each one went:
 
 | Incident | Where it landed in Base |
 |---|---|
@@ -69,8 +66,3 @@ the build. This is where each one went, on 22 Oct 2026.
 | schema locale at the 3,400-key cap | `locales.md`, and the count in `check-json.py` |
 | duplicated CSS blocks | `css-duplicate-block` in `check-conventions.py` |
 | Liquid cart JSON has no discount_codes | `javascript-standards.md`, cart API |
-
-The new checks found two things in Base's own tree on the day they were
-written: `templates/product.json` sets `image_ratio` on shop-the-look, which
-its schema never defines (the Liquid reads it, so it is always blank), and
-nothing else. Not fixed here — see the retrofit ruling in the decisions log.

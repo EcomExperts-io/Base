@@ -1,34 +1,12 @@
 #!/usr/bin/env python3
 """Pre-commit check: structural invariants of the AI configuration itself.
 
-Why this exists
----------------
-The rules are the thing that keeps every client theme consistent, and until this
-script there was nothing checking the rules. Three failures made the case:
-
-  * Two rules taught opposite things about container queries — `css-standards.md`
-    recommended them, `sections.md` banned them — for long enough that nobody
-    could say which came first. A contradiction between two injected rules means
-    the model picks one arbitrarily, so the standard is whatever the coin says.
-  * Editing one snippet injected 2,453 lines of rules, 919 of them CSS authoring
-    guidance a Liquid file cannot act on. Nothing measured that, so it grew
-    unnoticed until an audit counted it.
-  * `prompts-and-references.md` was always-apply and described two directories
-    that hold one file each in Base and do not exist in a client fork. It cost
-    every task 48 lines of context to say nothing.
-
-None of those is a code defect and none would ever fail a build. They are drift
-in the layer that governs everything else, which is exactly the kind of thing
-that only gets found by an audit unless something checks it every commit.
-
-What it does NOT do
--------------------
-It does not grade the writing or check that a rule is correct — that is review.
-It asserts the structural properties the rule system depends on: every rule is
-loadable, scoped deliberately, inventoried in CLAUDE.md, and cheap enough to
-inject. Content correctness stays a human judgment.
-
 Usage: python3 .claude/scripts/check-ai-config.py [--verbose]
+
+Notes:
+- Asserts structure only: every rule is loadable, scoped deliberately,
+  inventoried in CLAUDE.md, and cheap enough to inject. It does not grade the
+  writing or check that a rule is correct; that is review.
 """
 
 import ast
@@ -43,8 +21,6 @@ RULES_DIR = ".claude/rules"
 
 # Rules allowed to load on every file regardless of type. Anything unscoped is
 # paid for by every single task, so adding to this list is a deliberate act.
-# `prompts-and-references.md` sat here for months describing paths that did not
-# exist in the themes that were loading it.
 ALWAYS_APPLY_ALLOWLIST = {
     "rules-of-engagement",
     "naming-conventions",
@@ -57,38 +33,10 @@ ALWAYS_APPLY_ALLOWLIST = {
     "storefront-infrastructure",
 }
 
-# Ceiling on rule lines injected when editing one file of each kind. These are
-# not style targets — they are the point at which something has gone structurally
-# wrong, normally a large rule scoped more widely than it needs to be. Measured
-# values at the time of writing: 1834 / 2119 / 1214 / 1152.
-#
-# Re-measured 2026-09-21 after `accessibility.md` landed on development scoped
-# to every Liquid, JS and CSS file (359 lines, a WCAG 2.2 AA standard that
-# genuinely applies to all three): 2286 / 2566 / 1573 / 1134. The caps below
-# sit just above that. They were raised, not the rule narrowed, because the
-# rule earns its scope — accessibility defects live in markup, behaviour and
-# styling alike. The ratchet still holds: the next rule that pushes a target
-# over has to say why, here, in the same commit.
-#
-# Re-measured 2026-09-28 when development merged into the v2 branch carrying
-# three new always-apply rules — code-review-policy (82), code-fix-policy (53)
-# and storefront-infrastructure (32), 167 lines that every task now pays for:
-# 2501 / 2852 / 1743 / 942. Raised because they were allowlisted deliberately
-# (GitBot loads the first two by name, and a person fixing a finding with an
-# agent should read what the button reads). The cheaper shape, if this bites,
-# is to scope the two review policies to review time only and have the
-# reviewer agents read them by path — authoring a section does not need 135
-# lines on how a finding is written up.
-#
-# Re-measured 2026-10-22 after a client harvest (42 generic incidents into
-# liquid.md, schemas.md, sections.md, templates.md, css-standards.md and
-# javascript-standards.md — platform limits the upload enforces, Liquid
-# drops that print as numbers, a preset block that renders an empty band):
-# 2591 / 2988 / 1782 / 1355. The section target was raised by 100; the other
-# three still fit. The measured CSS and browser traps went to
-# `.claude/references/layout-pitfalls.md`, which is not injected, with six
-# one-line pointers in the rule — that is the shape to keep using: the rule
-# says what to do, the reference says what it cost.
+# Ceiling on rule lines injected when editing one file of each kind. Not style
+# targets: the point at which something has gone structurally wrong, normally
+# a large rule scoped more widely than it needs to be. The next rule that
+# pushes a target over has to say why, here, in the same commit.
 INJECTION_CAPS = {
     "snippets/component-example.liquid": 2600,
     "sections/example.liquid": 3050,

@@ -1,19 +1,6 @@
 #!/usr/bin/env python3
 """Is this machine ready to run the Base AI workflow? One command answers.
 
-Why this exists
----------------
-The audit of 14 Sep 2026 found the onboarding path was "sit next to Naish".
-Nothing in the repo said which MCP servers a build needs, whether the Shopify
-CLI could start on the installed Node, or whether the commit gate was even
-wired up in this checkout. Each of those failures is silent: a CLI that cannot
-start is reported by the hook as *skipped*, a missing hook path means the gate
-never runs, an unconfigured MCP server means the skill fails on its first call.
-
-This prints the state of every dependency the workflow has, with the fix
-beside each one that is off. The SessionStart hook runs the fast subset so a
-session opens knowing what is missing, instead of discovering it at 5pm.
-
 Usage
 -----
   python3 .claude/scripts/doctor.py            full report
@@ -86,15 +73,10 @@ def check_hooks_wired():
 def check_theme_check_config():
     """A Theme Check config that enables nothing makes three gates vacuous.
 
-    .theme-check.yml is tooling, so pull-base-tooling.py carries it — but a fork
-    that already had one keeps its own, and the org's older repo template starts
-    with `extends: :nothing` (the Ruby-era form) and lists a dozen checks by
-    their old names. The current CLI runs that as almost nothing: on the first
-    v2 pilot it reported one warning over the whole theme where Base's config
-    found fourteen errors. check-theme-staged.py blocks on errors only, so the
-    Stop hook, the commit gate and CI all passed — a gate that cannot fail,
-    which is the failure this workflow exists to remove. The doctor is the one
-    place that looks at the config itself.
+    A fork that already had a .theme-check.yml keeps its own, and an older
+    config starting with `extends: :nothing` (the Ruby-era form) with checks
+    listed by their old names runs as almost nothing on the current CLI.
+    check-theme-staged.py blocks on errors only, so every gate then passes.
     """
     path = os.path.join(ROOT, ".theme-check.yml")
     if not os.path.exists(path):

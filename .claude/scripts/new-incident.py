@@ -1,16 +1,6 @@
 #!/usr/bin/env python3
 """Create, list and update incident files — the record a rule is later made from.
 
-Why this exists
----------------
-The v1 workflow asked for a "mistake log" in every client repo, gitignored,
-created only if the AI offered and a human said yes. Four client builds later
-the count of logs was zero, while every incident that mattered had become a
-Base rule anyway — by archaeology, weeks late, by one person. The record has
-to be cheap to create at the moment of failure, committed so it is visible in
-review and greppable across forks, and shaped so a script can list what is
-still waiting to be harvested. That is what this writes.
-
 Fields that matter for harvesting
 ---------------------------------
   scope               generic | client   — the CLAUDE.md test: would this be true

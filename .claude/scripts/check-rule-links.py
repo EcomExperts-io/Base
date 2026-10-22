@@ -1,33 +1,12 @@
 #!/usr/bin/env python3
 """Pre-commit check: paths referenced inside AI config must actually resolve.
 
-Why this exists
----------------
-A rule that links a file the repo does not have is silently useless — worse
-than useless in a fork, where it sends the reader looking for something that
-was never copied down. Two live examples, both found by an audit rather than by
-any check:
+Usage: check-rule-links.py [--all]
+Only files staged in this commit are checked; `--all` sweeps the whole tree.
 
-  * `snippets.md` linked `.cursor/rules/examples/snippet-example.liquid`, which
-    exists in Base and not in the client theme forked from it, because the
-    examples lived under `.cursor/` and only `.claude/` was carried across.
-  * `prompts-and-references.md` was an always-apply rule entirely about
-    `.cursor/prompts/` and `.cursor/references/`, neither of which exists in
-    that fork.
-
-`sync-ai-config.sh --check` already detects a related kind of drift (an orphan
-`.mdc` with no source), so putting this there was tempting. It lives in its own
-script instead for two reasons: that script's `--check` contract is "the mirror
-is stale, re-run me to fix it", and a broken link is not fixable by running the
-sync — the printed remedy would be a lie. And it lets this check follow the
-same scoping rule as every other blocking check in this repo.
-
-Scope
------
-Only files **staged in this commit**. A pre-existing broken link in a file you
-did not touch is not your commit's problem, and blocking on one would be the
-fastest possible way to teach people `--no-verify`. Run with `--all` to sweep
-the whole tree — worth doing when you have just forked Base.
+Notes:
+- Separate from `sync-ai-config.sh --check` because that script's remedy is
+  "re-run the sync", and a broken link is not fixed by regenerating the mirror.
 """
 
 import os
@@ -90,18 +69,10 @@ def candidates(text):
 def resolve(ref, source):
     """Resolve a reference relative to its source file, then to the repo root."""
     ref = ref.split("#", 1)[0].strip()
-    # `assets/critical.css:162` is a citation, not a filename. CLAUDE.md asks
-    # for exactly this form — "reference code as file_path:line_number" — so a
-    # rule or an agent's memory that follows the house style must not be read
-    # as pointing at a file that does not exist.
-    #
-    # The range form `assets/cart.js:201-206` is the same citation over more
-    # than one line, and blocked a commit the first time an agent wrote one.
-    #
-    # So did the list form `sections/header.liquid:48,73` — two specific lines
-    # rather than a span — written by the standards coach into its own memory.
-    # Third variant of one bug: the citation syntax is wider than the pattern.
-    # Matching a repeated `[-,]\d+` group covers spans, lists, and both mixed.
+    # `assets/critical.css:162` is a citation, not a filename: CLAUDE.md asks
+    # for "file_path:line_number". The range form `assets/cart.js:201-206` and
+    # the list form `sections/header.liquid:48,73` are the same citation, so a
+    # repeated `[-,]\d+` group covers spans, lists, and both mixed.
     ref = re.sub(r":\d+(?:[-,]\d+)*(?::\d+)?$", "", ref)
     if not ref or ref.startswith(SKIP_PREFIXES):
         return None

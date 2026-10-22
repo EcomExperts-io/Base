@@ -9,13 +9,11 @@ argument-hint: <incident-file | rule-file | "what was learned">
 
 Move the paragraph, not the file. Open the Base PR from here.
 
-**Why this exists.** For the whole of v1 nothing flowed back to Base during a
-build. The rule for what belonged upstream existed; the mechanics did not — a
-client repo shares no history with Base, so there was no branch to cherry-pick
-onto, and "open a PR to Base" meant a separate afternoon. The worktree that
-`base-link.sh` creates is a real Base checkout beside this repo; this skill
-edits it, commits there, pushes to Base's URL and opens the PR, then marks the
-incident harvested. Human-invoked on purpose: it pushes to a shared repository.
+A client repo shares no history with Base, so there is no branch to cherry-pick
+onto. The worktree that `base-link.sh` creates is a real Base checkout beside
+this repo; this skill edits it, commits there, pushes to Base's URL and opens
+the PR, then marks the incident harvested. Human-invoked on purpose: it pushes
+to a shared repository.
 
 **Invocation:** `/harvest <incident-file | rule-file | "what was learned">`
 
@@ -52,9 +50,7 @@ Make the change under `WORKTREE`. Read the target rule first and match its
 voice: what to do, then the incident that earned it, in a few lines. If the
 learning is a check, add it to `check-conventions.py` (or the relevant script),
 wire it, and test it against Base's own tree. Add a fixture for it to
-`.claude/scripts/test-checks.py` — the gate scripts had no tests until four
-incidents on one build turned out to be untested error paths in the tooling
-itself. Regenerate the mirror there:
+`.claude/scripts/test-checks.py`. Regenerate the mirror there:
 
 ```bash
 sh <WORKTREE>/.claude/scripts/sync-ai-config.sh

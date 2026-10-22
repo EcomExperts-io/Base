@@ -134,7 +134,7 @@ export default defineConfig({
         {
           text: 'AI Workflow',
           items: [
-            { text: 'The workflow (v2)', link: '/ai-workflow/README' },
+            { text: 'The workflow', link: '/ai-workflow/README' },
             { text: 'Your first build', link: '/ai-workflow/first-build' },
             { text: 'Figma handoff — one page', link: '/ai-workflow/figma-handoff-checklist' },
             { text: 'Figma practices — long form', link: '/ai-workflow/figma-ai-friendly-design-practices' },

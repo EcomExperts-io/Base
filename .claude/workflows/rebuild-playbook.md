@@ -3,22 +3,11 @@
 What to build first, what to carry, and what to do when you arrive in the
 middle. A human starts this; it is not a skill.
 
-**Why this exists.** The v1 vision ordered work by page: Collection, then PDP,
-then "header, mega menu, cart engine later". The first full rebuild proved that
-wrong — five of nine builds were a footer, a header with five mega-menu panels,
-a cart drawer, a search overlay and a set of drawers, every page depended on
-them, and none had a standard to build against. Order by **dependency**, not by
-page. A store where the foundations and the chrome are right can have its pages
-rebuilt in any order; a store where they are wrong makes every page a
-renegotiation.
-
-**And commerce before content.** One client rebuild (Sep–Oct 2026)
-got the chrome right and still shipped its purchase path last: the cart
-drawer, discount codes and subscription plans were built after the landing
-pages, and the client reopened the largest bundle as "doesn't add with the
-correct discount" after its card was marked done. A storefront is a shop. The
-purchase path is stage 2, it has its own check, and that check runs green at
-the close of every stage after it — a page that breaks the cart is not done.
+Order by **dependency**, not by page: every page depends on the foundations
+and the chrome, and a store where those are right can have its pages rebuilt
+in any order. **Commerce before content**: a storefront is a shop. The purchase
+path is stage 2, it has its own check, and that check runs green at the close
+of every stage after it — a page that breaks the cart is not done.
 
 ## Arriving — the same three commands whether the repo is new or six months old
 
@@ -81,8 +70,7 @@ It writes the progress record (`progress.json` under `docs/ai-workflow/`); commi
 - **Record as you go**: `/record-incident` the moment a fix lands that a rule
   should have prevented. `/harvest` the generic ones before the stage closes,
   not at the end of the build.
-- **Gate**: `shopify-standards-coach` (advisory) then `shopify-pr-reviewer`
-  (gate) before a human sees the PR. Both remember what recurs.
+- **Gate**: `shopify-pr-reviewer` over the diff before a human sees the PR.
 
 ## Inheriting mid-rebuild
 
@@ -103,9 +91,8 @@ what fits. Everything above applies; two things change.
 Do not "fix" what the recon finds in stage 0. Record it; if a rule should have
 prevented it, `/record-incident`; fix it in the stage it belongs to.
 
-## What this costs, honestly
+## Budget
 
 Recon is a day. Foundations and chrome are the slow stages — a header with
-mega-menu panels and a cart drawer with states took two sessions each on one
-client build — and they are the stages a page-first order skips and pays for
-later. Homepage last feels wrong to everyone until the second rebuild.
+mega-menu panels or a cart drawer with states is about two sessions each — and
+they are the stages a page-first order skips and pays for later.

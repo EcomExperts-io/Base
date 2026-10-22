@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
 """Measure a theme before touching it — lineage, conventions, compliance, what is left.
 
-Why this exists
----------------
-Arriving on a rebuild another team started, or resuming one, the questions are
-always the same and were always answered by reading for a day: is this a Base
-fork, and how far has it moved? which breakpoint, container and naming did
-they actually settle on? how compliant is it, and whose sections are the
-non-compliant ones? which pages exist and which are still to build? is the
-tooling current? The answers decide what can be carried forward, and the
-downstream rule copies are supposed to record the measured ones ("769px, 14
-files against 4") — which was done by hand once, for one fork.
-
-This measures, and writes the answers to docs/ai-workflow/state-of-the-theme.md
-(or stdout). The /recon-theme skill reads the result, looks at what the
-numbers cannot see, and copies the measured conventions into the fork's rules.
-Where the fork's convention and Base's rule disagree, the fork's wins in the
-fork — half the theme already uses it.
+Writes the answers to docs/ai-workflow/state-of-the-theme.md (or stdout). The
+/recon-theme skill reads the result and copies the measured conventions into
+the fork's rules. Where the fork's convention and Base's rule disagree, the
+fork's wins in the fork.
 
 Usage
 -----
@@ -25,10 +13,7 @@ Usage
 
 --live-url adds the live feature inventory: what the published storefront
 loads that the theme code does not show — app embeds, tracking pixels, popup
-and chat scripts, markets, a page builder, rich-text metafield HTML. On one
-client rebuild a subscription widget auto-injected a second purchase UI into a rebuilt product
-form and a page builder owned the landing-page template names; both were found
-by a rendered page, weeks in, not by the recon.
+and chat scripts, markets, a page builder, rich-text metafield HTML.
 Base is read from --base-path, else the worktree recorded by base-link.sh,
 else the `base` remote. Without any, the lineage section is skipped.
 """

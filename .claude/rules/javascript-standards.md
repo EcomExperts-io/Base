@@ -480,10 +480,9 @@ class ProductInfo extends HTMLElement {
 **Whatever closes a UI state must abort the request that state started** — in
 the one method every dismissal routes through, and *before* its `isOpen` early
 return, because a `close()` on an already-closed panel is exactly a redundant
-dismissal and must still cancel. A client rebuild, Sep 2026: predictive search aborted on
-every input path and not on `close()`, so a late response reopened a
-full-height results sheet seconds after the shopper dismissed it. The cart
-drawer, quick-add and a variant re-render have the same shape.
+dismissal and must still cancel. Otherwise a late response reopens the panel
+after the shopper dismissed it. Predictive search, the cart drawer, quick-add
+and a variant re-render all have this shape.
 
 ```javascript
 close(returnFocus = false) {
@@ -505,8 +504,8 @@ close(returnFocus = false) {
 - **A section that renders its own selling-plan UI on a product page must turn
   off the subscription app's auto-inject.** Recharge's legacy widget injects
   into the first `form[action*="/cart/add"]` it finds; its documented switch is
-  `window.DISABLE_RECHARGE = true`, set inline before window load. A client
-  rebuild, Sep 2026: two purchase UIs on one product page.
+  `window.DISABLE_RECHARGE = true`, set inline before window load; without it
+  the page renders two purchase UIs.
 
 ## Error Handling
 

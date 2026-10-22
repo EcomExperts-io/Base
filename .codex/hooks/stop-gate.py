@@ -1,35 +1,19 @@
 #!/usr/bin/env python3
 """Stop hook — a turn cannot end with the mechanical gate failing.
 
-Why this exists
----------------
-Claude stops when the work looks done. The pre-commit hook fires hours later,
-if at all — every client fork runs husky, so Base's hook has never run on a
-client machine — and `git commit --no-verify` is one keystroke. This runs the
-same objective checks at the end of every turn that changed theme files, and
-refuses to let the turn end while a new file fails them. Claude Code lifts the
-refusal after eight consecutive blocks, so a check that is wrong cannot trap a
-session forever; it can only make the disagreement visible.
-
-What it gates, and what it only reports
-----------------------------------------
 Blocks (exit 2):  a new section missing the settings contract; a convention
                   error in a NEW file; invalid JSON in templates/locales/config;
                   a Theme Check error in any file changed this session.
 Reports (JSON):   convention warnings in modified files; a Theme Check that
                   could not run; section or snippet work with no newer
-                  verify-against-reference report.
-Reports (JSON):   convention warnings in modified files; a Theme Check that
-                  could not run; section or snippet work with no newer
                   verify-against-reference report; a client branch whose GitBot
                   findings have not been read since its last commit.
 
-"New" means untracked or added since HEAD. Modified legacy is never gated here
-— see check-conventions.py for why.
-
-Cost control: results are cached against the changed files' mtimes, so a turn
-that changed nothing since the last pass costs one stat() per file, not a
-Theme Check run.
+Notes:
+- "New" means untracked or added since HEAD. Modified legacy is reported, never gated.
+- Claude Code lifts the refusal after eight consecutive blocks.
+- Results are cached against the changed files' mtimes, so a turn that changed
+  nothing since the last pass costs one stat() per file, not a Theme Check run.
 """
 
 import hashlib
@@ -137,8 +121,7 @@ def main():
         if out.strip():
             warnings.append(out.strip())
 
-    # Client branches only (the script is silent in Base and on a trunk): has
-    # GitBot's review of this branch been read since its last commit?
+    # Silent in Base and on a trunk branch.
     rc, out = run([py, ".claude/scripts/preflight-status.py", "--changed"])
     if out.strip():
         warnings.append(out.strip())

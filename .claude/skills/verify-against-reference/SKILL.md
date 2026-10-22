@@ -11,11 +11,9 @@ the rendered page is from its reference — a number, a heatmap, a table — and
 one deliberate look at the side-by-side image. A build is not done until this
 has run and its report is newer than the last change to the section.
 
-**Why this exists.** Verification used to be "screenshot both and look", and
-the worst failure the workflow has recorded came from it: a section reported as
-matching because it measured 614px against a 615px frame while its media column
-rendered empty. Agents graded their own work from memory. Here the only things
-that count are files this skill wrote.
+A section can measure 614px against a 615px frame and render an empty media
+column; a report typed from memory is not a measurement. The only things that
+count here are files this skill wrote.
 
 **The number is a report, not a gate.** Font rasterisation and anti-aliasing
 differ between Figma and Chrome; a 4% diff can be a perfect build and a 1%
@@ -54,8 +52,8 @@ thing, which is worse than not verifying.
 - Optional: a **section selector** when verifying one band of a longer page
   against Figma.
 - A band you mean to scope out — "Header", "Footer" — gets `get_metadata`
-  first: list its children and confirm each exists elsewhere. A blog frame's
-  "Header" held the blog's own category nav, which was then built nowhere.
+  first: list its children and confirm each exists elsewhere — a frame's
+  "Header" can hold page-specific nav that then gets built nowhere.
 
 `$ARGUMENTS` may carry all of these: `<url> <fileKey> <node>@<width> [<node>@<width>] --slug <name> [--section <css-selector>]`
 or `--live <live-url> --key <section-key> --widths 1440,393 --slug <name>`.
@@ -95,10 +93,9 @@ set the viewport to exactly `<width>` wide, take the screenshot, save it to the
 same path — and note in the report that the render came from the browser tool.
 
 The renderer refuses to write a file when the page's `clientWidth` is not the
-width requested, or when the capture is one flat colour. Both happened silently
-before it did — a 393 request laid out at 501 and cropped, a blank PNG that
-diffed at 40% — so a diff that is good at one breakpoint and bad at the other
-is a reason to open the screenshot before the code.
+width requested, or when the capture is one flat colour. A diff that is good
+at one breakpoint and bad at the other is a reason to open the screenshot
+before the code.
 
 **Verifying one section of a page:** open the page in the browser tools, run
 `document.querySelector('<section-selector>').getBoundingClientRect().top +
@@ -183,8 +180,8 @@ Without the browser tools the table cannot be produced; the report then lists
 the box comparison under **unverified**, not as passed.
 
 Compare spans as well as heights: each band's top to the next band's top.
-Negative and collapsing margins move a band whose own height matches — on
-one rebuild two exact bands hid a 96px drift of everything below them.
+Negative and collapsing margins move a band whose own height matches, so two
+exact bands can hide a drift of everything below them.
 
 ### 6. Look, once
 
@@ -203,8 +200,8 @@ reports the weight you asked for (`.claude/references/layout-pitfalls.md`).
 ## Against live — per section
 
 One command renders both sides in headless Chrome, at every width, and writes
-the report. It closes every trap a live comparison has been seen to fall into: the viewport is
-emulated and asserted (never `--window-size`), each side has its own Chrome
+the report: the viewport is emulated and asserted (never `--window-size`),
+each side has its own Chrome
 profile and the theme it rendered is read from `Shopify.theme` and asserted
 (a leaked preview cookie makes "live" render our theme), lazy media is forced
 and waited for, fixed overlays and popups are hidden, animations finished,

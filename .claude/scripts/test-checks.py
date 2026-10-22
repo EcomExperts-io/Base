@@ -1,19 +1,7 @@
 #!/usr/bin/env python3
-"""The checks check themselves.
-
-Why this exists
----------------
-There is no test suite (`npm test` is a stub), so every error path in the
-gate scripts stayed unexercised until a client build hit it. Four incidents
-on one build had that root cause: `check-json.py` crashed on the one file its
-own docstring named; `check-rule-links.py` blocked the citation format
-CLAUDE.md asks for; `check-conventions.py` read CSS comments as code, and
-the fix for that made its `!important` rule unsatisfiable for ten days.
-Each fix was written against the single failing case.
-
-So: one fixture per behaviour a check promises, run by the pre-commit hook
-and CI. Fast, no dependencies, and it exits 1 the moment a check stops doing
-what its docstring says. Add a case here with every change to a check.
+"""The checks check themselves: one fixture per behaviour a check promises, run
+by the pre-commit hook and CI. Exits 1 the moment a check stops doing what its
+docstring says. Add a case here with every change to a check.
 
 Usage: test-checks.py [--verbose]
 """
@@ -88,7 +76,7 @@ def liquid(text, path="sections/x.liquid"):
     return f
 
 
-# --- what GitBot reports (a client rebuild, Oct 2026) ---
+# --- what GitBot reports ---
 f = css(".a { gap: 16px; padding-inline: 2.4rem; }\n.b { inline-size: 51.2rem; }\n")
 case("css: hardcoded lengths are ONE finding per file with a count",
      rules(f) == ["css-hardcoded-length"] and f[0].detail.startswith("3 declaration"), [(x.rule, x.detail) for x in f])

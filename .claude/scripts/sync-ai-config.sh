@@ -1,11 +1,9 @@
 #!/bin/sh
-# Keeps the Cursor and Claude Code copies of our AI configuration identical.
+# Keeps the Cursor, Codex and Claude Code copies of our AI configuration identical.
 #
-# Why this exists: on one client build the conventions lived only in
-# .cursor/rules/. Claude Code does not read that path, so for the first 18 days
-# of the build the agent had no access to them and ~30 sections shipped without
-# the section schema contract or translation keys. Two hand-maintained copies is
-# how that happened; this script makes drift impossible instead of discouraged.
+# Usage: sh .claude/scripts/sync-ai-config.sh [--check] [--force]
+#   --check  exit 1 if anything is out of sync, write nothing (for the hook)
+#   --force  overwrite even a hand-edited .mdc (discards it — last resort)
 #
 # Canonical source is .claude/ — edit there, never in .cursor/.
 #   Rules:     .claude/rules/*.md        -> .cursor/rules/*.mdc  (frontmatter converted)
@@ -16,9 +14,7 @@
 #   References:.claude/references/**     -> .cursor/references/**      (verbatim)
 #   Hooks:     .claude/hooks/**          -> .cursor/hooks/**           (verbatim)
 #
-# Codex reads a different layout, and the same principle holds (22 Oct 2026:
-# a hand-made AGENTS.md rewrote every path to a `.Codex/` that does not
-# exist, and the hand-copied skills were a day stale after one afternoon):
+# Codex reads a different layout:
 #   Skills:    .claude/skills/**         -> .agents/skills/**          (verbatim, tree replaced)
 #   Hooks:     .claude/hooks/**          -> .codex/hooks/**            (verbatim, tree replaced)
 #   Agents:    .claude/agents/*.md       -> .codex/agents/*.toml       (frontmatter + body as TOML)
@@ -27,29 +23,16 @@
 # .codex/config.toml (MCP servers) and .codex/hooks.json (the hook wiring, the
 # Codex equivalent of .claude/settings.json) are hand-maintained and tracked.
 #
-# Hooks are mirrored so a Cursor user has the same gate scripts to wire into
-# Cursor's own hooks configuration; the wiring itself (.claude/settings.json on
-# the Claude side) has no Cursor equivalent this script can generate.
-#
-# Examples, agents and workflows were added after an audit found that a rule
-# could link an example file the fork had never received (the examples lived
-# under .cursor/, which .claude/ forks do not carry), and that Cursor users had
-# no copy of the two review agents at all. Cursor does not auto-load agents or
-# workflows the way it loads rules — the point is that a human can open them.
-#
-# Generated .mdc files carry a checksum of their own content. Before overwriting
-# one, the script recomputes it: if it no longer matches, the file was edited by
-# hand and the script REFUSES rather than silently discarding that work. Without
-# this, the hook told a Cursor user their .cursor copy had diverged and the fix
-# command then destroyed the change they had just made.
-#
-# Note the weaker guarantee for skills: they are byte-identical copies with no
-# banner to carry a checksum, so a hand-edit there cannot be distinguished from
-# a source change and will be overwritten. Never edit .cursor/skills/ directly.
-#
-# Usage: sh .claude/scripts/sync-ai-config.sh [--check] [--force]
-#   --check  exit 1 if anything is out of sync, write nothing (for the hook)
-#   --force  overwrite even a hand-edited .mdc (discards it — last resort)
+# Notes:
+#   * Hooks are mirrored so a Cursor user has the gate scripts to wire into
+#     Cursor's own hooks configuration; the wiring (.claude/settings.json) has
+#     no Cursor equivalent. Cursor does not auto-load agents or workflows the
+#     way it loads rules; the mirrored copies are for a human to open.
+#   * Generated .mdc files carry a checksum of their own content. If it no
+#     longer matches, the file was edited by hand and the script REFUSES to
+#     overwrite it.
+#   * Skills and the other verbatim trees carry no checksum, so a hand-edit
+#     there cannot be told from a source change and is overwritten.
 
 set -e
 cd "$(git rev-parse --show-toplevel)"
@@ -140,12 +123,9 @@ for src in .claude/rules/*.md; do
     continue
   fi
 
-  # A merge conflict in a generated file is not hand-written work. Two branches
-  # that each regenerated the same .mdc collide on the checksum line every
-  # time, and the resolution is always the same: regenerate from .claude/.
-  # Without this the checksum guard read the conflict markers as a hand edit
-  # and refused, so resolving meant knowing to pass --force (PR #58, 28 Sep
-  # 2026 — see docs/ai-workflow/incidents/2026-09-28-generated-mirror-conflicts-on-merge.md).
+  # Conflict markers in a generated file are not a hand edit: two branches that
+  # each regenerated the same .mdc collide on the checksum line, and the
+  # resolution is always to regenerate from .claude/.
   if [ -f "$dest" ] && grep -q '^<<<<<<< \|^>>>>>>> ' "$dest"; then
     mv "$tmp" "$dest"
     echo "resolved $dest (merge conflict in a generated file — regenerated)"
@@ -174,8 +154,7 @@ done
 
 # --- orphan check ------------------------------------------------------------
 # A .mdc with no matching .claude/rules/*.md source is a leftover that Cursor
-# still loads. That is how a stale duplicate of rules-of-engagement survived
-# under a misspelled filename.
+# still loads.
 for dest in .cursor/rules/*.mdc; do
   [ -f "$dest" ] || continue
   name=$(basename "$dest" .mdc)
@@ -200,9 +179,7 @@ mirror_tree() {
     fi
   else
     # Replace the tree rather than layer onto it: `cp -a` alone never removes a
-    # destination file whose source was deleted or renamed, so a retired
-    # reference lingered in .cursor/ and `--check` stayed red with no fix path.
-    # These trees are documented as generated and disposable. The guard keeps a
+    # destination file whose source was deleted or renamed. The guard keeps a
     # bad argument from ever expanding to `rm -rf` of anything outside .cursor/.
     case "$dest" in
       .cursor/*|.agents/*|.codex/hooks*) rm -rf "$dest" ;;
@@ -215,8 +192,7 @@ mirror_tree() {
 }
 
 # The skills tree is replaced as a whole, so a renamed skill leaves no
-# orphan behind (verify-against-figma lingered under .cursor/skills after its
-# rename until this did).
+# orphan behind.
 mirror_skills() {
   root="$1"
   if [ "$CHECK" -eq 1 ]; then

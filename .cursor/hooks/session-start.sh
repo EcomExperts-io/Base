@@ -1,14 +1,5 @@
 #!/bin/sh
-# SessionStart hook — every session opens knowing where the theme stands.
-#
-# Why this exists
-# ---------------
-# The rules run to 3,700 lines and CLAUDE.md is loaded every session, but
-# neither can say what is true of THIS checkout right now: whether the gate is
-# wired, how far the tooling has drifted from Base, how many sections meet the
-# contract, how many incidents are waiting to be harvested. Those numbers
-# change daily and were only ever known to the one person who ran the scripts.
-# Ten lines here, under a second, and the session starts from facts.
+# SessionStart hook — prints the state of this checkout as session context.
 #
 # Plain stdout from a SessionStart hook is injected as context. Keep it short.
 
@@ -22,9 +13,6 @@ python3 .claude/scripts/doctor.py --context 2>/dev/null
 if [ -f .claude/scripts/check-tooling-drift.py ]; then
   python3 .claude/scripts/check-tooling-drift.py --brief 2>/dev/null
 fi
-# Which of the three situations this looks like — a fresh rebuild, joining
-# midway, correcting after QA — with the evidence, so the session starts in
-# the right part of the playbook. A reading, not a ruling.
 if [ -f .claude/scripts/where-are-we.py ]; then
   python3 .claude/scripts/where-are-we.py 2>/dev/null
 fi

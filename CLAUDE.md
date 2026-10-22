@@ -94,8 +94,6 @@ generated from `.claude/rules/` — as are `.cursor/skills`, `agents`,
 `.agents/skills`, `.codex/hooks`, `.codex/agents` and `AGENTS.md`, generated
 the same way. **Edit `.claude/` only.** The pre-commit hook regenerates both
 mirrors and stages them; there is no command to remember.
-The two copies existing by hand is what hid the conventions from Claude Code
-for the first 18 days of a client build.
 
 ## What runs on its own
 
@@ -133,15 +131,15 @@ client's, and the tooling pull does not touch it).
   reference is the store rather than a frame. Also `gitbot-preflight`, which reads GitBot's
   review of a pushed client branch from inside the session. Skills auto-invoke from their descriptions; `harvest`
   is human-only because it pushes to Base.
-- `.claude/agents/` — `shopify-standards-coach` (advisory) and
-  `shopify-pr-reviewer` (gates). Both keep project memory of what recurs.
+- `.claude/agents/` — `shopify-pr-reviewer`, the local review before a PR; it
+  reads the verify report and the running theme, which GitBot cannot.
 - `.claude/workflows/` — `rebuild-playbook.md` (the dependency order for a
   whole store, and the three commands on arrival), `parallel-section-build.md`
   (one page, one agent per section), `multi-session-rebuild.md` (a storefront
   across sessions), `landing-batch.md` (a card of landing pages matched to
   live, with its three agent briefs). Point an agent at the file; none is auto-loaded.
-- `.claude/references/` — debugging accounts of traps that already cost hours.
-  Rules stay short because these exist.
+- `.claude/references/` — symptom, cause and fix for traps too situational for
+  a rule. Rules stay short because these exist.
 - `docs/base-theme-standards/` — the architecture references (Collection &
   PDP; Header, Cart Engine & Search), the compliance checklist, the decisions
   log, the vision. `docs/ai-workflow/` — the workflow, the first build, the
@@ -183,7 +181,7 @@ principle upstream, measured specifics downstream. New client repos start from
    `/verify-against-reference`'s report on disk, never by an assertion.
 
 A page can match a design pixel-for-pixel and still fail every convention in
-this file. That is what happened on one client build. Check them separately and
+this file. Check them separately and
 report them separately, with the evidence for each.
 
 ## Commands
@@ -217,7 +215,7 @@ npx prettier --config .prettierrc.json --write path/to/file.liquid
 ```
 
 Name the files. Never pass a glob to `--write`: the theme is not uniformly
-formatted, and one glob put 48 untouched files into a client commit.
+formatted, so a glob reformats untouched files into the commit.
 
 There is no test suite — `npm test` is a stub. Verification is the gate, the
 verifier's report, and the theme editor.

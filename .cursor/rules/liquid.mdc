@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/liquid.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1826444413 -->
+<!-- checksum: 203635544 -->
 
 
 # Liquid Syntax Standards
@@ -117,9 +117,7 @@ Build it with `capture` and `raw`:
 ```
 
 This comes up whenever a translated string is handed to JavaScript as a
-template — a placeholder the client-side code substitutes later. Found on a
-client's Quick-Shop build, where the bundle-picker snippet still carries the
-broken form.
+template — a placeholder the client-side code substitutes later.
 
 **One `}` is enough to end it.** Shopify's tokenizer cuts an output tag at the
 first `}` it meets, not the first `}}`, so a string literal holding a single
@@ -131,8 +129,6 @@ brace — a JSON object built for a `data-` attribute — fails the whole file w
 {%- capture props -%}{"_supply_length":"{{ days }}-day"}{%- endcapture -%}
 data-properties="{{ props | escape }}"
 ```
-
-A client rebuild, Oct 2026: one such attribute 500'd the product page on first render.
 
 ### Filters are not applied to `{% render %}` arguments
 
@@ -152,8 +148,7 @@ This is the one standing exception to the "Inline Variables Pattern" below: a
 filtered value destined for a `render` argument **has** to be assigned first.
 
 Theme Check catches this one as `UnsupportedFilterArguments`, so a full
-`shopify theme check` run will find it — but only if the file is in scope, which
-is why it survived in a client theme for months.
+`shopify theme check` run will find it — but only if the file is in scope.
 
 ### A rich text metafield does not print as HTML
 
@@ -218,7 +213,7 @@ on it is blank, so a guard like `pool.size > 0` renders the empty state with
 every post picked. Shopify documents `.count` for these settings. A section
 with two sources hides it: `blog.articles` (or a `concat` of two) is a real
 array where `.size` works, so the picked branch reads right until it meets
-data. A client rebuild, Sep 2026: four picked posts rendered "No articles found".
+data.
 
 ### A typed metafield's `.value` is a drop, and its numbers are strings
 
@@ -226,8 +221,7 @@ data. A client rebuild, Sep 2026: four picked posts rendered "No articles found"
 gives `0.0`: it is a Rating drop whose `to_s` is the number. The number is
 `.value.rating`, and it arrives as a JSON string, so `"4.8" > 0` is false.
 Coerce with `| times: 1.0` before any comparison or arithmetic. `money`,
-`dimension` and `volume` metafields have the same shape. A client rebuild, Sep
-2026: every product card drew empty stars beside a correct review count.
+`dimension` and `volume` metafields have the same shape.
 
 ### Multi-tag collection URLs are alphabetical
 

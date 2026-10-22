@@ -1,24 +1,19 @@
 #!/usr/bin/env python3
 """Validate the JSON files a theme ships — templates, locales, config.
 
-Shopify's parser accepts two things strict JSON does not: `/* */` comment
-blocks (every template starts with one) and trailing commas. Both are
-tolerated here so that legitimate files pass, and a trailing comma is reported
-as a warning because Prettier, `json.load` and most editors reject it —
-`config/settings_schema.json` carried one for months without anyone noticing.
-
-A file that does not parse even after those two allowances is an error: a
-broken locale file renders key paths to the customer, and a broken template
-404s the page.
-
-A locale file is also counted. Shopify rejects one with more than 3,400 keys
-("Too many translation keys") and the failed upload takes every page of the
-theme down; Theme Check, Prettier and a JSON parse all pass the file. One client
-store's schema locale hit the cap exactly in Oct 2026 with 16 keys for one block, so
-the warning starts 100 keys early.
-
 Usage: check-json.py <paths...> [--quiet]
 Exit 1 on a parse error or a locale over the cap. Warnings never fail.
+
+Notes:
+- Shopify's parser accepts `/* */` comment blocks (every template starts with
+  one) and trailing commas. Both are tolerated; a trailing comma is a warning
+  because Prettier, `json.load` and most editors reject it.
+- A file that does not parse even then is an error: a broken locale renders
+  key paths to the customer, a broken template 404s the page.
+- Shopify rejects a locale file with more than 3,400 keys ("Too many
+  translation keys") and the failed upload takes every page of the theme down;
+  Theme Check, Prettier and a JSON parse all pass it. The warning starts 100
+  keys early.
 """
 
 import json
@@ -60,8 +55,7 @@ def main(argv):
         except json.JSONDecodeError as strict_err:
             # Python unbinds `strict_err` when the handler ends (PEP 3110), so
             # keep the one field the warning below needs while it is still in
-            # scope. Reading it after the block raises UnboundLocalError, which
-            # is what this check did on every file it was written to report.
+            # scope. Reading it after the block raises UnboundLocalError.
             strict_lineno = strict_err.lineno
             try:
                 data = json.loads(re.sub(r",(\s*[}\]])", r"\1", body))

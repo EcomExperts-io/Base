@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
 """Overlay Base's AI tooling onto a client repo — three-way, never clobbering.
 
-Why this exists
----------------
-Every client theme copies Base's `.claude/` on day one and drifts from that
-moment. CLAUDE.md asserted "14 of the 16 rules are byte-identical between Base
-and the client fork"; measured on 14 Sep 2026 the number was 6, because Base had
-moved and there was no way to pull it down. A fork's rule copies also carry
-things Base must not overwrite — the measured breakpoint, the container class,
-the client's own decisions — so a plain copy is as wrong as no copy.
-
-This does what a merge would do for the tooling files only, with no shared
-history required. For each file Base ships:
+Does what a merge would do for the tooling files only, with no shared history
+required. For each file Base ships:
 
     fork missing it                 -> ADD
     fork == Base                    -> unchanged
@@ -22,8 +13,7 @@ history required. For each file Base ships:
 
 "Since stamp" means since the Base commit recorded in `.base-version` by the
 previous run. The first run on a fork that already has tooling therefore keeps
-everything that differs and lists it — nothing the previous team decided is
-lost, and you get the list of what they decided. `--force` overwrites.
+everything that differs and lists it. `--force` overwrites.
 
 Files the fork holds under the tooling paths that Base does not ship are left
 alone and listed as fork-only.
@@ -46,7 +36,7 @@ Usage
   python3 .claude/scripts/pull-base-tooling.py --help
 
 An argument the script does not know stops it before it reads or writes
-anything. It used to be ignored, and `--help` once ran a real overlay.
+anything.
 
 Run `sh .claude/scripts/base-link.sh` first if there is no `base` remote.
 """

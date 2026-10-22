@@ -7,13 +7,10 @@ description: Find out what the store actually has before building against it —
 
 Ask the store before wiring anything to it.
 
-**Why this exists.** The rule is "no invented data"; the review agents enforce
-it after the fact by reading the diff. The failure it guards against is
-upstream of the code: a design shows an ingredients panel, the section is wired
-to `product.metafields.custom.ingredients`, and no product has it — or four
-page templates are built and 404 because no page in admin uses them. These
-are the reads that answer such questions, all of them without admin write
-access.
+A design shows an ingredients panel, the section is wired to
+`product.metafields.custom.ingredients`, and no product has it; a page template
+is built and 404s because no page in admin uses it. These reads answer that
+before the code is written, all without admin write access.
 
 **Invocation:** `/store-recon` — needs the store handle
 (`SHOPIFY_FLAG_STORE` in `settings.local.json` under `.claude/`; ask if unset).

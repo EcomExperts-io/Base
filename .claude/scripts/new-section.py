@@ -1,49 +1,18 @@
 #!/usr/bin/env python3
 """Scaffold a new section that already satisfies the merchant settings contract.
 
-Why this exists
----------------
-This is `.claude/skills/scaffold-section/SKILL.md` rewritten as something that
-runs. The skill is correct, 156 lines long, and has been invoked zero times — on
-Base or on any theme forked from it. An audit of this repo's AI tooling found
-the same for every skill and every agent in `.claude/`, including on a task
-written specifically for one of them. What has never failed is the pre-commit
-hook: nobody chooses it, so it runs every time.
-
-That is the pattern worth stating plainly, because it decides where new work
-belongs: **in this codebase, things that must be chosen never run, and things
-that run automatically always do.** A convention that depends on someone
-remembering to invoke it is a convention that is not in force.
-
-The cost of it not being in force is measured. On one client build 30 of
-31 new sections shipped with spacing and colour hardcoded into CSS and no
-merchant settings behind them; 5 uses of `| t` against Base's 221; zero `t:`
-schema keys against Base's 136. Every one of those sections would have been
-compliant if it had started from a file like this one.
-
-So: `python3 .claude/scripts/new-section.py testimonials` writes the four files,
-and refuses to write any of them if what it just built would not pass
-`.claude/scripts/check-section-contract.py` — the gate that would otherwise
-block the commit hours later, after the section has been styled and reviewed.
-It imports that checker rather than reimplementing it, so the two cannot drift.
-
-What it does NOT do
--------------------
-Design anything. The markup is a heading and a repeating block: a shape to
-replace, not a section. What it guarantees is the part that gets skipped —
-`padding_top`, `padding_bottom`, `padding_top_mobile`,
-`padding_bottom_mobile`, `color_scheme`, a `presets` entry, `t:` keys
-throughout, the file naming, and a docs page that will not break the docs build.
-
-It does not touch `locales/*.json`. Those carry an auto-generated header, are
-rewritten by the Shopify admin language editor, and corrupt when two agents
-write them at once — which is why `merge-locale-fragments.py` exists. The keys
-are printed in that script's fragment format instead.
-
-It does not touch `templates/*.json` or the docs sidebar. Both are one line, and
-a script guessing at either buys a merge conflict rather than a keystroke.
-
 Usage: python3 .claude/scripts/new-section.py <section-name> [--no-js]
+
+Notes:
+- Writes the section, its CSS and JS, and a docs page, and refuses to write any
+  of them if the result would not pass check-section-contract.py, which it
+  imports rather than reimplements so the two cannot drift.
+- The markup is a heading and a repeating block: a shape to replace, not a
+  design. The guaranteed part is the contract: the four padding settings,
+  `color_scheme`, a `presets` entry, `t:` keys throughout, the file naming.
+- Does not touch `locales/*.json` (two agents writing them at once corrupt
+  them; the keys are printed in merge-locale-fragments.py's fragment format),
+  `templates/*.json` or the docs sidebar.
 """
 
 import importlib.util
@@ -77,9 +46,9 @@ PADDING_BREAKPOINT = 750
 SECTION_NAME_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 
 # Named for a page rather than for a job. A page-prefixed name stops being
-# descriptive the first time the section is reused, and on one client build that
-# happened immediately. Warned rather than blocked: `collection-hero` may be
-# genuinely about collections rather than about one page.
+# descriptive the first time the section is reused. Warned rather than
+# blocked: `collection-hero` may be genuinely about collections rather than
+# about one page.
 PAGE_PREFIXES = ("home-", "homepage-", "about-", "landing-", "pdp-", "plp-", "contact-")
 
 # Words this theme's own docs sidebar capitalises differently from str.title().
@@ -122,13 +91,9 @@ def repo_root():
 def detect_container_class(repo):
     """Which container class this theme's sections actually use.
 
-    Base uses `.page-width` in all 32 of its sections, but a client theme forked
-    from Base often introduces its own container, and the two are frequently
-    identical at 1440 — so a section built with the wrong one measures correctly
-    at the width the Figma frame was drawn at, passes review, and reads as broken
-    at 1920. That happened on a client build and was caught by the lead, not by
-    the developer. Counting what the theme already ships is cheaper than
-    remembering to check.
+    A fork often introduces its own container, and two containers are
+    frequently identical at 1440 and different at 1920, so the one the theme
+    already ships is counted rather than assumed.
     """
     counts = Counter()
     for path in sorted((repo / "sections").glob("*.liquid")):
@@ -144,10 +109,8 @@ def detect_container_class(repo):
 def detect_component_breakpoint(repo):
     """The `min-width` this theme's own section CSS settled on.
 
-    Base's `section-*.css` is split evenly between 750px and 769px, so there is
-    no single right answer to copy out of a rule file — the rule says to grep the
-    theme and match it. This is that grep. Distinct from PADDING_BREAKPOINT
-    above: two numbers, two jobs.
+    The rule says to grep the theme and match it; this is that grep. Distinct
+    from PADDING_BREAKPOINT above: two numbers, two jobs.
     """
     counts = Counter()
     for path in sorted((repo / "assets").glob("section-*.css")):
@@ -160,8 +123,8 @@ def detect_component_breakpoint(repo):
 def related_sections(repo, name):
     """Existing sections sharing a word with the new name.
 
-    Not a check — a prompt to look before adding a forty-ninth section that does
-    what the thirty-second already does.
+    Not a check — a prompt to look before adding a section that does what an
+    existing one already does.
     """
     words = set(name.split("-"))
     hits = []
@@ -439,9 +402,8 @@ ${notes_tail}
 def build_schema(name, title):
     """The schema, built as data so it cannot be malformed JSON.
 
-    A section whose `{% schema %}` does not parse blocks the commit outright, and
-    the checker's own tolerance for a trailing comma exists because two Base
-    sections have one. Generating from a dict removes the whole category.
+    A section whose `{% schema %}` does not parse blocks the commit outright;
+    generating from a dict removes the whole category.
 
     Locale keys use the section handle verbatim: `locales/en.default.schema.json`
     already keys its sections that way (`main-cart-items`, `custom-liquid`), so
@@ -697,9 +659,7 @@ def docs_interpolation_problems(markdown):
 
     Mirrors `.claude/scripts/check-docs-interpolation.py`, which reads staged git
     content and so cannot be pointed at a string. VitePress compiles every docs
-    page as a Vue template and evaluates mustaches in inline spans; that broke
-    the docs build for four months without anyone noticing, because the deploy
-    workflow only runs on pushes that touch docs/**.
+    page as a Vue template and evaluates mustaches in inline spans.
     """
     problems, in_fence = [], False
     for number, line in enumerate(markdown.split("\n"), 1):

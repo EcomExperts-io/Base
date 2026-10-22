@@ -3,10 +3,7 @@
 Build one page of a Figma design by giving each section to its own agent, running
 them concurrently, then assembling and verifying the page yourself.
 
-Used on one client's PDP: 9 sections, ~1.5 hours wall-clock, reviewed by the team lead as
-"could be more than 60%" saved against a 40-hour estimate. This file is what made
-that repeatable rather than lucky. It is not a skill — skills only run when invoked,
-and this is a procedure a human chooses to start.
+It is not a skill — a human chooses to start it.
 
 **When to use it.** A page of 5+ independent content sections, each traceable to its
 own Figma frame. **When not to:** anything where the sections share a stylesheet or a
@@ -22,15 +19,9 @@ nothing there and costs you a merge.
 Enumerate the page's sections from the desktop frame, top to bottom, and for each one
 record the **desktop node id and the mobile node id**. One agent per row.
 
-Then — and this is the step that is skipped and always costs the most — **check what
-already exists.** A section that another page already ships is a `templates/*.json`
-entry, not a build. Grep `sections/`, and read whatever estimate or scope doc the
-lead has written. On that build, seven of the PDP's sections had already been delivered
-by the homepage build.
-
-Do not trust a name match. "Collections strip → Shop By Goal cards" looked like the
-same component in a scope doc and was not remotely the same component. Open both and
-look.
+Then **check what already exists.** A section that another page already ships is a
+`templates/*.json` entry, not a build. Grep `sections/` and read the scope doc. Do
+not trust a name match: open both and look.
 
 ### 2. Fill in the agent brief
 
@@ -58,23 +49,20 @@ one only its own two node ids and its own file ownership list.
 
 ### 5. Verify — and read this before you report anything
 
-Agents report their own fidelity. Two of three "X is broken" reports on one client build
-were false, both from agents measuring inside their own static harness rather than in
+Agents report their own fidelity, often measured in a static harness rather than in
 the theme. Re-verify anything load-bearing yourself.
 
-**Matching heights is not matching the design.** The single worst failure of this
-workflow to date: a section was reported as built because it measured 614px against
-the frame's 615px, and a scope doc independently agreed. It shared nothing else with
-the design. A FAQ layout was reported as matching at 728 vs 727 while its media
-column was rendering completely empty.
+**Matching heights is not matching the design.** A section can measure 614px against
+a 615px frame and share nothing else with it, or match height with an empty media
+column.
 
 So: **screenshot both breakpoints and look at them, against the Figma frame.** A
 measurement is a check on a screenshot, never a substitute for one. If you could not
 get a usable screenshot, the honest report is "unverified" — not the number you did
 manage to measure.
 
-Since v2 this is a skill, not a habit: once the template is assembled and the theme is
-running (`/run-theme`), run `/verify-against-reference` for each band with its desktop and
+Once the template is assembled and the theme is running (`/run-theme`), run
+`/verify-against-reference` for each band with its desktop and
 mobile node ids and a `--section` selector. It renders at the exact widths, diffs
 against the frame's export, masks `data-verify-mask` regions, computes the box table,
 and writes `.claude/verify/<band>/report.json`. The agents cannot run it — their
@@ -83,8 +71,7 @@ values and this step turns them into evidence.
 
 ### 6. Gate
 
-Run `shopify-standards-coach` for the advisory pass and `shopify-pr-reviewer` over the
-whole diff before it goes to a human.
+Run `shopify-pr-reviewer` over the whole diff before it goes to a human.
 
 ---
 

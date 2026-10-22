@@ -53,9 +53,8 @@ other:
 | **1** | **Code style and architecture** | `.claude/rules/` — does it look like Base? |
 | **2** | **Visual fidelity** | The Figma frame — does it match the design? |
 
-Keep them separate in your work and in your reporting. On one client build
-visual fidelity was good while the merchant-facing settings contract was
-near-zero — a page can be pixel-perfect and fail every convention we have.
+Keep them separate in your work and in your reporting: a page can be
+pixel-perfect and fail every convention we have.
 Never report "matches the design" as if it covered both.
 
 ## Step 1 — Confirm what you are building. Ask; do not guess.
@@ -66,8 +65,7 @@ Before any Figma call, establish and state back:
 - **Which reference** — **Figma**, **live**, or **both**. Figma is the
   source of the look and never of data; live is the source of what the
   section does, says and holds today, and never of code. A brief can switch
-  from Figma to live mid-build; when nothing asks, the fixes pile up (on one
-  rebuild 532 of 1,363 commits were fixes). Record the answer per band in
+  from Figma to live mid-build; ask, and record the answer per band in
   `docs/ai-workflow/reference-map.md`.
   - **Live** → `/build-section-from-live` from here; its §4 verifies against
     live and its §5 returns to Steps 5–7 of this skill.
@@ -81,17 +79,13 @@ Before any Figma call, establish and state back:
   requirements
 
 If any of these is missing or ambiguous, **ask**. Do not infer a file key from
-repo documentation without checking it — on one build a stale file key
-appeared in 10 places across the docs against 3 for the correct one, and the
-stale one was not readable by the connected account.
+repo documentation without checking it: docs carry stale keys.
 
 ### Notion is the functional source; Figma is not
 
 A Figma frame shows what a page looks like, never how it behaves. Requirements
 an account manager wrote — default selections, conditional visibility, edge
 cases, where a value comes from — live in Notion and exist nowhere in the design.
-
-A Notion link is supplied roughly **60% of the time**.
 
 - **Given** → read it first and treat it as the source of truth for behaviour.
   Walk its requirements individually at verification time.
@@ -118,10 +112,9 @@ minutes of renaming on their side is a day on ours.
 
 **Always pass an explicit `nodeId`.** Never rely on file-wide page listing.
 
-`get_metadata` with no `nodeId` is unreliable on our files — it has returned
-only a single "Cover" page while frames on other pages fetched perfectly well
-when addressed directly by ID. That is a tool limitation, not a permissions
-problem, and it has already blocked one audit. Get node IDs
+`get_metadata` with no `nodeId` is unreliable — it can return a single "Cover"
+page while frames on other pages fetch perfectly well by ID. That is a tool
+limitation, not a permissions problem. Get node IDs
 from a human, from a Figma share link (`?node-id=`), or from a registry the
 project keeps.
 
@@ -157,7 +150,7 @@ theme token, use the token.
 
 ## Step 4 — Verify both criteria
 
-**Code:** run the standards coach agent for advisory feedback, then fix what it
+**Code:** run the `shopify-pr-reviewer` agent over the diff, then fix what it
 finds. Confirm the gate would pass.
 
 **Visual:** run `/verify-against-reference` — start the theme with `/run-theme`,
@@ -170,11 +163,9 @@ deliberate look at the side-by-side, and writes
 it exists and is newer than your last edit, the page is not verified — the
 Stop hook will say so.
 
-Why a script and not your eyes: the workflow's worst recorded failure was a
-section reported as built because it measured 614px against a 615px frame
-while its media column rendered empty. A measurement is a check on a
-screenshot, never a substitute for one, and a table typed from memory is not a
-measurement. Custom elements remain the specific trap: they default to
+A matching height is not a matching section: a 614px render against a 615px
+frame can have an empty media column. A measurement is a check on a
+screenshot, never a substitute for one. Custom elements default to
 `display: inline`, which drops background and vertical padding on screen while
 `getComputedStyle` still reports both — the heatmap catches it, the table does
 not.
@@ -268,9 +259,6 @@ four fields that matter: what happened, how it surfaced, what fixed it, and
 which rule or check should have caught it. That last field is what turns a
 list of incidents into a queue of standards gaps; `/harvest` takes a generic
 one up to Base from this repo.
-
-The gitignored "mistake log" this replaced was asked for on every build and
-created on none — a record nobody can see in a pull request is not a record.
 
 ## Closing the loop
 

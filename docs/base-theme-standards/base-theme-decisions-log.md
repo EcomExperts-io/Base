@@ -235,6 +235,10 @@ breakpoint split — and fall under the retrofit ruling below.
 
 ## Open
 
+- **`templates/product.json` sets `image_ratio` on shop-the-look, which its
+  schema never defines.** Shopify drops the key silently; the template value
+  does nothing. Fix with the retrofit below (define the setting or remove the
+  key), not in tooling work.
 - **Retrofit Base's own sections to the contract.** The earlier ruling (above)
   left 24 of 46 sections non-compliant to keep a tooling change pure. The
   audit of 14 Sep 2026 argues the other way: the reference implementation is

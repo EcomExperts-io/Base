@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
 """commerce-check.py — walk the purchase path on OUR theme and prove each step with the engine's own event.
 
-Why this exists
----------------
-On one client rebuild commerce came last: the cart drawer, discount codes and
-subscription plans were built after the pages, and the client reopened the
-largest bundle as "doesn't add with the correct discount" after a card had
-been marked done. Nothing in the workflow had walked the
-purchase path; a pixel report cannot. This does, headless, at every width the
-QA team tests at, and it reads the result from `cart:change` — never from a
-fixed sleep, which read a stale DOM and looked exactly like a broken cart
-(incident 2026-09-17).
+Usage
+-----
+  python3 .claude/scripts/commerce-check.py --url <product page URL> [--widths 393,768,1024,1440]
+      [--discount-code CODE] [--market CC] [--out .claude/verify/commerce] [--allow-live] [--no-mutate]
+
+The URL is a product page on the dev server (http://127.0.0.1:9292/products/x)
+or the development theme's preview (https://store/products/x?preview_theme_id=ID).
+--no-mutate loads the page and checks the engine only — nothing is added.
+Exit 0 when every step passed, 1 when any failed, 2 on usage, 3+ as live-parity.
 
 What it checks, per width (393, 768, 1024, 1440 by default)
   engine     window.Cart with add/change/update/refresh, and #cart-data seeded
   add        submitting the real product form adds one line; the drawer opens;
              [data-cart-count] updates
   change     the quantity stepper link changes the line to 2 and keeps its
-             properties (Shopify replaces properties on /cart/change — GitBot
-             Critical on a client pull request)
+             properties (Shopify replaces properties on /cart/change)
   discount   with --discount-code: the code is applied and /cart.js lists it
-             as applicable (Liquid's cart JSON has none — incident 2026-10-20)
+             as applicable (Liquid's cart JSON has none)
   remove     the remove link empties the cart and the empty state renders
   market     with --market CC: the localization form switches country and
              prices re-render in that market's currency, then switches back
@@ -31,20 +29,13 @@ What it does not do — and says so in the report
   safari     Chrome only; the QA checklist carries the WebKit row
   checkout   never clicked; the cart is emptied at the end of the run
 
-Guarantees: the theme the page rendered is asserted from Shopify.theme (a
-leaked preview cookie makes "ours" the live theme — refused unless
---allow-live); analytics hosts are blocked so test adds fire no pixels; one
-Chrome, one run slot, closed on exit (laptop rules, via live-parity.py).
-
-Usage
------
-  python3 .claude/scripts/commerce-check.py --url <product page URL> [--widths 393,768,1024,1440]
-      [--discount-code CODE] [--market CC] [--out .claude/verify/commerce] [--allow-live] [--no-mutate]
-
-The URL is a product page on the dev server (http://127.0.0.1:9292/products/x)
-or the development theme's preview (https://store/products/x?preview_theme_id=ID).
---no-mutate loads the page and checks the engine only — nothing is added.
-Exit 0 when every step passed, 1 when any failed, 2 on usage, 3+ as live-parity.
+Notes:
+- Each result is read from the engine's `cart:change` event, never from a
+  fixed sleep, which reads a stale DOM and looks exactly like a broken cart.
+- The theme the page rendered is asserted from Shopify.theme (a leaked preview
+  cookie makes "ours" the live theme — refused unless --allow-live); analytics
+  hosts are blocked so test adds fire no pixels; one Chrome, one run slot,
+  closed on exit (laptop rules, via live-parity.py).
 """
 
 import datetime

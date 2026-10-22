@@ -23,9 +23,7 @@ Two more that cost nothing:
 
 ## What we send back
 
-Running our readiness check on a frame produces a short list like this — the
-same list you would get from us as a question, only before we have spent a day
-on it:
+Our readiness check on a frame produces a list like this:
 
 ```
 Figma readiness — Default header (329:26263, 1440×110)
@@ -42,7 +40,7 @@ Figma readiness — Default header (329:26263, 1440×110)
 ```
 
 Green means we build. Anything else means one round of renaming and a comment
-or two — ten minutes for you, a day saved for both of us.
+or two.
 
 ## What no frame can tell us
 

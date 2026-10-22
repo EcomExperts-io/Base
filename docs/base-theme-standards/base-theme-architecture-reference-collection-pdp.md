@@ -82,25 +82,21 @@ if (!customElements.get('collection-info')) {
 }
 ```
  
-The guard itself is universal (confirmed in all eight modules examined:
-`CollectionInfo`, `ProductInfo`, `ProductCard`, `PriceRange`,
-`InfiniteScroll`, `FeaturedProducts`, `RelatedProductsCarousel`,
-`FeaturedCollectionsV2`). **Correction (verified against code):**
-"initialize in `connectedCallback`" is the majority pattern, not a
-universal one — `ProductInfo`, `ProductCard`, `PriceRange`,
-`FeaturedProducts`, `RelatedProductsCarousel`, and
-`FeaturedCollectionsV2` wire up there, but `CollectionInfo` (the
-`collection-info` example above) and `InfiniteScroll` both wire up their
-listeners/observer directly in the `constructor` instead
-(`assets/section-collection.js`, `assets/component-infinite-scroll.js`)
-— check the specific file rather than assuming `connectedCallback`.
-Cleanup in `disconnectedCallback` is even less consistent: only the
-three carousel classes (`FeaturedProducts`, `RelatedProductsCarousel`,
-`FeaturedCollectionsV2`) define one; `CollectionInfo`, `ProductInfo`,
-`ProductCard`, `PriceRange`, and `InfiniteScroll` don't. Note:
-`variant-selector` and `quantity-selector` on the PDP are semantic tags
-only — no `customElements.define` found for them (confirmed via
-repo-wide grep); don't assume every custom tag has a JS class behind it.
+The guard is universal across all eight modules (`CollectionInfo`,
+`ProductInfo`, `ProductCard`, `PriceRange`, `InfiniteScroll`,
+`FeaturedProducts`, `RelatedProductsCarousel`, `FeaturedCollectionsV2`).
+Initialising in `connectedCallback` is the majority pattern, not a
+universal one: `ProductInfo`, `ProductCard`, `PriceRange`,
+`FeaturedProducts`, `RelatedProductsCarousel` and `FeaturedCollectionsV2`
+wire up there, but `CollectionInfo` and `InfiniteScroll` wire up their
+listeners/observer in the `constructor` (`assets/section-collection.js`,
+`assets/component-infinite-scroll.js`) — check the specific file rather
+than assuming `connectedCallback`. Cleanup in `disconnectedCallback` is
+less consistent still: only the three carousel classes define one;
+`CollectionInfo`, `ProductInfo`, `ProductCard`, `PriceRange` and
+`InfiniteScroll` don't. `variant-selector` and `quantity-selector` on the
+PDP are semantic tags only — no `customElements.define` exists for them;
+don't assume every custom tag has a JS class behind it.
  
 **Data-attribute contract (markup ↔ JS):**
  
@@ -155,10 +151,10 @@ templates — not bundled per section.
 4. Serialize with `new FormData(form) → URLSearchParams`.
 5. `fetch(pathname + ?section_id=SECTION_ID + & + params)`, parse HTML, swap targeted fragments, `history.pushState`.
 6. Never full-page navigate for filter/sort/pagination when JS is active.
-**Corrected — filtering is form-based, but there are only two form IDs,
-not three:** `#filters-form` (shared by both `component-filters-sidebar.liquid`
-and `component-filters-horizontal.liquid` — they render the same ID, not
-distinct variants) and `#filters-form-drawer` (`component-filters-drawer.liquid`).
+**Filtering is form-based, with two form IDs:** `#filters-form` (shared by
+`component-filters-sidebar.liquid` and `component-filters-horizontal.liquid`
+— they render the same ID) and `#filters-form-drawer`
+(`component-filters-drawer.liquid`).
 The sort `<select>` sits outside both and associates via the HTML `form=`
 attribute, set dynamically per `section.settings.filter_type`:
 `form="filters-form-drawer"` when `filter_type == 'drawer'`, otherwise
@@ -170,8 +166,8 @@ Shopify-generated `name`/`value` pairs.
 the form (`closest('form')` or fallback IDs), builds
 `FormData → URLSearchParams`, preserves an existing `q` search param,
 strips default price params via `removeDefaultPriceFilters()`, then calls
-`fetchSection(finalParams)`. **Corrected — precise attribute split in the
-price-range widget** (`snippets/component-filters-price-range.liquid`):
+`fetchSection(finalParams)`. **Attribute split in the price-range widget**
+(`snippets/component-filters-price-range.liquid`):
 the range inputs (`.min-range`/`.max-range`) carry both `name` (the
 Shopify facet param) and `data-render-section`, so they're what actually
 reaches `FormData`; the paired number inputs (`.min-number`/`.max-number`)
@@ -198,8 +194,8 @@ fetch(`${window.location.pathname}?section_id=${this.dataset.section}&${searchPa
 history.pushState({}, '', `${window.location.pathname}?${searchParams}`);
 ```
  
-**Corrected — list was missing two fragments.** Updated fragments by ID
-(per `CollectionInfo.fetchSection` in `assets/section-collection.js`):
+Updated fragments by ID (per `CollectionInfo.fetchSection` in
+`assets/section-collection.js`):
 `product-grid-{id}`, `results-count-{id}`, `drawer-results-count-{id}`,
 `active-filters-count-{id}`, `active-filter-group-{id}`, `sort-by-{id}` /
 `sort-by-drawer-{id}`, `filters-drawer-buttons-wrapper-id`, plus all
@@ -282,43 +278,3 @@ filter history, unlike variant changes).
 | PDP updates | Section API + patch by ID; `replaceState` for variant | `option_values=` query param; modal `-modal-{timestamp}` ID hack |
 | Price filter | Widget syncs UI; form names carry API params | Strip default price params before fetch |
 | Alpine vs. custom elements | Alpine for UI chrome; CE for fetch/URL | `$persist` for "show more" in facets |
-
----
-
-## Change Log
-
-- **Aug 5, 2026** — Independent verification pass against the actual
-  Base Theme code (`native-cart` branch, last commit June 10, 2026 — no
-  code changes since this doc was written, so all corrections below are
-  "inaccurate as originally written," not staleness). Three corrections
-  made, all in Section 2 and Section 3:
-  - **Custom element lifecycle:** "Register once, initialize in
-    `connectedCallback`" was stated as a universal pattern but isn't —
-    `CollectionInfo` (`assets/section-collection.js`) and
-    `InfiniteScroll` (`assets/component-infinite-scroll.js`) both wire
-    up in the `constructor` instead, confirmed by reading all eight
-    referenced modules directly. Notably, `CollectionInfo` is the same
-    class used as the doc's own illustrative code sample for the guard
-    pattern.
-  - **Fragment ID list:** was missing two IDs that `CollectionInfo.fetchSection`
-    actually updates — `drawer-results-count-{id}` and
-    `active-filters-count-{id}` (both present in
-    `assets/section-collection.js`, lines ~104–106).
-  - **Form ID count and price-range attribute split:** "three form IDs"
-    was corrected to two (`#filters-form` is shared by both the sidebar
-    and horizontal filter snippets, not a distinct ID per layout); the
-    sort `<select>`'s dynamic `form=` target (drawer vs. non-drawer) was
-    added; and the price-range description's "no `name`" claim was
-    corrected to specify that only the *number* inputs lack `name` — the
-    *range* inputs carry both `name` and `data-render-section`, per
-    `snippets/component-filters-price-range.liquid`.
-  - Everything else checked — File Organization, the data-attribute
-    contract table, the carousel-ownership claims (including
-    cross-checking `component-product-card.js` never contains carousel
-    logic), the PDP variant-fetch flow, Swiper's template-gated loading
-    in `layout/theme.liquid`, `variant-selector`/`quantity-selector`
-    having no `customElements.define`, and the Patterns/Anti-Patterns
-    tables — confirmed accurate against the code as-is. See the
-    Decisions Log for the carousel-ownership-specific verification
-    (unchanged, no corrections needed there).
- 

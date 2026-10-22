@@ -97,8 +97,7 @@ proving it is fine than they would have spent on a real defect.
 
 Each of these passes Theme Check and every local gate, then fails on upload —
 and one rejected file leaves `theme dev` serving a 500 on every route, or the
-old file, with the error only in the dev-server terminal. All found on one
-client rebuild, Sep–Oct 2026.
+old file, with the error only in the dev-server terminal.
 
 | Rejected on upload | Do instead |
 |---|---|

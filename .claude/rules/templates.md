@@ -162,8 +162,8 @@ in the one file an agent reads while assembling a template.
 
 ## Traps that take the whole theme down
 
-Neither of these is reported by Theme Check. Both were found on a client build
-by every route returning 500, or by a key path rendering to a customer.
+None of these is reported by Theme Check; each shows up as every route
+returning 500, or as a key path rendering to a customer.
 
 - **`t:` keys do not resolve in template values.** Shopify resolves `t:` in a
   schema `default`, not in a value stored in a template. A preset copied into
@@ -179,9 +179,9 @@ by every route returning 500, or by a key path rendering to a customer.
   against the schema the store has at that moment, discards a key it does not
   know, and the later schema upload does not restore it. The file on disk still
   carries the value and nothing warns. When one change adds a setting and sets
-  it in a template, restart the dev server before believing the page. Found
-  twice on one client rebuild. `check-conventions.py` warns on a template key its section's
-  schema does not define — which also catches a typo in the key.
+  it in a template, restart the dev server before believing the page.
+  `check-conventions.py` warns on a template key its section's schema does not
+  define — which also catches a typo in the key.
 - **Read the product's `template_suffix` before editing a product template.**
   `product.json` and `product.<suffix>.json` can carry identical sections; an
   edit to the one that does not render uploads cleanly and changes nothing.

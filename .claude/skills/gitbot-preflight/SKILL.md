@@ -7,10 +7,9 @@ argument-hint: [branch]
 # gitbot-preflight
 
 GitBot reviews every push on every branch of every client repository against
-Base's rules, and posts in the client's Slack channel. On one rebuild nothing
-in the build read those posts: 532 of 1,363 commits were fixes, and the review
-that would have named most of them was sitting in Slack a minute after each
-push. This skill closes that gap from inside the session.
+Base's rules, and posts in the client's Slack channel a minute after the push.
+This skill reads that review from inside the session and settles every finding
+before the pull request.
 
 **Base itself is not in GitBot's repository list.** This skill is for client
 forks. In Base, the local gate is the whole preflight.
@@ -72,8 +71,7 @@ left for the lead to find on the PR.
 - **Record** when a finding is something the local gate should have caught
   — a greppable pattern, a platform limit, a Liquid trap — with
   `/record-incident`, naming `check-conventions.py` or the rule. That is
-  how the gate learns; the ten checks in Step 1 are one rebuild's most
-  frequent findings written down.
+  how the gate learns.
 
 Then push again and re-run Step 2. The follow-up review reports each earlier
 finding fixed or still open; stop when nothing is open.

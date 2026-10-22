@@ -609,9 +609,8 @@ Write CSS that gracefully handles edge cases:
 }
 ```
 
-Six more, each measured on a client build where every computed style read
-correct and the page rendered wrong. The accounts are in
-`.claude/references/layout-pitfalls.md`; the short form:
+Six more where every computed style reads correct and the page renders wrong
+(symptom, cause and fix in `.claude/references/layout-pitfalls.md`):
 
 - Inside a scrolling flex container every child that is not the scroll area
   needs `flex-shrink: 0` — an `aspect-ratio` box most of all.

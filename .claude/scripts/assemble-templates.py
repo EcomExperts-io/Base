@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Assemble a page template from per-agent fragments, or validate one, against the section schemas.
 
-Why this exists
----------------
-A landing-page batch builds a template with several agents: each owns a few
-sections and writes its content as a fragment, and the orchestrator assembles
-the page in live's section order. Done by hand on one rebuild's first batch,
-the assembly was where the silent defects lived — a `t:` value left in a template
-renders the key path to the shopper, a range off its step or a `<br>` in an
-`inline_richtext` is rejected on upload and 500s every route, and an unknown
-setting is dropped without a word. Shopify reports none of it before the push.
-This validates every setting of every section against the schema the theme
-actually has, before anything is written.
+Usage
+-----
+  assemble-templates.py --fragments <dir> --templates a,b [--live-path <live theme dir> | --orders orders.json]
+                        [--layout landing] [--write]
+  assemble-templates.py --validate-file templates/page.x.json [templates/...]
+
+Without --write it only reports. Exit 1 on any error or missing fragment.
+
+Notes
+-----
+Shopify reports none of these before the push: a `t:` value left in a template
+renders the key path to the shopper; a range off its step or a `<br>` in an
+`inline_richtext` is rejected on upload and 500s every route; an unknown
+setting is dropped without a word.
 
 Fragments
 ---------
@@ -26,14 +29,6 @@ Keys starting with `_` never reach the template.
 Order comes from the live template when --live-path points at a pulled live
 theme (templates/page.<name>.json there); otherwise from --orders, a JSON file
 {"<template>": ["key", ...]}; otherwise from the fragments as found.
-
-Usage
------
-  assemble-templates.py --fragments <dir> --templates a,b [--live-path <live theme dir> | --orders orders.json]
-                        [--layout landing] [--write]
-  assemble-templates.py --validate-file templates/page.x.json [templates/...]
-
-Without --write it only reports. Exit 1 on any error or missing fragment.
 """
 
 import argparse

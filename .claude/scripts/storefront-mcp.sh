@@ -2,16 +2,9 @@
 # Talk to a store's Storefront MCP endpoint — the read-only catalog, policies
 # and cart tools Shopify exposes on every store at /api/mcp, no auth required.
 #
-# Why this exists
-# ---------------
-# "No invented data" is a rule the review agents enforce after the fact. The
-# check that prevents it is asking the store what it has before wiring a
-# section to it: does any product carry this metafield, does the collection
-# the homepage band links to have products, what are the shipping policies the
-# footer should show. Storefront MCP answers those without admin credentials.
-#
-# A password-protected or development store exposes fewer tools (often only
-# policies/FAQs); the tools/list call below says which are available.
+# Notes:
+#   A password-protected or development store exposes fewer tools (often only
+#   policies/FAQs); the tools/list call below says which are available.
 #
 # Usage:
 #   storefront-mcp.sh <store-handle-or-domain> list
