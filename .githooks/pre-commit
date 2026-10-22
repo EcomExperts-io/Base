@@ -36,7 +36,7 @@ fi
 # the file named. Unlike the old blanket `git add .`, this stages only the
 # generated tree, and only after the generator succeeded.
 if SYNC_OUT=$(sh .claude/scripts/sync-ai-config.sh 2>&1); then
-  git add .cursor
+  git add .cursor .agents .codex AGENTS.md
 else
   echo "$SYNC_OUT"
   echo ""

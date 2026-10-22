@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh .codex/hooks/post-edit-gate.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh .codex/hooks/session-start.sh",
+            "timeout": 20,
+            "statusMessage": "Base: reading the state of the theme"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/hooks/stop-gate.py",
+            "timeout": 150,
+            "statusMessage": "Base: running the gate on this turn's changes"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -40,8 +40,8 @@ def check_flags(argv, known, usage):
         i += 1
     return None
 
-TOOLING_PREFIXES = (".claude/", ".githooks/", "docs/ai-workflow/", "docs/base-theme-standards/")
-TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", ".github/workflows/theme-review.yml"}
+TOOLING_PREFIXES = (".claude/", ".githooks/", ".agents/", ".codex/", "docs/ai-workflow/", "docs/base-theme-standards/")
+TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", "AGENTS.md", ".github/workflows/theme-review.yml"}
 EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/", ".claude/.cache/",
                     ".claude/verify/", "docs/ai-workflow/incidents/")
 # The one file under the excluded incidents directory that does travel. Incidents

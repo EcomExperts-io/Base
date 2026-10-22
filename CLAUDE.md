@@ -90,8 +90,10 @@ documentation that guides the work — including this file — is kept true.
 
 `.cursor/rules/*.mdc` is the Cursor-readable copy of the same content,
 generated from `.claude/rules/` — as are `.cursor/skills`, `agents`,
-`workflows`, `references` and `hooks`. **Edit `.claude/` only.** The pre-commit
-hook regenerates the mirror and stages it; there is no command to remember.
+`workflows`, `references` and `hooks`. Codex reads the same content from
+`.agents/skills`, `.codex/hooks`, `.codex/agents` and `AGENTS.md`, generated
+the same way. **Edit `.claude/` only.** The pre-commit hook regenerates both
+mirrors and stages them; there is no command to remember.
 The two copies existing by hand is what hid the conventions from Claude Code
 for the first 18 days of a client build.
 

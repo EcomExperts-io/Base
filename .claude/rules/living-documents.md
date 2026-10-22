@@ -81,7 +81,8 @@ symptom appears. Rules stay short because references exist.
 `.claude/` is canonical. `.cursor/rules/*.mdc`, `.cursor/rules/examples/`,
 `.cursor/skills/`, `.cursor/agents/`, `.cursor/workflows/`,
 `.cursor/references/` and `.cursor/hooks/` are **generated** by
-`.claude/scripts/sync-ai-config.sh`. Edit the `.claude/` copy; the pre-commit
+`.claude/scripts/sync-ai-config.sh`, and so are the Codex copies:
+`.agents/skills/`, `.codex/hooks/`, `.codex/agents/` and `AGENTS.md`. Edit the `.claude/` copy; the pre-commit
 hook regenerates the mirror and stages it, so there is no command to remember
 — and never edit under `.cursor/`.
 
