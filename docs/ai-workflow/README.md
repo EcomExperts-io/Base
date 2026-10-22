@@ -2,7 +2,7 @@
 
 How a Figma design becomes Base Theme–standard code with AI doing the build,
 on any client store, by any developer on the team. The vision it serves is in
-[`base-theme-ai-workflow-vision.md`](../base-theme-standards/base-theme-ai-workflow-vision.md).
+[`base-theme-standards.md`](../base-theme-standards.md).
 
 ## The intent
 
@@ -82,7 +82,7 @@ Scope and order are a human call; the AI does not choose what to work on next.
 
 `/figma-readiness` scores the frame from `get_metadata` — default layer names,
 hidden leftovers, width in the name, components, text as text — and writes the
-designer's message if it is not green. Designers get [`figma-handoff-checklist.md`](./figma-handoff-checklist.md).
+designer's message if it is not green. Designers get [`figma-handoff.md`](./figma-handoff.md).
 
 ### 3. The AI fetches the design — one frame at a time, by node ID
 
@@ -140,7 +140,7 @@ inside the client repo. `check-tooling-drift.py` lists what is waiting either wa
 
 - **Verification is reported, not gated.** No diff threshold is set.
 - **Base does not pass its own compliance report** (`report-compliance.py`);
-  the retrofit is an open ruling in the decisions log. The gate stops the gap growing.
+  the retrofit is an open item in `docs/base-theme-standards.md`. The gate stops the gap growing.
 - **No company-owned Figma template file** for designers to copy from.
 - **No Admin API writes.** A page template with no page in admin is inert;
   `/store-recon` names it, nothing creates it.
@@ -154,7 +154,7 @@ inside the client repo. `check-tooling-drift.py` lists what is waiting either wa
 | Arrive on a repo | `base-link.sh`, `pull-base-tooling.py`, `npm run setup` (or `setup.sh`), `/recon-theme`, `/store-recon` |
 | Order of attack | `.claude/workflows/rebuild-playbook.md` |
 | A batch of landing pages matched to live | `.claude/workflows/landing-batch.md` — assembly with `assemble-templates.py`, pushes through `push-dev-theme.sh` |
-| Check a frame | `/figma-readiness` · designers: [`figma-handoff-checklist.md`](./figma-handoff-checklist.md) |
+| Check a frame | `/figma-readiness` · designers: [`figma-handoff.md`](./figma-handoff.md) |
 | Build a page or component | `/build-page-from-figma` |
 | New section | `/scaffold-section` |
 | Run the theme | `/run-theme` |
@@ -163,6 +163,4 @@ inside the client repo. `check-tooling-drift.py` lists what is waiting either wa
 | Close QA issues | `/close-qa-loop` |
 | Machine and repo health | `python3 .claude/scripts/doctor.py` · `check-tooling-drift.py` · `report-compliance.py` · `check-conventions.py --all` |
 | Merge gate | `shopify-pr-reviewer` |
-| Architecture references | Collection & PDP · Header, Cart Engine & Search — in `docs/base-theme-standards/` |
-| Rulings and open questions | `docs/base-theme-standards/base-theme-decisions-log.md` |
-| Designers, long form | [`figma-ai-friendly-design-practices.md`](./figma-ai-friendly-design-practices.md) |
+| Architecture, rulings and open items | [`base-theme-standards.md`](../base-theme-standards.md) |

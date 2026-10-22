@@ -24,6 +24,9 @@ they are wrong the moment something is learned and not written down.
 - Attach the consequence that makes a rule strict as one clause — what
   breaks — never the story of which build, who found it or when.
 - Remove information that has gone stale.
+- A Liquid mustache in docs prose or inline code goes in `<code v-pre>`;
+  VitePress evaluates it as Vue otherwise, and `check-docs-interpolation.py`
+  refuses the commit.
 
 **Do not wait to be asked.** Maintaining these is part of completing a task,
 not a follow-up to it.

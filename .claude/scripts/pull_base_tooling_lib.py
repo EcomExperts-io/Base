@@ -37,7 +37,7 @@ def check_flags(argv, known, usage):
         i += 1
     return None
 
-TOOLING_PREFIXES = (".claude/", ".githooks/", ".agents/", ".codex/", "docs/ai-workflow/", "docs/base-theme-standards/")
+TOOLING_PREFIXES = (".claude/", ".githooks/", ".agents/", ".codex/", "docs/ai-workflow/", "docs/base-theme-standards.md")
 TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", "AGENTS.md", ".github/workflows/theme-review.yml"}
 EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/", ".claude/.cache/",
                     ".claude/verify/", "docs/ai-workflow/incidents/")
@@ -53,6 +53,16 @@ INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 # a hand merge.
 RETIRED = {
     ".claude/skills/verify-against-figma/SKILL.md": ".claude/skills/verify-against-reference/SKILL.md",
+    ".claude/references/equal-height-column-pitfalls.md": ".claude/references/layout-pitfalls.md",
+    ".claude/references/vitepress-docs.md": None,
+    ".claude/agents/shopify-standards-coach.md": None,
+    "docs/ai-workflow/figma-ai-friendly-design-practices.md": "docs/ai-workflow/figma-handoff.md",
+    "docs/ai-workflow/figma-handoff-checklist.md": "docs/ai-workflow/figma-handoff.md",
+    "docs/base-theme-standards/base-theme-ai-workflow-vision.md": "docs/base-theme-standards.md",
+    "docs/base-theme-standards/base-theme-architecture-reference-collection-pdp.md": "docs/base-theme-standards.md",
+    "docs/base-theme-standards/base-theme-architecture-reference-header-cart-search.md": "docs/base-theme-standards.md",
+    "docs/base-theme-standards/base-theme-compliance-checklist.md": "docs/base-theme-standards.md",
+    "docs/base-theme-standards/base-theme-decisions-log.md": "docs/base-theme-standards.md",
 }
 
 

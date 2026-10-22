@@ -22,7 +22,7 @@ What counts as tooling
 ----------------------
 See pull_base_tooling_lib.py: .claude/** (except per-machine state),
 .githooks/**, .mcp.json, .theme-check.yml, CLAUDE.md, docs/ai-workflow/**,
-docs/base-theme-standards/**. Incidents are excluded — they belong to the repo
+docs/base-theme-standards.md. Incidents are excluded — they belong to the repo
 that recorded them. The CI workflow is special: a fork gets the six-line
 CALLER that uses Base's reusable workflow, never a copy of the steps.
 

@@ -172,8 +172,8 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 > **Existing sections are not retrofitted as part of unrelated work.** None of
 > Base's 48 carries the mobile pair yet; a section still on the multiplier is
 > legacy, not a bug to fix while passing through — the same standing rule as
-> the 750/769 breakpoint split above. The retrofit is an open ruling in the
-> decisions log. New sections carry all four.
+> the 750/769 breakpoint split above. The retrofit is an open item in
+> `docs/base-theme-standards.md`. New sections carry all four.
 
 The six `t:` keys above all resolve in `locales/en.default.schema.json` today —
 use them rather than inventing new ones.

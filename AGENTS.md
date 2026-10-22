@@ -1,7 +1,7 @@
 # AGENTS.md
 
 <!-- GENERATED from CLAUDE.md by .claude/scripts/sync-ai-config.sh - do not edit here. The files it names live under .claude/; .codex/ holds the Codex wiring and the generated hooks and agents. -->
-<!-- checksum: 2967548992 -->
+<!-- checksum: 61986593 -->
 
 Guidance for Codex (and any AI coding tool) working in the Base Theme
 repository, and in the client themes forked from it.
@@ -19,7 +19,7 @@ correct. Where Base contradicts the rules in `.claude/rules/`, the rules win —
 they describe the standard, and some of Base's older code predates it. Do not
 "fix" Base to match while working on an unrelated task: `/record-incident` it,
 move on. (The standing count is `python3 .claude/scripts/report-compliance.py`;
-the retrofit itself is an open ruling in the decisions log.)
+the retrofit itself is an open item in `docs/base-theme-standards.md`.)
 
 ## Stack
 
@@ -143,10 +143,10 @@ client's, and the tooling pull does not touch it).
   live, with its three agent briefs). Point an agent at the file; none is auto-loaded.
 - `.claude/references/` — symptom, cause and fix for traps too situational for
   a rule. Rules stay short because these exist.
-- `docs/base-theme-standards/` — the architecture references (Collection &
-  PDP; Header, Cart Engine & Search), the compliance checklist, the decisions
-  log, the vision. `docs/ai-workflow/` — the workflow, the first build, the
-  designer checklist, and `incidents/`.
+- `docs/base-theme-standards.md` — what Base is: the collection and PDP
+  pattern, the shell, cart engine and search, the rulings, and the open
+  items. `docs/ai-workflow/` — the workflow, the first build, the Figma
+  handoff, and `incidents/`.
 
 ## Flowing changes between Base and the forks
 

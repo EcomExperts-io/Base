@@ -227,6 +227,22 @@ the 301 and nothing to follow. Half of all pairs happen to be in order, which is
 why a filter UI passes a hand test and fails for shoppers. Sort before building
 the path: `assign next_tags = next_tags | split: '+' | sort | join: '+'`.
 
+### Date arithmetic: `date: '%s'` returns a string
+
+Liquid has no date maths; add seconds to a coerced timestamp. `%e` is
+space-padded, so strip it before coercing.
+
+```liquid
+assign stamp = 'now' | date: '%s' | plus: 0
+assign stamp = days | times: 86400 | plus: stamp
+assign day   = stamp | date: '%e' | strip | plus: 0
+assign month = stamp | date: '%b'
+```
+
+Ordinals need the teens exception (`day | modulo: 100` between 11 and 13 is
+always "th"); keep the suffixes as translation keys. `'now'` is UTC and the
+page cache can hold the value across midnight.
+
 ### Nil is not an error
 
 Liquid is nil-tolerant, and this is the single most common source of invented

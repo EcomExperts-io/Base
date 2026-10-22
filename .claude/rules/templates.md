@@ -185,3 +185,7 @@ returning 500, or as a key path rendering to a customer.
 - **Read the product's `template_suffix` before editing a product template.**
   `product.json` and `product.<suffix>.json` can carry identical sections; an
   edit to the one that does not render uploads cleanly and changes nothing.
+- **JSON templates and `config/settings_data.json` are editor-owned.** The
+  admin theme editor writes them, so a push overwrites a merchant's change.
+  Pull and diff before pushing one:
+  `shopify theme pull --only templates/index.json && git diff templates/index.json`.

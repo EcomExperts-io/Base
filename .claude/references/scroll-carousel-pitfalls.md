@@ -39,7 +39,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 
 - **Symptom.** A drag that ends over a slide's `<a>` navigates; the browser's native image-drag fights the gesture.
 - **Cause.** A pointer drag ends with a click. Touch already scrolls natively with momentum, so a JS drag is for mouse and pen only.
-- **Fix.** Return early on `pointerType === 'touch'`, `preventDefault()` on `dragstart`, and suppress the click in the capture phase, gated on distance (the completed-drag form is in §12).
+- **Fix.** Return early on `pointerType === 'touch'`, `preventDefault()` on `dragstart`, and suppress the click in the capture phase, gated on distance (the completed-drag form is in §11).
   ```js
   onClickCapture(event) {
     if (this.dragDistance <= 5) return; // real click, let it through
@@ -80,17 +80,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
   .product-tile__action { grid-column: 1; }
   ```
 
-## 8. Measuring a section against a Figma frame
-
-Render the frame once at 1:1 and measure the PNG:
-
-- Full-bleed bands: sample one gutter column down the render and group runs of identical colour.
-- Element boxes: a bounding-box scan thresholded against the section background, **y-range restricted first** — a whole-section scan merges heading, portrait and body copy into one box; a row profile (on-pixels per row) shows the bands.
-- Text size: match *width*, not cap height — render at a guess, then `font-size × design_width / rendered_width`.
-- A soft-alpha cutout has no hard edge: anchor on the silhouette width and derive the height from the intrinsic aspect.
-- Compare `document.documentElement.clientWidth` to the frame width; a scrollbar lays a 1440 window out at 1425 and every x is 15px out. Emulate 1455 to lay out at 1440.
-
-## 9. Progress-thumb travel must be measured against the bar, not the track
+## 8. Progress-thumb travel must be measured against the bar, not the track
 
 - **Symptom.** The thumb overshoots the end of its bar on the last slide and sits on top of the counter.
 - **Cause.** Mixed reference widths: `--carousel-thumb-width` is a percentage of the bar, while the offset was `ratio * (1 - visibleFraction) * track.clientWidth` in pixels of the track. The counter and the flex gap make the bar narrower than the track, so at `ratio: 1` the thumb runs past by `(1 - visibleFraction) * (trackWidth - barWidth)`.
@@ -108,10 +98,10 @@ Render the frame once at 1:1 and measure the PNG:
   ```
 - **Check.** Assert at 0 and at max only: `scroll-snap-type: x mandatory` snaps `scrollLeft = max * 0.5` to the nearest snap point and the thumb legitimately reads unmoved.
 
-## 10. Dot index must come from scroll *progress*, not scrollLeft ÷ viewport
+## 9. Dot index must come from scroll *progress*, not scrollLeft ÷ viewport
 
 - **Symptom.** The last dot never lights; at the end of the track the indicator sits on the middle dot of three.
-- **Cause.** Total travel is `scrollWidth - clientWidth`, not `pages × clientWidth`. At `scrollWidth 823`, `clientWidth 343` the track travels 1.4 viewports while `ceil()` counts 3 dots, so `scrollLeft / clientWidth` tops out at 1 — whenever `per_view` is fractional. Same root cause as §9: a position computed against one length and applied to another.
+- **Cause.** Total travel is `scrollWidth - clientWidth`, not `pages × clientWidth`. At `scrollWidth 823`, `clientWidth 343` the track travels 1.4 viewports while `ceil()` counts 3 dots, so `scrollLeft / clientWidth` tops out at 1 — whenever `per_view` is fractional. Same root cause as §8: a position computed against one length and applied to another.
   ```js
   const pages = Math.ceil(scrollWidth / clientWidth);      // 3
   const page  = Math.round(scrollLeft / clientWidth);      // tops out at 1
@@ -123,7 +113,7 @@ Render the frame once at 1:1 and measure the PNG:
   ```
 - **Check.** Sample 0 / 25 / 50 / 75 / 100 %: monotonic, starts at 0, ends at `pages - 1`.
 
-## 11. A hidden browser pane will not commit programmatic scrolls
+## 10. A hidden browser pane will not commit programmatic scrolls
 
 - **Symptom.** `track.scrollLeft = 137` reads back `0` on a live, overflowing track — via `scrollBy`/`scrollTo` too, with snap disabled. Assigning the *end* position happens to persist, which makes it look intermittent.
 - **Cause.** The Browser pane is hidden, so the scroller never commits. Nothing is wrong with the page.
@@ -134,7 +124,7 @@ Render the frame once at 1:1 and measure the PNG:
   /* assert on the indicator, then: */ delete track.scrollLeft;
   ```
 
-## 12. `setPointerCapture` on pointerdown steals every click inside the track
+## 11. `setPointerCapture` on pointerdown steals every click inside the track
 
 - **Symptom.** A button inside the track responds to the keyboard but not the mouse — space works, click does not.
 - **Cause.** While pointer capture is active the following `click` is dispatched at the capturing element, so it never reaches the button; and the track enters drag mode on a plain press.
