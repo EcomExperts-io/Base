@@ -1,0 +1,565 @@
+<title>Base Workflow v3 Walkthrough</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a control bar, one caption line, and the board; one scenario at a time, one step at a time. */
+:root {
+  --bg: #f6f7f5; --fg: #1d2327; --muted: #5a6670; --panel: #ffffff; --line: #d3d9d6;
+  --lane-alt: rgba(29,35,39,0.035); --lane-gate: rgba(201,120,10,0.07);
+  --accent: #b9650a; --gate: #fff4e3; --hi: #b9650a;
+  --font-body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15191c; --fg: #e6e9e7; --muted: #9aa5ad; --panel: #1e2428; --line: #333c42;
+  --lane-alt: rgba(230,233,231,0.04); --lane-gate: rgba(240,160,60,0.09);
+  --accent: #f0a23c; --gate: #2b2419; --hi: #f0a23c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #15191c; --fg: #e6e9e7; --muted: #9aa5ad; --panel: #1e2428; --line: #333c42;
+  --lane-alt: rgba(230,233,231,0.04); --lane-gate: rgba(240,160,60,0.09);
+  --accent: #f0a23c; --gate: #2b2419; --hi: #f0a23c; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px 48px; }
+.wrap { max-width: 1180px; margin-inline: auto; }
+h1 { font-size: 1.7rem; margin: 0 0 4px; font-weight: 600; text-wrap: balance; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.intro { max-width: 68ch; color: var(--muted); margin: 0 0 16px; }
+.bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+button { font: inherit; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+button[aria-pressed="true"] { border-color: var(--hi); box-shadow: inset 0 0 0 1px var(--hi); }
+button.primary { background: var(--hi); color: #15191c; border-color: var(--hi); font-weight: 600; }
+.ctl { display: flex; gap: 6px; margin-left: auto; }
+.caption { min-height: 4.5em; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
+.step-no { font-family: var(--font-mono); font-size: 12px; color: var(--hi); padding-top: 4px; white-space: nowrap; }
+.caption p { margin: 0; max-width: 72ch; }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); margin-top: 12px; }
+.scroll svg { display: block; font-family: var(--font-body); }
+.scroll svg[hidden] { display: none; }
+.node, .edge { opacity: 0.18; transition: opacity 0.35s ease; }
+@media (prefers-reduced-motion: reduce) { .node, .edge { transition: none; } }
+.node.seen, .edge.seen { opacity: 1; }
+.node.now rect { stroke: var(--hi); stroke-width: 3; }
+.node.now text { font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.sw { width: 26px; height: 16px; border-radius: 3px; background: var(--panel); border: 1.3px solid var(--fg); display: inline-block; }
+.sw.human { border-radius: 8px; } .sw.gate { background: var(--gate); border: 1.8px solid var(--accent); } .sw.outside { border-style: dashed; }
+.hint { font-size: 13px; color: var(--muted); margin-top: 10px; }
+</style>
+<div class="wrap">
+<div class="eyebrow">Base theme · AI workflow v3 · walkthrough</div>
+<h1>What runs behind the scenes, one step at a time</h1>
+<p class="intro">Pick a situation, then press Play or step with Next. Each step lights one part of the board and says what happens there in one sentence. The orange lane is what fires on its own; the rest is what you or the session does.</p>
+<div class="bar">
+  <div class="tabs" role="tablist" aria-label="Scenario">
+    <button type="button" id="tab-a" role="tab" aria-pressed="true" data-fig="a">A · A fresh rebuild</button>
+    <button type="button" id="tab-b" role="tab" aria-pressed="false" data-fig="b">B · Joining midway</button>
+    <button type="button" id="tab-c" role="tab" aria-pressed="false" data-fig="c">C · After QA</button>
+  </div>
+  <div class="ctl">
+    <button type="button" id="btn-prev" aria-label="Previous step">Back</button>
+    <button type="button" id="btn-play" class="primary" aria-label="Play through the steps">Play</button>
+    <button type="button" id="btn-next" aria-label="Next step">Next</button>
+    <button type="button" id="btn-all" aria-label="Show the whole board">Show all</button>
+  </div>
+</div>
+<div class="caption" aria-live="polite"><div class="step-no" id="step-no">step 0 of 0</div><p id="step-text">Press Play.</p></div>
+<div class="scroll" id="board">
+<svg viewBox="0 0 2002 510" width="2002" height="510" role="img" aria-label="Scenario A board" xmlns="http://www.w3.org/2000/svg" data-fig="a">
+<defs><marker id="a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<rect x="0" y="28" width="2002" height="118" fill="none"/>
+<line x1="0" y1="28" x2="2002" y2="28" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="48" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">YOU</text>
+<rect x="0" y="146" width="2002" height="118" fill="var(--lane-alt)"/>
+<line x1="0" y1="146" x2="2002" y2="146" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="166" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">SESSION (SKILLS)</text>
+<rect x="0" y="264" width="2002" height="118" fill="var(--lane-gate)"/>
+<line x1="0" y1="264" x2="2002" y2="264" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="284" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">GATES — AUTOMATIC</text>
+<rect x="0" y="382" width="2002" height="118" fill="var(--lane-alt)"/>
+<line x1="0" y1="382" x2="2002" y2="382" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="402" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">OUTSIDE THE REPO</text>
+<g class="edge" id="a-e-start-ssh"><line x1="196.0" y1="115.0" x2="196.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="202.0" y="128.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">opens a session</text></g>
+<g class="edge" id="a-e-ssh-recon"><path d="M196.0 295.0 L196.0 264.0 L352.0 264.0 L352.0 233.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="274.0" y="259.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">context injected</text></g>
+<g class="edge" id="a-e-recon-live"><line x1="352.0" y1="233.0" x2="352.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="358.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">reads only</text></g>
+<g class="edge" id="a-e-recon-map"><line x1="408.0" y1="205.0" x2="452.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="430.0" y="199.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">writes</text></g>
+<g class="edge" id="a-e-map-ref"><path d="M508.0 177.0 L508.0 146.0 L664.0 146.0 L664.0 115.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="586.0" y="141.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">asks</text></g>
+<g class="edge" id="a-e-ref-order"><line x1="664.0" y1="115.0" x2="664.0" y2="177.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="670.0" y="128.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">per band</text></g>
+<g class="edge" id="a-e-order-build"><line x1="720.0" y1="205.0" x2="764.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/></g>
+<g class="edge" id="a-e-build-src"><line x1="820.0" y1="233.0" x2="820.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="826.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">look · behaviour · copy</text></g>
+<g class="edge" id="a-e-build-write"><line x1="876.0" y1="205.0" x2="920.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/></g>
+<g class="edge" id="a-e-write-post"><line x1="976.0" y1="233.0" x2="976.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="982.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">each file</text></g>
+<g class="edge" id="a-e-write-verify"><line x1="1032.0" y1="205.0" x2="1076.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/></g>
+<g class="edge" id="a-e-verify-dev"><line x1="1132.0" y1="233.0" x2="1132.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1138.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">renders</text></g>
+<g class="edge" id="a-e-verify-stop"><line x1="1132.0" y1="233.0" x2="1132.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1138.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">turn ends</text></g>
+<g class="edge" id="a-e-verify-commit"><line x1="1188.0" y1="205.0" x2="1232.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/></g>
+<g class="edge" id="a-e-commit-pre"><line x1="1288.0" y1="233.0" x2="1288.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1294.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">new file blocks</text></g>
+<g class="edge" id="a-e-commit-push"><line x1="1344.0" y1="205.0" x2="1388.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/></g>
+<g class="edge" id="a-e-push-gitbot"><line x1="1444.0" y1="233.0" x2="1444.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1450.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">every push</text></g>
+<g class="edge" id="a-e-push-nudge"><line x1="1444.0" y1="233.0" x2="1444.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/></g>
+<g class="edge" id="a-e-push-preflight"><line x1="1500.0" y1="205.0" x2="1544.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/></g>
+<g class="edge" id="a-e-preflight-gitbot"><path d="M1600.0 233.0 L1600.0 323.0 L1444.0 323.0 L1444.0 413.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1522.0" y="318.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">read · fix · flag</text></g>
+<g class="edge" id="a-e-preflight-ci"><line x1="1600.0" y1="233.0" x2="1600.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1606.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">PR</text></g>
+<g class="edge" id="a-e-ci-pr"><path d="M1600.0 295.0 L1600.0 205.0 L1756.0 205.0 L1756.0 115.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1678.0" y="200.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">green</text></g>
+<g class="edge" id="a-e-pr-hand"><line x1="1756.0" y1="115.0" x2="1756.0" y2="177.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1762.0" y="128.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">merge</text></g>
+<g class="edge" id="a-e-hand-notion"><line x1="1756.0" y1="233.0" x2="1756.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1762.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">comment</text></g>
+<g class="edge" id="a-e-hand-inc"><line x1="1812.0" y1="205.0" x2="1856.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1834.0" y="199.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">as you go</text></g>
+<g class="edge" id="a-e-inc-base"><line x1="1912.0" y1="233.0" x2="1912.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#a-arrow)"/><text x="1918.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">generic</text></g>
+<g class="edge" id="a-e-preflight-write"><path d="M1656.0 205.0 C1716.0 155.0 860.0 155.0 976.0 177.0" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#a-arrow)"/><text x="1316.0" y="157.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">findings → fix → push again</text></g>
+<g class="node" id="a-n-start"><rect x="140.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="196.0" y="84.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Start the repo</text>
+<text x="196.0" y="97.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">new-client-theme.sh</text>
+</g>
+<g class="node" id="a-n-ssh"><rect x="140.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="196.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">SessionStart hook</text>
+<text x="196.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">doctor · drift · open</text>
+<text x="196.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">incidents · 3 rules</text>
+</g>
+<g class="node" id="a-n-recon"><rect x="296.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="352.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/recon-theme</text>
+<text x="352.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">--live-url</text>
+<text x="352.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">/store-recon</text>
+</g>
+<g class="node" id="a-n-live"><rect x="296.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="352.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Live store</text>
+<text x="352.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">theme pull, apps,</text>
+<text x="352.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">popups, markets</text>
+</g>
+<g class="node" id="a-n-map"><rect x="452.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="508.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Reference map</text>
+<text x="508.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">state of the theme</text>
+<text x="508.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">gap table</text>
+</g>
+<g class="node" id="a-n-ref"><rect x="608.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="664.0" y="78.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Name the reference</text>
+<text x="664.0" y="91.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">Figma · live · both</text>
+<text x="664.0" y="104.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">per band</text>
+</g>
+<g class="node" id="a-n-order"><rect x="608.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="664.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Playbook order</text>
+<text x="664.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">1 foundations</text>
+<text x="664.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">2 commerce path</text>
+</g>
+<g class="node" id="a-n-build"><rect x="764.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="820.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/build-page-from-figma</text>
+<text x="820.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">or /build-section-</text>
+<text x="820.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">from-live</text>
+</g>
+<g class="node" id="a-n-src"><rect x="764.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="820.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Figma frame</text>
+<text x="820.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">or live page</text>
+<text x="820.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">(behaviour, copy)</text>
+</g>
+<g class="node" id="a-n-write"><rect x="920.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="976.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Write section,</text>
+<text x="976.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">template, locale</text>
+<text x="976.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">/scaffold-section</text>
+</g>
+<g class="node" id="a-n-post"><rect x="920.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="976.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">PostToolUse</text>
+<text x="976.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">contract · conventions</text>
+<text x="976.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">· JSON, per file</text>
+</g>
+<g class="node" id="a-n-verify"><rect x="1076.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1132.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/verify-against-</text>
+<text x="1132.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">reference</text>
+<text x="1132.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">+ commerce-check</text>
+</g>
+<g class="node" id="a-n-stop"><rect x="1076.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="1132.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Stop gate</text>
+<text x="1132.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">gate · Theme Check ·</text>
+<text x="1132.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">verify/commerce/GitBot</text>
+</g>
+<g class="node" id="a-n-dev"><rect x="1076.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1132.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Dev theme</text>
+<text x="1132.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">preview URL</text>
+<text x="1132.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">(never live)</text>
+</g>
+<g class="node" id="a-n-commit"><rect x="1232.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1288.0" y="209.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Commit</text>
+</g>
+<g class="node" id="a-n-pre"><rect x="1232.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="1288.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">pre-commit</text>
+<text x="1288.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">8 checks + both</text>
+<text x="1288.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">mirrors + self-tests</text>
+</g>
+<g class="node" id="a-n-push"><rect x="1388.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1444.0" y="209.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Push</text>
+</g>
+<g class="node" id="a-n-nudge"><rect x="1388.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="1444.0" y="320.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Push nudge</text>
+<text x="1444.0" y="333.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">→ /gitbot-preflight</text>
+</g>
+<g class="node" id="a-n-gitbot"><rect x="1388.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1444.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">GitBot review</text>
+<text x="1444.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">posts to Slack</text>
+<text x="1444.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">in 1–2 min</text>
+</g>
+<g class="node" id="a-n-preflight"><rect x="1544.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1600.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/gitbot-preflight</text>
+<text x="1600.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">fix, or flag with</text>
+<text x="1600.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">your reason</text>
+</g>
+<g class="node" id="a-n-ci"><rect x="1544.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="1600.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">CI on the PR</text>
+<text x="1600.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">same checks</text>
+<text x="1600.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">+ tooling drift</text>
+</g>
+<g class="node" id="a-n-pr"><rect x="1700.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="1756.0" y="84.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Review, say</text>
+<text x="1756.0" y="97.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">merge</text>
+</g>
+<g class="node" id="a-n-hand"><rect x="1700.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1756.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Notion handoff</text>
+<text x="1756.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">QA checklist incl.</text>
+<text x="1756.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">purchase path</text>
+</g>
+<g class="node" id="a-n-notion"><rect x="1700.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1756.0" y="438.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Notion card</text>
+<text x="1756.0" y="451.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">QI picks it up</text>
+</g>
+<g class="node" id="a-n-inc"><rect x="1856.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1912.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/record-incident</text>
+<text x="1912.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">the moment a rule</text>
+<text x="1912.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">should have caught</text>
+</g>
+<g class="node" id="a-n-base"><rect x="1856.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1912.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Base</text>
+<text x="1912.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">/harvest opens</text>
+<text x="1912.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">the PR</text>
+</g>
+</svg>
+<svg viewBox="0 0 1846 510" width="1846" height="510" role="img" aria-label="Scenario B board" xmlns="http://www.w3.org/2000/svg" data-fig="b">
+<defs><marker id="b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<rect x="0" y="28" width="1846" height="118" fill="none"/>
+<line x1="0" y1="28" x2="1846" y2="28" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="48" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">YOU</text>
+<rect x="0" y="146" width="1846" height="118" fill="var(--lane-alt)"/>
+<line x1="0" y1="146" x2="1846" y2="146" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="166" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">SESSION (SKILLS)</text>
+<rect x="0" y="264" width="1846" height="118" fill="var(--lane-gate)"/>
+<line x1="0" y1="264" x2="1846" y2="264" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="284" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">GATES — AUTOMATIC</text>
+<rect x="0" y="382" width="1846" height="118" fill="var(--lane-alt)"/>
+<line x1="0" y1="382" x2="1846" y2="382" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="402" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">OUTSIDE THE REPO</text>
+<g class="edge" id="b-e-arrive-link"><path d="M196.0 115.0 L196.0 146.0 L352.0 146.0 L352.0 177.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="274.0" y="141.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">three commands</text></g>
+<g class="edge" id="b-e-link-basew"><line x1="352.0" y1="233.0" x2="352.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="358.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">reads at the stamp</text></g>
+<g class="edge" id="b-e-link-ssh"><line x1="352.0" y1="233.0" x2="352.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="358.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">ADD · UPDATE · KEEP · RETIRE</text></g>
+<g class="edge" id="b-e-ssh-recon"><path d="M352.0 295.0 L352.0 264.0 L508.0 264.0 L508.0 233.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-recon-live"><line x1="508.0" y1="233.0" x2="508.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="514.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">inventory</text></g>
+<g class="edge" id="b-e-recon-verdict"><line x1="564.0" y1="205.0" x2="608.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="586.0" y="199.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">state doc</text></g>
+<g class="edge" id="b-e-verdict-decide"><path d="M664.0 177.0 L664.0 146.0 L820.0 146.0 L820.0 115.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-decide-order"><line x1="820.0" y1="115.0" x2="820.0" y2="177.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-order-xlog"><line x1="876.0" y1="205.0" x2="920.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-xlog-build"><line x1="1032.0" y1="205.0" x2="1076.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-build-post"><line x1="1132.0" y1="233.0" x2="1132.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="1138.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">each write</text></g>
+<g class="edge" id="b-e-build-regress"><line x1="1188.0" y1="205.0" x2="1232.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-regress-commerce"><line x1="1344.0" y1="205.0" x2="1388.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-commerce-dev"><line x1="1444.0" y1="233.0" x2="1444.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="1450.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">purchase path</text></g>
+<g class="edge" id="b-e-commerce-merge"><line x1="1500.0" y1="205.0" x2="1544.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="1522.0" y="199.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">green</text></g>
+<g class="edge" id="b-e-merge-gitbot"><line x1="1600.0" y1="233.0" x2="1600.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="1606.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">every push</text></g>
+<g class="edge" id="b-e-merge-harvest"><line x1="1656.0" y1="205.0" x2="1700.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/></g>
+<g class="edge" id="b-e-merge-done"><path d="M1600.0 177.0 L1600.0 146.0 L1756.0 146.0 L1756.0 115.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="1678.0" y="141.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">previews first</text></g>
+<g class="edge" id="b-e-harvest-base2"><line x1="1756.0" y1="233.0" x2="1756.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#b-arrow)"/><text x="1762.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">generic</text></g>
+<g class="edge" id="b-e-regress-build"><path d="M1344.0 205.0 C1404.0 155.0 1016.0 155.0 1132.0 177.0" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#b-arrow)"/><text x="1238.0" y="157.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">not 0.0% → not additive → fix</text></g>
+<g class="node" id="b-n-arrive"><rect x="140.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="196.0" y="78.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Arrive on a repo</text>
+<text x="196.0" y="91.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">someone else</text>
+<text x="196.0" y="104.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">started</text>
+</g>
+<g class="node" id="b-n-link"><rect x="296.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="352.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">base-link.sh</text>
+<text x="352.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">pull-base-tooling.py</text>
+<text x="352.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">three-way overlay</text>
+</g>
+<g class="node" id="b-n-basew"><rect x="296.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="352.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Base</text>
+<text x="352.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">development</text>
+<text x="352.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">(remote + worktree)</text>
+</g>
+<g class="node" id="b-n-ssh"><rect x="296.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="352.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">SessionStart</text>
+<text x="352.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">drift from Base ·</text>
+<text x="352.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">compliance · incidents</text>
+</g>
+<g class="node" id="b-n-recon"><rect x="452.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="508.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/recon-theme</text>
+<text x="508.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">--live-url</text>
+<text x="508.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">/store-recon</text>
+</g>
+<g class="node" id="b-n-live"><rect x="452.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="508.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Live store</text>
+<text x="508.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">+ the previous</text>
+<text x="508.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">team&#x27;s rule edits</text>
+</g>
+<g class="node" id="b-n-verdict"><rect x="608.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="664.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Carry verdict</text>
+<text x="664.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">as-is · with fixes ·</text>
+<text x="664.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">rebuild · missing</text>
+</g>
+<g class="node" id="b-n-decide"><rect x="764.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="820.0" y="78.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Argue in the state</text>
+<text x="820.0" y="91.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">doc, not in code;</text>
+<text x="820.0" y="104.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">pick the 3 decisions</text>
+</g>
+<g class="node" id="b-n-order"><rect x="764.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="820.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Missing list, sorted</text>
+<text x="820.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">by stage: commerce</text>
+<text x="820.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">before content</text>
+</g>
+<g class="node" id="b-n-xlog"><rect x="920.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="976.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Cross-batch log</text>
+<text x="976.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">if another session</text>
+<text x="976.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">runs in parallel</text>
+</g>
+<g class="node" id="b-n-build"><rect x="1076.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1132.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Per build: the</text>
+<text x="1132.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">same loop as a</text>
+<text x="1132.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">fresh rebuild</text>
+</g>
+<g class="node" id="b-n-post"><rect x="1076.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="1132.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">PostToolUse +</text>
+<text x="1132.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">Stop gate</text>
+<text x="1132.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">(legacy reported, not gated)</text>
+</g>
+<g class="node" id="b-n-regress"><rect x="1232.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1288.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">live-parity regress</text>
+<text x="1288.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">consumers outside</text>
+<text x="1288.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">the batch at 0.0%</text>
+</g>
+<g class="node" id="b-n-commerce"><rect x="1388.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1444.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">commerce-check</text>
+<text x="1444.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">green at the close</text>
+<text x="1444.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">of every stage</text>
+</g>
+<g class="node" id="b-n-dev"><rect x="1388.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1444.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Dev theme</text>
+<text x="1444.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">QA theme read-only</text>
+<text x="1444.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">live never</text>
+</g>
+<g class="node" id="b-n-merge"><rect x="1544.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1600.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Merge the project</text>
+<text x="1600.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">branch early;</text>
+<text x="1600.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">push, PR, preflight</text>
+</g>
+<g class="node" id="b-n-gitbot"><rect x="1544.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1600.0" y="438.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">GitBot</text>
+<text x="1600.0" y="451.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">+ CI drift report</text>
+</g>
+<g class="node" id="b-n-harvest"><rect x="1700.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1756.0" y="202.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/record-incident</text>
+<text x="1756.0" y="215.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">→ /harvest</text>
+</g>
+<g class="node" id="b-n-base2"><rect x="1700.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1756.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Base</text>
+<text x="1756.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">rules + checks</text>
+<text x="1756.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">improve for all</text>
+</g>
+<g class="node" id="b-n-done"><rect x="1700.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="1756.0" y="84.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Merge on</text>
+<text x="1756.0" y="97.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">your word</text>
+</g>
+</svg>
+<svg viewBox="0 0 1846 510" width="1846" height="510" role="img" aria-label="Scenario C board" xmlns="http://www.w3.org/2000/svg" data-fig="c">
+<defs><marker id="c-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<rect x="0" y="28" width="1846" height="118" fill="none"/>
+<line x1="0" y1="28" x2="1846" y2="28" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="48" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">YOU</text>
+<rect x="0" y="146" width="1846" height="118" fill="var(--lane-alt)"/>
+<line x1="0" y1="146" x2="1846" y2="146" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="166" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">SESSION (SKILLS)</text>
+<rect x="0" y="264" width="1846" height="118" fill="var(--lane-gate)"/>
+<line x1="0" y1="264" x2="1846" y2="264" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="284" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">GATES — AUTOMATIC</text>
+<rect x="0" y="382" width="1846" height="118" fill="var(--lane-alt)"/>
+<line x1="0" y1="382" x2="1846" y2="382" stroke="currentColor" stroke-opacity="0.18"/>
+<text x="12" y="402" font-size="11" font-weight="600" fill="currentColor" letter-spacing="0.4">OUTSIDE THE REPO</text>
+<g class="edge" id="c-e-ask-close"><path d="M196.0 115.0 L196.0 146.0 L352.0 146.0 L352.0 177.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-qi-close"><path d="M196.0 413.0 L196.0 323.0 L352.0 323.0 L352.0 233.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="274.0" y="318.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">reads the list</text></g>
+<g class="edge" id="c-e-close-ssh"><line x1="352.0" y1="233.0" x2="352.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-close-ref"><line x1="408.0" y1="205.0" x2="452.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-ref-fix"><line x1="564.0" y1="205.0" x2="608.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-fix-post"><line x1="664.0" y1="233.0" x2="664.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="670.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">each write</text></g>
+<g class="edge" id="c-e-fix-verify"><line x1="720.0" y1="205.0" x2="764.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-verify-src"><line x1="820.0" y1="233.0" x2="820.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="826.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">diff + boxes</text></g>
+<g class="edge" id="c-e-verify-stop"><line x1="820.0" y1="233.0" x2="820.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="826.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">turn ends</text></g>
+<g class="edge" id="c-e-verify-commerce"><line x1="876.0" y1="205.0" x2="920.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-commerce-regress"><line x1="1032.0" y1="205.0" x2="1076.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-regress-dev"><line x1="1132.0" y1="233.0" x2="1132.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="1138.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">consumers</text></g>
+<g class="edge" id="c-e-regress-push"><line x1="1188.0" y1="205.0" x2="1232.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="1210.0" y="199.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">0.0%</text></g>
+<g class="edge" id="c-e-push-pre"><line x1="1288.0" y1="233.0" x2="1288.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-push-gitbot"><line x1="1288.0" y1="233.0" x2="1288.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-push-preflight"><line x1="1344.0" y1="205.0" x2="1388.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-preflight-gitbot"><path d="M1444.0 233.0 L1444.0 323.0 L1288.0 323.0 L1288.0 413.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="1366.0" y="318.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">read · flag</text></g>
+<g class="edge" id="c-e-preflight-ci"><line x1="1444.0" y1="233.0" x2="1444.0" y2="295.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="1450.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">PR</text></g>
+<g class="edge" id="c-e-ci-merge"><path d="M1444.0 295.0 L1444.0 205.0 L1600.0 205.0 L1600.0 115.0" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="1522.0" y="200.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">green</text></g>
+<g class="edge" id="c-e-merge-closen"><line x1="1600.0" y1="115.0" x2="1600.0" y2="177.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-closen-notion2"><line x1="1600.0" y1="233.0" x2="1600.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="1606.0" y="246.0" font-size="10.5" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">evidence</text></g>
+<g class="edge" id="c-e-closen-inc"><line x1="1656.0" y1="205.0" x2="1700.0" y2="205.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/><text x="1678.0" y="199.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">rule gap?</text></g>
+<g class="edge" id="c-e-inc-base"><line x1="1756.0" y1="233.0" x2="1756.0" y2="413.0" stroke="currentColor" stroke-width="1.3" marker-end="url(#c-arrow)"/></g>
+<g class="edge" id="c-e-preflight-fix"><path d="M1500.0 205.0 C1560.0 155.0 548.0 155.0 664.0 177.0" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 4" marker-end="url(#c-arrow)"/><text x="1082.0" y="157.0" font-size="10.5" text-anchor="middle" fill="currentColor" stroke="var(--bg)" stroke-width="4" paint-order="stroke">still open → fix again</text></g>
+<g class="node" id="c-n-qi"><rect x="140.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="196.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Notion</text>
+<text x="196.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">QI logs issues</text>
+<text x="196.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">on the card</text>
+</g>
+<g class="node" id="c-n-ask"><rect x="140.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="196.0" y="84.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Ask for the</text>
+<text x="196.0" y="97.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">QA round</text>
+</g>
+<g class="node" id="c-n-close"><rect x="296.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="352.0" y="202.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/close-qa-loop</text>
+<text x="352.0" y="215.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">picks each issue up</text>
+</g>
+<g class="node" id="c-n-ssh"><rect x="296.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="352.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">SessionStart</text>
+<text x="352.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">open incidents,</text>
+<text x="352.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">compliance number</text>
+</g>
+<g class="node" id="c-n-ref"><rect x="452.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="508.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Which reference?</text>
+<text x="508.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">reference-map.md</text>
+<text x="508.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">names it per band</text>
+</g>
+<g class="node" id="c-n-fix"><rect x="608.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="664.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Fix against the</text>
+<text x="664.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">standards, not</text>
+<text x="664.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">around them</text>
+</g>
+<g class="node" id="c-n-post"><rect x="608.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="664.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">PostToolUse</text>
+<text x="664.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">the file you just</text>
+<text x="664.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">wrote</text>
+</g>
+<g class="node" id="c-n-stop"><rect x="764.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="820.0" y="314.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Stop: 3 advisories</text>
+<text x="820.0" y="327.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">verify newer? commerce</text>
+<text x="820.0" y="340.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">report? GitBot read?</text>
+</g>
+<g class="node" id="c-n-verify"><rect x="764.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="820.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/verify-against-</text>
+<text x="820.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">reference on the</text>
+<text x="820.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">changed band</text>
+</g>
+<g class="node" id="c-n-src"><rect x="764.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="820.0" y="438.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Figma frame</text>
+<text x="820.0" y="451.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">or live section</text>
+</g>
+<g class="node" id="c-n-commerce"><rect x="920.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="976.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">commerce-check</text>
+<text x="976.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">if the purchase</text>
+<text x="976.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">path moved</text>
+</g>
+<g class="node" id="c-n-regress"><rect x="1076.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1132.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">regress: the other</text>
+<text x="1132.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">pages still 0.0%</text>
+<text x="1132.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">at defaults</text>
+</g>
+<g class="node" id="c-n-dev"><rect x="1076.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1132.0" y="438.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Dev theme</text>
+<text x="1132.0" y="451.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">vs QA theme</text>
+</g>
+<g class="node" id="c-n-push"><rect x="1232.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1288.0" y="209.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Push</text>
+</g>
+<g class="node" id="c-n-pre"><rect x="1232.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="1288.0" y="320.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">pre-commit +</text>
+<text x="1288.0" y="333.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">push nudge</text>
+</g>
+<g class="node" id="c-n-gitbot"><rect x="1232.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1288.0" y="432.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">GitBot</text>
+<text x="1288.0" y="445.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">follow-up review:</text>
+<text x="1288.0" y="458.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">fixed or still open</text>
+</g>
+<g class="node" id="c-n-preflight"><rect x="1388.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1444.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/gitbot-preflight</text>
+<text x="1444.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">fixed, or flagged</text>
+<text x="1444.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">in your words</text>
+</g>
+<g class="node" id="c-n-ci"><rect x="1388.0" y="295.0" width="112" height="56" fill="var(--gate)" stroke="var(--accent)" stroke-width="1.8" rx="4"/>
+<text x="1444.0" y="327.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">CI on the PR</text>
+</g>
+<g class="node" id="c-n-merge"><rect x="1544.0" y="59.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.4" rx="14"/>
+<text x="1600.0" y="91.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Say merge</text>
+</g>
+<g class="node" id="c-n-closen"><rect x="1544.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1600.0" y="196.0" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Close the issue</text>
+<text x="1600.0" y="209.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">in Notion with</text>
+<text x="1600.0" y="222.0" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">the evidence</text>
+</g>
+<g class="node" id="c-n-notion2"><rect x="1544.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1600.0" y="438.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Notion</text>
+<text x="1600.0" y="451.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">comment, status</text>
+</g>
+<g class="node" id="c-n-inc"><rect x="1700.0" y="177.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" rx="4"/>
+<text x="1756.0" y="202.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">/record-incident</text>
+<text x="1756.0" y="215.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">→ /harvest to Base</text>
+</g>
+<g class="node" id="c-n-base"><rect x="1700.0" y="413.0" width="112" height="56" fill="var(--panel)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" rx="4"/>
+<text x="1756.0" y="438.5" font-size="11" font-weight="600" text-anchor="middle" fill="currentColor">Base</text>
+<text x="1756.0" y="451.5" font-size="11" font-weight="400" text-anchor="middle" fill="currentColor">the gate learns</text>
+</g>
+</svg>
+</div>
+<div class="legend">
+<span><i class="sw human"></i> you decide</span>
+<span><i class="sw"></i> a skill the session runs</span>
+<span><i class="sw gate"></i> a gate that fires on its own</span>
+<span><i class="sw outside"></i> outside the repo</span>
+</div>
+<p class="hint">Keys: Space plays and pauses, the arrow keys step, 1 2 3 switch scenario. The board scrolls sideways on a narrow screen; the lit box is scrolled into view at each step.</p>
+</div>
+<script>
+(function () {
+  var STEPS = {"a": [{"ids": ["start"], "text": "You start the repo from Base with one script. It clones the development branch and stamps which Base version the tooling came from."}, {"ids": ["ssh"], "text": "The moment a session opens, a hook injects the state: doctor status, drift from Base, the compliance number, open incidents and the three most-missed rules. Nobody runs it."}, {"ids": ["recon", "live"], "text": "You run recon with the live URL. It measures the theme and lists what the live store loads: apps, popups, markets, a page builder. It reads; it never writes."}, {"ids": ["map"], "text": "Recon writes the state of the theme and the reference map, one row per band."}, {"ids": ["ref"], "text": "You name the reference per band: Figma for the look, live for what the band does and says today, or both. Pique never got asked; that is where its fix commits came from."}, {"ids": ["order"], "text": "The playbook sets the order: foundations, then the commerce path, then chrome, shared parts, templates, content, the long tail. Commerce comes second because it shipped last on Pique and the client found the bug."}, {"ids": ["build", "src"], "text": "Each band is built from its reference: the Figma frame, or the live page through the live-build skill, which pulls the live theme from the store and cleans its code to the rules."}, {"ids": ["write", "post"], "text": "Every file written is checked as it is written: the settings contract, the conventions, JSON validity, the locale key cap. The findings come back in the same turn."}, {"ids": ["verify", "dev", "stop"], "text": "Verification renders the band and diffs it against its reference; a change to the purchase path gets the commerce check. When the turn ends, the Stop gate runs everything again plus Theme Check, and names what has no report."}, {"ids": ["commit", "pre"], "text": "A commit runs eight checks, regenerates both mirrors, and runs the checks' own self-tests. A new file that fails blocks the commit; legacy is reported, never gated."}, {"ids": ["push", "nudge", "gitbot"], "text": "A push is reviewed by GitBot within two minutes and posted to the client's Slack. The session is told so at once."}, {"ids": ["preflight"], "text": "The preflight reads GitBot's findings from inside the session and settles each one: fixed, or flagged with your reason in your words. Then push again, until nothing is open."}, {"ids": ["ci", "pr"], "text": "CI runs the same checks on the pull request plus the drift report. You review and say merge."}, {"ids": ["hand", "notion"], "text": "The handoff goes to Notion: what was built, the decisions, and a QA checklist in plain English with the purchase-path rows."}, {"ids": ["inc", "base"], "text": "Anything a rule should have caught is recorded the moment it happens. The generic ones go up to Base and reach every fork on the next pull."}], "b": [{"ids": ["arrive"], "text": "You arrive on a repo someone else started. Measurement comes before code."}, {"ids": ["link", "basew"], "text": "Two scripts link Base as a remote and overlay the tooling three-way against the stamp: files the fork never had are added, Base's changes land where the fork never touched them, and the fork's own edits are kept and listed."}, {"ids": ["ssh"], "text": "The overlay sorts every file: ADD, UPDATE, KEEP, RETIRE. A renamed skill is retired, not duplicated. The next session start prints the drift and the compliance number."}, {"ids": ["recon", "live"], "text": "Recon measures the theme and the live store, and reads what the previous team wrote into the rule copies: their breakpoints, their container, their decisions."}, {"ids": ["verdict"], "text": "It ends with a carry verdict: carry as-is, carry with fixes, rebuild, or missing."}, {"ids": ["decide"], "text": "You argue with the verdict in the state document, never in code, and take the three decisions: the breakpoint, the container, and which conventions to keep."}, {"ids": ["order"], "text": "The missing list becomes the build order, sorted by the stage table. If the homepage exists and the cart does not, the cart comes next, whatever the tracker says."}, {"ids": ["xlog"], "text": "If another session runs in parallel, a shared log records every planned edit to a shared file before it is made, so the two reuse each other's settings instead of adding twins."}, {"ids": ["build", "post"], "text": "From here it is the same loop as a fresh rebuild: every file checked as it is written, every turn checked as it ends. Legacy is reported, never gated."}, {"ids": ["regress"], "text": "Every shared section the batch touches is proved unchanged for the pages built before it: a consumer page outside the batch, on the QA theme against the dev theme, at 0.0%."}, {"ids": ["commerce", "dev"], "text": "The commerce check runs green at the close of every stage. Nothing after stage two may break the cart."}, {"ids": ["merge", "gitbot"], "text": "The project branch is merged in early, not only at the end; then push, pull request, and the GitBot preflight."}, {"ids": ["harvest", "base2", "done"], "text": "Incidents recorded along the way are harvested to Base. You merge on your word, with the preview links in hand first."}], "c": [{"ids": ["qi", "ask"], "text": "Quality inspection logs issues on the Notion card and you ask for the round."}, {"ids": ["close", "ssh"], "text": "The QA loop skill picks each issue up. The session start already printed the open incidents and the compliance number."}, {"ids": ["ref"], "text": "The reference map says which reference each band has, so the fix is checked against the right thing."}, {"ids": ["fix", "post"], "text": "The fix is made against the standards, not around them. Each write is gated as it lands."}, {"ids": ["verify", "src"], "text": "The changed band is verified against its reference: a diff and a box table against the frame, or the live section at the same widths."}, {"ids": ["stop"], "text": "The Stop gate carries three advisories for exactly this case: a changed band with no newer verify report, a purchase-path change with no commerce report, and GitBot findings nobody has read since the last commit."}, {"ids": ["commerce"], "text": "If the purchase path moved, the commerce check walks add, change, discount, remove and the market switch again."}, {"ids": ["regress", "dev"], "text": "The other pages that share the section are shown unchanged at defaults: 0.0% on the QA theme against the dev theme."}, {"ids": ["push", "pre", "gitbot"], "text": "Push. The pre-commit and the push nudge ran; GitBot's follow-up review says whether each earlier finding is fixed or still open."}, {"ids": ["preflight", "ci"], "text": "The preflight settles what is still open, fixed or flagged in your words, and CI runs on the pull request."}, {"ids": ["merge", "closen", "notion2"], "text": "You say merge. The issue closes in Notion with the evidence quoted: the numbers, not an assertion."}, {"ids": ["inc", "base"], "text": "A fix that a rule should have prevented becomes an incident, then a Base pull request, so the gate learns."}]};
+  var EDGES = {"a": [["start", "ssh"], ["ssh", "recon"], ["recon", "live"], ["recon", "map"], ["map", "ref"], ["ref", "order"], ["order", "build"], ["build", "src"], ["build", "write"], ["write", "post"], ["write", "verify"], ["verify", "dev"], ["verify", "stop"], ["verify", "commit"], ["commit", "pre"], ["commit", "push"], ["push", "gitbot"], ["push", "nudge"], ["push", "preflight"], ["preflight", "gitbot"], ["preflight", "ci"], ["ci", "pr"], ["pr", "hand"], ["hand", "notion"], ["hand", "inc"], ["inc", "base"], ["preflight", "write"]], "b": [["arrive", "link"], ["link", "basew"], ["link", "ssh"], ["ssh", "recon"], ["recon", "live"], ["recon", "verdict"], ["verdict", "decide"], ["decide", "order"], ["order", "xlog"], ["xlog", "build"], ["build", "post"], ["build", "regress"], ["regress", "commerce"], ["commerce", "dev"], ["commerce", "merge"], ["merge", "gitbot"], ["merge", "harvest"], ["merge", "done"], ["harvest", "base2"], ["regress", "build"]], "c": [["ask", "close"], ["qi", "close"], ["close", "ssh"], ["close", "ref"], ["ref", "fix"], ["fix", "post"], ["fix", "verify"], ["verify", "src"], ["verify", "stop"], ["verify", "commerce"], ["commerce", "regress"], ["regress", "dev"], ["regress", "push"], ["push", "pre"], ["push", "gitbot"], ["push", "preflight"], ["preflight", "gitbot"], ["preflight", "ci"], ["ci", "merge"], ["merge", "closen"], ["closen", "notion2"], ["closen", "inc"], ["inc", "base"], ["preflight", "fix"]]};
+  var fig = 'a', i = -1, timer = null;
+  var svgs = {};
+  document.querySelectorAll('#board svg').forEach(function (s) { svgs[s.dataset.fig] = s; });
+  var no = document.getElementById('step-no'), text = document.getElementById('step-text'), play = document.getElementById('btn-play');
+  try { var saved = localStorage.getItem('wf3-fig'); if (saved && STEPS[saved]) fig = saved; } catch (e) {}
+  function paint() {
+    var s = svgs[fig], steps = STEPS[fig];
+    Object.keys(svgs).forEach(function (k) { if (k !== fig) svgs[k].setAttribute('hidden', ''); else svgs[k].removeAttribute('hidden'); });
+    document.querySelectorAll('[role=tab]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.fig === fig)); });
+    var seen = {}, now = {};
+    for (var k = 0; k <= i && k < steps.length; k++) steps[k].ids.forEach(function (id) { seen[id] = true; if (k === i) now[id] = true; });
+    s.querySelectorAll('.node').forEach(function (n) {
+      var id = n.id.split('-n-')[1];
+      n.classList.toggle('seen', !!seen[id] || i >= steps.length);
+      n.classList.toggle('now', !!now[id]);
+    });
+    EDGES[fig].forEach(function (e) {
+      var el = s.getElementById(fig + '-e-' + e[0] + '-' + e[1]);
+      if (el) el.classList.toggle('seen', (!!seen[e[0]] && !!seen[e[1]]) || i >= steps.length);
+    });
+    if (i < 0) { no.textContent = 'step 0 of ' + steps.length; text.textContent = 'Press Play, or Next.'; }
+    else if (i >= steps.length) { no.textContent = 'all ' + steps.length + ' steps'; text.textContent = 'The whole board. Pick another situation, or press Back to walk it again.'; }
+    else {
+      no.textContent = 'step ' + (i + 1) + ' of ' + steps.length; text.textContent = steps[i].text;
+      var first = s.getElementById(fig + '-n-' + steps[i].ids[0]);
+      if (first && first.scrollIntoView) first.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    }
+  }
+  function step(d) { var n = STEPS[fig].length; i = Math.max(-1, Math.min(n, i + d)); paint(); if (i >= n) stop(); }
+  function stop() { if (timer) clearInterval(timer); timer = null; play.textContent = 'Play'; }
+  function start() { if (i >= STEPS[fig].length) i = -1; step(1); timer = setInterval(function () { step(1); }, 5200); play.textContent = 'Pause'; }
+  function setFig(f) { stop(); fig = f; i = -1; try { localStorage.setItem('wf3-fig', f); } catch (e) {} paint(); }
+  document.querySelectorAll('[role=tab]').forEach(function (b) { b.addEventListener('click', function () { setFig(b.dataset.fig); }); });
+  document.getElementById('btn-next').addEventListener('click', function () { stop(); step(1); });
+  document.getElementById('btn-prev').addEventListener('click', function () { stop(); step(-1); });
+  document.getElementById('btn-all').addEventListener('click', function () { stop(); i = STEPS[fig].length; paint(); });
+  play.addEventListener('click', function () { timer ? stop() : start(); });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA') return;
+    if (ev.key === ' ') { ev.preventDefault(); timer ? stop() : start(); }
+    else if (ev.key === 'ArrowRight') { stop(); step(1); }
+    else if (ev.key === 'ArrowLeft') { stop(); step(-1); }
+    else if (ev.key === '1' || ev.key === '2' || ev.key === '3') setFig('abc'[Number(ev.key) - 1]);
+  });
+  paint();
+})();
+</script>
