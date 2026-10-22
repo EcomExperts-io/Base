@@ -87,7 +87,7 @@ RULES = {
     "a11y-div-as-button": ("error", "a click handler on a div, span, li or href-less `<a>`: not focusable, not keyboard-operable — use `<button type=\"button\">`", "accessibility.md"),
     "a11y-img-no-alt": ("error", "an `<img>` with no `alt` attribute at all; `alt=\"\"` when decorative, the merchant value escaped otherwise", "accessibility.md"),
     "security-unescaped-metafield-attr": ("error", "a metafield output inside a quoted attribute without `| escape` can inject markup", "accessibility.md"),
-    # --- commerce first (v3 step 4): the cart engine owns every cart mutation.
+    # --- commerce first: the cart engine owns every cart mutation.
     "js-raw-cart-request": ("error", "a request to /cart/add, /cart/change or /cart/clear outside assets/cart.js bypasses the queue, the section render and `cart:change`; use `window.Cart.add/change`", "javascript-standards.md"),
     "js-raw-cart-update": ("warn", "a request to /cart/update outside assets/cart.js: allowed for a form that then calls `Cart.refresh()` (the discount form), wrong anywhere else", "javascript-standards.md"),
 }
