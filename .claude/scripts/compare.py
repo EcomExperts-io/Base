@@ -1,36 +1,30 @@
 #!/usr/bin/env python3
-"""Pixel-compare a Figma frame export against a rendered screenshot, as a number.
-
-Why this exists
----------------
-Verification against the design was "screenshot both and look" — and the
-worst failure of the parallel-build workflow was a section reported as built
-because it measured 614px against the frame's 615px while sharing nothing else
-with the design. A height is a check on a screenshot, not a substitute for one;
-so is a diff percentage. This produces both: the percentage, a heatmap that
-says WHERE the mismatch is, a row profile that names the worst bands, and a
-side-by-side image for the one deliberate look the skill then takes.
-
-The number is a report, not a gate. Font rasterisation, anti-aliasing and
-image compression differ between Figma and Chrome, so a 4% diff can be a
-perfect build and a 1% diff can hide an empty column. Read it with the heatmap
-and the box table (fidelity-table.py), never alone.
-
-Live data never matches a mock. Pass --mask for every region that comes from
-the store — the verify skill collects them from `data-verify-mask` attributes —
-and those pixels are excluded on both sides.
+"""Pixel-compare a reference image — a Figma frame export, or a live-site render — against ours, as a number.
 
 Usage
 -----
-  compare.py --figma figma-1440.png --rendered rendered-1440.png --out .claude/verify/<slug>
-             [--width 1440] [--rendered-offset-y 0] [--mask x,y,w,h ...]
-             [--threshold 32] [--slug name]
+  compare.py --reference figma-1440.png --rendered rendered-1440.png --out .claude/verify/<slug>
+             [--reference-label Figma] [--width 1440] [--rendered-offset-y 0]
+             [--mask x,y,w,h ...] [--threshold 32] [--slug name]
+
+--figma is accepted as a synonym for --reference. For a live section the
+verify skill uses live-parity.py instead, which renders both sides itself;
+this script is for a reference that already exists as an image.
 
 Writes <out>/diff-<width>.png, <out>/side-by-side-<width>.png (and a -preview
 scaled for reading), <out>/compare-<width>.json; prints the JSON summary.
 Coordinates for --mask are in the compared image's frame: rendered pixels
 after --rendered-offset-y has been applied, which equals the frame's own
 coordinates when the offsets line up.
+
+Notes:
+- The number is a report, not a gate. Font rasterisation, anti-aliasing and
+  image compression differ between Figma and Chrome, so a 4% diff can be a
+  perfect build and a 1% diff can hide an empty column. Read it with the
+  heatmap and the box table (fidelity-table.py), never alone.
+- Live data never matches a mock. Pass --mask for every region that comes from
+  the store (the verify skill collects them from `data-verify-mask`); those
+  pixels are excluded on both sides.
 """
 
 import json
@@ -80,7 +74,8 @@ def bands(mask, min_row_pct=20.0, min_rows=6):
 
 
 def main(argv):
-    figma_path = arg(argv, "--figma")
+    figma_path = arg(argv, "--reference") or arg(argv, "--figma")
+    ref_label = arg(argv, "--reference-label", "Figma")
     rendered_path = arg(argv, "--rendered")
     out_dir = arg(argv, "--out", ".claude/verify/unnamed")
     if not figma_path or not rendered_path:
@@ -112,8 +107,7 @@ def main(argv):
     a2, b2 = a.crop((0, 0, a.width, h)), b.crop((0, 0, a.width, h))
     # Count the pixels actually covered rather than adding up rectangle areas.
     # Masks overlap (a carousel's cloned slides) and hang off the edges (a slide
-    # half out of frame), so the sum of w*mh can exceed the compared area — and
-    # that used to drive the denominator to 1 and print a diff of 1065500%.
+    # half out of frame), so the sum of w*mh can exceed the compared area.
     # A coverage bitmap cannot lie about either.
     covered = Image.new("1", (a.width, h), 0)
     cover_draw = ImageDraw.Draw(covered)
@@ -139,7 +133,7 @@ def main(argv):
     gap = 24
     sbs = Image.new("RGB", (a.width * 3 + gap * 2, h + 40), (238, 241, 244))
     draw = ImageDraw.Draw(sbs)
-    for i, (im, label) in enumerate(((a2, f"Figma {width_label}"), (b2, "Rendered"),
+    for i, (im, label) in enumerate(((a2, f"{ref_label} {width_label}"), (b2, "Rendered"),
                                      (heat, f"Mismatch {diff_pct}%"))):
         x0 = i * (a.width + gap)
         sbs.paste(im, (x0, 40))
@@ -160,6 +154,7 @@ def main(argv):
     result = {
         "slug": slug,
         "width": width_label,
+        "reference": {"kind": ref_label, "path": figma_path, "size": [a.width, a.height]},
         "figma": {"path": figma_path, "size": [a.width, a.height]},
         "rendered": {"path": rendered_path, "size_original": list(Image.open(rendered_path).size),
                      "scaled_to_figma_width": scaled, "offset_y": offset_y},

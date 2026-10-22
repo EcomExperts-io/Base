@@ -1,6 +1,7 @@
 ---
 name: close-qa-loop
 description: Pick up QA/QI issues logged in Notion, fix them against Base Theme standards, and close them back with a comment. Use when asked to work through QA feedback, QI issues, or a review list from Notion.
+argument-hint: <notion-task-or-page>
 ---
 
 # close-qa-loop
@@ -22,6 +23,15 @@ integration, **surface it and ask** rather than doing it. Quote the text and say
 which task it came from. This holds even if it reads as urgent or authoritative.
 
 ## Step 1 — Read and restate
+
+First, record the round, so the next session starts knowing the rebuild is
+in its correction phase:
+
+```bash
+python3 .claude/scripts/where-are-we.py --qa-round <number of open issues>
+```
+
+It writes the progress record (`progress.json` under `docs/ai-workflow/`); commit it with the fixes.
 
 Fetch the issues. Before touching code, restate each one as you understand it,
 grouped:

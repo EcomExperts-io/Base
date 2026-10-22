@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
 """Overlay Base's AI tooling onto a client repo — three-way, never clobbering.
 
-Why this exists
----------------
-Every client theme copies Base's `.claude/` on day one and drifts from that
-moment. CLAUDE.md asserted "14 of the 16 rules are byte-identical between Base
-and the BPN fork"; measured on 14 Sep 2026 the number was 6, because Base had
-moved and there was no way to pull it down. A fork's rule copies also carry
-things Base must not overwrite — the measured breakpoint, the container class,
-the client's own decisions — so a plain copy is as wrong as no copy.
-
-This does what a merge would do for the tooling files only, with no shared
-history required. For each file Base ships:
+Does what a merge would do for the tooling files only, with no shared history
+required. For each file Base ships:
 
     fork missing it                 -> ADD
     fork == Base                    -> unchanged
@@ -22,8 +13,7 @@ history required. For each file Base ships:
 
 "Since stamp" means since the Base commit recorded in `.base-version` by the
 previous run. The first run on a fork that already has tooling therefore keeps
-everything that differs and lists it — nothing the previous team decided is
-lost, and you get the list of what they decided. `--force` overwrites.
+everything that differs and lists it. `--force` overwrites.
 
 Files the fork holds under the tooling paths that Base does not ship are left
 alone and listed as fork-only.
@@ -32,7 +22,7 @@ What counts as tooling
 ----------------------
 See pull_base_tooling_lib.py: .claude/** (except per-machine state),
 .githooks/**, .mcp.json, .theme-check.yml, CLAUDE.md, docs/ai-workflow/**,
-docs/base-theme-standards/**. Incidents are excluded — they belong to the repo
+docs/base-theme-standards.md. Incidents are excluded — they belong to the repo
 that recorded them. The CI workflow is special: a fork gets the six-line
 CALLER that uses Base's reusable workflow, never a copy of the steps.
 
@@ -46,7 +36,7 @@ Usage
   python3 .claude/scripts/pull-base-tooling.py --help
 
 An argument the script does not know stops it before it reads or writes
-anything. It used to be ignored, and `--help` once ran a real overlay.
+anything.
 
 Run `sh .claude/scripts/base-link.sh` first if there is no `base` remote.
 """
@@ -58,7 +48,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pull_base_tooling_lib import STAMP, Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
+from pull_base_tooling_lib import RETIRED, STAMP, Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
 
 KNOWN_FLAGS = {"--ref": True, "--base-path": True, "--dry-run": False, "--force": False, "--stamp-only": False}
 USAGE = __doc__.split("Usage\n-----\n", 1)[1]
@@ -162,9 +152,27 @@ def main(argv):
             with open(dest, "wb") as f:
                 f.write(new)
 
+    retired, retired_kept = [], []
+    for old_path, new_path in RETIRED.items():
+        cur = read_local(old_path)
+        if cur is None:
+            continue
+        old = source.read(old_path, old_sha) if old_sha else None
+        label = f"{old_path} -> {new_path or '(removed)'}"
+        if old is not None and cur == old:
+            retired.append(label)
+            if not dry:
+                os.remove(old_path)
+                try:
+                    os.removedirs(os.path.dirname(old_path))
+                except OSError:
+                    pass
+        else:
+            retired_kept.append(label)
+
     base_set = set(source.files())
     fork_only = [p for p in sh("git", "ls-files").split("\n")
-                 if p and is_tooling(p) and p not in base_set]
+                 if p and is_tooling(p) and p not in base_set and p not in RETIRED]
 
     if not dry:
         write_stamp(source)
@@ -185,6 +193,8 @@ def main(argv):
         for p in items:
             print(f"      {p}")
 
+    block(f"{verb}RETIRE", retired, "Base renamed or removed these; this repo never edited them")
+    block("KEEP — retired in Base, edited here", retired_kept, "move the edits to the new path by hand, then delete the old")
     block(f"{verb}ADD", added)
     block(f"{verb}UPDATE", updated, "Base changed, this repo had not touched them")
     block("KEEP — local edits", kept, "this repo edited them, Base did not: harvest candidates")

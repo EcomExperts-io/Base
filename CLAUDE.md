@@ -16,7 +16,7 @@ correct. Where Base contradicts the rules in `.claude/rules/`, the rules win —
 they describe the standard, and some of Base's older code predates it. Do not
 "fix" Base to match while working on an unrelated task: `/record-incident` it,
 move on. (The standing count is `python3 .claude/scripts/report-compliance.py`;
-the retrofit itself is an open ruling in the decisions log.)
+the retrofit itself is an open item in `docs/base-theme-standards.md`.)
 
 ## Stack
 
@@ -64,6 +64,9 @@ first three are checked by a hook the moment a file is written.
   sync, and cross-region DOM updates.** Don't mix both in one section.
 - **Figma is design-only.** Values come from Shopify; absent values render
   nothing. Mark live values with `data-verify-mask` so the verifier ignores them.
+- **Live is a reference for behaviour, copy and data, never for code.** A
+  section that matches live and carries live's markup has failed the
+  migration. The brief names the reference — Figma, live or both — per band.
 - **No commented-out code.** `layout/theme.liquid` stays thin.
 
 ## Rules
@@ -87,10 +90,10 @@ documentation that guides the work — including this file — is kept true.
 
 `.cursor/rules/*.mdc` is the Cursor-readable copy of the same content,
 generated from `.claude/rules/` — as are `.cursor/skills`, `agents`,
-`workflows`, `references` and `hooks`. **Edit `.claude/` only.** The pre-commit
-hook regenerates the mirror and stages it; there is no command to remember.
-The two copies existing by hand is what hid the conventions from Claude Code
-for the first 18 days of a client build.
+`workflows`, `references` and `hooks`. Codex reads the same content from
+`.agents/skills`, `.codex/hooks`, `.codex/agents` and `AGENTS.md`, generated
+the same way. **Edit `.claude/` only.** The pre-commit hook regenerates both
+mirrors and stages them; there is no command to remember.
 
 ## What runs on its own
 
@@ -98,16 +101,22 @@ Configured in `.claude/settings.json`, so it travels with the tooling into
 every fork:
 
 - **SessionStart** injects doctor status, tooling drift from Base, the
-  compliance number, open incidents and the three most-missed rules.
+  compliance number, open incidents, the three most-missed rules, and one
+  line saying which situation the repo looks like — a fresh rebuild, joining
+  midway, correcting after QA — and why (`where-are-we.py`).
 - **PostToolUse** on every theme-file write runs the settings contract, the
   conventions and JSON validity on that file and hands the findings back.
 - **Stop** refuses to end a turn while a *new* theme file fails the contract, a
   convention, JSON validity or Theme Check, and flags section work with no
   verify report newer than the change. Modified legacy is reported, not gated.
 - **PostToolUseFailure** on a Shopify command points at `/record-incident`.
+- **PostToolUse** on a `git push` in a client repo points at
+  `/gitbot-preflight`; the Stop hook says, once per turn, when a client
+  branch's GitBot findings have not been read since its last commit.
 
 The pre-commit (`.githooks/pre-commit`, called from husky in forks) and the
-reusable CI workflow run the same checks. `python3 .claude/scripts/doctor.py`
+reusable CI workflow run the same checks. Both also run
+`test-checks.py`, one fixture per promise a gate script makes. `python3 .claude/scripts/doctor.py`
 says whether any of it is wired on this machine; `npm run setup` wires it
 (`sh .claude/scripts/setup.sh` is the same thing, for a fork whose
 `package.json` has no `setup` script — a client's `package.json` is the
@@ -116,22 +125,25 @@ client's, and the tooling pull does not touch it).
 ## Skills, agents and workflows
 
 - `.claude/skills/` — `build-page-from-figma`, `scaffold-section`,
-  `figma-readiness`, `run-theme`, `verify-against-figma`, `record-incident`,
+  `figma-readiness`, `run-theme`, `verify-against-reference`, `record-incident`,
   `harvest`, `recon-theme`, `store-recon`, `close-qa-loop`,
-  `accessibility-review`. Skills auto-invoke from their descriptions; `harvest`
+  `accessibility-review`. With `build-section-from-live` for a band whose
+  reference is the store rather than a frame. Also `gitbot-preflight`, which reads GitBot's
+  review of a pushed client branch from inside the session. Skills auto-invoke from their descriptions; `harvest`
   is human-only because it pushes to Base.
-- `.claude/agents/` — `shopify-standards-coach` (advisory) and
-  `shopify-pr-reviewer` (gates). Both keep project memory of what recurs.
+- `.claude/agents/` — `shopify-pr-reviewer`, the local review before a PR; it
+  reads the verify report and the running theme, which GitBot cannot.
 - `.claude/workflows/` — `rebuild-playbook.md` (the dependency order for a
   whole store, and the three commands on arrival), `parallel-section-build.md`
   (one page, one agent per section), `multi-session-rebuild.md` (a storefront
-  across sessions). Point an agent at the file; none is auto-loaded.
-- `.claude/references/` — debugging accounts of traps that already cost hours.
-  Rules stay short because these exist.
-- `docs/base-theme-standards/` — the architecture references (Collection &
-  PDP; Header, Cart Engine & Search), the compliance checklist, the decisions
-  log, the vision. `docs/ai-workflow/` — the workflow, the first build, the
-  designer checklist, and `incidents/`.
+  across sessions), `landing-batch.md` (a card of landing pages matched to
+  live, with its three agent briefs). Point an agent at the file; none is auto-loaded.
+- `.claude/references/` — symptom, cause and fix for traps too situational for
+  a rule. Rules stay short because these exist.
+- `docs/base-theme-standards.md` — what Base is: the collection and PDP
+  pattern, the shell, cart engine and search, the rulings, and the open
+  items. `docs/ai-workflow/` — the workflow, the first build, the Figma
+  handoff, and `incidents/`.
 
 ## Flowing changes between Base and the forks
 
@@ -166,10 +178,10 @@ principle upstream, measured specifics downstream. New client repos start from
 1. **Code style and architecture** — does it look like Base? Judged by the
    gate and the rules.
 2. **Visual fidelity** — does it match the Figma frame? Judged by
-   `/verify-against-figma`'s report on disk, never by an assertion.
+   `/verify-against-reference`'s report on disk, never by an assertion.
 
 A page can match a design pixel-for-pixel and still fail every convention in
-this file. That is what happened on Bites Vitamins. Check them separately and
+this file. Check them separately and
 report them separately, with the evidence for each.
 
 ## Commands
@@ -201,6 +213,9 @@ python3 .claude/scripts/check-conventions.py --all
 ```bash
 npx prettier --config .prettierrc.json --write path/to/file.liquid
 ```
+
+Name the files. Never pass a glob to `--write`: the theme is not uniformly
+formatted, so a glob reformats untouched files into the commit.
 
 There is no test suite — `npm test` is a stub. Verification is the gate, the
 verifier's report, and the theme editor.

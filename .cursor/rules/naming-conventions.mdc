@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 
 <!-- GENERATED from .claude/rules/naming-conventions.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 768465374 -->
+<!-- checksum: 3859245229 -->
 
 
 # Architecture Standards
@@ -148,10 +148,8 @@ Both answers already exist in this codebase and both are correct in context:
 | Base's three product carousels — Featured Products, Related Products, Featured Collections v2 | **Separate** `section-*` files | Each wraps Swiper with genuinely different configuration, breakpoints and slide structure. They are three different carousels that happen to share a library. |
 | A scroll-snap-plus-dots carousel used by several content sections | **One shared** `component-*` | Identical behaviour and markup contract; only the cards inside and the values differ. |
 
-The second case is what the compliance checklist means by "a genuine atomic UI
-primitive" — the exception it already carves out of its general preference for
-duplication. The test above is how to tell whether you are in it, rather than
-having to judge the phrase.
+The second case is the "genuine atomic UI primitive"; the test above is how
+to tell whether you are in it, rather than having to judge the phrase.
 
 ### Building a shared primitive so it stays shared
 
@@ -173,11 +171,9 @@ A `section-*` file must not be loaded by more than one unrelated section. If
 something turns out to be genuinely shared, it is renamed to `component-*` —
 it does not keep the name of whichever page happened to need it first.
 
-This is the concrete failure it prevents: on Bites Vitamins,
-a `section-about-carousel.js` ended up loaded by eight sections across four
-pages, keeping a name that implied single-page scope. Generalising the code was
-right; not renaming it was the mistake. **When you widen a file's scope, rename
-it in the same change.**
+The failure it prevents: a `section-about-carousel.js` loaded by eight sections
+across four pages, its name still claiming single-page scope. **When you widen
+a file's scope, rename it in the same change.**
 
 ## Key Rules Summary
 1. **Sections:** No `main-` prefix for new sections; name by function, not by page

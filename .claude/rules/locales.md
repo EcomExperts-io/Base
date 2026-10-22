@@ -67,3 +67,16 @@ locales/
 **Schema Translations:**
 
 Use the rules outlined in our typescript schema (`schemas/schema.d.ts`, if present in this repo) to determine the appropriate key structure for schema translations.
+
+## A locale file holds at most 3,400 keys
+
+Shopify's documented limit: at most 3,400 translations in a single locale file,
+and no value over 1,000 characters
+(<https://shopify.dev/docs/storefronts/themes/architecture/locales>, "Requirements
+and limitations"). The upload rejects a file over it ("Too many translation
+keys") and the failed upload takes every page of the theme down; Theme Check,
+Prettier and a JSON parse all pass the file. `check-json.py` errors above 3,400
+and warns above 3,300. Near the cap, before adding a schema key: reuse a generic
+label (`labels.*`, `sections.all.*`) wherever its wording fits, fold `info`
+lines into one `paragraph` setting, and remove an unused key in the same
+change.

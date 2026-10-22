@@ -162,8 +162,8 @@ in the one file an agent reads while assembling a template.
 
 ## Traps that take the whole theme down
 
-Neither of these is reported by Theme Check. Both were found on a client build
-by every route returning 500, or by a key path rendering to a customer.
+None of these is reported by Theme Check; each shows up as every route
+returning 500, or as a key path rendering to a customer.
 
 - **`t:` keys do not resolve in template values.** Shopify resolves `t:` in a
   schema `default`, not in a value stored in a template. A preset copied into
@@ -174,3 +174,18 @@ by every route returning 500, or by a key path rendering to a customer.
   before a template may reference it. Reference it too early and every route on
   the theme returns 500 until the registration catches up — push the section,
   wait, then push the template.
+- **A template setting uploaded before its section's schema is dropped.**
+  `theme dev` syncs files in watcher order; Shopify validates the template
+  against the schema the store has at that moment, discards a key it does not
+  know, and the later schema upload does not restore it. The file on disk still
+  carries the value and nothing warns. When one change adds a setting and sets
+  it in a template, restart the dev server before believing the page.
+  `check-conventions.py` warns on a template key its section's schema does not
+  define — which also catches a typo in the key.
+- **Read the product's `template_suffix` before editing a product template.**
+  `product.json` and `product.<suffix>.json` can carry identical sections; an
+  edit to the one that does not render uploads cleanly and changes nothing.
+- **JSON templates and `config/settings_data.json` are editor-owned.** The
+  admin theme editor writes them, so a push overwrites a merchant's change.
+  Pull and diff before pushing one:
+  `shopify theme pull --only templates/index.json && git diff templates/index.json`.

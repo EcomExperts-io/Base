@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/css-standards.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1628048013 -->
+<!-- checksum: 1767346874 -->
 
 
 # CSS Standards
@@ -612,6 +612,26 @@ Write CSS that gracefully handles edge cases:
   background: rgb(var(--color-surface-secondary));
 }
 ```
+
+Six more where every computed style reads correct and the page renders wrong
+(symptom, cause and fix in `.claude/references/layout-pitfalls.md`):
+
+- Inside a scrolling flex container every child that is not the scroll area
+  needs `flex-shrink: 0` — an `aspect-ratio` box most of all.
+- `aspect-ratio` on a flex item needs `min-block-size: 0` (`min-inline-size: 0`
+  in a row), or the automatic minimum sizes it to the merchant's photo.
+- A first or last child's block margin collapses out through a section wrapper
+  whose padding setting can be 0. Space the child with padding, not margin.
+- A component that sets its own `display` beats the UA's `[hidden]`; declare
+  `.x[hidden] { display: none; }` beside it.
+- A `font-weight` is only as real as the face `css-variables.liquid` loads;
+  `font_modify` emits nothing for a weight the library lacks and the browser
+  synthesises. Enumerate `[...document.fonts]` — `document.fonts.check()` lies.
+- A span in a second font inside a fixed `line-height` grows the line; give it
+  `line-height: 0` (`1` is not enough in desktop Chrome).
+
+No duplicated rule blocks: an edit to the first copy is overridden by the
+second. `check-conventions.py` warns on a run of 40+ lines that repeats.
 
 ### Browser Support
 

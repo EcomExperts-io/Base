@@ -1,28 +1,15 @@
 #!/usr/bin/env python3
 """Render a URL at an exact viewport and save a PNG, via the DevTools protocol.
 
-Why this exists
----------------
-`render-screenshot.sh` passes `--window-size` to headless Chrome. That is a
-*window* size, and the OS window manager is allowed to overrule it: on macOS
-Chrome clamps the window to roughly 501px wide, lays the page out at 501, and
-then crops the screenshot to the width that was asked for. The image is the
-right size and the page inside it is not.
-
-Nothing errored when that happened. Every band of a homepage produced a diff
-percentage, a heatmap and a side-by-side, and the numbers looked like what a
-reader would expect from an untuned mobile build. That is the failure this
-script exists to make impossible — see
-docs/ai-workflow/incidents/2026-09-16-headless-cannot-render-a-mobile-viewport.md
-
-`Emulation.setDeviceMetricsOverride` sets the *viewport*, which the window
-manager has no say in, so a 393px request is 393px of layout. The protocol also
-lets us ask the page how wide it thinks it is and refuse to write a file when
-the answer is wrong.
-
-No dependencies: Chrome speaks WebSocket, and the ~90 lines below are enough of
-a client to send JSON and read JSON back. Adding `websockets` or Playwright
-would put an install step in front of every fork of this theme.
+Notes:
+- The viewport is set with `Emulation.setDeviceMetricsOverride`, never
+  `--window-size`: a window size is a hint the window manager may clamp (macOS
+  clamps headless Chrome to roughly 501px), and the screenshot is then cropped
+  from a page laid out at the wrong width. The page is asked how wide it thinks
+  it is and nothing is written when the answer is wrong.
+- No dependencies: Chrome speaks WebSocket, and the small client below is
+  enough to send JSON and read JSON back; `websockets` or Playwright would put
+  an install step in front of every fork of this theme.
 
 Usage: render-screenshot.py <url> <width> <height> <out.png> [--wait-ms N]
                             [--deadline S] [--mobile] [--scale N]
@@ -188,8 +175,8 @@ class WS:
 
 
 def is_blank(png_bytes):
-    """A render that painted nothing still writes a valid PNG — a 393x9000 wall
-    of one grey, which then diffs at 40% and reads like a real result.
+    """A render that painted nothing still writes a valid PNG — a wall of one
+    grey, which then diffs like a real result.
 
     The test is deliberately narrow: one single colour over the whole sample.
     Anything with two colours in it has painted something, and a stricter test
@@ -291,12 +278,10 @@ def main(argv):
                 "expression": expression, "returnByValue": True,
             })["result"].get("value")
 
-        # Lazy images are the second quiet failure, and it looks exactly like a
-        # section that was never built. `loading="lazy"` only fetches near the
-        # viewport, so on a page taller than the one asked for,
-        # captureBeyondViewport writes the whole document with holes in it:
-        # space reserved by the layout, nothing painted in it. Measured on a
-        # 393x9000 homepage — two bands came back as blank cream.
+        # `loading="lazy"` only fetches near the viewport, so on a page taller
+        # than the one asked for, captureBeyondViewport writes the whole
+        # document with holes in it: space reserved by the layout, nothing
+        # painted in it.
         #
         # So stretch the viewport over the whole document first, let the images
         # land, then put it back to the size the caller asked for. Chrome's

@@ -12,16 +12,9 @@ paths:
 This rule applies to **every string you write**, in every file, regardless of
 what the surrounding code looks like.
 
-That sounds obvious enough not to need saying. It needs saying because of how it
-actually failed. On the Bites Vitamins build, localisation was applied
-diligently wherever the agent was *editing an existing Base file* — those files
-were already dense with `| t` calls, so it matched them. In **brand-new
-sections**, where there was no surrounding `| t` to copy, it was skipped almost
-entirely: 5 uses of `| t` across 31 new sections, against 221 across Base's
-sections, and zero `t:` schema keys against Base's 136.
-
 The failure mode is pattern-matching on nearby code instead of applying a
-standard. So, explicitly:
+standard: translation gets applied in files already dense with `| t` calls and
+skipped in brand-new files that have none. So, explicitly:
 
 - A brand-new section with no translation calls anywhere in it is **not**
   evidence that translations don't apply here.
@@ -39,10 +32,6 @@ All four of these need translating. The last two are the ones that get missed:
 | Schema labels and preset names | `"label": "t:sections.all.colors.label"` |
 | **Accessibility attributes** | `aria-label`, `alt`, `title` |
 | **Screen-reader-only text** | `.visually-hidden` spans |
-
-Concrete misses from the Bites build, all hardcoded English in shipped
-`aria-label` attributes: `"Products"`, `"Contact methods"`,
-`"Comparison columns"`, `"Filter reviews"`, `"Filter articles"`.
 
 Schema labels use the `t:` prefix and live in
 `locales/en.default.schema.json`. User-facing strings use `| t` and live in

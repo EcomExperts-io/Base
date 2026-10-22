@@ -1,6 +1,7 @@
 ---
 name: recon-theme
 description: Measure a theme before building in it — lineage against Base, the conventions actually in use, compliance, which pages exist and which are left, tooling state — and write the state-of-the-theme document plus the fork's measured rule values. Use when arriving on a client repo for the first time, resuming a rebuild another team started, or when asked what was done previously, what conventions to follow, or what is left.
+argument-hint: [--live-url <storefront-url>]
 ---
 
 # recon-theme
@@ -9,13 +10,10 @@ Read the repo before writing to it. Arriving on a rebuild — new or someone
 else's — the store depends on what was built first and what can be carried, so
 the first act is measurement, not code.
 
-**Why this exists.** The downstream rule copies are supposed to carry the
-numbers a client theme settled on ("769px, 14 files against 4") so that agents
-build to the theme in front of them rather than to Base's generic text. That was
-done by hand, once, for one fork. Meanwhile a developer landing on Furbish found
-no rules at all, and one landing on BPN found rules that had drifted from Base
-with no record of which edits were deliberate. The recon makes the measurement
-a script and the judgment a checklist.
+The fork's rule copies carry the numbers the theme settled on ("769px, 14 files
+against 4") so agents build to the theme in front of them, not to Base's
+generic text. The recon makes that measurement a script and the judgment a
+checklist.
 
 **Invocation:** `/recon-theme` — in the client repo, after
 `sh .claude/scripts/base-link.sh` (so lineage can be measured) and
@@ -25,6 +23,13 @@ a script and the judgment a checklist.
 
 ```bash
 python3 .claude/scripts/recon-theme.py
+```
+
+With the published storefront's URL, so the live feature inventory is in the
+document from day one:
+
+```bash
+python3 .claude/scripts/recon-theme.py --live-url https://www.<store>
 ```
 
 Writes `state-of-the-theme.md` under `docs/ai-workflow/`: lineage against Base per
@@ -52,13 +57,36 @@ in the "What the numbers cannot see" section of the document:
 - **What the previous team wrote down.** Their rule edits (the drift report
   lists them), their references, their decisions log, their frame map. Treat
   a doc an AI wrote during a build as a claim, not a ruling, until it is
-  checked against the code — the Bites `shared-page-sections.md` was a post-hoc
-  rationalisation.
+  checked against the code.
 - **Half-built pages.** Templates with no admin page, sections in no template,
   frames in the map with nothing built. This is the "what is left" list.
 - **Three decisions** to make before the next section: the breakpoint to build
   new work at, the container class to use, and whether to keep or retire any
   convention that contradicts the rules (say which way, and why).
+
+## Step 2½ — Read the live inventory as a list of things the theme must not fight
+
+The "Live site inventory" section names what the storefront loads that the
+code does not show. For each line, decide and write down:
+
+- **An app that acts on the theme** (subscriptions, reviews, upsells): which
+  sections it injects into or owns, and whether the rebuilt section drives it,
+  switches it off, or leaves it (a subscription app has injected a second
+  purchase UI into a rebuilt product form; the fix was one documented flag).
+- **A popup or chat** paints over every capture; `live-parity.py` hides the
+  known ones. An unknown one is added to its overlay list, not masked by hand.
+- **Markets**: the market list to verify in, logged in and out.
+- **A page builder** owns template names until admin is changed; the pages
+  it renders are migrations of HTML, not sections to restyle
+  (`build-section-from-live` §3).
+- **Tracking** stays the platform's (`storefront-infrastructure.md`); the
+  theme does not re-add it.
+
+Then write the reference map — `docs/ai-workflow/reference-map.md`, one row
+per band: which reference (Figma, live or both), the Figma node ids with
+their exact sizes, the live URL and section key, and whether it is in scope.
+A rebuild that is "match live" has no Figma columns; a redesign has no live
+section key for the bands that are new.
 
 ## Step 3 — Record the measured conventions where agents read them
 

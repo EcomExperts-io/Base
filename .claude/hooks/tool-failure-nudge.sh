@@ -1,15 +1,6 @@
 #!/bin/sh
-# PostToolUseFailure hook — when a Shopify command fails, ask whether a rule
-# should have prevented it.
-#
-# Why this exists
-# ---------------
-# Every incident that later became a rule in this repo first surfaced as a
-# failing command: a theme upload 500ing on a two-step range, a template
-# rendering a `t:` key, Theme Check dying on Node 20. None was recorded at the
-# time — the mistake log the workflow asked for existed in zero client repos.
-# The moment of failure is the only moment the details are all in context, so
-# this is where the nudge goes. It adds one line of context; it does not block.
+# PostToolUseFailure hook — when a Shopify command fails, adds one line of
+# context pointing at /record-incident. Does not block.
 
 INPUT=$(cat)
 printf '%s' "$INPUT" | python3 -c '

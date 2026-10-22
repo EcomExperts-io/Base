@@ -113,9 +113,18 @@ Build it with `capture` and `raw`:
 ```
 
 This comes up whenever a translated string is handed to JavaScript as a
-template — a placeholder the client-side code substitutes later. Found on the
-BPN Quick-Shop build, where the bundle-picker snippet still carries the
-broken form.
+template — a placeholder the client-side code substitutes later.
+
+**One `}` is enough to end it.** Shopify's tokenizer cuts an output tag at the
+first `}` it meets, not the first `}}`, so a string literal holding a single
+brace — a JSON object built for a `data-` attribute — fails the whole file with
+"Variable … was not properly terminated". Build the JSON as text with
+`capture`, so no brace ever sits inside an output tag:
+
+```liquid
+{%- capture props -%}{"_supply_length":"{{ days }}-day"}{%- endcapture -%}
+data-properties="{{ props | escape }}"
+```
 
 ### Filters are not applied to `{% render %}` arguments
 
@@ -135,8 +144,7 @@ This is the one standing exception to the "Inline Variables Pattern" below: a
 filtered value destined for a `render` argument **has** to be assigned first.
 
 Theme Check catches this one as `UnsupportedFilterArguments`, so a full
-`shopify theme check` run will find it — but only if the file is in scope, which
-is why it survived in a client theme for months.
+`shopify theme check` run will find it — but only if the file is in scope.
 
 ### A rich text metafield does not print as HTML
 
@@ -193,6 +201,47 @@ and that the paginated form (`{% paginate shop.metaobjects.<type>.values by 250 
 and the bare form behave differently once a type holds more entries than a
 single page. If a section says "leave empty to list every entry", check which
 form it uses before believing it.
+
+### Count a `*_list` setting with `.count`, not `.size`
+
+An `article_list` or `product_list` setting iterates like an array, but `.size`
+on it is blank, so a guard like `pool.size > 0` renders the empty state with
+every post picked. Shopify documents `.count` for these settings. A section
+with two sources hides it: `blog.articles` (or a `concat` of two) is a real
+array where `.size` works, so the picked branch reads right until it meets
+data.
+
+### A typed metafield's `.value` is a drop, and its numbers are strings
+
+`product.metafields.reviews.rating.value` prints `4.8` and `| times: 100.0`
+gives `0.0`: it is a Rating drop whose `to_s` is the number. The number is
+`.value.rating`, and it arrives as a JSON string, so `"4.8" > 0` is false.
+Coerce with `| times: 1.0` before any comparison or arithmetic. `money`,
+`dimension` and `volume` metafields have the same shape.
+
+### Multi-tag collection URLs are alphabetical
+
+Shopify canonicalises `/collections/all/<tag>+<tag>` to alphabetical order and
+301s any other order — with no `Location` header, so a section fetch receives
+the 301 and nothing to follow. Half of all pairs happen to be in order, which is
+why a filter UI passes a hand test and fails for shoppers. Sort before building
+the path: `assign next_tags = next_tags | split: '+' | sort | join: '+'`.
+
+### Date arithmetic: `date: '%s'` returns a string
+
+Liquid has no date maths; add seconds to a coerced timestamp. `%e` is
+space-padded, so strip it before coercing.
+
+```liquid
+assign stamp = 'now' | date: '%s' | plus: 0
+assign stamp = days | times: 86400 | plus: stamp
+assign day   = stamp | date: '%e' | strip | plus: 0
+assign month = stamp | date: '%b'
+```
+
+Ordinals need the teens exception (`day | modulo: 100` between 11 and 13 is
+always "th"); keep the suffixes as translation keys. `'now'` is UTC and the
+page cache can hold the value across midnight.
 
 ### Nil is not an error
 

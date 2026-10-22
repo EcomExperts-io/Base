@@ -1,0 +1,5 @@
+# Theme ids push-dev-theme.sh refuses to push to, one per line: the live theme
+# and the GitHub-synced QA theme of this store. A fork fills this in on arrival
+# (`shopify theme list`); Base's copy is empty. Lines that are not an id are
+# ignored. The script also refuses any theme whose role is not development or
+# unpublished, so this list is the second lock, not the only one.

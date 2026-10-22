@@ -1,6 +1,7 @@
 ---
 name: run-theme
-description: Start or reuse the Shopify theme dev server for this checkout so the theme can be opened, screenshotted and verified. Use when the theme needs to be running — before verify-against-figma, before /verify or /run, or when asked to preview, launch or open the theme.
+description: Start or reuse the Shopify theme dev server for this checkout so the theme can be opened, screenshotted and verified. Use when the theme needs to be running — before verify-against-reference, before /run, or when asked to preview, launch or open the theme.
+argument-hint: [--verify]
 ---
 
 # run-theme
@@ -52,8 +53,8 @@ re-uploads files as they change. Nothing here touches the published theme.
 
 6. **Open a page** by path: `/`, `/products/<handle>`,
    `/collections/<handle>`, `/pages/<handle>`. A page template renders nothing
-   until a page with that handle and template exists in admin — four pages
-   404'd on a client build for that reason alone, which is not a code defect.
+   until a page with that handle and template exists in admin; that 404 is
+   not a code defect.
 
 ## Stopping
 
@@ -71,8 +72,20 @@ with it, or leave it for the developer if they started it.
   keeps a stream open, so a headless render that waits for the network to
   settle never returns. `.claude/launch.json` has a `theme-verify`
   configuration on port 9293 with `--live-reload off` for
-  `/verify-against-figma`; day-to-day work stays on 9292. Same command
+  `/verify-against-reference`; day-to-day work stays on 9292. Same command
   otherwise: `shopify theme dev --port 9293 --live-reload off`.
 - With live reload off, an upload error latches: after the offending file is
   fixed the server keeps serving the failed state (a 500 on every route),
   because nothing re-uploads it. Restart that server; the next request is 200.
+- **A theme-wide 500 whose body names a file you were not editing is an
+  invalid schema somewhere else in the theme.** One rejected upload fails every
+  route. Read the filename in the error, not the URL you requested, and restart
+  once to tell a real failure from a latched one.
+- **An upload rejection is silent from the agent's side.** It shows in this
+  terminal and on the 500 page only. After writing a schema, or a template with
+  dynamic sources, `curl -s <url> | grep -c "Upload Errors"` before measuring.
+- **A change that adds a setting and sets it in a template needs a restart.**
+  The watcher may sync the template before the schema and Shopify drops the
+  key; see `templates.md`.
+- **Do not verify against a server another session started.** Its branch,
+  live-reload state and upload history are not yours.

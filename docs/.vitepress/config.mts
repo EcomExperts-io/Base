@@ -11,7 +11,7 @@ export default defineConfig({
       { text: 'Snippets', link: '/snippets/component-product-card' },
       { text: 'Assets', link: '/assets/component-product-card' },
       { text: 'AI Workflow', link: '/ai-workflow/README' },
-      { text: 'Standards', link: '/base-theme-standards/base-theme-ai-workflow-vision' }
+      { text: 'Standards', link: '/base-theme-standards' }
     ],
 
     sidebar: {
@@ -134,23 +134,18 @@ export default defineConfig({
         {
           text: 'AI Workflow',
           items: [
-            { text: 'The workflow (v2)', link: '/ai-workflow/README' },
+            { text: 'The workflow', link: '/ai-workflow/README' },
             { text: 'Your first build', link: '/ai-workflow/first-build' },
-            { text: 'Figma handoff — one page', link: '/ai-workflow/figma-handoff-checklist' },
-            { text: 'Figma practices — long form', link: '/ai-workflow/figma-ai-friendly-design-practices' },
+            { text: 'Figma handoff', link: '/ai-workflow/figma-handoff' },
             { text: 'Incidents', link: '/ai-workflow/incidents/README' },
           ]
         }
       ],
-      '/base-theme-standards/': [
+      '/base-theme-standards': [
         {
           text: 'Standards',
           items: [
-            { text: 'Vision & principles', link: '/base-theme-standards/base-theme-ai-workflow-vision' },
-            { text: 'Reference — Collection & PDP', link: '/base-theme-standards/base-theme-architecture-reference-collection-pdp' },
-            { text: 'Reference — Header, Cart & Search', link: '/base-theme-standards/base-theme-architecture-reference-header-cart-search' },
-            { text: 'Compliance checklist', link: '/base-theme-standards/base-theme-compliance-checklist' },
-            { text: 'Decisions log', link: '/base-theme-standards/base-theme-decisions-log' },
+            { text: 'Base Theme Standards', link: '/base-theme-standards' },
           ]
         }
       ],

@@ -1,36 +1,16 @@
 #!/usr/bin/env python3
 """Standing count: how much of this theme honours the merchant settings contract.
 
-Why this exists
----------------
-The Bites Vitamins failure — 30 of 31 new sections shipped with spacing and
-colour hardcoded and no merchant settings behind them — ran for five weeks
-because nobody was counting. Every individual section looked finished, so the
-absence of a control was invisible until an audit went looking for it.
-
-`check-section-contract.py` closes that hole going forward: it blocks a commit
-that adds a non-compliant section. But a gate only ever sees new work, by
-design — 23 of Base's 48 sections predate the standard and the gate will never
-mention them again. That leaves the actual state of the theme unmeasured, which
-is the exact condition the incident needed.
-
-This prints the number. It is not a gate — it always exits 0 — it is a figure
-you can put in front of someone weekly and watch move. A number that is
-reported is a number that cannot quietly drift for five weeks.
-
-Scope
------
-The whole theme, every `sections/*.liquid`, staged or not. That is the
-difference from the gate and the reason both exist.
-
-Capability, not spelling
-------------------------
-See CONTRACT NOTE below. This reports whether a merchant *has* a control, not
-whether it is spelled the way the worked example spells it.
-
 Usage:
     python3 .claude/scripts/report-compliance.py
     python3 .claude/scripts/report-compliance.py --json
+
+Notes:
+- Not a gate: it always exits 0. It counts the whole theme, every
+  `sections/*.liquid`, staged or not; the gate only ever sees new work.
+- Capability, not spelling: see CONTRACT NOTE below. This reports whether a
+  merchant *has* a control, not whether it is spelled the way the worked
+  example spells it.
 """
 
 import glob
@@ -81,13 +61,12 @@ SPACING_CONTROL_TYPES = {"range", "number"}
 
 STANDARD_IDS = {"top": "padding_top", "bottom": "padding_bottom"}
 
-# The mobile pair joined the contract on 2026-09-21 (mobile padding is its own
-# merchant value, not `padding_top | times: 0.75` — see sections.md). The gate
-# requires it on NEW sections. This report deliberately does not fold it into
-# the headline number: every section written before the ruling lacks it, so
-# scoring it would take a trusted 22/46 to 0/46 overnight and say nothing new.
-# It is counted and printed on its own line instead, so the retrofit gap is
-# visible without the number people rely on being redefined under them.
+# The mobile pair (mobile padding is its own merchant value, not
+# `padding_top | times: 0.75` — see sections.md) is required by the gate on NEW
+# sections. This report deliberately does not fold it into the headline
+# number: every section written before the ruling lacks it. It is counted and
+# printed on its own line instead, so the retrofit gap is visible without the
+# number people rely on being redefined under them.
 MOBILE_IDS = {"top": "padding_top_mobile", "bottom": "padding_bottom_mobile"}
 
 WIDTH = 74
@@ -241,8 +220,8 @@ def tally(rows):
         "compliant": len(compliant),
         "compliant_standard_ids": len(compliant) - len(nonstandard),
         "compliant_non_standard_ids": len(nonstandard),
-        # Compliant sections that also carry the mobile pair — the part of the
-        # contract added on 2026-09-21. Reported, not scored; see MOBILE_IDS.
+        # Compliant sections that also carry the mobile pair. Reported, not
+        # scored; see MOBILE_IDS.
         "compliant_with_mobile_pair": sum(1 for r in compliant if r["has_mobile_padding"]),
         # Every in-scope section whose padding control exists under ids the gate
         # does not match — the false-flag count, whatever else the section is
@@ -313,8 +292,7 @@ def report(rows, t):
          "full contract met, padding spelled\ndifferently")
     line("  with mobile pair", f"{t['compliant_with_mobile_pair']}/{t['compliant']}",
          "padding_top_mobile / padding_bottom_mobile —\n"
-         "in the contract since 2026-09-21, gated on\n"
-         "new sections, not scored on legacy ones")
+         "gated on new sections, not scored on legacy ones")
     print()
     line("NOT COMPLIANT", t["violations"])
     line("  missing padding", t["missing_padding"])

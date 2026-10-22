@@ -1,6 +1,7 @@
 ---
 name: build-page-from-figma
-description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states.
+description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states. When the reference is the live site instead, Step 1 routes to build-section-from-live.
+argument-hint: <figma-url-or-nodeId> [notion-task]
 ---
 
 # build-page-from-figma
@@ -11,16 +12,13 @@ QA checklist written for a non-technical reviewer.
 ## Not everything from Figma is a page
 
 This skill is named for pages because pages came first, but on a full rebuild
-**most of the work is not a page**. One client rebuild ran nine builds: four were
-pages, and five were a footer, a site header with five mega-menu panels, a cart
-drawer, a search overlay with four states, and a set of filter and quick-add
-drawers. The skill was bypassed on all five, because Step 1 asks which template
-the result belongs to and there is no answer for a footer.
-
-That was the wrong call — the parts that mattered most (the settings contract,
-translation keys, verifying both criteria separately, the Notion handoff) apply
-just as much. Use the skill; substitute the four steps below where the page
-assumptions do not fit.
+**most of the work is not a page**: a footer, a site header with mega-menu
+panels, a cart drawer, a search overlay with several states, filter and
+quick-add drawers. Step 1 asks which template the result belongs to, and there
+is no answer for a footer — which is how the skill gets bypassed on exactly
+the work where the settings contract, translation keys, separate verification
+of both criteria and the Notion handoff matter most. Use the skill; substitute
+the four rows below where the page assumptions do not fit.
 
 | The skill says | For a component, overlay or state, instead |
 |---|---|
@@ -42,9 +40,8 @@ Two extra hazards that only appear in this kind of work:
   status into it. Do **not** make the whole drawer or result list live: a screen
   reader would re-announce the entire region on every quantity tick or keystroke.
 
-**This is v1.** It reflects how we actually work today, not a finished process.
-Expect to hit cases it doesn't cover — when that happens, record it in the
-project's mistake log (see step 6) rather than working around it silently.
+Expect to hit cases this skill does not cover. When that happens, record it
+with `/record-incident` (Step 7) rather than working around it silently.
 
 ## Two success criteria, judged separately
 
@@ -56,9 +53,8 @@ other:
 | **1** | **Code style and architecture** | `.claude/rules/` — does it look like Base? |
 | **2** | **Visual fidelity** | The Figma frame — does it match the design? |
 
-Keep them separate in your work and in your reporting. On the Bites Vitamins
-build, visual fidelity was good while the merchant-facing settings contract was
-near-zero — a page can be pixel-perfect and fail every convention we have.
+Keep them separate in your work and in your reporting: a page can be
+pixel-perfect and fail every convention we have.
 Never report "matches the design" as if it covered both.
 
 ## Step 1 — Confirm what you are building. Ask; do not guess.
@@ -66,25 +62,30 @@ Never report "matches the design" as if it covered both.
 Before any Figma call, establish and state back:
 
 - **Which project / store** this is
-- **Which Figma file** — the file key, confirmed for this project
+- **Which reference** — **Figma**, **live**, or **both**. Figma is the
+  source of the look and never of data; live is the source of what the
+  section does, says and holds today, and never of code. A brief can switch
+  from Figma to live mid-build; ask, and record the answer per band in
+  `docs/ai-workflow/reference-map.md`.
+  - **Live** → `/build-section-from-live` from here; its §4 verifies against
+    live and its §5 returns to Steps 5–7 of this skill.
+  - **Both** → design values from the frame, behaviour, copy and data shape
+    from live; verify the look against the frame and the behaviour with
+    `live-parity.py states`.
+- **Which Figma file** — the file key, confirmed for this project (Figma or both)
 - **Which frame** — a node ID, and whether it is the desktop or mobile variant
 - **Which template** the result belongs to
-
 - **The Notion sub-task**, if one was given — it carries the functional
   requirements
 
 If any of these is missing or ambiguous, **ask**. Do not infer a file key from
-repo documentation without checking it — on Bites Vitamins a stale file key
-appeared in 10 places across the docs against 3 for the correct one, and the
-stale one is not readable by the connected account.
+repo documentation without checking it: docs carry stale keys.
 
 ### Notion is the functional source; Figma is not
 
 A Figma frame shows what a page looks like, never how it behaves. Requirements
 an account manager wrote — default selections, conditional visibility, edge
 cases, where a value comes from — live in Notion and exist nowhere in the design.
-
-A Notion link is supplied roughly **60% of the time**.
 
 - **Given** → read it first and treat it as the source of truth for behaviour.
   Walk its requirements individually at verification time.
@@ -111,10 +112,9 @@ minutes of renaming on their side is a day on ours.
 
 **Always pass an explicit `nodeId`.** Never rely on file-wide page listing.
 
-`get_metadata` with no `nodeId` is unreliable on our files — on the Bites
-Vitamins file it returns only a single "Cover" page, while frames on other pages
-fetch perfectly well when addressed directly by ID. That is a tool limitation,
-not a permissions problem, and it has already blocked one audit. Get node IDs
+`get_metadata` with no `nodeId` is unreliable — it can return a single "Cover"
+page while frames on other pages fetch perfectly well by ID. That is a tool
+limitation, not a permissions problem. Get node IDs
 from a human, from a Figma share link (`?node-id=`), or from a registry the
 project keeps.
 
@@ -150,10 +150,10 @@ theme token, use the token.
 
 ## Step 4 — Verify both criteria
 
-**Code:** run the standards coach agent for advisory feedback, then fix what it
+**Code:** run the `shopify-pr-reviewer` agent over the diff, then fix what it
 finds. Confirm the gate would pass.
 
-**Visual:** run `/verify-against-figma` — start the theme with `/run-theme`,
+**Visual:** run `/verify-against-reference` — start the theme with `/run-theme`,
 then give the skill the page URL, the file key and each node id with the width
 it was designed at. It renders the page at exactly that width, diffs it
 against the frame's own export, masks the regions marked `data-verify-mask`,
@@ -163,17 +163,25 @@ deliberate look at the side-by-side, and writes
 it exists and is newer than your last edit, the page is not verified — the
 Stop hook will say so.
 
-Why a script and not your eyes: the workflow's worst recorded failure was a
-section reported as built because it measured 614px against a 615px frame
-while its media column rendered empty. A measurement is a check on a
-screenshot, never a substitute for one, and a table typed from memory is not a
-measurement. Custom elements remain the specific trap: they default to
+A matching height is not a matching section: a 614px render against a 615px
+frame can have an empty media column. A measurement is a check on a
+screenshot, never a substitute for one. Custom elements default to
 `display: inline`, which drops background and vertical padding on screen while
 `getComputedStyle` still reports both — the heatmap catches it, the table does
 not.
 
 **Functionality:** walk the Notion requirements one at a time and confirm each.
-Say plainly which ones you could not verify and why.
+Say plainly which ones you could not verify and why. If the change touches the
+purchase path — product form, quick add, selling plans, cart drawer or page,
+discount codes, localization — run `commerce-check.py` (the functional half of
+`/verify-against-reference`) at 393, 768, 1024 and 1440 and quote its report;
+then a person walks the three rows it cannot: logged in, Safari, checkout.
+
+**GitBot:** in a client repo, every push is reviewed against these same rules
+and the review lands in Slack. After the push, run `/gitbot-preflight`: it
+reads the findings from here and settles each one — fixed, or flagged with
+the developer's reason — before the pull request. The handoff quotes its
+three numbers (open, fixed, flagged).
 
 Report all three separately, each with what you actually checked, quoting the
 verify report's numbers rather than "matches the design".
@@ -229,6 +237,14 @@ Never mention code, settings, schema, tokens, or file names.
 - ~~Confirm `padding_top_mobile` is read outside the media query~~
 - ~~Check `component-product-card` snippet is used~~
 
+**Always include the purchase path when the page sells anything**, in the
+reviewer's words: "Add the product to the cart from this page — the cart
+opens and shows it with the right price." "Change the quantity to 2 — the
+total updates." "Remove it — the cart says it is empty." "Enter the discount
+code <code> — the total drops." "Switch the country at the bottom of the page
+— prices show in that currency." "Do the add, change and remove again while
+logged in." "Do them on an iPhone in Safari."
+
 Group by what the reviewer is looking at — Desktop, Mobile, Links and buttons,
 Text and images. Cover both what should happen and the obvious ways it could be
 wrong.
@@ -243,9 +259,6 @@ four fields that matter: what happened, how it surfaced, what fixed it, and
 which rule or check should have caught it. That last field is what turns a
 list of incidents into a queue of standards gaps; `/harvest` takes a generic
 one up to Base from this repo.
-
-The gitignored "mistake log" this replaced was asked for on every build and
-created on none — a record nobody can see in a pull request is not a record.
 
 ## Closing the loop
 

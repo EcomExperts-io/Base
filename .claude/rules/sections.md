@@ -10,9 +10,8 @@ paths:
 
 **Every section must expose these settings.** This is not a style
 preference; it is the contract that makes a section usable in the theme editor.
-Base implements the desktop pair in 37 of its 48 sections; the mobile pair
-joined the contract on 2026-09-21 and applies to new work (see the ruling
-below the worked example).
+The mobile pair applies to new work; existing sections are not retrofitted in
+passing (see the ruling below the worked example).
 
 | Setting | Required | Notes |
 |---|---|---|
@@ -26,14 +25,11 @@ Plus a `presets` entry, so a merchant can actually add the section.
 
 ### Why this rule exists
 
-On the Bites Vitamins build, 30 of 31 new sections shipped without any of
-this — spacing and colour were hardcoded into the CSS instead. The cause is
-worth understanding, because it will recur: **a Figma frame specifies exactly
-one spacing value and one background colour.** An agent building to match a
-design has no reason to invent a merchant control, because the control is not
-in the design. Visual fidelity was good; the merchant-facing contract was
-near-zero. They are different success criteria and this one has to be applied
-deliberately.
+**A Figma frame specifies exactly one spacing value and one background
+colour**, so a build that matches the design has no reason to add a merchant
+control — and 30 of 31 new sections on one build shipped without any. Visual
+fidelity and the merchant contract are different success criteria; this one
+has to be applied deliberately.
 
 ### The colour-scheme exception
 
@@ -150,8 +146,7 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 > Base uses it in all 32 of its sections. A client theme often introduces its own
 > container with a different max-width, and the two are frequently **identical at
 > 1440** — so a section built and measured only at 1440 passes review and then reads
-> as broken on a large screen. This happened on a client build and was caught by the
-> lead, not by the developer. Check which container class that theme's finished,
+> as broken on a large screen. Check which container class that theme's finished,
 > QI-passed pages use, and measure at 1920 and 393 as well as at the width the Figma
 > frame was drawn at.
 
@@ -159,43 +154,49 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 > carries `.page-width` an explicit `inline-size: 100%`.** `.page-width` centres
 > itself with `margin-inline: auto`, and an auto cross-axis margin on a flex item
 > cancels the default `align-items: stretch` — so the container collapses to its
-> widest child and takes the band's alignment with it. Measured on a client
-> build: 532px wide at x=454 instead of 1248 at x=96, which read as a centred
-> band against a left-aligned frame.
->
-> Every computed style still reports correct — `align-items: flex-start` and
-> `text-align: start` included — because they are. Only a pixel comparison shows
-> it. Same shape as the custom-element `display` trap in
-> `rules-of-engagement.md`.
+> widest child and takes the band's alignment with it. Every computed style
+> still reports correct, because it is; only a pixel comparison shows it (same
+> shape as the custom-element `display` trap in `rules-of-engagement.md`).
 
 > **Mobile padding is its own merchant setting, not a multiple of the desktop
-> one.** Ruled 2026-09-17 on the Pique rebuild and adopted here 2026-09-21; it
-> replaces the `padding_top | times: 0.75` boilerplate inherited from Dawn.
+> one.** Ruled 2026-09-17, adopted 2026-09-21; it replaces the
+> `padding_top | times: 0.75` boilerplate inherited from Dawn.
 >
-> The multiplier was measured wrong three ways on one build. Seven homepage
-> bands at 393 wanted roughly *half* the desktop padding, so a `padding_top` of
-> 80 needed 40 and the boilerplate gave 60 — every band's first row sat 19 to
-> 21px low. A footer wanted 80/20 on desktop against 34/34 on mobile, ratios of
-> 0.43 and 1.70 on the two edges of one section. And a header measured 9 on
-> desktop against 15 on mobile — a ratio of 1.67, desktop the *tighter* band,
-> because its tallest child was a 46px search field in a 64px bar while mobile
-> fitted a 26px logo in 56px. A constant cannot express a ratio that crosses
-> 1.0, so `0.75` was never a number to tune; it was the wrong shape.
->
-> The tempting middle ("add the mobile pair only when the measured ratio is not
-> about 0.75") was rejected. It leaves a judgment call at the moment a developer
-> is least able to make it — before the section has been measured against its
-> frames — and it is how four sections on one build ended up with three
-> spellings between them. **Four settings always, no condition to evaluate.**
+> Measured mobile/desktop ratios run from 0.43 to 1.70, sometimes on the two
+> edges of one section, and a header can be tighter on desktop than on mobile.
+> A constant cannot express a ratio that crosses 1.0, so `0.75` was the wrong
+> shape, not the wrong number. A conditional ("add the mobile pair only when
+> the ratio is not about 0.75") leaves a judgment call before the section has
+> been measured. **Four settings always, no condition to evaluate.**
 >
 > **Existing sections are not retrofitted as part of unrelated work.** None of
 > Base's 48 carries the mobile pair yet; a section still on the multiplier is
 > legacy, not a bug to fix while passing through — the same standing rule as
-> the 750/769 breakpoint split above. The retrofit is an open ruling in the
-> decisions log. New sections carry all four.
+> the 750/769 breakpoint split above. The retrofit is an open item in
+> `docs/base-theme-standards.md`. New sections carry all four.
 
 The six `t:` keys above all resolve in `locales/en.default.schema.json` today —
 use them rather than inventing new ones.
+
+## A preset-seeded block renders nothing until it has content
+
+A `presets` entry that seeds blocks hands the merchant blocks whose content
+settings are blank — design copy must not become a schema `default` — so the
+first thing they see after adding the section is a coloured band around an
+empty element. Skip a block whose content settings are all blank, and render
+nothing when none survives; pre-scan the way `shop-the-look.liquid` does:
+
+```liquid
+{%- assign has_message = false -%}
+{%- for block in section.blocks -%}
+  {%- if block.settings.text != blank or block.settings.link_text != blank -%}
+    {%- assign has_message = true -%}{%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+```
+
+`check-section-contract.py` notes a section whose preset seeds blocks and whose
+markup never tests `blank`.
 
 ## Section Requirements
 
@@ -244,8 +245,7 @@ against the list above, or start from
 
 Name sections by **function**, not by the page they first appear on. `hero`,
 `faq`, `selling-points` — not `home-hero` or `about-values`. A page-prefixed
-name stops being descriptive the first time the section is reused, and on the
-Bites build that happened immediately.
+name stops being descriptive the first time the section is reused.
 
 `main-` is reserved for template main sections. Do not use it for new sections.
 

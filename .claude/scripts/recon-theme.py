@@ -1,27 +1,19 @@
 #!/usr/bin/env python3
 """Measure a theme before touching it — lineage, conventions, compliance, what is left.
 
-Why this exists
----------------
-Arriving on a rebuild another team started, or resuming one, the questions are
-always the same and were always answered by reading for a day: is this a Base
-fork, and how far has it moved? which breakpoint, container and naming did
-they actually settle on? how compliant is it, and whose sections are the
-non-compliant ones? which pages exist and which are still to build? is the
-tooling current? The answers decide what can be carried forward, and the
-downstream rule copies are supposed to record the measured ones ("769px, 14
-files against 4") — which was done by hand once, for one fork.
-
-This measures, and writes the answers to docs/ai-workflow/state-of-the-theme.md
-(or stdout). The /recon-theme skill reads the result, looks at what the
-numbers cannot see, and copies the measured conventions into the fork's rules.
-Where the fork's convention and Base's rule disagree, the fork's wins in the
-fork — half the theme already uses it.
+Writes the answers to docs/ai-workflow/state-of-the-theme.md (or stdout). The
+/recon-theme skill reads the result and copies the measured conventions into
+the fork's rules. Where the fork's convention and Base's rule disagree, the
+fork's wins in the fork.
 
 Usage
 -----
   python3 .claude/scripts/recon-theme.py [--base-path ../Base | --ref base/development]
-                                         [--stdout] [--json]
+                                         [--live-url https://www.example.com] [--stdout] [--json]
+
+--live-url adds the live feature inventory: what the published storefront
+loads that the theme code does not show — app embeds, tracking pixels, popup
+and chat scripts, markets, a page builder, rich-text metafield HTML.
 Base is read from --base-path, else the worktree recorded by base-link.sh,
 else the `base` remote. Without any, the lineage section is skipped.
 """
@@ -34,6 +26,9 @@ import os
 import re
 import subprocess
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 
 THEME_DIRS = ("sections", "snippets", "assets", "templates", "layout", "locales", "config", "blocks")
 OUT = "docs/ai-workflow/state-of-the-theme.md"
@@ -229,11 +224,114 @@ def tooling():
            "runtime_hooks": bool(json.loads(read(".claude/settings.json") or "{}").get("hooks")) if os.path.exists(".claude/settings.json") else False,
            "ci": sorted(os.listdir(".github/workflows")) if os.path.isdir(".github/workflows") else [],
            "stamp": json.loads(read(".base-version") or "null") if os.path.exists(".base-version") else None,
-           "frame_map": os.path.exists("docs/ai-workflow/figma-frame-map.md"),
+           "frame_map": os.path.exists("docs/ai-workflow/reference-map.md") or os.path.exists("docs/ai-workflow/figma-frame-map.md"),
            "incidents": len([p for p in os.listdir("docs/ai-workflow/incidents") if p.endswith(".md") and p != "README.md"]) if os.path.isdir("docs/ai-workflow/incidents") else 0}
     if os.path.exists(".claude/scripts/check-tooling-drift.py") and out["stamp"]:
         out["drift"] = sh(sys.executable, ".claude/scripts/check-tooling-drift.py", "--brief", "--no-fetch").strip()
     return out
+
+
+# ---------------------------------------------------------------------------
+# live feature inventory — what the published storefront loads
+# ---------------------------------------------------------------------------
+# Vendor fingerprints, by what they do to a build. A match is a name in the
+# report, not a verdict; the skill says what each class means for the work.
+VENDORS = {
+    "tracking": [
+        ("Google Tag Manager", r"googletagmanager\.com/gtm"), ("GA4 / gtag", r"gtag\(|googletagmanager\.com/gtag"),
+        ("Meta pixel", r"connect\.facebook\.net|fbq\("), ("TikTok", r"analytics\.tiktok\.com|ttq\.load"),
+        ("Pinterest", r"ct\.pinterest\.com|pintrk"), ("Snap", r"sc-static\.net|snaptr\("),
+        ("Klaviyo", r"klaviyo\.com|klaviyo\.js"), ("Hotjar", r"hotjar\.com"), ("Microsoft Clarity", r"clarity\.ms"),
+        ("Northbeam", r"northbeam"), ("Triple Whale", r"triplewhale"), ("Elevar", r"elevar"),
+        ("Attentive", r"attn\.tv"), ("Postscript", r"postscript\.io"), ("Shopify Web Pixels", r"web-pixels-manager"),
+    ],
+    "popups and chat": [
+        ("Klaviyo forms", r"klaviyo.*(forms|onsite)"), ("Justuno", r"justuno"), ("Privy", r"privy\.com|privy-"),
+        ("Alia", r"alia-root|alia\.app"), ("Wisepops", r"wisepops"), ("OptiMonk", r"optimonk"),
+        ("Gorgias chat", r"gorgias"), ("Tidio", r"tidio"), ("Zendesk", r"zendesk|zopim"), ("Intercom", r"intercom"),
+        ("Shopify Inbox", r"shopify-chat|inbox\.shopify"),
+    ],
+    "apps acting on the theme": [
+        ("Recharge", r"rechargepayments|rechargeapps|recharge"), ("Skio", r"skio"), ("Loop subscriptions", r"loopwork|loopsubscriptions"),
+        ("Rebuy", r"rebuyengine"), ("Yotpo", r"yotpo"), ("Judge.me", r"judge\.me"), ("Okendo", r"okendo"),
+        ("Stamped", r"stamped\.io"), ("Loox", r"loox\.io"), ("Smile", r"smile\.io"), ("Bold", r"boldapps"),
+        ("Globo", r"globosoftware|globo\."), ("Weglot", r"weglot"), ("Langify", r"langify"),
+    ],
+    "page builders": [
+        ("Replo", r"replo"), ("Shogun", r"getshogun|shogun"), ("PageFly", r"pagefly"), ("GemPages", r"gempages"),
+        ("Zipify", r"zipify"), ("Tapita", r"tapita"),
+    ],
+}
+
+
+def inventory_html(html, url=""):
+    """What one rendered storefront page says about the platform around the theme."""
+    low = html.lower()
+    out = {"url": url, "bytes": len(html), "vendors": {}, "counts": {}}
+    for group, items in VENDORS.items():
+        hits = [name for name, rx in items if re.search(rx, low)]
+        out["vendors"][group] = hits
+    scripts = re.findall(r"""<script\b[^>]*\bsrc=["']([^"']+)""", html, flags=re.I)
+    out["counts"] = {
+        "scripts": len(re.findall(r"<script\b", html, flags=re.I)),
+        "external_scripts": len(scripts),
+        "app_embeds": len([s for s in scripts if "/extensions/" in s or "cdn.shopify.com/extensions" in s]),
+        "sections": len(re.findall(r'id="shopify-section-', html)),
+        "inline_style_blocks": len(re.findall(r"<style\b", html, flags=re.I)),
+        "inline_style_bytes": sum(len(m) for m in re.findall(r"<style\b[^>]*>(.*?)</style>", html, flags=re.I | re.S)),
+        "rich_text_metafields": len(re.findall(r"metafield-rich_text_field", html)),
+        "hreflang_alternates": len(re.findall(r'hreflang=', html, flags=re.I)),
+        "localization_forms": len(re.findall(r'action="[^"]*/localization"|shopify-localization|localization-form', html)),
+        "iframes": len(re.findall(r"<iframe\b", html, flags=re.I)),
+    }
+    m = re.search(r"Shopify\.theme\s*=\s*(\{[^}]*\})", html)
+    out["theme"] = m.group(1)[:200] if m else None
+    hosts = collections.Counter()
+    for s in scripts:
+        h = urllib.parse.urlsplit(s if "//" in s else "https:" + s if s.startswith("//") else "").netloc
+        if h and "shopify" not in h:
+            hosts[h] += 1
+    out["third_party_script_hosts"] = hosts.most_common(15)
+    return out
+
+
+def live_inventory(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (recon-theme.py; Base tooling)",
+                                               "Accept": "text/html"})
+    try:
+        with urllib.request.urlopen(req, timeout=25) as r:
+            final = r.geturl()
+            html = r.read().decode("utf-8", errors="replace")
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        return {"url": url, "error": str(e)}
+    inv = inventory_html(html, url)
+    inv["final_url"] = final
+    inv["redirected"] = final.rstrip("/") != url.rstrip("/")
+    return inv
+
+
+def render_live(w, inv):
+    w("## Live site inventory")
+    w("")
+    if not inv:
+        w("Not measured — pass `--live-url https://www.<store>` to list what the published storefront loads: app embeds, pixels, popups, markets, a page builder. Each of those changes what a section must do, and none shows in the theme code.")
+        w("")
+        return
+    if "error" in inv:
+        w(f"`{inv['url']}` could not be fetched: {inv['error']}.")
+        w("")
+        return
+    w(f"Fetched `{inv['url']}`" + (f" (redirected to `{inv['final_url']}` — the canonical host is the one to verify against)" if inv.get("redirected") else "") + f"; `Shopify.theme` {inv['theme'] or 'not found on the page'}.")
+    w("")
+    c = inv["counts"]
+    w(f"- **Scripts:** {c['scripts']} total, {c['external_scripts']} external, {c['app_embeds']} app embeds (`/extensions/`); {c['iframes']} iframes. Third-party hosts: " + (", ".join(f"`{h}`×{n}" for h, n in inv["third_party_script_hosts"]) or "none") + ".")
+    for group, hits in inv["vendors"].items():
+        w(f"- **{group.capitalize()}:** " + (", ".join(hits) if hits else "none detected") + ".")
+    w(f"- **Markets:** {c['hreflang_alternates']} hreflang alternates, {c['localization_forms']} localization form(s) — verify logged in and out in each market the store sells to.")
+    w(f"- **Content outside sections:** {c['inline_style_blocks']} inline `<style>` blocks ({c['inline_style_bytes']:,} bytes) and {c['rich_text_metafields']} rich-text metafield wrappers on the page; a page-builder's HTML is a template to migrate, not a section to style.")
+    w("")
+    w("What each line means for the build: a subscription or review app that injects into the product form has to be switched off or driven by the section that replaces it (`javascript-standards.md`, Product forms); a popup paints over every capture and is hidden by `live-parity.py`; a page builder owns template names until admin is changed (`build-section-from-live` §3); tracking is the platform's and stays out of the theme (`storefront-infrastructure.md`).")
+    w("")
 
 
 # ---------------------------------------------------------------------------
@@ -304,11 +402,12 @@ def render(d):
     pg = d["pages"]
     w(f"{len(pg['templates'])} templates; page templates: " + (", ".join(f"`{p}`" for p in pg["page_templates"]) or "none") + ".")
     w("")
-    w("A page template renders nothing until a page with that template exists in admin — confirm each against the store (`/store-recon`), and against the Figma frame map" + (" (`docs/ai-workflow/figma-frame-map.md` exists)" if d["tooling"]["frame_map"] else " (no frame map in this repo yet — build one from the file's frames)") + ".")
+    w("A page template renders nothing until a page with that template exists in admin — confirm each against the store (`/store-recon`), and against the Figma frame map" + (" (a reference map exists under `docs/ai-workflow/`)" if d["tooling"]["frame_map"] else " (no reference map in this repo yet — one row per band: Figma node ids, live URL and section key, which is the reference)") + ".")
     if pg["sections_in_no_template"]:
         w("")
         w("Sections referenced by no template (built, unassigned, or dead): " + ", ".join(f"`{s}`" for s in pg["sections_in_no_template"][:40]) + ".")
     w("")
+    render_live(w, d.get("live"))
     w("## Tooling")
     w("")
     t = d["tooling"]
@@ -349,6 +448,7 @@ def main(argv):
         "compliance": compliance(),
         "pages": pages(files),
         "tooling": tooling(),
+        "live": live_inventory(argv[argv.index("--live-url") + 1]) if "--live-url" in argv else None,
     }
     if "--json" in argv:
         print(json.dumps(d, indent=2, default=str))

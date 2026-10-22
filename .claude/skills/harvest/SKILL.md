@@ -2,19 +2,18 @@
 name: harvest
 description: Send a generic learning from this client repo up to Base as a pull request — a rule paragraph, a reference, a check — from inside the client session, using the Base worktree. Use when asked to harvest, upstream, or flow an incident or rule edit back to Base.
 disable-model-invocation: true
+argument-hint: <incident-file | rule-file | "what was learned">
 ---
 
 # harvest
 
 Move the paragraph, not the file. Open the Base PR from here.
 
-**Why this exists.** For the whole of v1 nothing flowed back to Base during a
-build. The rule for what belonged upstream existed; the mechanics did not — a
-client repo shares no history with Base, so there was no branch to cherry-pick
-onto, and "open a PR to Base" meant a separate afternoon. The worktree that
-`base-link.sh` creates is a real Base checkout beside this repo; this skill
-edits it, commits there, pushes to Base's URL and opens the PR, then marks the
-incident harvested. Human-invoked on purpose: it pushes to a shared repository.
+A client repo shares no history with Base, so there is no branch to cherry-pick
+onto. The worktree that `base-link.sh` creates is a real Base checkout beside
+this repo; this skill edits it, commits there, pushes to Base's URL and opens
+the PR, then marks the incident harvested. Human-invoked on purpose: it pushes
+to a shared repository.
 
 **Invocation:** `/harvest <incident-file | rule-file | "what was learned">`
 
@@ -42,7 +41,7 @@ Generic principle upstream, measured specifics downstream.
 sh .claude/scripts/harvest.sh start <slug>
 ```
 
-Prints `WORKTREE=…` and `BRANCH=harvest/<client>-<slug>`, checked out from the
+Prints `WORKTREE=…` and `BRANCH=harvest/<slug>`, checked out from the
 current `base/development`. It refuses if the worktree has uncommitted work.
 
 ## Step 3 — Edit in the worktree, not here
@@ -50,20 +49,24 @@ current `base/development`. It refuses if the worktree has uncommitted work.
 Make the change under `WORKTREE`. Read the target rule first and match its
 voice: what to do, then the incident that earned it, in a few lines. If the
 learning is a check, add it to `check-conventions.py` (or the relevant script),
-wire it, and test it against Base's own tree. Regenerate the mirror there:
+wire it, and test it against Base's own tree. Add a fixture for it to
+`.claude/scripts/test-checks.py`. Regenerate the mirror there:
 
 ```bash
 sh <WORKTREE>/.claude/scripts/sync-ai-config.sh
 ```
 
 Commit in the worktree with the repo's message style (`[FIX]:` or
-`[FEATURE]:`), naming the client incident in the body. Base's pre-commit runs
-on that commit — a harvest that fails Base's own gate is not ready.
+`[FEATURE]:`). The body describes the incident generically — the mechanism,
+the date, the measured number — and **never names the client**: Base is reused
+for every store, and a client's name or failures do not belong in it. Base's
+pre-commit runs on that commit — a harvest that fails Base's own gate is not
+ready.
 
 ## Step 4 — Push and open the pull request
 
-Write the PR body to a file (what happened on the client build, what changes in
-Base, how it was verified; end with the generated-by line the repo uses), then:
+Write the PR body to a file (what went wrong, in generic terms; what changes in
+Base; how it was verified; end with the generated-by line the repo uses), then:
 
 ```bash
 sh .claude/scripts/harvest.sh open <slug> "<title>" <body-file>
@@ -89,3 +92,5 @@ merges and this repo pulls the tooling down.
 - Do not edit `.cursor/` anywhere — it is generated.
 - Do not push to `base` as a remote. The script pushes to the URL for a reason.
 - Do not harvest a client design decision because it felt like a rule.
+- Do not write the client's name into Base — not in a rule, a docstring, a
+  commit message or a branch. The lesson goes up; the story stays here.

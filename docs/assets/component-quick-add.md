@@ -286,3 +286,21 @@ Ensures the element is registered only once across bundles or hot reload session
 - ESC key and outside clicks close the modal
 - The component supports both quick-add (with fetch) and static modals (without fetch)
 
+## Adding quick add to a section that posts a variant directly
+
+A section that posts `selected_or_first_available_variant.id` straight to `/cart/add` adds a multi-variant product without the shopper choosing. Gate on the product card's test:
+
+```liquid
+assign has_options = false
+if product.variants_count > 1
+  assign has_options = true
+endif
+if variant.quantity_rule.min > 1 or variant.quantity_rule.max != null or variant.quantity_rule.increment > 1
+  assign has_options = true
+endif
+```
+
+- Load `component-quick-add.css`, `component-quick-add.js` and `component-modal-opener.js`; without them the opener is an inert button and nothing errors.
+- `data-product-url` goes on the button, not on `<modal-opener>`: `show()` reads it off the button it is given.
+- Ids carry a section or block id — `QuickAdd-<code v-pre>{{ product.id }}</code>` collides when one product sits in two blocks; pass `section.id | append: '-' | append: block.id` as `uid`.
+- Check: after the opener is clicked, `[id^=QuickAddInfo-]` fills with `product-info`, a variant picker and an add-to-cart.
