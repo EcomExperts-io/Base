@@ -302,5 +302,5 @@ endif
 
 - Load `component-quick-add.css`, `component-quick-add.js` and `component-modal-opener.js`; without them the opener is an inert button and nothing errors.
 - `data-product-url` goes on the button, not on `<modal-opener>`: `show()` reads it off the button it is given.
-- Ids carry a section or block id — `QuickAdd-<code v-pre>{{ product.id }}</code>` collides when one product sits in two blocks; pass `section.id | append: '-' | append: block.id` as `uid`.
+- Ids carry a section or block id — <code v-pre>QuickAdd-{{ product.id }}</code> collides when one product sits in two blocks; pass `section.id | append: '-' | append: block.id` as `uid`.
 - Check: after the opener is clicked, `[id^=QuickAddInfo-]` fills with `product-info`, a variant picker and an add-to-cart.

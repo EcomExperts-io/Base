@@ -8,7 +8,8 @@ Notes:
 - VitePress compiles every markdown file as a Vue template. It applies `v-pre`
   to fenced code blocks but NOT to inline code spans, so `{{ routes.cart_url }}`
   inside backticks is evaluated as a Vue expression and the build dies.
-- Fix: `<code v-pre>escaped content</code>` renders identically.
+- Fix: `<code v-pre>escaped content</code>` renders identically — as an element,
+  not inside backticks, where Markdown escapes the tag and Vue still evaluates.
 """
 
 import os
@@ -30,25 +31,35 @@ def staged_docs():
     ]
 
 
+SPAN = re.compile(r"`[^`]+`")
+VPRE = re.compile(r"<code v-pre>.*?</code>")
+
+
+def offenders_in(content):
+    """(line, text) for every line whose `{{` Vue would evaluate: outside a
+    fenced block, and either inside a backtick span or outside a `<code v-pre>`."""
+    found, in_fence = [], False
+    for n, line in enumerate(content.split("\n"), 1):
+        if FENCE.match(line):
+            in_fence = not in_fence
+            continue
+        if in_fence or "{{" not in line:
+            continue
+        spans = SPAN.findall(line)
+        rest = VPRE.sub("", SPAN.sub("", line))
+        if any("{{" in s for s in spans) or "{{" in rest:
+            found.append((n, line.strip()))
+    return found
+
+
 def offenders(path):
-    """Lines containing {{ outside a fenced block and not already v-pre'd."""
     try:
         content = subprocess.run(
             ["git", "show", f":{path}"], capture_output=True, text=True, check=True
         ).stdout
     except subprocess.CalledProcessError:
         return []
-
-    found, in_fence = [], False
-    for n, line in enumerate(content.split("\n"), 1):
-        if FENCE.match(line):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-        if "{{" in line and "v-pre" not in line:
-            found.append((n, line.strip()))
-    return found
+    return offenders_in(content)
 
 
 def main():

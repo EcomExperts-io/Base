@@ -346,6 +346,11 @@ got4 = list(tcs.offenses(cli4, "/r")); got5 = list(tcs.offenses(cli5, "/r"))
 case("theme-staged: both Theme Check JSON shapes (CLI 4 file list, CLI 5 flat issues) yield the same path and an error with its row",
      got4[0][0] == "sections/a.liquid" == got5[0][0] and got4[0][1]["start_row"] == 3 and got5[0][1]["start_row"] == 4 and len(got4) == len(got5) == 1, (got4, got5))
 
+cdi = load("check-docs-interpolation")
+doc = "\n".join(["```liquid", "{{ fenced }}", "```", "<code v-pre>{{ ok }}</code>", "`<code v-pre>{{ tag_escaped }}</code>`", "`{{ inline }}`", "plain {{ bare }}"])
+hit = [n for n, _ in cdi.offenders_in(doc)]
+case("docs-interpolation: a mustache in a fence or a v-pre element passes; inside backticks (even around a v-pre tag) or bare it is flagged", hit == [5, 6, 7], hit)
+
 aic = load("check-ai-config")
 with tempfile.TemporaryDirectory() as d:
     b = os.path.join(d, "b.sh"); open(b, "w").write("#!/bin/bash\nA=(1 2)\necho ${#A[@]}\n")
