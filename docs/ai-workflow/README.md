@@ -1,36 +1,15 @@
-# The AI Development Workflow — v2
+# The AI Development Workflow
 
-**What this is:** how we take a Figma design and produce Base Theme–standard
-code with AI doing the build, on any client store, by any developer on the
-team. Written for someone joining who has never seen it, and for the AI tools
-that run it.
-
-**Status: v2, 15 Sep 2026.** v1 shipped client pages and was honest that it
-could not run unattended. An audit on 14 Sep measured what that meant in
-practice: one operator, forks that could not receive Base's tooling or send
-learnings back, about five percent of the rules enforced by anything but the
-model's goodwill, verification by eye, and a mistake log that four builds had
-asked for and none had created. v2 is the same intent with mechanisms behind
-it — hooks that fire whether or not anyone remembers, a report on disk instead
-of an assertion, and a queue instead of archaeology. The vision it serves is in
-[`base-theme-ai-workflow-vision.md`](../base-theme-standards/base-theme-ai-workflow-vision.md).
-
----
+How a Figma design becomes Base Theme–standard code with AI doing the build,
+on any client store, by any developer on the team. What Base is lives in
+[`base-theme-standards.md`](../base-theme-standards.md).
 
 ## The intent
 
-A developer hands the AI a design and says:
-
 > **"Build this page using our Base Theme standards."**
 
-…and the AI already understands **both** what the design is **and** how we
-expect it to be implemented — without anyone re-explaining the architecture.
-
-An AI given only a Figma frame produces something that looks right and is
-built wrong: it matches the design and skips everything the design cannot
-express — merchant settings, translation keys, naming. That is a
-missing-context failure, and `.claude/rules/` fixes the context. v2 adds the
-other half: a system that notices when the context was ignored.
+`.claude/rules/` supplies how it must be built; the hooks notice when that
+was ignored.
 
 ### Two success criteria, never conflated
 
@@ -39,9 +18,9 @@ other half: a system that notices when the context was ignored.
 | **1** | **Code style and architecture** | `.claude/rules/` — does it look like Base? | the gate: contract, conventions, Theme Check |
 | **2** | **Visual fidelity** | The Figma frame, at that breakpoint | `.claude/verify/<slug>/report.json` |
 
-Passing one says nothing about the other. On Bites Vitamins the pages were
-pixel-perfect and 30 of 31 new sections shipped with no merchant controls.
-Report the two separately, always, with the evidence for each.
+Passing one says nothing about the other: a section can be pixel-perfect and
+ship with no merchant controls. Report the two separately, with the evidence
+for each.
 
 ### Where each thing comes from
 
@@ -52,27 +31,20 @@ Report the two separately, always, with the evidence for each.
 | **Shopify** | All real data — objects, metafields, collections, pages, policies — read through the CLI and the store's Storefront MCP endpoint (`/store-recon`); platform facts through the Dev MCP | — |
 | **`.claude/rules/`** | How it must be built | What it should look like |
 
----
-
 ## What runs without you
-
-These fire in every session in every repo that has pulled the tooling. None of
-them depend on a person remembering.
 
 | When | What | Where it is configured |
 |---|---|---|
-| Session starts | Doctor status, tooling drift from Base, compliance number, open incidents, the three most-missed rules — injected as context | `SessionStart` hook |
+| Session starts | Doctor status, tooling drift from Base, compliance number, open incidents, the three most-missed rules, and one line naming which of the three situations the repo looks like (fresh rebuild, joining midway, correcting after QA) with the evidence — injected as context | `SessionStart` hook |
 | Claude writes a theme file | Settings contract, grep-level conventions, JSON validity on that one file, findings handed straight back | `PostToolUse` hook (~100 ms) |
-| Claude tries to end a turn | The same gate over everything changed this turn, plus Theme Check; a **new** file that fails blocks the turn; a section changed with no verify report newer than the change is flagged | `Stop` hook |
+| Claude tries to end a turn | The same gate over everything changed this turn, plus Theme Check; a **new** file that fails blocks the turn; a section changed with no verify report newer than the change is flagged; a client branch whose GitBot findings have not been read since its last commit is named | `Stop` hook |
 | A Shopify command fails | A nudge to `/record-incident` while the details are in context | `PostToolUseFailure` hook |
+| A `git push` in a client repo | A nudge to `/gitbot-preflight`: read GitBot's findings here and settle each one before the PR | `PostToolUse` hook on Bash |
 | A commit | The full pre-commit gate; the Cursor mirror regenerated and staged | `.githooks/pre-commit` (called from husky in client forks) |
 | A pull request — into any branch; the fork's trunk is the fork's decision | Base's reusable review workflow, run through a six-line caller in each fork | `.github/workflows/theme-review.yml` |
 
 Modified legacy files are reported, never gated — you answer for what you add.
-Where a check is wrong for a theme, the fix is to say so in the rule, not to
-disable hooks.
-
----
+Where a check is wrong for a theme, say so in the rule; do not disable hooks.
 
 ## The workflow
 
@@ -84,126 +56,88 @@ python3 .claude/scripts/pull-base-tooling.py   # three-way overlay; the previous
 npm run setup                                  # hooks, mirror, doctor — or: sh .claude/scripts/setup.sh
 ```
 
-Then `/recon-theme` (lineage, the conventions actually in use, compliance,
-what is built and what is left) and `/store-recon` (what the store has). The
-previous team's conventions win where they conflict with Base's — half the
-theme already uses them — and the recon writes them into this repo's rule
-copies. Build in the dependency order in
-`.claude/workflows/rebuild-playbook.md`: recon,
-foundations, global chrome, shared components, transactional templates,
-homepage, long tail.
+Then `/recon-theme` (lineage, conventions in use, compliance, what is left)
+and `/store-recon` (what the store has). The previous team's conventions win
+where they conflict with Base's; the recon writes them into this repo's rule
+copies. Build in the order in `.claude/workflows/rebuild-playbook.md`.
 
-### 1. A human decides what to build
+### 1. A human decides what to build and supplies the inputs
 
-Scope and order are a human call. The AI does not choose what to work on next.
+Scope and order are a human call; the AI does not choose what to work on next.
 
-### 2. The human supplies the inputs
-
+- **The reference** — Figma, live, or both, per band, recorded in
+  `docs/ai-workflow/reference-map.md`. Live means the published storefront:
+  rebuilt from what it does and shows (`/build-section-from-live`), never from
+  its code, and verified with `live-parity.py` to 0%.
 - **Figma URL for desktop** and **for mobile** — a specific frame each, with
-  `?node-id=` in it. Two different frames with different specs, not one
-  responsive artifact.
+  `?node-id=` in it. Two frames with different specs, not one responsive one.
 - **Notion link** — the sub-task with the functional requirements, when one
-  exists (roughly 60% of the time). When it does, it is the source of truth
-  for behaviour; when it does not, the AI states every assumption it made.
+  exists. Without one, the AI states every assumption it made.
 - **What to build**, in words.
 
-### 3. The frame is checked before it is built
+### 2. The frame is checked before it is built
 
-`/figma-readiness` scores the frame from `get_metadata`: default layer names,
-hidden leftovers, width in the frame name, components used, text as text — and
-writes the message to send the designer if it is not green. The four-item
-version designers get is
-[`figma-handoff-checklist.md`](./figma-handoff-checklist.md).
+`/figma-readiness` scores the frame from `get_metadata` and writes the
+designer's message if it is not green. Designers get
+[`figma-handoff.md`](./figma-handoff.md).
 
-### 4. The AI fetches the design — one frame at a time, by node ID
+### 3. The AI fetches the design — one frame at a time, by node ID
 
-Always by explicit `nodeId`; never by listing a file's pages, which is
-unreliable on large files. Never guess a node id — a wrong one silently builds
-the wrong design.
+Always by explicit `nodeId`, never by listing a file's pages (unreliable on
+large files), and never guessed — a wrong id silently builds the wrong design.
 
-### 5. The AI builds against Base Theme standards
+### 4. The AI builds against Base Theme standards
 
-`/scaffold-section` for each new section. The rules apply in full; the three a
-design-driven build most reliably misses — the settings contract, translation
-keys, naming by function — are now also the three the per-edit gate reports
-the moment they are missed. Live values are marked `data-verify-mask` so the
-verifier can ignore them.
+`/scaffold-section` for each new section. The rules apply in full; the per-edit
+gate reports the settings contract, translation keys and naming by function the
+moment they are missed. Live values are marked `data-verify-mask`.
 
-### 6. The AI verifies — both criteria, separately, with evidence
+### 5. The AI verifies — both criteria, separately, with evidence
 
-**Visual:** `/run-theme`, then `/verify-against-figma`: the frame exported at
+**Visual:** `/run-theme`, then `/verify-against-reference`: the frame at
 native size, the page rendered at the exact width and height, live regions
-masked, a pixel diff with heatmap and worst bands, a box table computed from
-`get_metadata` and the DOM, one deliberate look at the side-by-side, and
-`report.{json,md}` on disk. The number is read with the heatmap and the
-table; it is a report, not yet a gate.
+masked, a pixel diff with heatmap and worst bands, a box table, one look at
+the side-by-side, `report.{json,md}` on disk. Against live, `live-parity.py`
+renders both sides itself and pairs every element with its computed style.
+The number is read with the heatmap and the table; it is a report, not a gate.
 
-**Code:** the gate has already run on every file; the standards coach gives
-advisory feedback; `shopify-pr-reviewer` gates before a human sees the PR and
-quotes the verify report.
+**Code:** the gate has already run on every file; `shopify-pr-reviewer` gates
+before a human sees the PR and quotes the verify report.
 
 **Functionality:** each Notion requirement walked and confirmed, or named as
-unverified.
+unverified. On the purchase path, `commerce-check.py` walks add, change,
+discount, remove and market switch at four widths on the development theme;
+the three rows it cannot automate — logged in, Safari, checkout — are walked
+by a person and written down. A `/goal` set at the start lets a fresh
+evaluator decide when all three hold.
 
-A `/goal` set at the start lets a fresh evaluator — not the model doing the
-work — decide when all three hold.
+### 6. Hand-off, and the loop in both directions
 
-### 7. The AI reports back in Notion and hands off to QI
+On the Notion sub-task: a comment for someone who was not in the session, the
+QA checklist in plain English, status set to Quality Inspection. QI logs
+issues → `/close-qa-loop` fixes them against the same standards.
 
-On the sub-task: a comment for someone who was not in the session; the QA
-checklist in plain English for a non-technical reviewer; status set to
-Quality Inspection.
+Anything a rule, gate or check should have prevented → `/record-incident` the
+moment it happens: a committed file under `docs/ai-workflow/incidents/` with
+`scope`, `should_have_caught` and `status`. Generic incidents and rule edits
+→ `/harvest` opens the Base pull request from inside the client repo.
+`check-tooling-drift.py` lists what is waiting either way.
 
-### 8. Anything that went wrong is recorded when it happens
-
-`/record-incident` — a committed file under `docs/ai-workflow/incidents/` with
-`scope`, `should_have_caught` and `status`. Not at the end of the build; at
-the moment. The doctor counts the open ones every session.
-
-### 9. The loop closes, in both directions
-
-QI logs issues → `/close-qa-loop` fixes them against the same standards.
-Generic incidents and rule edits → `/harvest` opens the Base pull request from
-inside the client repo, using the Base worktree. `check-tooling-drift.py`
-lists what is waiting either way from the first day of the build.
-
----
-
-## A typical run, start to finish
+## A typical prompt
 
 > Build the product-ingredients section using our Base Theme standards.
 > File key `emfC8d9CtGm0Ewfb8p3LgZ`. Desktop `14840:13393@1440`, mobile
 > `14840:13701@393`. Requirements: `notion.so/…/PDP-rebuild-2a4f`.
 > Run /figma-readiness first; set a /goal.
 
-The AI scores the frame (green), reads the Notion task, fetches both frames by
-id, scaffolds the section — contract, keys, function name — and as it writes
-each file the gate reports what is off, which it fixes in the same turn. It
-starts the theme, runs the verifier: 1440 at 3.4% with one box off (grid gap
-20 vs 24), 393 at 2.1% clean; fixes the gap, re-runs, both under 3. Walks the
-two Notion requirements. Sets the Notion status, posts the comment and the QA
-checklist. The turn ends because the goal evaluator says so, not because the
-model felt done. The report is on disk; the reviewer will quote it.
-
----
-
 ## What this workflow does not do yet
 
-Stated plainly, so v2 does not become permanent either:
-
-- **Verification is reported, not gated.** Diff thresholds wait for two or
-  three real builds' worth of numbers.
-- **Base does not yet pass its own report** — 22 of 46 sections. The retrofit
-  needs a ruling (Decisions Log, Open); until then every fork inherits the
-  gap and the gate stops it growing.
-- **No company-owned Figma template file.** Readiness is checked; the file
-  designers copy from does not exist yet. The first build uses a client frame.
-- **No Admin API writes.** A page template with no page in admin is still
-  "inert until someone creates it" — `/store-recon` names it, nothing creates it.
-- **The observed first build has not happened.** `first-build.md` is the
-  acceptance test; it has not been run by anyone but its author.
-
----
+- **Verification is reported, not gated.** No diff threshold is set.
+- **Base does not pass its own compliance report** (`report-compliance.py`);
+  the retrofit is an open item in `docs/base-theme-standards.md`.
+- **No company-owned Figma template file** for designers to copy from.
+- **No Admin API writes.** A page template with no page in admin is inert;
+  `/store-recon` names it, nothing creates it.
 
 ## Reference
 
@@ -213,15 +147,14 @@ Stated plainly, so v2 does not become permanent either:
 | Conventions | `.claude/rules/` — start with `CLAUDE.md` |
 | Arrive on a repo | `base-link.sh`, `pull-base-tooling.py`, `npm run setup` (or `setup.sh`), `/recon-theme`, `/store-recon` |
 | Order of attack | `.claude/workflows/rebuild-playbook.md` |
-| Check a frame | `/figma-readiness` · designers: [`figma-handoff-checklist.md`](./figma-handoff-checklist.md) |
+| A batch of landing pages matched to live | `.claude/workflows/landing-batch.md` — assembly with `assemble-templates.py`, pushes through `push-dev-theme.sh` |
+| Check a frame | `/figma-readiness` · designers: [`figma-handoff.md`](./figma-handoff.md) |
 | Build a page or component | `/build-page-from-figma` |
 | New section | `/scaffold-section` |
 | Run the theme | `/run-theme` |
-| Verify against the design | `/verify-against-figma` |
+| Verify against the design | `/verify-against-reference` |
 | Record / send up | `/record-incident` · `/harvest` |
 | Close QA issues | `/close-qa-loop` |
 | Machine and repo health | `python3 .claude/scripts/doctor.py` · `check-tooling-drift.py` · `report-compliance.py` · `check-conventions.py --all` |
-| Advisory grading / merge gate | `shopify-standards-coach` · `shopify-pr-reviewer` |
-| Architecture references | Collection & PDP · Header, Cart Engine & Search — in `docs/base-theme-standards/` |
-| Rulings and open questions | `docs/base-theme-standards/base-theme-decisions-log.md` |
-| Designers, long form | [`figma-ai-friendly-design-practices.md`](./figma-ai-friendly-design-practices.md) |
+| Merge gate | `shopify-pr-reviewer` |
+| Architecture, rulings and open items | [`base-theme-standards.md`](../base-theme-standards.md) |

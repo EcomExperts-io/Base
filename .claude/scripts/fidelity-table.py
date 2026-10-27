@@ -1,30 +1,14 @@
 #!/usr/bin/env python3
 """Turn two box lists — the frame's and the DOM's — into a fidelity table.
 
-Why this exists
----------------
-The build workflow says "measure, don't eyeball", and every agent duly reported
-a fidelity table it had typed by hand, which is where 614 became "matches 615".
-This computes the deltas from two JSON files so the table is arithmetic, not
-prose, and so the same properties are compared every time: position, size,
-type scale, colour, gap — whatever both sides supply.
-
-Inputs
-------
-Both files map a layer/element name to its properties. Numbers are compared
-with a tolerance; strings (colour, font family) must match exactly.
-
-  {"hero/heading": {"x": 120, "y": 96, "w": 640, "h": 56, "font_size": 45, "line_height": 52,
-                    "color": "#17212b"},
-   "hero/cta":     {"x": 120, "y": 184, "w": 189, "h": 46}}
-
-The Figma side is written from get_metadata (positions and sizes — subtract the
-frame's own x,y so both sides are frame-relative) and get_variable_defs or the
-design context (type, colour). The rendered side comes from measure-boxes.js
-run in the browser tools.
-
 Usage: fidelity-table.py figma-boxes.json rendered-boxes.json [--tolerance 2] [--json out.json]
 Exit 0 always — a report, not a gate.
+
+Notes:
+- Both files map a layer/element name to its properties, e.g. {"hero/heading": {"x": 120, "y": 96, "w": 640, "h": 56,
+  "font_size": 45, "line_height": 52, "color": "#17212b"}}. Numbers get a tolerance; strings must match exactly.
+- The Figma side comes from get_metadata (subtract the frame's own x,y so both sides are frame-relative) plus the
+  design context for type and colour; the rendered side from measure-boxes.js in the browser tools.
 """
 
 import json

@@ -1,21 +1,14 @@
 #!/usr/bin/env python3
 """Score a Figma frame's structure for the things that make it buildable in one pass.
 
-Why this exists
----------------
-The designer practices document is 414 lines and calls itself aspirational —
-designers do not read it, and nothing in the workflow checked a frame before a
-build started. Every re-prompting cycle it describes comes from the same four
-structural facts: default layer names, absolute positioning, no width in the
-frame name, hidden leftovers. `get_metadata` exposes three of them as data.
-This turns them into a score and a message the AI can send back to the
-designer with the specific layers to fix, before anyone builds anything.
-
-Input is the XML `get_metadata` returns, saved to a file. Auto layout is not
-visible in metadata — the skill checks that half through the design context.
-
 Usage: figma-readiness-score.py <metadata.xml> [--width 1440] [--json]
 Exit 0 always; the verdict is in the output. "send back" means do not build yet.
+
+Notes:
+- Scores four structural facts: default layer names, absolute positioning, no
+  width in the frame name, hidden leftovers. Input is the XML `get_metadata`
+  returns, saved to a file. Auto layout is not visible in metadata; the skill
+  checks that half through the design context.
 """
 
 import json

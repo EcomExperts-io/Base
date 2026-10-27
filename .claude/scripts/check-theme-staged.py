@@ -1,35 +1,15 @@
 #!/usr/bin/env python3
 """Run Theme Check, but only fail on offenses in files this change touches.
 
-Why not just `shopify theme check`
-----------------------------------
-Theme Check has no per-file argument — it always scans the whole theme. Used
-directly in a pre-commit hook that means a pre-existing error anywhere blocks
-everyone, including the person trying to commit the fix. Reproduced: a bad
-section arriving via merge blocked an unrelated docs-only commit.
+Usage:
+  check-theme-staged.py                  the staged set — the pre-commit hook
+  check-theme-staged.py --files <paths>  an explicit set — the Stop hook passes what changed this turn
+Exit 0 = nothing to answer for. Exit 1 = an error in a file you named. A Theme Check that cannot run is a skip, and says so.
 
-So we run the whole-theme scan (unavoidable), take the JSON output, and only
-fail on offenses in the files you name. You are accountable for what you touch,
-not for what you inherited.
-
-Warnings never block; only severity `error` does.
-
-Two ways to name the files
---------------------------
-  (default)        the staged set — the pre-commit hook
-  --files <paths>  an explicit set — the Stop hook passes what changed this turn
-
-Node
-----
-The Shopify CLI needs Node 22+ and dies at startup on older versions. On this
-team's machines the default Node is often 20 with a newer one under ~/.nvm, so
-when the PATH node is too old and nvm has one that works, that one is used for
-this run. The skip is the dangerous outcome — a gate that silently did not run
-looks exactly like a gate that passed — so the result always says which Node it
-ran on, or why it could not.
-
-Exit 0 = nothing to answer for. Exit 1 = an error in a file you named.
-A Theme Check that cannot run at all is a skip, never a block, and says so.
+Notes:
+- Theme Check has no per-file argument, so the whole theme is scanned and only errors (never warnings) in the named files fail.
+- The Shopify CLI needs Node 22+ and dies at startup on older versions; when PATH's node is too old and ~/.nvm has one
+  that works, that one is used, and the result always says which Node it ran on, or why it could not.
 """
 
 import glob
@@ -71,6 +51,25 @@ def node_env():
     return env, v
 
 
+def offenses(results, root):
+    """(repo-relative path, offense) pairs from either JSON shape the CLI emits:
+    CLI 4 is a list of files each holding `offenses` (`start_row`); CLI 5 is a
+    dict whose `issues` are flat (`filePath`, `startRow`)."""
+    if isinstance(results, dict):
+        for issue in results.get("issues", []):
+            if isinstance(issue, dict):
+                rel = os.path.normpath(os.path.relpath(issue.get("filePath", ""), root))
+                yield rel, {**issue, "start_row": issue.get("startRow", issue.get("start_row", "?"))}
+        return
+    for entry in results:
+        if not isinstance(entry, dict):
+            continue
+        rel = os.path.normpath(os.path.relpath(entry.get("path", ""), root))
+        for off in entry.get("offenses", []):
+            if isinstance(off, dict):
+                yield rel, off
+
+
 def main(argv):
     if shutil.which("shopify") is None:
         print("Theme Check did not run: the Shopify CLI is not installed. Not blocking.")
@@ -104,14 +103,10 @@ def main(argv):
         print("            The Shopify CLI needs Node 22+: nvm install 24 && nvm alias default 24")
         return 0
 
-    blocking = []
-    for entry in results:
-        rel = os.path.normpath(os.path.relpath(entry.get("path", ""), root))
-        if rel not in targets:
-            continue
-        for off in entry.get("offenses", []):
-            if off.get("severity") == "error":
-                blocking.append((rel, off))
+    blocking = [
+        (rel, off) for rel, off in offenses(results, root)
+        if rel in targets and off.get("severity") == "error"
+    ]
 
     if not blocking:
         return 0

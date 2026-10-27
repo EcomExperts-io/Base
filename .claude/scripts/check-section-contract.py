@@ -1,48 +1,18 @@
 #!/usr/bin/env python3
 """Pre-commit check: new sections must expose the merchant settings contract.
 
-Why this exists
----------------
-On the Bites Vitamins build, 30 of 31 new sections shipped with spacing and
-colour hardcoded into CSS and no merchant settings behind them. Nothing caught
-it: the pre-commit hook logged to a file and carried on, `shopify theme check`
-was commented out, and the review agents did not look for it. The pages looked
-finished, so nobody noticed for five weeks.
-
-This blocks instead of logging, and only on checks that need no judgment.
-
-Scope
+Usage
 -----
-Only sections *added* in this commit. Modifying an existing section does not
-trigger it — 23 of Base's 48 sections predate this standard, and most of those
-are template main sections or section-group members for which a `presets` entry
-would actually be wrong (a merchant should not be able to add a second cart to
-a page).
+  check-section-contract.py                  sections ADDED in the staged changeset (the pre-commit hook)
+  check-section-contract.py --files <paths>  these working-tree sections, judged as if new (the runtime hooks)
+  check-section-contract.py --quiet          say nothing when everything passes
 
-Escape hatches, both requiring a written reason
-----------------------------------------------
-A Liquid comment mentioning `presets` marks a section as not merchant-addable
-and exempts it from the whole contract — the contract is about merchant
-editability, so a section a merchant cannot place is out of scope. This works
-whether or not the section has a `{% schema %}`: a render-target section may
-legitimately have none.
-
-A Liquid comment mentioning `color_scheme` exempts that one setting, for
-designs that fix the surface on purpose.
-
-Padding has no exception on a merchant-addable section. Since 2026-09-21 that
-is four settings — `padding_top`, `padding_bottom`, `padding_top_mobile`,
-`padding_bottom_mobile` — because mobile padding is its own merchant value, not
-a multiple of desktop (see .claude/rules/sections.md for the measurements that
-retired the 0.75 multiplier).
-
-Modes
------
-  (default)        sections ADDED in the staged changeset — the pre-commit hook
-  --files <paths>  these working-tree sections, judged as if new — the runtime
-                   hooks pass the file Claude just wrote, or every section new
-                   since HEAD at the end of a turn
-  --quiet          say nothing when everything passes
+Notes:
+- Only sections added in this commit: Base's legacy predates the standard, and a template main section or a
+  section-group member would be wrong with a `presets` entry.
+- A Liquid comment mentioning `presets` marks a section as not merchant-addable and exempts it from the whole contract,
+  with or without a `{% schema %}`; a Liquid comment mentioning `color_scheme` exempts that one setting.
+- Padding has no exception: `padding_top`, `padding_bottom`, `padding_top_mobile`, `padding_bottom_mobile`; mobile is its own value.
 """
 
 import json
@@ -51,11 +21,8 @@ import re
 import subprocess
 import sys
 
-# Hardcoded English is a rule breach, but it is a different kind of work from a
-# missing setting: a section copied from an older Base section can carry 20+
-# bare schema labels, each needing a locale key written. These block by default
-# — flip this to False if that proves noisy enough that people start reaching
-# for --no-verify, which would cost more than the checks are worth.
+# Bare English labels block by default. Flip this to False if that proves noisy
+# enough that people start reaching for --no-verify.
 BLOCK_ON_HARDCODED_STRINGS = True
 
 REFERENCE = ".claude/skills/scaffold-section/reference-section.liquid"
@@ -66,17 +33,9 @@ COMMENT_RE = re.compile(r"\{%-?\s*comment\s*-?%\}(.*?)\{%-?\s*endcomment\s*-?%\}
 # A schema label that is a bare string rather than a `t:` key.
 BARE_LABEL_RE = re.compile(r'"(?:label|content|info)"\s*:\s*"(?!t:)([^"]+)"')
 
-# An accessibility attribute holding a literal string. Values containing `{` or
-# `}` are Liquid output and therefore fine; `alt=""` is legitimately empty on a
-# decorative image, so a value is only flagged when it has at least one char.
-#
-# Deliberately narrow. Visible body text is NOT checked here: in a Shopify
-# content section most of it comes from merchant settings
-# (`{{ section.settings.heading | escape }}`), which correctly does not use
-# `| t` — `| t` is for theme-provided strings. Detecting the difference in
-# freeform markup is not reliable enough for a blocking gate, so that judgment
-# stays with the review agents. These attributes are always theme-authored,
-# which is what makes them safe to check mechanically.
+# An accessibility attribute holding a literal string. `{`/`}` in the value is Liquid output and fine; an empty value is
+# a legitimate decorative `alt=""`. Visible body text is deliberately NOT checked: most of it is merchant settings, which
+# correctly do not use `| t`, and telling the two apart in freeform markup is not reliable enough for a blocking gate.
 A11Y_ATTR_RE = re.compile(r'\b(aria-label|alt|title)="([^"{}]+)"')
 
 # Regions to ignore when scanning markup: Liquid comments, the schema block
@@ -118,8 +77,7 @@ def staged_content(path):
 
 
 def parse_schema(src):
-    """Return (schema_dict, error). Tolerates trailing commas — Shopify does,
-    and sections/dynamic-grid.liquid in this repo actually has two."""
+    """Return (schema_dict, error). Tolerates trailing commas, as Shopify does."""
     m = SCHEMA_RE.search(src)
     if not m:
         return None, "no {% schema %} block found"
@@ -140,16 +98,8 @@ def comments_mentioning(src, needle):
 
 def check(path, src):
     """Return (blocking, advisory) lists of problem strings for one section."""
-    # The presets exemption is resolved BEFORE the schema is parsed, because a
-    # render-target section (rendered by another section, never placed by a
-    # merchant) legitimately has no {% schema %} at all. Checking the schema
-    # first made the exemption unreachable for exactly the sections it was
-    # written for: they had to carry a stub schema to satisfy a check whose own
-    # docstring says they are out of scope. sections/pickup-availability.liquid
-    # and sections/predictive-results.liquid are both in this state.
-    #
-    # A malformed schema still blocks regardless — that breaks the theme, and
-    # no exemption should hide it.
+    # The presets exemption is resolved BEFORE the schema is parsed: a render-target section legitimately has no
+    # {% schema %} at all. A malformed schema still blocks regardless.
     schema, err = parse_schema(src)
     if err == "no {% schema %} block found" and comments_mentioning(src, "presets"):
         return [], []
@@ -196,6 +146,18 @@ def check(path, src):
             "      add a Liquid comment mentioning `color_scheme` that says why."
         )
 
+    # A preset that seeds blocks hands the merchant blank blocks, so unless the loop skips an empty block the section
+    # renders a coloured band around nothing. Advisory: the markup may test emptiness some other way.
+    seeded = sum(len(p.get("blocks") or []) for p in (schema.get("presets") or []) if isinstance(p, dict))
+    markup = markup_only(src)
+    if seeded and "section.blocks" in markup and "blank" not in markup:
+        advisory.append(
+            f"the preset seeds {seeded} block(s) with no content and the markup never tests `blank`:\n"
+            "      a merchant who adds this section sees an empty coloured band. Skip a block whose\n"
+            "      content settings are blank and render nothing when none survives (sections.md,\n"
+            "      'A preset-seeded block renders nothing until it has content')."
+        )
+
     bare = BARE_LABEL_RE.findall(schema_raw)
     if bare:
         shown = ", ".join(f'"{b}"' for b in bare[:3])
@@ -218,8 +180,7 @@ def check(path, src):
             f"{shown}{more}\n"
             "      These are theme-authored strings, so they need a locale key:\n"
             '      aria-label="{{ \'sections.example.label\' | t }}"\n'
-            "      Keys go in locales/en.default.json. Five of these shipped to a\n"
-            "      client on the Bites Vitamins build."
+            "      Keys go in locales/en.default.json."
         )
         (problems if BLOCK_ON_HARDCODED_STRINGS else advisory).append(msg)
 
@@ -256,12 +217,14 @@ def main(argv=None):
             notes[p] = advisory
 
     if not failures:
+        # --quiet silences the all-clear, not a note: the runtime hooks run
+        # with it, and a note nobody can see is not advisory, it is absent.
         if not quiet:
             print(f"Section contract OK ({len(paths)} new section(s) checked).")
-            for path, advisory in notes.items():
-                print(f"  note — {path}")
-                for a in advisory:
-                    print(f"    {a}")
+        for path, advisory in notes.items():
+            print(f"  note — {path}")
+            for a in advisory:
+                print(f"    {a}")
         return 0
 
     n = sum(len(v) for v in failures.values())

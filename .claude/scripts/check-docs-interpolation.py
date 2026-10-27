@@ -1,22 +1,14 @@
 #!/usr/bin/env python3
 """Pre-commit check: Liquid examples in docs must not be run as Vue expressions.
 
-The docs site is VitePress, which compiles every markdown file as a Vue
-template. It applies `v-pre` to fenced code blocks automatically but NOT to
-inline code spans — so `{{ routes.cart_url }}` inside backticks is evaluated as
-a Vue expression, finds nothing, and the build dies.
-
-This is worth a check rather than a rule because of how it was found: the docs
-build had been broken since June 2026 and nobody knew, since the deploy workflow
-only runs on pushes that touch docs/** and nothing had. Then the branch adding
-this very check introduced three more instances of the same fault — two of them
-in prose written specifically to document the standard. A convention nobody can
-reliably follow by hand belongs in a script.
-
-Fix: `<code v-pre>escaped content</code>` — renders identically, Vue leaves it
-alone.
-
+Usage: check-docs-interpolation.py
 Only staged docs markdown is checked. Exit 1 if any file would break the build.
+
+Notes:
+- VitePress compiles every markdown file as a Vue template. It applies `v-pre`
+  to fenced code blocks but NOT to inline code spans, so `{{ routes.cart_url }}`
+  inside backticks is evaluated as a Vue expression and the build dies.
+- Fix: `<code v-pre>escaped content</code>` renders identically.
 """
 
 import os

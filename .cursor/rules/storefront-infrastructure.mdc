@@ -5,32 +5,25 @@ alwaysApply: true
 ---
 
 <!-- GENERATED from .claude/rules/storefront-infrastructure.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3534146581 -->
+<!-- checksum: 972555336 -->
 
 
 # Storefront infrastructure
 
-What runs outside the theme, and therefore what a theme must not try to solve.
-This exists because both halves are expensive to get wrong: building something
-the platform already provides wastes a sprint, and reporting its absence in the
-theme wastes a reviewer's afternoon.
+What runs outside the theme, and therefore what a theme must not build or
+report as missing.
 
 ## Bot protection, rate limiting and abuse mitigation
 
-Every storefront in this organisation runs bot protection, rate limiting and
-abuse mitigation **at the platform layer, outside the theme**.
-
-So:
+Every storefront in this organisation runs these **at the platform layer,
+outside the theme**.
 
 - Do not add CAPTCHA, request throttling, client-side rate limiting or bot
-  scoring to a theme. It duplicates a control that already exists, in the one
-  layer a determined client can bypass.
-- Do not report the absence of any of them as a defect. It is handled, and the
-  theme is not where it lives.
+  scoring to a theme; it duplicates a control in the one layer a client can bypass.
+- Do not report the absence of any of them as a defect.
 
-This says nothing about bot-detection code that **is** in the theme. If a change
-contains scoring, thresholds or blocking logic, review it like any other code and
-report real defects in it. The rule is about absence, not about exemption.
+Bot-detection code that **is** in the theme — scoring, thresholds, blocking
+logic — is reviewed like any other code. The rule is about absence, not exemption.
 
 ## What this does not cover
 

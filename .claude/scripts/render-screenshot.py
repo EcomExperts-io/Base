@@ -1,48 +1,18 @@
 #!/usr/bin/env python3
-"""Render a URL at an exact viewport and save a PNG, via the DevTools protocol.
+"""Render a URL at an exact viewport and save a PNG, via the DevTools protocol. CHROME_BIN overrides the binary.
 
-Why this exists
----------------
-`render-screenshot.sh` passes `--window-size` to headless Chrome. That is a
-*window* size, and the OS window manager is allowed to overrule it: on macOS
-Chrome clamps the window to roughly 501px wide, lays the page out at 501, and
-then crops the screenshot to the width that was asked for. The image is the
-right size and the page inside it is not.
+Notes:
+- The viewport is set with Emulation.setDeviceMetricsOverride, never --window-size: macOS clamps a headless window
+  to about 501px and the capture is then cropped from a page laid out at the wrong width.
+- No dependencies on purpose: the small WebSocket client below is enough for CDP, and `websockets` or Playwright
+  would put an install step in front of every fork.
+- Exits non-zero and writes nothing when Chrome cannot start, the page's innerWidth is not the width asked for,
+  or the image is blank. An image that never loaded is a warning on stderr; the file is still written.
 
-Nothing errored when that happened. Every band of a homepage produced a diff
-percentage, a heatmap and a side-by-side, and the numbers looked like what a
-reader would expect from an untuned mobile build. That is the failure this
-script exists to make impossible — see
-docs/ai-workflow/incidents/2026-09-16-headless-cannot-render-a-mobile-viewport.md
-
-`Emulation.setDeviceMetricsOverride` sets the *viewport*, which the window
-manager has no say in, so a 393px request is 393px of layout. The protocol also
-lets us ask the page how wide it thinks it is and refuse to write a file when
-the answer is wrong.
-
-No dependencies: Chrome speaks WebSocket, and the ~90 lines below are enough of
-a client to send JSON and read JSON back. Adding `websockets` or Playwright
-would put an install step in front of every fork of this theme.
-
-Usage: render-screenshot.py <url> <width> <height> <out.png> [--wait-ms N]
-                            [--deadline S] [--mobile] [--scale N]
+Usage: render-screenshot.py <url> <width> <height> <out.png> [--wait-ms N] [--deadline S] [--mobile] [--scale N]
                             [--eval "<js>"] [--eval-settle-ms N]
-
---eval runs JavaScript in the page once it has settled at the requested
-viewport and before the capture, for states that only exist after an
-interaction: a drawer, a modal, an overlay, an accordion opened. Without it
-those states cannot be verified against their frames at all.
-
-Exits non-zero, and writes nothing, when:
-  * Chrome cannot be found or started
-  * the page's own innerWidth does not match the width requested
-  * the captured image is blank
-
-Warns on stderr, and still writes, when an image never finished loading — that
-is usually the page's own defect and belongs in the diff, but it is worth
-knowing before you read the number.
-
-CHROME_BIN overrides the binary.
+  --eval runs JavaScript in the settled page before the capture, for states that exist only after an interaction
+  (a drawer, a modal, an accordion opened).
 """
 
 import base64
@@ -84,10 +54,8 @@ def find_chrome():
 
 
 class WS:
-    """The smallest WebSocket client that can carry CDP: text frames, no
-    extensions, no continuation of *sent* messages (commands are tiny). Server
-    frames are reassembled, because a screenshot arrives as megabytes of
-    base64 split across frames."""
+    """The smallest WebSocket client that can carry CDP: text frames, no extensions, no continuation of sent messages.
+    Server frames are reassembled: a screenshot arrives as megabytes of base64 split across frames."""
 
     def __init__(self, url, timeout=120):
         m = re.match(r"ws://([^:/]+):(\d+)(/.*)", url)
@@ -188,13 +156,9 @@ class WS:
 
 
 def is_blank(png_bytes):
-    """A render that painted nothing still writes a valid PNG — a 393x9000 wall
-    of one grey, which then diffs at 40% and reads like a real result.
-
-    The test is deliberately narrow: one single colour over the whole sample.
-    Anything with two colours in it has painted something, and a stricter test
-    would reject legitimate pages — a black-on-white control, a band that is
-    genuinely a flat ground and a rule."""
+    """A render that painted nothing still writes a valid PNG, a wall of one grey, which diffs like a real result.
+    Deliberately narrow: one single colour over the whole sample. Two colours means something painted, and a stricter
+    test would reject a legitimately flat band."""
     try:
         import io
 
@@ -291,16 +255,9 @@ def main(argv):
                 "expression": expression, "returnByValue": True,
             })["result"].get("value")
 
-        # Lazy images are the second quiet failure, and it looks exactly like a
-        # section that was never built. `loading="lazy"` only fetches near the
-        # viewport, so on a page taller than the one asked for,
-        # captureBeyondViewport writes the whole document with holes in it:
-        # space reserved by the layout, nothing painted in it. Measured on a
-        # 393x9000 homepage — two bands came back as blank cream.
-        #
-        # So stretch the viewport over the whole document first, let the images
-        # land, then put it back to the size the caller asked for. Chrome's
-        # texture limit is the cap.
+        # `loading="lazy"` only fetches near the viewport, so captureBeyondViewport on a taller page writes holes where
+        # images never painted. Stretch the viewport over the whole document first (Chrome's texture limit is the cap),
+        # let the images land, then put it back.
         page_height = evaluate("String(document.documentElement.scrollHeight)")
         try:
             page_height = int(page_height)
@@ -313,11 +270,9 @@ def main(argv):
                 "deviceScaleFactor": scale, "mobile": mobile,
             })
 
-        # An image has painted once it has intrinsic dimensions. `complete` is
-        # not the test: a carousel that clones its slides re-evaluates srcset on
-        # the clones, so images that are on screen and decoded sit at
-        # complete === false indefinitely. naturalWidth === 0 is the honest
-        # "nothing there" — still fetching if !complete, failed if complete.
+        # An image has painted once it has intrinsic dimensions. `complete` is not the test: a carousel that clones its
+        # slides re-evaluates srcset on the clones and decoded images sit at complete === false indefinitely.
+        # naturalWidth === 0 is "nothing there": still fetching if !complete, failed if complete.
         loading = None
         images_deadline = time.time() + min(deadline, 60)
         while time.time() < images_deadline:

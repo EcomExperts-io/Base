@@ -5,176 +5,65 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/templates.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 654379057 -->
+<!-- checksum: 3101096854 -->
 
 
 # Templates
 
-All JSON templates must follow this exact structure:
+## Structure
 
-## Required Schema
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["sections"],
-  "properties": {
-    "sections": {
-      "type": "object",
-      "patternProperties": {
-        "^[a-zA-Z0-9_-]+$": {
-          "type": "object",
-          "required": ["type"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "pattern": "^[a-zA-Z0-9_-]+$"
-            },
-            "settings": {
-              "type": "object"
-            },
-            "blocks": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "required": ["type"],
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "settings": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "order": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    }
-  }
-}
-```
+- Every template has a `sections` object; `order` lists the section keys in sequence
+- Section keys are alphanumeric with dashes or underscores
+- Every section and block has a `type`; `settings` and `blocks` are optional
+- A section's `type` is its filename in `sections/`, named by function
+  (`product`, `collection`) and never with a `main-` prefix (`naming-conventions.md`)
+- Alternate templates: `product.alternate.json`
 
-## Template Structure Rules
-
-- Every template must have a `sections` object
-- Section keys must be alphanumeric with dashes/underscores
-- Each section must have a `type` property
-- `settings` and `blocks` are optional
-- `order` array defines section sequence
-- Blocks must have a `type` property
-
-
-## Template Types
-
-**Standard Templates:**
-- `index.json` - Homepage
-- `product.json` - Product pages
-- `collection.json` - Collection pages
-- `page.json` - Static pages
-- `blog.json` - Blog listing
-- `article.json` - Blog posts
-- `cart.json` - Shopping cart
-- `search.json` - Search results
-
-**Alternate Templates:**
-Alternative templates may exist for any of the standard templates, following the structure `template-name.template-suffix.template-file-type`, for example: `product.alternate.json`
-
-## Valid Template Examples
-
-**Product Template:**
 ```json
 {
   "sections": {
-    "header": {
-      "type": "header"
-    },
     "main": {
       "type": "product",
       "settings": {
         "show_vendor": true,
-        "show_sku": false,
         "media_size": "medium"
       },
       "blocks": {
-        "title": {
-          "type": "title",
-          "settings": {}
-        },
-        "price": {
-          "type": "price",
-          "settings": {
-            "show_compare_at": true
-          }
-        },
-        "variant_picker": {
-          "type": "variant_picker",
-          "settings": {
-            "picker_type": "dropdown"
-          }
-        }
+        "title": { "type": "title", "settings": {} },
+        "price": { "type": "price", "settings": { "show_compare_at": true } }
       },
-      "block_order": ["title", "price", "variant_picker"]
+      "block_order": ["title", "price"]
     },
-    "footer": {
-      "type": "footer"
+    "related": {
+      "type": "related-products",
+      "settings": { "limit": 4 }
     }
   },
-  "order": ["header", "main", "footer"]
+  "order": ["main", "related"]
 }
 ```
-
-**Collection Template:**
-```json
-{
-  "sections": {
-    "header": {
-      "type": "header"
-    },
-    "collection-banner": {
-      "type": "collection-banner",
-      "settings": {
-        "show_collection_description": true,
-        "show_collection_image": false
-      }
-    },
-    "main": {
-      "type": "collection",
-      "settings": {
-        "products_per_page": 24,
-        "columns_desktop": 4,
-        "columns_mobile": 2
-      }
-    }
-  },
-  "order": ["header", "collection-banner", "main"]
-}
-```
-
-A section's `type` is its filename in `sections/`. Base names sections by
-function — `product`, `collection` — and never with a `main-` prefix; see
-`naming-conventions.md`. Earlier versions of these examples used Dawn's
-`main-product` and `main-collection-product-grid`, which contradicted that rule
-in the one file an agent reads while assembling a template.
 
 ## Traps that take the whole theme down
 
-Neither of these is reported by Theme Check. Both were found on a client build
-by every route returning 500, or by a key path rendering to a customer.
+None is reported by Theme Check; each shows up as every route returning 500,
+or as a key path rendering to a customer.
 
-- **`t:` keys do not resolve in template values.** Shopify resolves `t:` in a
-  schema `default`, not in a value stored in a template. A preset copied into
+- **`t:` keys do not resolve in template values.** A preset copied into
   `templates/*.json` with its `t:` values intact renders the literal key path
-  on the storefront. Strip them to plain strings when assembling a template.
-  `.claude/scripts/check-conventions.py` flags any `"t:` value in a template.
-- **A brand-new block type needs roughly 25 seconds to register** with Shopify
-  before a template may reference it. Reference it too early and every route on
-  the theme returns 500 until the registration catches up — push the section,
-  wait, then push the template.
+  on the storefront. Strip them to plain strings; `check-conventions.py` flags
+  any `"t:` value in a template.
+- **A brand-new block type needs roughly 25 seconds to register** before a
+  template may reference it, or every route returns 500 until it catches up:
+  push the section, wait, then push the template.
+- **A template setting uploaded before its section's schema is dropped.**
+  `theme dev` syncs in watcher order; Shopify discards a key the store's schema
+  does not know yet, and the later schema upload does not restore it. The file
+  on disk still carries the value. When one change adds a setting and sets it
+  in a template, restart the dev server before believing the page.
+  `check-conventions.py` warns on a template key its schema does not define.
+- **Read the product's `template_suffix` before editing a product template.**
+  `product.json` and `product.<suffix>.json` can carry identical sections; an
+  edit to the one that does not render changes nothing.
+- **JSON templates and `config/settings_data.json` are editor-owned.** A push
+  overwrites a merchant's change; pull and diff first:
+  `shopify theme pull --only templates/index.json && git diff templates/index.json`.

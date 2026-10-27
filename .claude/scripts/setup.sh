@@ -1,14 +1,6 @@
 #!/bin/sh
 # One command to make a checkout ready for the Base AI workflow.
 #
-# Why this exists
-# ---------------
-# Before this, activating the workflow meant knowing four unrelated things: that
-# hooks live in .githooks/ and need core.hooksPath (or a husky shim in a client
-# fork), that .cursor/ is generated and must be regenerated, which MCP servers
-# the skills expect, and how to tell whether any of it worked. Nothing in the
-# repo said so. `npm run setup` says so, and doctor.py proves it.
-#
 # Safe to re-run at any time. Writes nothing outside this repo except the
 # git config for this checkout.
 

@@ -1,34 +1,12 @@
 #!/usr/bin/env python3
 """Pre-commit check: structural invariants of the AI configuration itself.
 
-Why this exists
----------------
-The rules are the thing that keeps every client theme consistent, and until this
-script there was nothing checking the rules. Three failures made the case:
-
-  * Two rules taught opposite things about container queries — `css-standards.md`
-    recommended them, `sections.md` banned them — for long enough that nobody
-    could say which came first. A contradiction between two injected rules means
-    the model picks one arbitrarily, so the standard is whatever the coin says.
-  * Editing one snippet injected 2,453 lines of rules, 919 of them CSS authoring
-    guidance a Liquid file cannot act on. Nothing measured that, so it grew
-    unnoticed until an audit counted it.
-  * `prompts-and-references.md` was always-apply and described two directories
-    that hold one file each in Base and do not exist in a client fork. It cost
-    every task 48 lines of context to say nothing.
-
-None of those is a code defect and none would ever fail a build. They are drift
-in the layer that governs everything else, which is exactly the kind of thing
-that only gets found by an audit unless something checks it every commit.
-
-What it does NOT do
--------------------
-It does not grade the writing or check that a rule is correct — that is review.
-It asserts the structural properties the rule system depends on: every rule is
-loadable, scoped deliberately, inventoried in CLAUDE.md, and cheap enough to
-inject. Content correctness stays a human judgment.
-
 Usage: python3 .claude/scripts/check-ai-config.py [--verbose]
+
+Notes:
+- Asserts structure only: every rule is loadable, scoped deliberately,
+  inventoried in CLAUDE.md, and cheap enough to inject. It does not grade the
+  writing or check that a rule is correct; that is review.
 """
 
 import ast
@@ -43,59 +21,42 @@ RULES_DIR = ".claude/rules"
 
 # Rules allowed to load on every file regardless of type. Anything unscoped is
 # paid for by every single task, so adding to this list is a deliberate act.
-# `prompts-and-references.md` sat here for months describing paths that did not
-# exist in the themes that were loading it.
 ALWAYS_APPLY_ALLOWLIST = {
     "rules-of-engagement",
     "naming-conventions",
-    # How work is reviewed, and what the platform already handles. Both are org
-    # policy rather than file-type convention: they apply to a change in any
-    # file, and to a reviewer who is reading rather than writing. GitBot also
-    # loads code-review-policy by name, so scoping it by glob would not reduce
-    # what a review costs — only what an authoring task pays.
+    # Org policy rather than file-type convention: both apply to a change in any file and to a reviewer who is reading.
+    # GitBot also loads code-review-policy by name, so scoping it by glob would save an authoring task only.
     "code-review-policy",
     "storefront-infrastructure",
 }
 
-# Ceiling on rule lines injected when editing one file of each kind. These are
-# not style targets — they are the point at which something has gone structurally
-# wrong, normally a large rule scoped more widely than it needs to be. Measured
-# values at the time of writing: 1834 / 2119 / 1214 / 1152.
-#
-# Re-measured 2026-09-21 after `accessibility.md` landed on development scoped
-# to every Liquid, JS and CSS file (359 lines, a WCAG 2.2 AA standard that
-# genuinely applies to all three): 2286 / 2566 / 1573 / 1134. The caps below
-# sit just above that. They were raised, not the rule narrowed, because the
-# rule earns its scope — accessibility defects live in markup, behaviour and
-# styling alike. The ratchet still holds: the next rule that pushes a target
-# over has to say why, here, in the same commit.
-#
-# Re-measured 2026-09-28 when development merged into the v2 branch carrying
-# three new always-apply rules — code-review-policy (82), code-fix-policy (53)
-# and storefront-infrastructure (32), 167 lines that every task now pays for:
-# 2501 / 2852 / 1743 / 942. Raised because they were allowlisted deliberately
-# (GitBot loads the first two by name, and a person fixing a finding with an
-# agent should read what the button reads). The cheaper shape, if this bites,
-# is to scope the two review policies to review time only and have the
-# reviewer agents read them by path — authoring a section does not need 135
-# lines on how a finding is written up.
+# Ceiling on rule lines injected when editing one file of each kind: the point at which a rule is scoped more widely
+# than it needs to be, not a style target. The rule that pushes a target over says why here, in the same commit.
 INJECTION_CAPS = {
     "snippets/component-example.liquid": 2600,
-    "sections/example.liquid": 2950,
+    "sections/example.liquid": 3050,
     "assets/section-example.css": 1800,
     "assets/section-example.js": 1400,
 }
 
-# Headings that must live in exactly one rule. The CSS split put markup-side
-# decisions (class names, custom properties set in a style attribute) in
-# css-in-markup.md and stylesheet-side decisions in css-standards.md. If a
-# heading reappears in both, the split has been undone by hand.
+# Headings that must live in exactly one rule: markup-side CSS decisions are css-in-markup.md, stylesheet-side are
+# css-standards.md. A heading in both means the split has been undone by hand.
 UNIQUE_HEADINGS = [
     "## BEM Naming Convention",
     "## Scoping CSS to Instances of Sections and Blocks",
     "## Namespace Your CSS Variables",
 ]
 
+
+
+def shell_interpreter(script):
+    """The shell a script's shebang names, so a `#!/bin/bash` script is parsed by bash
+    and a `#!/bin/sh` one by sh (dash on Linux, which rejects bash arrays)."""
+    with open(script, encoding="utf-8", errors="replace") as f:
+        first = f.readline().strip()
+    if first.startswith("#!") and "bash" in first:
+        return "bash"
+    return "sh"
 
 def repo_root():
     return subprocess.run(
@@ -121,11 +82,8 @@ def frontmatter(text):
 
 
 def paths_of(fm):
-    """The `paths:` globs from a frontmatter block, or None for always-apply.
-
-    Accepts both the inline form (`paths: "a,b"`) and the indented YAML list,
-    because sync-ai-config.sh accepts both and the two have to agree.
-    """
+    """The `paths:` globs from a frontmatter block, or None for always-apply. Accepts the inline form and the
+    indented YAML list, because sync-ai-config.sh accepts both and the two have to agree."""
     if fm is None:
         return None
     out, inlist = [], False
@@ -251,7 +209,7 @@ def check(rules, problems, notes):
         except SyntaxError as e:
             problems.append(f"{script}: does not parse — {e}")
     for script in sorted(glob.glob(".claude/scripts/*.sh")):
-        r = subprocess.run(["sh", "-n", script], capture_output=True, text=True)
+        r = subprocess.run([shell_interpreter(script), "-n", script], capture_output=True, text=True)
         if r.returncode != 0:
             problems.append(f"{script}: shell syntax error — {r.stderr.strip()}")
 

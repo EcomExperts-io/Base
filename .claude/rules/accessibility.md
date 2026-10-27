@@ -14,31 +14,24 @@ paths:
 
 # Accessibility standard
 
-Target: **WCAG 2.2 level AA**, applied to the code in the diff.
-
-This is not a summary of WCAG. It is the list of defects we expect to be caught
-in review of a Shopify theme, written so each one can be decided from a diff and
-fixed by the developer who wrote it. It supersedes the short accessibility
-section in `html-standards` where the two differ.
+Target: **WCAG 2.2 level AA**, applied to the code in the diff. It
+supersedes the accessibility notes in `html-standards.md` where the two differ.
 
 ## How to decide
 
-A defect is worth reporting when you can finish one of these sentences with
-something concrete:
+A defect is worth reporting when one of these sentences ends with something
+concrete:
 
 - "A screen reader user would hear **…**" / "would not be told **…**"
 - "A keyboard user cannot **…**"
 - "At 200% zoom, **…**"
 - "Someone who cannot distinguish red from green would **…**"
 
-If the sentence can only be finished with "it would be better if", it is not a
-defect. Precision matters more than volume: a review of six real problems is
-acted on, a review of thirty possible ones is skimmed and closed.
+"It would be better if" is not a defect.
 
-**Name the success criterion.** Every finding fails a WCAG 2.2 success
-criterion, named as number and title (`2.4.7 Focus Visible`). A finding that
-fails none is not an accessibility finding, whatever else it is. GitBot drops
-findings that name none. The sections below map to the criteria they cover:
+**Name the success criterion**, as number and title (`2.4.7 Focus Visible`). A
+finding that fails none is not an accessibility finding; GitBot drops it. The
+sections below map to the criteria they cover:
 
 | Section | Criteria |
 |---|---|
@@ -52,12 +45,10 @@ findings that name none. The sections below map to the criteria they cover:
 | 8. ARIA | 4.1.2 Name, Role, Value · 1.3.1 Info and Relationships · 4.1.3 Status Messages |
 | 9. Motion, timing, carousels | 2.3.3 Animation from Interactions · 2.2.2 Pause, Stop, Hide · 2.2.1 Timing Adjustable |
 
-**One finding per criterion per file**, anchored to the first line, with the
-other lines named in the body. Eight new findings is the most one review
-reports; the worst come first.
+**One finding per criterion per file**, anchored to the first line, the other
+lines named in the body. At most eight findings per review, worst first.
 
-**State the severity.** A human fixes every one of these now, so triage is part
-of the finding:
+**State the severity:**
 
 | Severity | Meaning |
 |---|---|
@@ -65,24 +56,20 @@ of the finding:
 | **Serious** | The task is possible but the experience is wrong or confusing: unlabelled field, unnamed control, wrong heading level, insufficient contrast, state not announced. |
 | **Minor** | Real but low impact: redundant alt text, a missing landmark label, decorative SVG not hidden. |
 
-**Every finding carries a fix a developer can apply without further research** —
-name the element, the attribute, and the value. "Add an accessible name" is not a
-fix. `<button type="button" aria-label="{{ 'general.close' | t }}">` is.
+**Every finding carries a fix** — element, attribute, value. "Add an accessible
+name" is not a fix; `<button type="button" aria-label="{{ 'general.close' | t }}">` is.
 
 ---
 
 ## 1. Controls must be real controls
 
-A control is anything a person clicks, taps, or activates.
-
 **Defect:** `<div>`, `<span>`, `<li>`, or an `<a>` without `href`, carrying an
 `onclick` or a click listener.
 
 Use `<button type="button">`, `<button type="submit">`, `<a href="…">` for
-navigation, or a native form control. Anything else must supply **all** of: a
-role, `tabindex="0"`, key handlers for Enter **and** Space, and a visible focus
-style. Any one missing is a defect — `role="button"` without `tabindex` is not
-reachable; `tabindex="0"` without key handlers is reachable but dead.
+navigation, or a native form control. Anything else needs **all** of: a role,
+`tabindex="0"`, key handlers for Enter **and** Space, and a visible focus
+style; any one missing is a defect.
 
 ```liquid
 {% comment %} Defect — not focusable, not keyboard operable, unnamed {% endcomment %}
@@ -122,8 +109,7 @@ no `aria-labelledby`.
 
 - An SVG or `<img>` inside a button does **not** name it. Hide the icon
   (`aria-hidden="true"` on SVG, `alt=""` on img) and name the button.
-- **`title` is not an accessible name.** Unreliable on touch, invisible to
-  keyboard users, inconsistently announced. A control named only by `title` is a
+- **`title` is not an accessible name.** A control named only by `title` is a
   defect. *Serious.*
 - A name that is punctuation, an emoji, or "→" is not a name.
 - **The visible label must be inside the accessible name** (2.5.3).
@@ -145,9 +131,8 @@ no `aria-labelledby`.
 ## 3. Forms
 
 **Defect:** an `<input>`, `<select>` or `<textarea>` with a `placeholder` and no
-`<label for="…">`, `aria-label`, or `aria-labelledby`. A placeholder disappears
-as soon as the field is filled, so the field loses its name exactly when someone
-checks their answer. *Serious.*
+`<label for="…">`, `aria-label`, or `aria-labelledby`; the placeholder vanishes
+once the field is filled. *Serious.*
 
 - **`for` must match a real, unique `id`.** A section or snippet can render more
   than once per page, so ids must be scoped: `id="Newsletter-email-{{ section.id }}"`.
@@ -173,8 +158,7 @@ checks their answer. *Serious.*
 
 ## 4. Keyboard, focus and order
 
-- **`tabindex` greater than 0 is a defect.** It jumps the element ahead of
-  natural order and reorders the page around it. Only `0` and `-1`. *Serious.*
+- **`tabindex` greater than 0 is a defect.** Only `0` and `-1`. *Serious.*
 - **Focus styling removed with no replacement** — `outline: none`, `outline: 0`,
   or a `:focus` rule that sets nothing visible. Prefer `:focus-visible`. The
   replacement must be visible against its own background (3:1). *Serious.*
@@ -200,17 +184,14 @@ checks their answer. *Serious.*
 ## 5. Images, icons, media and frames
 
 - **`<img>` with no `alt` attribute at all is a defect** — missing is not the
-  same as empty. With no attribute a screen reader may read the file name or the
-  URL. *Serious.*
+  same as empty; a screen reader may read the file name. *Serious.*
 - Decorative: `alt=""`. Meaningful: text describing purpose, not appearance.
 - In Liquid, use the merchant value, escaped: `alt="{{ image.alt | escape }}"`,
   with a sensible fallback. Never output an unescaped alt.
 - **A fallback to visible text is the fix.** `alt="{{ settings.image_alt |
-  default: settings.headline | escape }}"` — or the title, the product name,
-  the card's claim — is correct even when that text setting is optional. That a
-  merchant could leave every text field blank is content, not a code defect:
-  do not report it, and judge an earlier finding of this kind fixed once the
-  fallback is there.
+  default: settings.headline | escape }}"` — or the title, the product name —
+  is correct even when that text setting is optional. That a merchant could
+  leave every text field blank is content, not a code defect.
 - **Alt text that is the file name, "image", or repeats adjacent visible text**
   is a defect. *Minor.*
 - **Product images** take the product title as a fallback, not "product image".
@@ -226,9 +207,6 @@ checks their answer. *Serious.*
   blurs when zoomed. Put the text in markup over the image. *Serious.*
 
 ## 6. Structure: headings, landmarks, lists, tables
-
-Screen reader users navigate by heading and landmark. Treat the outline as
-functionality, not styling.
 
 - **One `<h1>` per page.** A change that lets a page end up with **no h1**, or
   with **several**, is a defect — including a theme setting that lets a section
@@ -264,15 +242,11 @@ functionality, not styling.
   a `{% style %}` block, or a literal hex in CSS. Compute the ratio and state it
   in the finding. Where colours come from a merchant colour scheme, do not guess;
   but a hardcoded colour against a known scheme background is fair game.
-- **A template's custom CSS does not fix a section's colour.** Overriding a
-  failing hardcoded colour from the theme editor (a template JSON's
-  `custom_css`) fixes that one page; the section ships the failing default to
-  every other template it is added to, and a reviewer reading the section
-  cannot see the override. Fix it in the section: change the hardcoded colour
-  to one that passes, or make it a colour setting whose default passes and
-  whose `info` states the contrast it needs. A brand colour that cannot change
-  is a decision for the Lead and AM (the bypass), not a reason to leave the
-  section failing silently.
+- **A template's `custom_css` does not fix a section's colour**; the section
+  ships the failing default to every other template. Fix it in the section:
+  a colour that passes, or a colour setting whose default passes and whose
+  `info` states the contrast it needs. A brand colour that cannot change is a
+  decision for the Lead and AM, not a reason to leave the section failing.
 - **Colour must not be the only cue** (1.4.1). Sale prices, errors, required
   fields, selected and sold-out states, links inside body copy: each needs text,
   an icon, underline, or shape as well. *Serious.*
@@ -288,8 +262,7 @@ functionality, not styling.
 
 ## 8. ARIA
 
-The first rule of ARIA is not to use it — a native element is always better. When
-it is used, it must be correct, because wrong ARIA is worse than none.
+A native element beats ARIA; wrong ARIA is worse than none.
 
 - **`aria-*` pointing at an id that does not exist is a defect.** Check
   `aria-labelledby`, `aria-describedby`, `aria-controls` against the ids in the
@@ -320,19 +293,13 @@ it is used, it must be correct, because wrong ARIA is worse than none.
 - **Carousels** need: real buttons for previous and next, keyboard access to
   every slide, a pause control when it auto-advances, and slides that are not
   hidden from assistive technology while visible.
-- **Swiper manages its own arrow state.** When `<button>` elements are passed
-  to Swiper's `navigation` (`prevEl` / `nextEl`), Swiper sets the native
-  `disabled` attribute on them at each end of the track, alongside its
-  `swiper-button-disabled` class, and its a11y module sets `aria-disabled`. CSS
-  such as `.swiper-button-disabled { pointer-events: none; }` is styling on top
-  of that, not the only cue. Do not report the disabled state of Swiper-driven
-  `<button>` arrows. A `<div>` or `<span>` arrow is still a defect (section 1),
-  and so is an arrow Swiper does not drive.
+- **Swiper manages its own arrow state.** On `<button>` elements passed to
+  `navigation`, Swiper sets `disabled` and `aria-disabled` at each end of the
+  track; do not report their disabled state. A `<div>` arrow, or one Swiper
+  does not drive, is still a defect (section 1).
 - **Countdown timers and auto-closing popups** need a way to extend or dismiss.
 
 ## 10. Patterns that recur in themes
-
-Hold these to the rules above; they are where the defects cluster.
 
 - **Accordion / FAQ** — `<button>` inside the heading, `aria-expanded` updated,
   `aria-controls` pointing at the panel, panel hidden with `hidden` or
@@ -360,11 +327,9 @@ Hold these to the rules above; they are where the defects cluster.
   page, and duplicate ids break every `for` and `aria-*` association. *Serious.*
 - **Never emit merchant or customer input into an attribute unescaped.** Use
   `| escape`. Both a correctness and an accessibility defect.
-- **Inline `onclick` that interpolates a Liquid value is a defect.** HTML
-  escaping does not make a value safe inside a JavaScript string — an apostrophe
-  (`Men's`) produces broken JavaScript, and the handler dies silently, taking the
-  control with it. Use `data-` attributes and a listener. *Blocker* when it
-  breaks the control.
+- **Inline `onclick` that interpolates a Liquid value is a defect.** An
+  apostrophe (`Men's`) breaks the handler silently. Use `data-` attributes and a
+  listener. *Blocker* when it breaks the control.
 - **Storefront-facing text must be translatable.** A hardcoded English string in
   a section, snippet, or schema label is a defect on a localized storefront; it
   belongs in `locales/*.json` behind `| t`. This includes accessible names, alt
@@ -372,17 +337,14 @@ Hold these to the rules above; they are where the defects cluster.
 - **New section settings that can produce inaccessible output are defects when
   the setting is added** — an unconstrained heading-level picker, a colour picker
   with no contrast guidance, a toggle that can remove a label or an alt text.
-- **`.visually-hidden` must keep the element in the accessibility tree.** A
-  utility implemented with `display: none` or `visibility: hidden` hides it from
-  screen readers too, which defeats the point. Use the clip-rect pattern.
+- **`.visually-hidden` must keep the element in the accessibility tree**: the
+  clip-rect pattern, never `display: none` or `visibility: hidden`.
 - **`{% render %}` with an `id` argument** is how a repeated snippet stays
   unique; a snippet that hardcodes ids cannot be rendered twice.
 
 ---
 
 ## What not to report
-
-Precision is the whole value here. Do not report:
 
 - Anything on a line the diff does not touch, or in a removed line.
 - Decorative images correctly marked `alt=""`.
@@ -391,17 +353,15 @@ Precision is the whole value here. Do not report:
 - A missing `<label>` where an adequate `aria-label` or `aria-labelledby` exists.
 - Anything needing a guess about merchant content, product data, or copy.
 - Naming, structure or style preferences with no accessibility consequence.
-- Speculation about what JavaScript elsewhere in the theme might do — unless the
-  diff shows it.
+- Speculation about JavaScript elsewhere in the theme, unless the diff shows it.
 - **Untranslated or hardcoded English text.** That is a localization defect
   (`localization.md`), reported by the main review, not here.
 - **Unescaped merchant output or any injection concern.** That is security,
   reported by the main review, not here.
-- Copy, wording and content choices. An accessible name that exists but reads
-  badly is not a defect.
+- Copy and wording. An accessible name that exists but reads badly is not a defect.
 
-Never describe a change as ADA compliant, WCAG compliant, or certified. A review
-of a diff reports specific defects; it does not certify a storefront.
+Never describe a change as ADA compliant, WCAG compliant, or certified; a
+review reports defects, it does not certify a storefront.
 
 ## Quick check before opening a PR
 

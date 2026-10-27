@@ -1,34 +1,21 @@
 #!/bin/sh
-# The git mechanics of sending a generic learning up to Base from inside a
-# client repo, without shared history and without copying files by hand.
+# Git mechanics of sending a generic learning up to Base from a client repo, with no shared history.
 #
-# Why this exists
-# ---------------
-# CLAUDE.md said "branch off development here, make the change generic, open
-# the PR". From a client repo that meant: find a Base checkout, remember which
-# rule to edit, retype the paragraph, commit, push, open the PR, come back and
-# mark the incident. Nobody did it during a build, so nothing flowed up until
-# someone did it as a separate project. This makes the mechanics two commands
-# around the one step that needs judgment (the edit itself):
-#
-#   harvest.sh start <slug>                         -> a branch in the Base worktree
+# Usage:
+#   harvest.sh start <slug>                                  -> a branch in the Base worktree
 #   ...edit the rule/reference in the worktree, commit there...
 #   harvest.sh open <slug> "<title>" <body-file> [--no-pr]   -> push + PR
 #
-# The worktree is the one base-link.sh created (a checkout of base/development
-# beside this repo). Pushing goes to Base's URL explicitly because the `base`
-# remote has pushing disabled — a stray `git push base` must never happen, an
-# explicit harvest push should.
-#
-# BASE_URL and BASE_REPO are overridable so the script can be exercised against
-# a local bare clone in a test.
+# Notes:
+#   * The worktree is the one base-link.sh created beside this repo.
+#   * Pushes go to Base's URL explicitly: the `base` remote has pushing disabled.
+#   * BASE_URL and BASE_REPO are overridable so a test can point at a local bare clone.
 
 set -e
 ROOT=$(git rev-parse --show-toplevel)
 cd "$ROOT"
 BASE_URL="${BASE_URL:-https://github.com/EcomExperts-io/Base.git}"
 BASE_REPO="${BASE_REPO:-EcomExperts-io/Base}"
-CLIENT=$(basename "$ROOT" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
 CMD="$1"; SLUG="$2"
 
 usage() {
@@ -38,7 +25,7 @@ usage() {
 }
 [ -n "$CMD" ] && [ -n "$SLUG" ] || usage
 SLUG=$(printf '%s' "$SLUG" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
-BRANCH="harvest/${CLIENT}-${SLUG}"
+BRANCH="harvest/${SLUG}"
 
 WT=$(python3 -c 'import json,sys
 try: print(json.load(open(".claude/.cache/base-link.json"))["worktree"])
@@ -82,8 +69,7 @@ case "$CMD" in
       echo "harvest: uncommitted changes in $WT — commit them first." >&2
       exit 1
     fi
-    # Base's structural invariants, from inside Base — a harvest must not be the
-    # commit that breaks the rule system it is trying to improve.
+    # Base's structural invariants, run from inside the Base worktree.
     (cd "$WT" && python3 .claude/scripts/check-ai-config.py) || exit 1
     git -C "$WT" push "$BASE_URL" "HEAD:refs/heads/$BRANCH"
     echo "pushed $BRANCH ($AHEAD commit(s)) to $BASE_URL"

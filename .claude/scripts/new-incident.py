@@ -1,25 +1,6 @@
 #!/usr/bin/env python3
 """Create, list and update incident files — the record a rule is later made from.
 
-Why this exists
----------------
-The v1 workflow asked for a "mistake log" in every client repo, gitignored,
-created only if the AI offered and a human said yes. Four client builds later
-the count of logs was zero, while every incident that mattered had become a
-Base rule anyway — by archaeology, weeks late, by one person. The record has
-to be cheap to create at the moment of failure, committed so it is visible in
-review and greppable across forks, and shaped so a script can list what is
-still waiting to be harvested. That is what this writes.
-
-Fields that matter for harvesting
----------------------------------
-  scope               generic | client   — the CLAUDE.md test: would this be true
-                      in a Shopify theme that is not this client's?
-  should_have_caught  the rule, check or skill that should have prevented it —
-                      the field that turns a list of incidents into a queue of
-                      standards gaps
-  status              open | harvested | client-only
-
 Usage
 -----
   new-incident.py --slug t-key-in-template --title "…" --scope generic \
@@ -27,8 +8,11 @@ Usage
   new-incident.py --list [--open]
   new-incident.py --set-status docs/ai-workflow/incidents/<file>.md harvested --pr <url>
 
-surfaced-by is one of: theme-500, theme-check, gate, hook, review, qa, designer,
-eyeball, verify, ci, other.
+Notes:
+- --scope is generic | client: the CLAUDE.md test, would this be true in a Shopify theme that is not this client's?
+- --should-have-caught names the rule, check or skill that should have prevented it; it turns the list into a queue of gaps.
+- --surfaced-by is one of theme-500, theme-check, gate, hook, review, qa, designer, eyeball, verify, ci, other.
+- status is open | harvested | client-only.
 """
 
 import datetime

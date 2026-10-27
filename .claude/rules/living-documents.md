@@ -3,98 +3,58 @@ description: Keeping the documentation that guides this work — docs/, .claude/
 paths:
   - "docs/**"
   - ".claude/**"
-  - ".cursor/**"
   - "CLAUDE.md"
 ---
 
 # Living Documents
 
-## What this replaced, and why
-
-This rule used to be called `prompts-and-references.md`. It was **always-apply**
-— injected into every task on every file type — and it was entirely about the
-Cursor prompts and references directories. Two problems with that:
-
-- Those two directories held **one file each in Base and did not exist at all in
-  a client fork**, so in a client theme the rule spent its always-apply budget
-  describing paths that were not there.
-- It referred to "the Horizon theme". This is Base.
-
-The principle underneath it is worth keeping. The scope was wrong. It now
-applies to the documentation that actually guides the work, and only when you
-are in it.
-
-**References have since earned their place.** A client build accumulated four
-debugging references — hover states, scroll carousels, equal-height columns and
-overriding a shared component — totalling around a thousand lines of measured
-findings. They lived in `.cursor/references/`, which the sync script did not
-mirror and Claude Code does not load, so the most expensive knowledge on that
-build was invisible to the agent that needed it. They now live in
-`.claude/references/` and are mirrored like everything else.
-
 ## The principle
 
-The files in `docs/`, `.claude/rules/`, `.claude/skills/`, `.claude/agents/`,
-`.claude/workflows/`, `.claude/references/` and `CLAUDE.md` are **living
-documents**. They describe what we currently believe is correct, which means
-they are wrong the moment something is learned and not written down.
+`docs/`, `.claude/rules/`, `.claude/skills/`, `.claude/agents/`,
+`.claude/workflows/`, `.claude/references/` and `CLAUDE.md` describe what we
+currently believe is correct, so they are wrong the moment something is learned
+and not written down. Maintaining them is part of completing a task, not a
+follow-up to it.
 
-- Update them as new cases are encountered.
-- When you discover a pattern, edge case, or solution while working an issue,
+- When you discover a pattern, edge case or solution while working an issue,
   fix the relevant file in the same change.
-- If something in them does not work as described, correct it immediately
-  rather than working around it.
-- Add examples from real implementations. This codebase's rules are written
-  incident-first — "30 of 31 sections shipped without…" — because a rule with
-  the failure attached gets followed and a rule without one gets skimmed.
+- If something in them does not work as described, correct it rather than
+  working around it.
+- Attach the consequence that makes a rule strict as one clause — what
+  breaks — never the story of which build, who found it or when.
 - Remove information that has gone stale.
-
-**Do not wait to be asked.** Maintaining these is part of completing a task,
-not a follow-up to it.
+- A Liquid mustache in docs prose or inline code goes in `<code v-pre>`;
+  VitePress evaluates it as Vue otherwise, and `check-docs-interpolation.py`
+  refuses the commit.
 
 ## Where a learning goes
 
 | What you learned | Where it goes |
 |---|---|
 | A convention this theme follows | the matching `.claude/rules/*.md` |
-| A trap in Liquid, Shopify or the platform, generic to any theme | the matching rule, **and up to Base** — see CLAUDE.md, "Flowing changes back to Base" |
+| A trap in Liquid, Shopify or the platform, generic to any theme | the matching rule, **and up to Base** — see CLAUDE.md, "Flowing changes between Base and the forks" |
 | How a specific section or snippet works | `docs/sections/` or `docs/snippets/` |
 | A step in a procedure someone invokes | the matching `.claude/skills/*/SKILL.md` |
 | A CSS or browser trap you had to **measure** to find — a cascade order, a layout feedback loop, a state that reports correctly and renders wrong | `.claude/references/*-pitfalls.md`, **and up to Base** |
 | Something true only of this client's theme | that theme's rule copy, not Base |
-| A fix that a rule, gate or check **should have prevented** | `/record-incident` → `docs/ai-workflow/incidents/`, committed, the moment it happens; then `/harvest` if it is generic |
+| A fix that a rule, gate or check **should have prevented** | `/record-incident` → `docs/ai-workflow/incidents/`, committed the moment it happens; then `/harvest` if it is generic |
 
-**The incident comes first.** The rule paragraph is written from the incident,
-not the other way round — and an incident recorded at the end of a build is an
-incident not recorded. Four client builds asked for a gitignored mistake log
-and produced none; the committed, structured file replaced it because a script
-can count what is still open and a pull request can show it.
+The rule paragraph is written from the incident, not the other way round, and
+an incident recorded at the end of a build is an incident not recorded.
 
-The line between a rule and a reference: a **rule** is what to do, is scoped by
-a `paths` glob and is injected automatically. A **reference** is a debugging
-account of something that already cost someone hours — too long and too
-situational to inject on every task, but the first thing to read when the same
-symptom appears. Rules stay short because references exist.
+A **rule** is what to do, scoped by a `paths` glob and injected automatically.
+A **reference** is symptom, cause and fix for a trap too situational to inject
+on every task. Rules stay short because references exist.
 
 ## The one hard constraint
 
-`.claude/` is canonical. `.cursor/rules/*.mdc`, `.cursor/rules/examples/`,
-`.cursor/skills/`, `.cursor/agents/`, `.cursor/workflows/`,
-`.cursor/references/` and `.cursor/hooks/` are **generated** by
-`.claude/scripts/sync-ai-config.sh`. Edit the `.claude/` copy; the pre-commit
-hook regenerates the mirror and stages it, so there is no command to remember
-— and never edit under `.cursor/`.
+`.claude/` is canonical. Everything under `.cursor/`, plus `.agents/skills/`,
+`.codex/hooks/`, `.codex/agents/` and `AGENTS.md`, is **generated** by
+`.claude/scripts/sync-ai-config.sh`; the pre-commit hook regenerates and
+stages it. A hand-edit to a generated `.mdc` is detected by its checksum; a
+hand-edit to a copied skill or example is simply lost.
 
-Generated `.mdc` files carry a checksum, so a hand-edit there is detected and
-the sync refuses to clobber it — but the skills and examples are plain copies
-with no such protection and a hand-edit is simply lost.
-
-**A merge conflict under `.cursor/` is never resolved by hand.** Two branches
-that each edited a rule and regenerated its `.mdc` collide on the checksum
-line every time; the `.md` merges cleanly, the mirror does not. Resolve the
+**A merge conflict under `.cursor/` is never resolved by hand.** Resolve the
 `.md` if git asks, then run `sh .claude/scripts/sync-ai-config.sh` — it
 detects conflict markers in a generated file and regenerates it — and stage
-`.cursor/`. This is how PR #58's only conflict was resolved.
-
-Two hand-maintained copies is how the Bites Vitamins conventions ended up
-somewhere Claude Code could not read them for the first 18 days of the build.
+`.cursor/`.
