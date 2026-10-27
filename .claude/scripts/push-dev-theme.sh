@@ -1,7 +1,7 @@
 #!/bin/bash
 # push-dev-theme.sh — push theme files to THIS developer's development theme, safely, from several agents at once.
 #
-# Usage:  sh .claude/scripts/push-dev-theme.sh [--theme <id>] [--fragments <dir>] <path> [<path> ...]
+# Usage:  bash .claude/scripts/push-dev-theme.sh [--theme <id>] [--fragments <dir>] <path> [<path> ...]
 #   paths are relative to the repo root (assets/, blocks/, config/, layout/, locales/, sections/, snippets/, templates/)
 #   --theme      the theme id; default .claude/.cache/dev-theme-id (`shopify theme push --unpublished --json` prints it)
 #   --fragments  rebuild locales/en.default.json and en.default.schema.json from HEAD plus the fragments in <dir> first

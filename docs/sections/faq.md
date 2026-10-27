@@ -1,6 +1,6 @@
-# FAQ Section (`sections/Faq.liquid`)
+# FAQ Section (`sections/faq.liquid`)
 
-`sections/Faq.liquid` renders an FAQ accordion with a configurable heading and multiple Q&A items (blocks). Each FAQ item can be expanded/collapsed, with the open state managed by Alpine.js (`x-data`, `x-show`, `x-transition`). The section supports color schemes and responsive padding.
+`sections/faq.liquid` renders an FAQ accordion with a configurable heading and multiple Q&A items (blocks). Each FAQ item can be expanded/collapsed, with the open state managed by Alpine.js (`x-data`, `x-show`, `x-transition`). The section supports color schemes and responsive padding.
 
 ---
 

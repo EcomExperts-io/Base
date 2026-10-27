@@ -162,6 +162,16 @@ jobs:
           git reset --soft "${ORIG_HEAD}"
           [ "${contract}" -eq 0 ] && [ "${conventions}" -eq 0 ]
 
+      - name: Setup Python (Pillow for the verifier's self-tests)
+        if: ${{ !cancelled() && hashFiles('.claude/scripts/test-checks.py') != '' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        if: ${{ !cancelled() && hashFiles('.claude/scripts/test-checks.py') != '' }}
+        run: python3 -m pip install --quiet pillow
+
       - name: The checks check themselves
         if: ${{ !cancelled() && hashFiles('.claude/scripts/test-checks.py') != '' }}
         run: python3 "${SCRIPTS}/test-checks.py"

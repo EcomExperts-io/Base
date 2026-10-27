@@ -48,6 +48,16 @@ UNIQUE_HEADINGS = [
 ]
 
 
+
+def shell_interpreter(script):
+    """The shell a script's shebang names, so a `#!/bin/bash` script is parsed by bash
+    and a `#!/bin/sh` one by sh (dash on Linux, which rejects bash arrays)."""
+    with open(script, encoding="utf-8", errors="replace") as f:
+        first = f.readline().strip()
+    if first.startswith("#!") and "bash" in first:
+        return "bash"
+    return "sh"
+
 def repo_root():
     return subprocess.run(
         ["git", "rev-parse", "--show-toplevel"],
@@ -199,7 +209,7 @@ def check(rules, problems, notes):
         except SyntaxError as e:
             problems.append(f"{script}: does not parse — {e}")
     for script in sorted(glob.glob(".claude/scripts/*.sh")):
-        r = subprocess.run(["sh", "-n", script], capture_output=True, text=True)
+        r = subprocess.run([shell_interpreter(script), "-n", script], capture_output=True, text=True)
         if r.returncode != 0:
             problems.append(f"{script}: shell syntax error — {r.stderr.strip()}")
 

@@ -185,7 +185,7 @@ before editing it; small exact-string edits, never whole-file rewrites.
 `merge-locale-fragments.py`). Budget `{{BUDGET}}` keys; report the exact
 count and propose the cheapest cut rather than overspend.
 
-**Pushing.** Only through `sh .claude/scripts/push-dev-theme.sh --fragments
+**Pushing.** Only through `bash .claude/scripts/push-dev-theme.sh --fragments
 {{FRAGMENTS}} <paths>` to the dev theme `{{DEV_THEME}}`; read its output, it
 fails on a rejection. Test your bands in a throwaway template
 `templates/page.zzt-<your-id>.json` (`&view=zzt-<your-id>`). Never leave the

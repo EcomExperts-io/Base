@@ -51,6 +51,25 @@ def node_env():
     return env, v
 
 
+def offenses(results, root):
+    """(repo-relative path, offense) pairs from either JSON shape the CLI emits:
+    CLI 4 is a list of files each holding `offenses` (`start_row`); CLI 5 is a
+    dict whose `issues` are flat (`filePath`, `startRow`)."""
+    if isinstance(results, dict):
+        for issue in results.get("issues", []):
+            if isinstance(issue, dict):
+                rel = os.path.normpath(os.path.relpath(issue.get("filePath", ""), root))
+                yield rel, {**issue, "start_row": issue.get("startRow", issue.get("start_row", "?"))}
+        return
+    for entry in results:
+        if not isinstance(entry, dict):
+            continue
+        rel = os.path.normpath(os.path.relpath(entry.get("path", ""), root))
+        for off in entry.get("offenses", []):
+            if isinstance(off, dict):
+                yield rel, off
+
+
 def main(argv):
     if shutil.which("shopify") is None:
         print("Theme Check did not run: the Shopify CLI is not installed. Not blocking.")
@@ -84,14 +103,10 @@ def main(argv):
         print("            The Shopify CLI needs Node 22+: nvm install 24 && nvm alias default 24")
         return 0
 
-    blocking = []
-    for entry in results:
-        rel = os.path.normpath(os.path.relpath(entry.get("path", ""), root))
-        if rel not in targets:
-            continue
-        for off in entry.get("offenses", []):
-            if off.get("severity") == "error":
-                blocking.append((rel, off))
+    blocking = [
+        (rel, off) for rel, off in offenses(results, root)
+        if rel in targets and off.get("severity") == "error"
+    ]
 
     if not blocking:
         return 0

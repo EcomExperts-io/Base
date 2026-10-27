@@ -329,15 +329,29 @@ case("assemble: off-step range, <br> in inline_richtext and a bad option are err
 r = subprocess.run([sys.executable, os.path.join(HERE, "assemble-templates.py"), "--validate-file", "templates/index.json"], capture_output=True, text=True)
 case("assemble: --validate-file runs on the repo's own index template", r.returncode in (0, 1) and "templates/index.json" in r.stdout, r.stdout[:80])
 
-r = subprocess.run(["sh", os.path.join(HERE, "push-dev-theme.sh")], capture_output=True, text=True)
+r = subprocess.run(["bash", os.path.join(HERE, "push-dev-theme.sh")], capture_output=True, text=True)
 case("push-dev-theme: no paths is a usage error", r.returncode == 2 and "usage" in r.stderr, (r.returncode, r.stderr[:60]))
-r = subprocess.run(["sh", os.path.join(HERE, "push-dev-theme.sh"), "--theme", "1", "docs/x.md"], capture_output=True, text=True)
+r = subprocess.run(["bash", os.path.join(HERE, "push-dev-theme.sh"), "--theme", "1", "docs/x.md"], capture_output=True, text=True)
 case("push-dev-theme: an unknown or wrong-role theme id is refused before anything is pushed", r.returncode in (5, 9), (r.returncode, r.stderr[:80]))
 with tempfile.TemporaryDirectory() as d:
     open(os.path.join(d, "protected-themes.txt"), "w").write("# live\n123456\n")
     # the guard reads .claude/protected-themes.txt in the repo root; test the match rule directly
     lines = [l.strip() for l in open(os.path.join(d, "protected-themes.txt")) if l.strip() and not l.startswith("#")]
     case("push-dev-theme: the protected list matches whole ids only", "123456" in lines and "12345" not in lines, lines)
+
+tcs = load("check-theme-staged")
+cli4 = [{"path": "/r/sections/a.liquid", "offenses": [{"check": "X", "severity": "error", "start_row": 3, "message": "m"}]}, "stray"]
+cli5 = {"valid": False, "issues": [{"filePath": "/r/sections/a.liquid", "check": "X", "severity": "error", "startRow": 4, "message": "m"}], "errorCount": 1}
+got4 = list(tcs.offenses(cli4, "/r")); got5 = list(tcs.offenses(cli5, "/r"))
+case("theme-staged: both Theme Check JSON shapes (CLI 4 file list, CLI 5 flat issues) yield the same path and an error with its row",
+     got4[0][0] == "sections/a.liquid" == got5[0][0] and got4[0][1]["start_row"] == 3 and got5[0][1]["start_row"] == 4 and len(got4) == len(got5) == 1, (got4, got5))
+
+aic = load("check-ai-config")
+with tempfile.TemporaryDirectory() as d:
+    b = os.path.join(d, "b.sh"); open(b, "w").write("#!/bin/bash\nA=(1 2)\necho ${#A[@]}\n")
+    p = os.path.join(d, "p.sh"); open(p, "w").write("#!/bin/sh\necho ok\n")
+    case("ai-config: a shell script is parsed by the interpreter its shebang names, so bash arrays pass and a POSIX script is checked as sh",
+         aic.shell_interpreter(b) == "bash" and aic.shell_interpreter(p) == "sh", (aic.shell_interpreter(b), aic.shell_interpreter(p)))
 
 # ---------------------------------------------------------------------------
 # where-are-we.py — the three situations, in throwaway repos
