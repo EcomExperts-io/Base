@@ -1,11 +1,6 @@
 #!/bin/sh
-# Base Theme pre-commit checks.
-#
-# Activated by `npm install` (the prepare script sets core.hooksPath), or
-# manually with:  git config core.hooksPath .githooks
-#
-# This hook BLOCKS on failure. Everything here must be objective and fast: a
-# check that is sometimes wrong teaches people to use --no-verify.
+# Base Theme pre-commit checks. Activated by `npm install` (prepare sets core.hooksPath) or `git config core.hooksPath .githooks`.
+# This hook BLOCKS on failure: everything here must be objective and fast, or people learn to use --no-verify.
 
 set -e
 cd "$(git rev-parse --show-toplevel)"
@@ -21,9 +16,8 @@ else
 fi
 
 # --- 2. Cursor mirror is regenerated, not policed -----------------------------
-# The mirror is a derived artefact of .claude/, so the hook regenerates it and
-# stages only the generated tree, only after the generator succeeded. The sync
-# REFUSES to overwrite a hand-edited .mdc; that refusal fails the commit.
+# The mirror is derived from .claude/: regenerate it and stage only the generated tree, only after the generator
+# succeeded. The sync REFUSES to overwrite a hand-edited .mdc; that refusal fails the commit.
 if SYNC_OUT=$(sh .claude/scripts/sync-ai-config.sh 2>&1); then
   git add .cursor .agents .codex AGENTS.md
 else
@@ -36,11 +30,8 @@ else
 fi
 
 # --- 3. Theme Check, scoped to staged files ---------------------------------
-# Theme Check always scans the whole theme, so used directly it would let a
-# pre-existing offense anywhere block everyone — including whoever is trying to
-# commit the fix. This wrapper runs the scan and only fails on errors in files
-# this commit actually touches. Warnings never block. A CLI that cannot start
-# is a skip, not a block.
+# Theme Check scans the whole theme, so used directly a pre-existing offense would block everyone, including whoever
+# is committing the fix. Only errors in files this commit touches fail; a CLI that cannot start is a skip.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-theme-staged.py || FAILED=1
 fi

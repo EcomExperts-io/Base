@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 """Stop hook — a turn cannot end with the mechanical gate failing.
 
-Blocks (exit 2):  a new section missing the settings contract; a convention
-                  error in a NEW file; invalid JSON in templates/locales/config;
-                  a Theme Check error in any file changed this session.
-Reports (JSON):   convention warnings in modified files; a Theme Check that
-                  could not run; section or snippet work with no newer
-                  verify-against-reference report; a client branch whose GitBot
-                  findings have not been read since its last commit.
+Blocks (exit 2):  a new section missing the settings contract; a convention error in a NEW file; invalid JSON in
+                  templates/locales/config; a Theme Check error in any file changed this session.
+Reports (JSON):   convention warnings in modified files; a Theme Check that could not run; section or snippet work with
+                  no newer verify report; a client branch whose GitBot findings have not been read since its last commit.
 
 Notes:
 - "New" means untracked or added since HEAD. Modified legacy is reported, never gated.
 - Claude Code lifts the refusal after eight consecutive blocks.
-- Results are cached against the changed files' mtimes, so a turn that changed
-  nothing since the last pass costs one stat() per file, not a Theme Check run.
+- Results are cached against the changed files' mtimes, so an unchanged turn costs one stat() per file, not a Theme Check run.
 """
 
 import hashlib

@@ -2,8 +2,8 @@
 
 For designers handing work to the development team. We build by pointing an
 AI tool at your frame; it reads the file's **structure** — layer names, auto
-layout, variables, components — not the picture. Anything you communicated
-visually but not structurally is invisible to it, and a hidden layer is as
+layout, variables, components — not the picture. Anything communicated
+visually but not structurally is invisible to it; a hidden layer is as
 visible as a shown one.
 
 ## The four that matter most
@@ -32,8 +32,8 @@ Figma readiness — Default header (329:26263, 1440×110)
     638:21435      Frame 1261153641   241×48
 ```
 
-Green means we build. Anything else means one round of renaming and a comment
-or two. The practice numbers refer to the list below.
+Green means we build; anything else means one round of renaming and a
+comment or two. The practice numbers refer to the list below.
 
 ## The sixteen practices
 
@@ -84,11 +84,10 @@ or two. The practice numbers refer to the list below.
 
 ## What no frame can tell us
 
-Behaviour, unless annotated. Real data — prices, inventory, reviews, copy come
-from the store. Merchant controls — every section gets spacing and colour
-settings regardless of what the frame shows; if a background is deliberately
+Behaviour, unless annotated. Real data — prices, inventory, reviews, copy
+come from the store. Merchant controls — every section gets spacing and
+colour settings regardless of the frame; if a background is deliberately
 fixed, say so. What happens between your breakpoints; a width that matters
-needs its own frame. Whether your colours pass contrast; checking while
-designing is cheaper than after the build. We will ask rather than invent.
+needs its own frame. Whether your colours pass contrast. We ask rather than invent.
 
 The development side of this is [`README.md`](./README.md).

@@ -1,38 +1,15 @@
 #!/bin/sh
-# Keeps the Cursor, Codex and Claude Code copies of our AI configuration identical.
+# Keep the Cursor and Codex copies of the AI configuration identical to .claude/, the only source.
 #
 # Usage: sh .claude/scripts/sync-ai-config.sh [--check] [--force]
 #   --check  exit 1 if anything is out of sync, write nothing (for the hook)
 #   --force  overwrite even a hand-edited .mdc (discards it — last resort)
 #
-# Canonical source is .claude/ — edit there, never in .cursor/.
-#   Rules:     .claude/rules/*.md        -> .cursor/rules/*.mdc  (frontmatter converted)
-#   Examples:  .claude/rules/examples/** -> .cursor/rules/examples/**  (verbatim)
-#   Skills:    .claude/skills/**         -> .cursor/skills/**          (verbatim)
-#   Agents:    .claude/agents/**         -> .cursor/agents/**          (verbatim)
-#   Workflows: .claude/workflows/**      -> .cursor/workflows/**       (verbatim)
-#   References:.claude/references/**     -> .cursor/references/**      (verbatim)
-#   Hooks:     .claude/hooks/**          -> .cursor/hooks/**           (verbatim)
-#
-# Codex reads a different layout:
-#   Skills:    .claude/skills/**         -> .agents/skills/**          (verbatim, tree replaced)
-#   Hooks:     .claude/hooks/**          -> .codex/hooks/**            (verbatim, tree replaced)
-#   Agents:    .claude/agents/*.md       -> .codex/agents/*.toml       (frontmatter + body as TOML)
-#   CLAUDE.md                            -> AGENTS.md                  (banner + checksum; paths kept,
-#                                                                       the files really are under .claude/)
-# .codex/config.toml (MCP servers) and .codex/hooks.json (the hook wiring, the
-# Codex equivalent of .claude/settings.json) are hand-maintained and tracked.
-#
 # Notes:
-#   * Hooks are mirrored so a Cursor user has the gate scripts to wire into
-#     Cursor's own hooks configuration; the wiring (.claude/settings.json) has
-#     no Cursor equivalent. Cursor does not auto-load agents or workflows the
-#     way it loads rules; the mirrored copies are for a human to open.
-#   * Generated .mdc files carry a checksum of their own content. If it no
-#     longer matches, the file was edited by hand and the script REFUSES to
-#     overwrite it.
-#   * Skills and the other verbatim trees carry no checksum, so a hand-edit
-#     there cannot be told from a source change and is overwritten.
+#   * Cursor reads .cursor/ (rules converted to .mdc, the rest verbatim); Codex reads .agents/skills, .codex/hooks,
+#     .codex/agents/*.toml and AGENTS.md. .codex/config.toml and .codex/hooks.json are hand-maintained.
+#   * A generated .mdc carries a checksum of its content; a mismatch means a hand edit and the script refuses to overwrite it.
+#   * Verbatim trees carry no checksum, so a hand edit there is overwritten without warning.
 
 set -e
 cd "$(git rev-parse --show-toplevel)"
@@ -62,11 +39,9 @@ for src in .claude/rules/*.md; do
 
   desc=$(sed -n 's/^description:[[:space:]]*//p' "$src" | head -1)
 
-  # `paths:` may be inline (`paths: "a,b"`) or a YAML list of indented `- "glob"`
-  # lines. Cursor wants one comma-separated `globs:` value, so flatten either form.
-  # List items must be indented, which is what keeps the closing `---` fence from
-  # being read as an item. Every action ends in `next` because sub() rewrites $0
-  # and a later rule would otherwise match the rewritten line.
+  # `paths:` may be inline (`paths: "a,b"`) or a YAML list of indented `- "glob"` lines; Cursor wants one comma-separated
+  # `globs:` value. List items must be indented so the closing `---` fence is never read as an item. Every action ends
+  # in `next` because sub() rewrites $0 and a later rule would match the rewritten line.
   paths=$(awk '
     /^paths:[[:space:]]*$/ { inlist=1; next }
     /^paths:[[:space:]]*[^[:space:]]/ {
@@ -165,9 +140,8 @@ for dest in .cursor/rules/*.mdc; do
 done
 
 # --- verbatim trees ----------------------------------------------------------
-# Everything below is a straight copy — no format conversion, and so no banner
-# and no checksum. A hand-edit under .cursor/ in these trees cannot be told
-# apart from a source change and WILL be overwritten. Edit .claude/ only.
+# A straight copy: no banner, no checksum, so a hand-edit under .cursor/ here cannot be told from a source change
+# and WILL be overwritten. Edit .claude/ only.
 mirror_tree() {
   src="$1"
   dest="$2"
@@ -222,9 +196,8 @@ mirror_tree ".claude/hooks/"          ".cursor/hooks/"
 mirror_tree ".claude/hooks/"          ".codex/hooks/"
 
 # --- Codex agents: .claude/agents/*.md -> .codex/agents/*.toml ----------------
-# Frontmatter name and description become TOML keys; the body becomes
-# developer_instructions. Python does the escaping (a backslash or a triple
-# quote in a body would otherwise break the TOML string).
+# Frontmatter name and description become TOML keys; the body becomes developer_instructions. Python does the
+# escaping: a backslash or a triple quote in a body would otherwise break the TOML string.
 gen_agents() {
   python3 - "$CHECK" <<'PY'
 import glob, os, re, sys

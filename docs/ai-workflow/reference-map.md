@@ -1,10 +1,9 @@
 # Reference map
 
 One row per band of every page in scope, written by `/recon-theme` on arrival
-and kept current by whoever changes the scope. (Older forks carry the same
-table as `figma-frame-map.md`, with only the Figma columns.) A rebuild has
-three kinds of reference, and the band's reference decides which skill builds
-it and which half of `/verify-against-reference` proves it:
+and kept current by whoever changes the scope (older forks: `figma-frame-map.md`,
+Figma columns only). The band's reference decides which skill builds it and
+which half of `/verify-against-reference` proves it:
 
 | Reference | Source of | Built with | Verified by |
 |---|---|---|---|
@@ -12,8 +11,7 @@ it and which half of `/verify-against-reference` proves it:
 | **Live** | what the band does, says and holds today; never its code | `/build-section-from-live` | `live-parity.py` to 0% |
 | **Both** | look from Figma; behaviour, copy and data shape from live | `/build-page-from-figma`, routing the behaviour to live | the frame for the look, `live-parity.py states` for behaviour |
 
-This file in Base is the template. A fork fills it in; Base's own copy stays
-empty.
+In Base this file is the template; a fork fills it in.
 
 ## Bands
 
@@ -24,8 +22,7 @@ empty.
 Rules for the table:
 
 - A Figma cell carries the node id **and the frame's exact size**; the verify
-  skill renders at that width and height, and a wrong guess verifies the wrong
-  design.
+  skill renders at that width and height.
 - A live cell carries the page URL and the section key (`[id$="__KEY"]` on
   live), or a selector for a static section (`#shopify-section-header`).
 - "Both" rows say in the note which behaviour comes from live (a carousel's

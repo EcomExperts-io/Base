@@ -6,118 +6,47 @@ paths:
 
 # CSS Standards
 
-Class naming (BEM), custom-property namespacing, and passing settings in via a
-`style` attribute live in `css-in-markup.md`, which is scoped to `**/*.liquid`
-as well as `**/*.css` because those are decisions you make in the markup. This
-file is the rest, and is scoped to `**/*.css` only: in this theme new CSS goes
-in a `.css` file loaded with `stylesheet_tag`, never in the Liquid.
+Class naming, custom-property namespacing and settings passed through a `style`
+attribute are in `css-in-markup.md`. New CSS goes in a `.css` file loaded with
+`stylesheet_tag`, never in the Liquid.
 
 ## Specificity Rules
 
-- **Never** use IDs as selectors
-- **Avoid** using elements as selectors
-- **Avoid** using `!important` at all costs - if you must use it, comment why in the code
-- Use a `0 1 0` specificity wherever possible, meaning a single `.class` selector.
-- In cases where you must use higher specificity due to a parent/child relationship, try to keep the specificity to a maximum of `0 4 0`
-  - Note that this can sometimes be impossible due to the `0 1 0` specificity of pseudo-classes like `:hover`. There may be situations where `.parent:hover .child` is the only way to achieve the desired effect.
-- **Avoid** complex selectors. A selector should be easy to understand at a glance. Don't over do it with pseudo selectors (:has, :where, :nth-child, etc).
-
-See [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) for more a comprehensive list of specificity rules.
+- **Never** use IDs as selectors; **avoid** elements as selectors.
+- **Avoid** `!important`; if you must, comment why on the same or previous line.
+- Aim for `0 1 0` — a single `.class`. Keep parent/child selectors to `0 4 0`
+  at most (`.parent:hover .child` is sometimes the only way).
+- A selector should be readable at a glance; go easy on `:has`, `:where`, `:nth-child`.
 
 ## CSS Variables
 
-CSS variables, a.k.a. custom properties, are a powerful tool for reducing redundancy and making it easier to update values across a component.
+- A hardcoded value is set on a variable first, then used: `--touch-target-size: 44px;`.
+- **Never** hardcode colours; use the colour-scheme variables.
 
-- If you need to hardcode a value, set it to a variable and use that variable in the declaration. Example: a touch target size. `--touch-target-size: 44px;`
-- **Never** hardcode colors, always use the color schemes
-
-### Global Variables
-
-Global variables should be scoped to the `:root` selector in `snippets/css-variables.liquid`.
-
-**Example of global variables**
+Global variables live on `:root` in `snippets/css-variables.liquid`:
 
 ```css
-/* in snippets/theme-styles-variables.liquid */
 :root {
-    --page-width: 1400px;
-     --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }}; /* Referencing a theme setting */
-     --font-{{ preset_name_dash }}--family: {{ settings[preset_font] | prepend: 'var(--font-' | append: '--family)' }}; /* Using Liquid to set a variable */
+  --page-width: 1400px;
+  --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
 }
 ```
 
-### Scoped Variables
-
-Be sure to scope your CSS variables to the component they are being used in, if they are not meant to be global. Scoped variables can reference global variables.
-
-**Example of scoped variables**
+Anything not global is scoped to its component, and may reference globals:
 
 ```css
-/* in assets/facets.css */
 .facets {
-  --drawer-padding: var(--padding-md); /* Referencing a global variable */
-  --facets-upper-z-index: 3;
+  --drawer-padding: var(--padding-md);
   --facets-open-z-index: 4;
-
-  --facets-clear-shadow: 0px -4px 14px 0px rgb(var(--color-foreground-rgb) / var(--opacity-10)); /* Referencing a Color Scheme variable */
+  --facets-clear-shadow: 0px -4px 14px 0px rgb(var(--color-foreground-rgb) / var(--opacity-10));
 }
 ```
 
-### Semantic Color Variables
-
-Use semantic naming for better maintainability:
-
-```css
-:root {
-  /* Base colors */
-  --color-primary: {{ settings.colors_accent_1 }};
-  --color-secondary: {{ settings.colors_accent_2 }};
-
-  /* Semantic colors */
-  --color-text-primary: rgb(var(--color-foreground));
-  --color-text-secondary: rgb(var(--color-foreground) / 0.75);
-  --color-text-disabled: rgb(var(--color-foreground) / 0.38);
-
-  /* Interactive states */
-  --color-interactive-default: rgb(var(--color-accent));
-  /* color-mix isn't supported in earlier version of iOS <16.2 so limit its usage to progressive enhancement */
-  --color-interactive-hover: color-mix(in srgb, rgb(var(--color-accent)) 90%, black);
-  --color-interactive-pressed: color-mix(in srgb, rgb(var(--color-accent)) 80%, black);
-  --color-interactive-disabled: rgb(var(--color-accent) / 0.38);
-}
-```
-
-### Design Token System
-
-Establish consistent spacing and typography scales:
-
-```css
-:root {
-  /* Spacing scale */
-  --space-3xs: 0.25rem; /* 4px */
-  --space-2xs: 0.5rem; /* 8px */
-  --space-xs: 0.75rem; /* 12px */
-  --space-sm: 1rem; /* 16px */
-  --space-md: 1.5rem; /* 24px */
-  --space-lg: 2rem; /* 32px */
-  --space-xl: 3rem; /* 48px */
-  --space-2xl: 4rem; /* 64px */
-  --space-3xl: 6rem; /* 96px */
-
-  /* Typography scale */
-  --font-size-xs: 0.75rem; /* 12px */
-  --font-size-sm: 0.875rem; /* 14px */
-  --font-size-base: 1rem; /* 16px */
-  --font-size-lg: 1.125rem; /* 18px */
-  --font-size-xl: 1.25rem; /* 20px */
-  --font-size-2xl: 1.5rem; /* 24px */
-  --font-size-3xl: 1.875rem; /* 30px */
-}
-```
+`color-mix()` is unsupported on iOS below 16.2; use it only as progressive enhancement.
 
 ### Redundancy
 
-Use variables to reduce property assignment redundancy.
+Vary the variable, not the declaration:
 
 ```css
 /* Do this */
@@ -139,138 +68,36 @@ Use variables to reduce property assignment redundancy.
 }
 ```
 
-## Modern CSS Features
+## Container queries — do not use them
 
-### Container Queries — do not use them here
+The theme has no `container-type` or `@container`; use the `min-width` media
+queries everything else uses. A component that must reflow to a slot of
+varying width is raised, not quietly built on a second responsive system.
 
-This file used to recommend them. It was contradicted by `sections.md`, which
-says the opposite, and `sections.md` is right: **Base has zero uses of
-`container-type` or `@container` in `assets/`, `sections/`, `snippets/`,
-`blocks/` or `layout/`.** Measured, not assumed.
-
-Use the `min-width` media queries the rest of the theme uses. Introducing a
-container query means this section responds to a different signal than every
-other section on the page, which is a real inconsistency to pay for and there
-is no case in this theme that has needed it.
-
-If you hit a genuine one — a component that must reflow to its slot rather
-than the viewport, placed in slots of different widths on the same page —
-raise it rather than quietly starting a second responsive system.
-
-### CSS Functions
-
-Leverage modern CSS functions for better responsiveness:
+## CSS Functions
 
 ```css
 .component {
-  /* Fluid spacing */
   padding: clamp(1rem, 4vw, 3rem);
-
-  /* Intrinsic sizing */
   width: min(100%, 800px);
-
-  /* Dynamic colors */
-  /* color-mix isn't supported in earlier version of iOS <16.2 so limit its usage */
-  background: color-mix(in srgb, rgb(var(--color-primary)) 90%, white);
-}
-```
-
-### Cascade Layers
-
-For better CSS organization in complex themes:
-
-```css
-@layer reset, base, components, utilities, overrides;
-
-@layer components {
-  .button {
-    /* Component styles here won't conflict with utilities */
-  }
-}
-```
-
-### View Transitions
-
-```css
-@view-transition {
-  navigation: auto;
-}
-
-.page-content {
-  view-transition-name: main-content;
 }
 ```
 
 ## Media Queries
 
-- Default to mobile first. e.g. `min-width` queries
-- Use `screen` for all media queries
-
-### Breakpoint System
-
-Define consistent breakpoints:
-
-```css
-/* Mobile first breakpoints */
---breakpoint-sm: 576px; /* Small devices */
---breakpoint-md: 768px; /* Medium devices */
---breakpoint-lg: 992px; /* Large devices */
---breakpoint-xl: 1200px; /* Extra large devices */
---breakpoint-2xl: 1400px; /* 2X Extra large devices */
-```
-
-### Context-Aware Queries
-
-Use feature queries alongside media queries:
-
-```css
-@supports (display: grid) {
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-}
-
-@supports not (display: grid) {
-  .product-grid {
-    display: flex;
-    flex-wrap: wrap;
-  }
-}
-```
-
-### Print Styles
-
-Always consider print stylesheets:
-
-```css
-@media print {
-  .no-print {
-    display: none !important;
-  }
-
-  a[href^='http']:after {
-    content: ' (' attr(href) ')';
-  }
-}
-```
+- Mobile first: `min-width` queries only.
+- Use `screen` on every media query.
+- Breakpoint values: grep `assets/` and match what the theme settled on
+  (`sections.md`); do not introduce a new scale.
 
 ## CSS Nesting Rules
 
-Nesting can make styles harder to read. Be responsible with it.
+- Never nest beyond the first level, except media queries and the modifier
+  case below.
+- `&` only for a direct relationship: states (`&:hover`, `&:focus-visible`)
+  and modifiers that affect each other (`.button--integrated { &.button--text }`).
 
-- **No `&` operator** in nested selectors
-- **Never nest beyond first level** (except media queries/states)
-- **Keep nesting simple** and readable
-- Only use `&` when there is a direct relationship between the two selectors
-  - State based selectors e.g. `&:hover`, `&:focus`, `&:active`
-  - Modifiers that affect each other e.g. `button--integrated { &.button--text }`
-- Never nest beyond the first level
-- See below for exceptions
-
-### Nesting Media Queries
-
-Use nesting for media queries
+Nest media queries inside the rule, even when there is nothing to override yet:
 
 ```css
 .header {
@@ -282,62 +109,25 @@ Use nesting for media queries
 }
 ```
 
-This includes when there is nothing to override, e.g.
+A parent modifier that changes several children may nest them, so the
+if-like relationship reads in one place:
 
 ```css
-.header {
-  @media screen and (min-width: 750px) {
-    width: 100px;
-  }
-}
-```
-
-That way, if something needs to be added later, it can just be added without needing to flip the media query to the inside.
-
-### If-like Parent-Child Relationships
-
-You may use nesting to help organize parent-child relationship when the parent can have **multiple states or modifiers** that affect children. In the example below, a number of child selectors need to change when the parent is the `--full-width` variant. This saves you from needing to append `parent--full-width` to each css selector.
-
-```css
-.parent {
-  grid-columns: var(--gap) 1fr var(--gap);
-}
-
-.child {
-  grid-column: 2;
-}
-
-.grand-child {
-  ...;
-}
-
 .parent--full-screen {
   grid-columns: 1fr;
 
   .child {
     grid-column: 1;
   }
-
-  .grand-child {
-    ...;
-  }
 }
 ```
 
-In cases like this, the styles that are being applied are the direct result of the parent's modifier. We can see this as a kind of if-like relationship where the logic is easier to follow if the child styles are nested inside the parent.
-
-This is not a reason to nest multiple levels. Maintain the single level rule.
+That is still one level of nesting.
 
 ## Logical Properties
 
-Where appropriate, use logical properties to have baseline support for Right-to-Left (RTL) languages.
-Focusing on these properties:
-
-- padding
-- margin
-- border
-- text-align
-- top, bottom, left, right
+Use logical properties for padding, margin, border, text-align and inset, so
+RTL works by default.
 
 ✅ Do this:
 
@@ -346,7 +136,6 @@ Focusing on these properties:
   padding-inline: 2rem;
   padding-block: 1rem;
   margin-inline: auto;
-  margin-block: 0;
   border-inline-end: 1rem solid var(--color-background);
   text-align: start;
   inset: 0;
@@ -359,132 +148,68 @@ Focusing on these properties:
 .element {
   padding: 1rem 2rem;
   margin: 0 auto;
-  border-bottom: 1rem solid var(--color-background);
+  border-right: 1rem solid var(--color-background);
   text-align: left;
   top: 0;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
 }
 ```
 
-## Layout Patterns
+## Using `:is()`
 
-### CSS Grid for Layouts
-
-```css
-.section-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-}
-```
-
-### Flexbox for Components
+Same styles on several selectors: a comma list, not `:is()`.
 
 ```css
-.product-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-```
-
-### Aspect Ratio for Media
-
-```css
-.product-card__image {
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-```
-
-## Fancy Selectors
-
-### Using `:is()`
-
-When giving the same styles to multiple selectors, use a comma separated list.
-
-✅ Do this:
-
-```css
+/* Do this */
 .facets__label,
 .facets__clear-all,
 .clear-filter {
   ...;
 }
-```
 
-❌ Not this:
-
-```css
+/* Not this */
 :is(.facets__label, .facets__clear-all, .clear-filter) {
   ...;
 }
 ```
 
-However, if you are giving the same styles to a parent-child relationship with different selectors, you may use `:is()`.
-
-✅ Do this:
+`:is()` is for a shared parent or a shared child:
 
 ```css
+/* Do this */
 .parent:is(.child-1, .child-2) {
   ...;
 }
-```
 
-❌ Not this:
+:is(.parent, .parent-2) .child {
+  ...;
+}
 
-```css
+/* Not this */
 .parent .child-1,
 .parent .child-2 {
   ...;
 }
 ```
 
-✅ Do this:
-
-```css
-:is(.parent, .parent-2) .child {
-  ...;
-}
-```
-
-❌ Not this:
-
-```css
-.parent .child,
-.parent-2 .child {
-  ...;
-}
-```
-
-Try to keep the same specificity for all selectors within a single `:is()` to avoid increasing the overall specificity of the selector unintentionally.
+Keep every selector inside one `:is()` at the same specificity.
 
 ## Accessibility
 
-### Motion and Animation
-
-- Always respect user motion preferences
-- Provide fallbacks for users who prefer reduced motion
+Motion (position, size, rotation) is disabled under reduced motion; opacity
+and colour transitions need no override (`accessibility.md`, section 9):
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  .product-card {
+    transition: none;
   }
 }
 ```
 
-### Focus Management
-
-- Ensure all interactive elements have visible focus indicators
-- Use `:focus-visible` for better UX
+Every interactive element has a visible focus style, on `:focus-visible`:
 
 ```css
 .button:focus-visible {
@@ -493,27 +218,13 @@ Try to keep the same specificity for all selectors within a single `:is()` to av
 }
 ```
 
-### Color and Contrast
+Contrast and colour-as-the-only-cue are in `accessibility.md`, section 7.
 
-- Maintain WCAG AA contrast ratios (4.5:1 for normal text, 3:1 for large text)
-- Test with high contrast mode
-- Never rely solely on color to convey information
+## Performance
 
-```css
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark theme variables */
-  }
-}
-```
-
-## Performance Considerations
-
-### Animation Performance
-
-- Use `transform` and `opacity` for animations
-- Avoid animating layout properties (`width`, `height`, `margin`, `padding`)
-- Use `will-change` sparingly and remove after animation
+- Animate `transform` and `opacity`, never layout properties
+  (`width`, `height`, `margin`, `padding`).
+- `will-change` only while the animation runs; reset it after.
 
 ```css
 .product-card {
@@ -521,11 +232,7 @@ Try to keep the same specificity for all selectors within a single `:is()` to av
 }
 
 .product-card:hover {
-  transform: translateY(-2px); /* Better than animating top/margin */
-}
-
-/* Only use will-change during animation */
-.product-card:hover {
+  transform: translateY(-2px);
   will-change: transform;
 }
 
@@ -534,33 +241,16 @@ Try to keep the same specificity for all selectors within a single `:is()` to av
 }
 ```
 
-### Layout Performance
-
-- Use `contain` property for better rendering performance
-- Prefer CSS Grid and Flexbox over complex positioning
-
-```css
-.product-grid {
-  contain: layout style paint;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-```
-
-## CSS Organization
-
-### CSS Property Order
-
-Maintain consistent property order within declarations:
+## CSS Property Order
 
 ```css
 .component {
-  /* 1. Layout & Positioning */
+  /* 1. Layout & positioning */
   position: relative;
   display: flex;
   flex-direction: column;
 
-  /* 2. Box Model */
+  /* 2. Box model */
   width: 100%;
   margin: 0;
   padding: var(--space-md);
@@ -574,38 +264,26 @@ Maintain consistent property order within declarations:
   background: rgb(var(--color-surface));
   color: rgb(var(--color-text));
 
-  /* 5. Animation & Transforms */
+  /* 5. Animation & transforms */
   transition: transform 0.2s ease;
 }
 ```
 
-## Error Prevention
+## Common Pitfalls
 
-### Common Pitfalls
-
-- **Never** use `position: fixed` without considering mobile keyboards
-- **Always** test with zoom up to 200%
-- **Avoid** magic numbers - use variables or calc() instead
-- **Remember** that `vh` units can be problematic on mobile, use `dvh` to mitage this
+- `position: fixed` meets the mobile keyboard; test it there.
+- Test at 200% zoom.
+- No magic numbers: a variable or `calc()`.
+- `vh` misbehaves on mobile; use `dvh`.
 
 ### Defensive CSS
 
-Write CSS that gracefully handles edge cases:
-
 ```css
 .product-card {
-  /* Prevent content overflow */
-  word-wrap: break-word;
   overflow-wrap: break-word;
-
-  /* Handle long content */
-  min-width: 0; /* Allows flex items to shrink below content size */
-
-  /* Prevent layout shift */
-  aspect-ratio: 1 / 1;
-
-  /* Fallback for missing images */
-  background: rgb(var(--color-surface-secondary));
+  min-width: 0; /* lets a flex item shrink below its content size */
+  aspect-ratio: 1 / 1; /* no layout shift while the image loads */
+  background: rgb(var(--color-surface-secondary)); /* visible when the image is missing */
 }
 ```
 
@@ -629,17 +307,7 @@ Six more where every computed style reads correct and the page renders wrong
 No duplicated rule blocks: an edit to the first copy is overridden by the
 second. `check-conventions.py` warns on a run of 40+ lines that repeats.
 
-### Browser Support
-
-- Test in browsers used by your audience
-- Provide fallbacks for newer CSS features
-- Use progressive enhancement approach
-
-## CSS Documentation
-
-### Commenting Standards
-
-Use consistent commenting for better maintainability:
+## Commenting
 
 ```css
 /* =============================================================================
@@ -648,86 +316,41 @@ Use consistent commenting for better maintainability:
 
 /**
  * Brief component description
- *
- * @example
- * <div class="component component--modifier">
- *   <div class="component__element">Content</div>
- * </div>
  */
 .component {
-  /* Implementation */
 }
 
 /* Component modifiers
    ========================================================================== */
-
-/**
- * Modifier description
- */
 .component--modifier {
-  /* Modifier styles */
-}
-
-/* Component elements
-   ========================================================================== */
-
-/**
- * Element description
- */
-.component__element {
-  /* Element styles */
 }
 ```
 
 ## Example Component Structure
 
-Two files: the section loads its stylesheet with `stylesheet_tag`, and passes
-merchant settings in as custom properties on the wrapper. No `{% stylesheet %}`
-(banned in new sections by `sections.md`), no container queries (zero uses in
-this theme).
+The section loads its stylesheet with `stylesheet_tag` and passes merchant
+settings in as custom properties on the wrapper (`css-in-markup.md`):
 
 ```liquid
-{% comment %} sections/featured-collection.liquid {% endcomment %}
 {{ 'section-featured-collection.css' | asset_url | stylesheet_tag }}
 
 <div
   class="featured-collection color-{{ section.settings.color_scheme }}"
-  style="
-    --featured-collection-padding-block-start: {{ section.settings.padding_top }}px;
-    --featured-collection-padding-block-end: {{ section.settings.padding_bottom }}px;
-    --featured-collection-columns: {{ section.settings.columns | default: 4 }};
-  "
+  style="--featured-collection-columns: {{ section.settings.columns | default: 4 }};"
 >
-  <div class="featured-collection__grid">
-    {%- for product in section.settings.collection.products -%}
-      {%- render 'component-product-card', card_product: product -%}
-    {%- endfor -%}
-  </div>
+  <div class="featured-collection__grid">…</div>
 </div>
 ```
 
 ```css
 /* assets/section-featured-collection.css */
-.featured-collection {
-  padding-block-start: var(--featured-collection-padding-block-start);
-  padding-block-end: var(--featured-collection-padding-block-end);
-}
-
 .featured-collection__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-md);
-}
 
-@media screen and (min-width: 750px) {
-  .featured-collection__grid {
+  @media screen and (min-width: 750px) {
     grid-template-columns: repeat(var(--featured-collection-columns), 1fr);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .featured-collection * {
-    transition: none;
   }
 }
 ```

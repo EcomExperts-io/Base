@@ -71,13 +71,8 @@ def check_hooks_wired():
 
 
 def check_theme_check_config():
-    """A Theme Check config that enables nothing makes three gates vacuous.
-
-    A fork that already had a .theme-check.yml keeps its own, and an older
-    config starting with `extends: :nothing` (the Ruby-era form) with checks
-    listed by their old names runs as almost nothing on the current CLI.
-    check-theme-staged.py blocks on errors only, so every gate then passes.
-    """
+    """A Theme Check config that enables nothing makes three gates vacuous: an older `extends: :nothing` config with
+    checks under their old names runs as almost nothing on the current CLI, and check-theme-staged.py blocks on errors only."""
     path = os.path.join(ROOT, ".theme-check.yml")
     if not os.path.exists(path):
         return ("WARN", "theme check",

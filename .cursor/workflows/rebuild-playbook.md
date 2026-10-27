@@ -1,13 +1,10 @@
 # Workflow — the order of attack for a store rebuild
 
 What to build first, what to carry, and what to do when you arrive in the
-middle. A human starts this; it is not a skill.
-
-Order by **dependency**, not by page: every page depends on the foundations
-and the chrome, and a store where those are right can have its pages rebuilt
-in any order. **Commerce before content**: a storefront is a shop. The purchase
-path is stage 2, it has its own check, and that check runs green at the close
-of every stage after it — a page that breaks the cart is not done.
+middle. A human starts this. Order by **dependency**, not by page: every page
+depends on the foundations and the chrome. **Commerce before content**: the
+purchase path is stage 2, has its own check, and that check runs green at the
+close of every stage after it — a page that breaks the cart is not done.
 
 ## Arriving — the same three commands whether the repo is new or six months old
 
@@ -22,9 +19,9 @@ the first line of code. If the repo has a `.cursor/` but no `.claude/`, the
 overlay installs `.claude/` and regenerates `.cursor/` from it; if both exist
 and disagree, the drift report says so and a human picks.
 
-**The previous team's conventions win where they conflict with Base's** — half
-the theme already uses them. Record them in this repo's rule copies (the recon
-does this), not in Base.
+**The previous team's conventions win where they conflict with Base's** —
+half the theme already uses them. The recon records them in this repo's rule
+copies, not in Base.
 
 ## The dependency order
 
@@ -39,7 +36,7 @@ does this), not in Base.
 | **6 · Homepage and content** | Homepage, landing pages (`landing-batch.md` when they are matched to live), about, FAQ | *Assembly*, not construction — Base ships 20+ content sections; building the homepage first is how page-named sections happen | Presets reused via `templates/*.json` before anything new is written; name by function; a landing page that adds to cart runs the commerce check |
 | **7 · Long tail** | Blog, article, account, 404, password, gift card | Template main sections, low design variance, often Base's as-is | Contract exemptions declared with a Liquid comment mentioning `presets` |
 
-Stages 1–4 decide what can be carried. Put the review agents on them hardest.
+Stages 1–4 decide what can be carried; review them hardest.
 
 **Closing a stage, from 2 onward:**
 
@@ -49,15 +46,15 @@ python3 .claude/scripts/commerce-check.py --url "<dev theme product URL>" --disc
 
 Green at 393, 768, 1024 and 1440, then the two rows it cannot automate — a
 person logged in, and Safari on an iPhone and a Mac — walked and recorded in
-the stage's handoff. The Stop hook names a change to the purchase path that
-has no commerce report newer than it. Then record the close, so the next
-session is told where the rebuild stands:
+the stage's handoff. The Stop hook names a purchase-path change with no
+newer commerce report. Then record the close:
 
 ```bash
 python3 .claude/scripts/where-are-we.py --close-stage 2 "commerce path"
 ```
 
-It writes the progress record (`progress.json` under `docs/ai-workflow/`); commit it with the stage's work.
+It writes `progress.json` under `docs/ai-workflow/`; commit it with the
+stage's work.
 
 ## Per stage
 
@@ -65,11 +62,9 @@ It writes the progress record (`progress.json` under `docs/ai-workflow/`); commi
   rebuild) or `parallel-section-build.md` Part 2 (one page's sections). Both
   start with `/build-page-from-figma`, which starts with `/figma-readiness`.
 - **Verify before hand-off**: `/verify-against-reference` per frame, report on
-  disk, numbers quoted in the handoff. The Stop hook reminds; the reviewer
-  reads the report.
+  disk, numbers quoted in the handoff.
 - **Record as you go**: `/record-incident` the moment a fix lands that a rule
-  should have prevented. `/harvest` the generic ones before the stage closes,
-  not at the end of the build.
+  should have prevented; `/harvest` the generic ones before the stage closes.
 - **Gate**: `shopify-pr-reviewer` over the diff before a human sees the PR.
 
 ## Inheriting mid-rebuild
@@ -78,21 +73,20 @@ Every session start prints one line from `where-are-we.py`: which of the
 three situations the repo looks like — a fresh rebuild, joining midway,
 correcting after QA — and why, from the state document's age, the verify
 reports, the stages recorded as closed, the branch name and the recent
-commits. It is a reading, not a ruling; the person who knows better runs
-what fits. Everything above applies; two things change.
+commits. It is a reading, not a ruling. Two things change:
 
 1. **Stage 0 produces a "carry" verdict, not a plan** — `/recon-theme` ends
    with carry-as-is / carry-with-fixes / rebuild / missing. Argue with it in
    the state document, not in code.
 2. **The "missing" list is your build order**, sorted by the stage table. If
    the previous team built the homepage and no header, the header comes next
-   regardless of what the tracker says — the tracker is told why.
+   regardless of the tracker — the tracker is told why.
 
-Do not "fix" what the recon finds in stage 0. Record it; if a rule should have
-prevented it, `/record-incident`; fix it in the stage it belongs to.
+Do not "fix" what the recon finds in stage 0. Record it, `/record-incident`
+if a rule should have prevented it, and fix it in the stage it belongs to.
 
 ## Budget
 
 Recon is a day. Foundations and chrome are the slow stages — a header with
-mega-menu panels or a cart drawer with states is about two sessions each — and
-they are the stages a page-first order skips and pays for later.
+mega-menu panels or a cart drawer with states is about two sessions each —
+and the stages a page-first order skips and pays for later.

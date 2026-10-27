@@ -6,25 +6,13 @@ Usage
   compare.py --reference figma-1440.png --rendered rendered-1440.png --out .claude/verify/<slug>
              [--reference-label Figma] [--width 1440] [--rendered-offset-y 0]
              [--mask x,y,w,h ...] [--threshold 32] [--slug name]
-
---figma is accepted as a synonym for --reference. For a live section the
-verify skill uses live-parity.py instead, which renders both sides itself;
-this script is for a reference that already exists as an image.
-
-Writes <out>/diff-<width>.png, <out>/side-by-side-<width>.png (and a -preview
-scaled for reading), <out>/compare-<width>.json; prints the JSON summary.
-Coordinates for --mask are in the compared image's frame: rendered pixels
-after --rendered-offset-y has been applied, which equals the frame's own
-coordinates when the offsets line up.
+  --figma is a synonym for --reference. Writes <out>/diff-<width>.png, side-by-side-<width>.png (+ -preview),
+  compare-<width>.json, and prints the JSON summary.
 
 Notes:
-- The number is a report, not a gate. Font rasterisation, anti-aliasing and
-  image compression differ between Figma and Chrome, so a 4% diff can be a
-  perfect build and a 1% diff can hide an empty column. Read it with the
-  heatmap and the box table (fidelity-table.py), never alone.
-- Live data never matches a mock. Pass --mask for every region that comes from
-  the store (the verify skill collects them from `data-verify-mask`); those
-  pixels are excluded on both sides.
+- --mask is in the compared image's frame (rendered pixels after --rendered-offset-y); mask every region of live store data.
+- A report, not a gate: Figma and Chrome rasterise differently, so 4% can be a perfect build and 1% can hide an empty column.
+- For a live section the verify skill uses live-parity.py, which renders both sides itself.
 """
 
 import json
@@ -105,10 +93,8 @@ def main(argv):
 
     h = min(a.height, b.height)
     a2, b2 = a.crop((0, 0, a.width, h)), b.crop((0, 0, a.width, h))
-    # Count the pixels actually covered rather than adding up rectangle areas.
-    # Masks overlap (a carousel's cloned slides) and hang off the edges (a slide
-    # half out of frame), so the sum of w*mh can exceed the compared area.
-    # A coverage bitmap cannot lie about either.
+    # Count the pixels actually covered, not the sum of rectangle areas: masks overlap (cloned carousel slides) and hang
+    # off the edges (a slide half out of frame), so the sum of w*h can exceed the compared area.
     covered = Image.new("1", (a.width, h), 0)
     cover_draw = ImageDraw.Draw(covered)
     for (x, y, w, mh) in masks:

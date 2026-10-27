@@ -1,44 +1,18 @@
 #!/usr/bin/env python3
-"""Overlay Base's AI tooling onto a client repo — three-way, never clobbering.
+"""Overlay Base's AI tooling onto a client repo, three-way against the `.base-version` stamp, never clobbering.
 
-Does what a merge would do for the tooling files only, with no shared history
-required. For each file Base ships:
-
-    fork missing it                 -> ADD
-    fork == Base                    -> unchanged
-    fork untouched since stamp      -> UPDATE  (Base changed, fork did not)
-    fork edited, Base unchanged     -> KEEP    (a local decision; harvest candidate)
-    fork edited AND Base changed    -> KEEP, save Base's copy under .claude/.cache/base-new/
-    no stamp and fork differs       -> KEEP, same as above (provenance unknown)
-
-"Since stamp" means since the Base commit recorded in `.base-version` by the
-previous run. The first run on a fork that already has tooling therefore keeps
-everything that differs and lists it. `--force` overwrites.
-
-Files the fork holds under the tooling paths that Base does not ship are left
-alone and listed as fork-only.
-
-What counts as tooling
-----------------------
-See pull_base_tooling_lib.py: .claude/** (except per-machine state),
-.githooks/**, .mcp.json, .theme-check.yml, CLAUDE.md, docs/ai-workflow/**,
-docs/base-theme-standards.md. Incidents are excluded — they belong to the repo
-that recorded them. The CI workflow is special: a fork gets the six-line
-CALLER that uses Base's reusable workflow, never a copy of the steps.
-
-.cursor/ is not copied; it is regenerated from .claude/ afterwards.
+Notes:
+- Per file: missing in the fork -> ADD; untouched since the stamp -> UPDATE; edited in the fork -> KEEP.
+- A KEEP where Base also changed (or with no stamp) saves Base's copy under .claude/.cache/base-new/; --force overwrites.
+- What is tooling is defined in pull_base_tooling_lib.py; fork-only files under those paths are listed, never removed.
+- The CI workflow is special: a fork gets the short caller of Base's reusable workflow, never a copy of the steps.
+- An unknown argument stops the script before anything is read or written; run base-link.sh first if `base` is missing.
 
 Usage
 -----
-  python3 .claude/scripts/pull-base-tooling.py [--ref base/development] [--dry-run] [--force]
+  python3 .claude/scripts/pull-base-tooling.py [--ref base/development] [--dry-run] [--force] [--help]
   python3 .claude/scripts/pull-base-tooling.py --base-path ../Base     # a local Base checkout
   python3 .claude/scripts/pull-base-tooling.py --stamp-only            # fresh fork: record the version
-  python3 .claude/scripts/pull-base-tooling.py --help
-
-An argument the script does not know stops it before it reads or writes
-anything.
-
-Run `sh .claude/scripts/base-link.sh` first if there is no `base` remote.
 """
 
 import datetime

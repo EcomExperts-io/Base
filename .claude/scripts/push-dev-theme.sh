@@ -3,20 +3,13 @@
 #
 # Usage:  sh .claude/scripts/push-dev-theme.sh [--theme <id>] [--fragments <dir>] <path> [<path> ...]
 #   paths are relative to the repo root (assets/, blocks/, config/, layout/, locales/, sections/, snippets/, templates/)
-#
-# The theme id comes from --theme or from .claude/.cache/dev-theme-id (write it once:
-# `shopify theme push --unpublished --theme "<repo>/<branch>" --json` prints it). It is refused when
-# it appears in .claude/protected-themes.txt (one id per line: the live theme, the QA theme), and
-# when `shopify theme list --json` says its role is not development or unpublished.
-#
-# With --fragments, locales/en.default.json and en.default.schema.json are rebuilt from HEAD plus
-# every fragment in that directory before the push (merge-locale-fragments.py), so an agent's keys
-# are never lost and the locale files are never edited by hand.
+#   --theme      the theme id; default .claude/.cache/dev-theme-id (`shopify theme push --unpublished --json` prints it)
+#   --fragments  rebuild locales/en.default.json and en.default.schema.json from HEAD plus the fragments in <dir> first
 #
 # Notes:
+#   * a theme listed in .claude/protected-themes.txt, or whose role is not development/unpublished, is refused;
 #   * pushes are serialised through a lock directory: two at once interleave and one loses;
-#   * a new section file needs ~25 s to register before a template may reference it, or every
-#     route on the theme returns 500 — hence the wait between the two push phases;
+#   * a new section needs ~25 s to register before a template may reference it (else every route 500s): hence two push phases;
 #   * `shopify theme push` exits 0 when Shopify rejects a file, so the output is parsed.
 
 set -u
@@ -30,7 +23,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --theme) THEME_ID="$2"; shift 2 ;;
     --fragments) FRAGMENTS="$2"; shift 2 ;;
-    -h|--help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     --*) echo "unknown flag $1" >&2; exit 2 ;;
     *) PATHS+=("$1"); shift ;;
   esac

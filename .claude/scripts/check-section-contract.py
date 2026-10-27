@@ -1,29 +1,18 @@
 #!/usr/bin/env python3
 """Pre-commit check: new sections must expose the merchant settings contract.
 
-Modes
+Usage
 -----
-  (default)        sections ADDED in the staged changeset — the pre-commit hook
-  --files <paths>  these working-tree sections, judged as if new — the runtime
-                   hooks pass the file Claude just wrote, or every section new
-                   since HEAD at the end of a turn
-  --quiet          say nothing when everything passes
+  check-section-contract.py                  sections ADDED in the staged changeset (the pre-commit hook)
+  check-section-contract.py --files <paths>  these working-tree sections, judged as if new (the runtime hooks)
+  check-section-contract.py --quiet          say nothing when everything passes
 
-Notes
------
-Only sections *added* in this commit. Modifying an existing section does not
-trigger it: Base's legacy predates this standard, and for a template main
-section or a section-group member a `presets` entry would be wrong.
-
-Escape hatches, both requiring a written reason: a Liquid comment mentioning
-`presets` marks a section as not merchant-addable and exempts it from the
-whole contract, with or without a `{% schema %}` (a render-target section may
-have none); a Liquid comment mentioning `color_scheme` exempts that one
-setting.
-
-Padding has no exception on a merchant-addable section: `padding_top`,
-`padding_bottom`, `padding_top_mobile`, `padding_bottom_mobile`. Mobile
-padding is its own merchant value, not a multiple of desktop.
+Notes:
+- Only sections added in this commit: Base's legacy predates the standard, and a template main section or a
+  section-group member would be wrong with a `presets` entry.
+- A Liquid comment mentioning `presets` marks a section as not merchant-addable and exempts it from the whole contract,
+  with or without a `{% schema %}`; a Liquid comment mentioning `color_scheme` exempts that one setting.
+- Padding has no exception: `padding_top`, `padding_bottom`, `padding_top_mobile`, `padding_bottom_mobile`; mobile is its own value.
 """
 
 import json
@@ -44,17 +33,9 @@ COMMENT_RE = re.compile(r"\{%-?\s*comment\s*-?%\}(.*?)\{%-?\s*endcomment\s*-?%\}
 # A schema label that is a bare string rather than a `t:` key.
 BARE_LABEL_RE = re.compile(r'"(?:label|content|info)"\s*:\s*"(?!t:)([^"]+)"')
 
-# An accessibility attribute holding a literal string. Values containing `{` or
-# `}` are Liquid output and therefore fine; `alt=""` is legitimately empty on a
-# decorative image, so a value is only flagged when it has at least one char.
-#
-# Deliberately narrow. Visible body text is NOT checked here: in a Shopify
-# content section most of it comes from merchant settings
-# (`{{ section.settings.heading | escape }}`), which correctly does not use
-# `| t` — `| t` is for theme-provided strings. Detecting the difference in
-# freeform markup is not reliable enough for a blocking gate, so that judgment
-# stays with the review agents. These attributes are always theme-authored,
-# which is what makes them safe to check mechanically.
+# An accessibility attribute holding a literal string. `{`/`}` in the value is Liquid output and fine; an empty value is
+# a legitimate decorative `alt=""`. Visible body text is deliberately NOT checked: most of it is merchant settings, which
+# correctly do not use `| t`, and telling the two apart in freeform markup is not reliable enough for a blocking gate.
 A11Y_ATTR_RE = re.compile(r'\b(aria-label|alt|title)="([^"{}]+)"')
 
 # Regions to ignore when scanning markup: Liquid comments, the schema block
@@ -117,10 +98,8 @@ def comments_mentioning(src, needle):
 
 def check(path, src):
     """Return (blocking, advisory) lists of problem strings for one section."""
-    # The presets exemption is resolved BEFORE the schema is parsed: a
-    # render-target section (rendered by another section, never placed by a
-    # merchant) legitimately has no {% schema %} at all. A malformed schema
-    # still blocks regardless.
+    # The presets exemption is resolved BEFORE the schema is parsed: a render-target section legitimately has no
+    # {% schema %} at all. A malformed schema still blocks regardless.
     schema, err = parse_schema(src)
     if err == "no {% schema %} block found" and comments_mentioning(src, "presets"):
         return [], []
@@ -167,10 +146,8 @@ def check(path, src):
             "      add a Liquid comment mentioning `color_scheme` that says why."
         )
 
-    # A preset that seeds blocks hands the merchant blocks whose content is
-    # blank (design copy must not be a schema default), so unless the loop
-    # skips an empty block the section renders a coloured band around nothing.
-    # Advisory: the markup may test emptiness some other way.
+    # A preset that seeds blocks hands the merchant blank blocks, so unless the loop skips an empty block the section
+    # renders a coloured band around nothing. Advisory: the markup may test emptiness some other way.
     seeded = sum(len(p.get("blocks") or []) for p in (schema.get("presets") or []) if isinstance(p, dict))
     markup = markup_only(src)
     if seeded and "section.blocks" in markup and "blank" not in markup:

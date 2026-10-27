@@ -5,80 +5,32 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/javascript-standards.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1359481654 -->
+<!-- checksum: 2819094539 -->
 
 
 # JavaScript Standards
 
 ## General Principles
 
-- **Zero external dependencies** - Use native browser APIs
-- **Avoid mutation** - Use `const` over `let` unless necessary  
-- **Use `for (const item of items)`** over `items.forEach()`
-- **Add new lines before blocks** with `{` and `}`
-- **Use vanilla Web Components** - Extend HTMLElement directly for custom elements
-
-## Async Operations and Request Management
-
-**Always use async/await over .then() chaining:**
-
-```javascript
-async renderSection(hasDifferentProductUrl, productUrl) {
-  this.abortController?.abort();
-  this.abortController = new AbortController();
-
-  try {
-    const response = await fetch(`${productUrl}?option_values=${this.selectedOptionValues}&section_id=${this.dataset.section}`, {
-      signal: this.abortController.signal,
-    });
-    
-    const responseText = await response.text();
-    const html = new DOMParser().parseFromString(responseText, 'text/html');
-    const variant = this.getSelectedVariant(html);
-    
-    if (hasDifferentProductUrl) {
-      const productInfo = html.querySelector('product-info');
-      this.replaceWith(productInfo);
-      productInfo.updateURL(variant?.id);
-    } else {
-      this.updateMedia(variant?.featured_media?.id);
-      this.updateURL(variant?.id);
-      this.updateVariantInputs(variant?.id);
-      this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
-    }
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      console.log('Fetch aborted by user');
-    } else {
-      console.error(error);
-    }
-  }
-}
-```
+- **Zero external dependencies** — native browser APIs (Alpine and Swiper are
+  the only runtime libraries, loaded from `layout/theme.liquid`)
+- **`const` over `let`** unless reassignment is needed
+- **`for (const item of items)`** over `items.forEach()`
+- **New lines before `{` and after `}` blocks**
+- **`async`/`await`** over `.then()` chaining
+- **Vanilla Web Components** — extend `HTMLElement` directly
 
 ## Web Components Pattern
-
-**Use vanilla Web Components with HTMLElement:**
 
 ```javascript
 if (!customElements.get('product-info')) {
   class ProductInfo extends HTMLElement {
-    // Property declarations with initialization
     abortController = undefined;
     swiper = null;
 
     constructor() {
       super();
-      // Minimal constructor - defer setup to connectedCallback
-    }
-
-    setupEventListeners() {
-      this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
-      this.quantitySelector.addEventListener('change', this.onQuantitySelectorEvent.bind(this));
-      this.quantitySelector.querySelector('button[name="plus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
-      this.quantitySelector.querySelector('button[name="minus"]').addEventListener('click', this.onQuantitySelectorEvent.bind(this));
-      document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
-      document.addEventListener('cart:change', this.onCartUpdate.bind(this));
+      // Minimal constructor — setup goes in connectedCallback
     }
 
     connectedCallback() {
@@ -93,33 +45,26 @@ if (!customElements.get('product-info')) {
       this.swiper?.destroy();
     }
 
-    // Getter methods for DOM element access
+    setupEventListeners() {
+      this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
+      document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
+      document.addEventListener('cart:change', this.onCartUpdate.bind(this));
+    }
+
+    // Getters for DOM access
     get variantSelector() {
       return this.querySelector('variant-selector');
     }
 
-    get quantitySelector() {
-      return this.querySelector('quantity-selector');
-    }
-
-    // Event handlers with descriptive names
+    // Event handlers named on<Event>
     onVariantChange(e) {
-      const hasDifferentProductUrl = e.target?.dataset?.productUrl ? 
-        (e.target?.dataset?.productUrl !== this.dataset.url) : false;
       const productUrl = e.target?.dataset?.productUrl || this.dataset.url;
-      this.renderSection(hasDifferentProductUrl, productUrl);
+      this.renderSection(productUrl !== this.dataset.url, productUrl);
     }
 
-    // Public methods for external component communication
-    updateMedia(variantFeaturedMediaId) {
-      if (!variantFeaturedMediaId) return;
-      var index = this.querySelector(`.swiper-slide[data-media-id="${variantFeaturedMediaId}"]`).dataset.mediaIndex;
-      this.swiper?.slideTo(index);
-    }
-
-    // Arrow function for helper methods
+    // Arrow functions for helpers
     updateSourceFromDestination = (html, id) => {
-      const source = html.getElementById(`${id}`);
+      const source = html.getElementById(id);
       const destination = this.querySelector(`#${id}`);
       if (source && destination) {
         destination.innerHTML = source.innerHTML;
@@ -131,31 +76,22 @@ if (!customElements.get('product-info')) {
 }
 ```
 
-**HTML integration with Liquid templates:**
-
 ```liquid
 <product-info
-  data-url="{{ product.url}}"
+  data-url="{{ product.url }}"
   data-section="{{ section.id }}"
   class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
 >
-  <!-- Component content with nested custom elements -->
-  <variant-selector id="variant-selector-{{ section.id }}" data-picker-type="{{ block.settings.picker_type }}">
-    <!-- Variant selection UI -->
-  </variant-selector>
-  
-  <quantity-selector>
-    <!-- Quantity controls -->
-  </quantity-selector>
+  <variant-selector id="variant-selector-{{ section.id }}">…</variant-selector>
 </product-info>
 
-<!-- Load component script -->
-<script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'component-product-info.js' | asset_url }}" type="module"></script>
 ```
 
-## Early Returns and Conditional Logic
+A class on a custom-element tag needs an explicit `display`
+(`rules-of-engagement.md`).
 
-**Use early returns over nested conditionals:**
+## Early Returns
 
 ```javascript
 // Good
@@ -164,9 +100,7 @@ const processOrder = (order) => {
   if (!order.items.length) return;
   if (order.status !== 'pending') return;
 
-  // Process the order
   updateOrderStatus(order.id, 'processing');
-  sendConfirmationEmail(order.email);
 };
 
 // Avoid
@@ -175,216 +109,115 @@ const processOrder = (order) => {
     if (order.items.length) {
       if (order.status === 'pending') {
         updateOrderStatus(order.id, 'processing');
-        sendConfirmationEmail(order.email);
       }
     }
   }
 };
 ```
 
-**Optional chaining guidelines:**
+One optional chain is fine (`button?.enable()`); several in a row become an
+early return.
 
-```javascript
-// Multiple chains - use early return
-const updateButton = (product) => {
-  const button = product.querySelector('[data-ref="button"]');
-  if (!button) return;
-
-  button.disabled = false;
-  button.textContent = 'Add to cart';
-};
-
-// Single chain is fine
-const updateButton = (product) => {
-  const button = product.querySelector('[data-ref="button"]');
-  button?.enable();
-};
-```
-
-## Simplification Patterns
-
-**Ternary operators for simple conditions:**
 ```javascript
 const buttonText = isLoading ? 'Loading...' : 'Add to cart';
-element.textContent = buttonText;
-```
-
-**One-liner conditionals:**
-```javascript
 if (isOutOfStock) return;
+return product.available && product.price > 0;
 ```
 
-**Return boolean comparisons directly:**
-```javascript
-const isAvailable = product.available && product.price > 0;
-return isAvailable;
-```
+## Events and the cart engine
 
-## Event-Driven Architecture
-
-**Use custom events for component communication:**
+Components communicate through custom events on `document`:
 
 ```javascript
-class ProductInfo extends HTMLElement {
-  onCartUpdate(e) {
-    // Check page context before executing
-    if (!window.location.pathname.includes('/products/')) return;
+onCartUpdate(e) {
+  if (!window.location.pathname.includes('/products/')) return;
 
-    // cart:change only fires on successful requests
-    // detail: { action, payload, response, cart, previousCart, sections, source }
-    if (e.detail.action === 'add') {
-      // Add the CSS class to the "body" tag
-      document.body.classList.add('js-item-added');
-
-      // Dispatch a custom event for other components
-      // (for adds, detail.response is the added line item from /cart/add.js)
-      document.dispatchEvent(
-        new CustomEvent('item-added-to-cart', {
-          detail: e.detail.response,
-        })
-      );
-    }
-  }
-
-  setupEventListeners() {
-    // Listen to the cart engine's events (assets/cart.js)
-    document.addEventListener('cart:change', this.onCartUpdate.bind(this));
-    // Listen to own component events
-    this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
+  // cart:change fires only on success
+  // detail: { action, payload, response, cart, previousCart, sections, source }
+  if (e.detail.action === 'add') {
+    document.body.classList.add('js-item-added');
+    document.dispatchEvent(new CustomEvent('item-added-to-cart', { detail: e.detail.response }));
   }
 }
 ```
 
-**Cart mutations go through the `window.Cart` API (assets/cart.js):**
+**Every cart mutation goes through `window.Cart` (`assets/cart.js`):**
 
 ```javascript
-// Add to cart — pass the product form's FormData
 Cart.add(new FormData(form), form);
-
-// Change a line quantity
 Cart.change({ line: 1, quantity: 2 }, sourceElement);
-
-// Update cart note or attributes
 Cart.update({ note: 'Gift wrap please' }, sourceElement);
-
-// Re-fetch state + section HTML after external cart changes
-Cart.refresh();
+Cart.refresh(); // re-fetch state and section HTML after an external change
 ```
 
-- All mutations are serialized through an internal queue, so rapid calls can't race.
-- Success dispatches `cart:change` on `document`; failures dispatch `cart:error` with `detail.error: { status, message, description }`.
-- Current cart state is always available at `window.Cart.state`.
-- Every mutation goes through `window.Cart`. A `fetch` to `/cart/add`, `/cart/change` or `/cart/clear` anywhere else is an error the gate reports: it skips the queue, the section render and `cart:change`, so nothing else on the page re-renders. The one documented exception is a form that does its own `/cart/update` request and then calls `Cart.refresh()`, as the discount form does.
-- `Cart.state` is seeded from Liquid's `{{ cart | json }}` in `layout/theme.liquid` and replaced by a `/cart.js` or `/cart/*.js` response after the first mutation or `Cart.refresh()`. The two differ: Liquid's cart JSON has no `discount_codes` and no `token`, so anything that needs them reads `/cart.js` first (a client rebuild, Oct 2026: a line's discount code was never applied because the seeded state had no codes array).
-- A test of a cart mutation awaits `cart:change`, never a fixed sleep: mutations queue and each carries a section render, so a stale read looks exactly like a broken cart.
+- Mutations are serialised through a queue; success dispatches `cart:change`
+  on `document`, failure `cart:error` with `detail.error: { status, message, description }`.
+- `window.Cart.state` is the current cart.
+- A `fetch` to `/cart/add`, `/cart/change` or `/cart/clear` anywhere else is an
+  error the gate reports: it skips the queue, the section render and
+  `cart:change`, so nothing else re-renders. The one exception is a form that
+  does its own `/cart/update` and then calls `Cart.refresh()`, as the discount
+  form does.
+- `Cart.state` is seeded from `{{ cart | json }}` in `layout/theme.liquid` and
+  replaced by a `/cart.js` response after the first mutation or `Cart.refresh()`.
+  Liquid's cart JSON has no `discount_codes` and no `token`; anything that needs
+  them reads `/cart.js` first.
+- A test of a cart mutation awaits `cart:change`, never a fixed sleep.
 
-**Page context awareness:**
+Guard page-specific behaviour on the path:
 
 ```javascript
-class ProductInfo extends HTMLElement {
-  updateURL(variantId) {
-    // Only execute on product pages
-    if (!window.location.pathname.includes('/products/')) return;
-    window.history.replaceState({}, '', `${this.dataset.url}${variantId ? `?variant=${variantId}` : ''}`);
-  }
-
-  onCartUpdate(e) {
-    // Only execute on product pages
-    if (!window.location.pathname.includes('/products/')) return;
-    // Implementation
-  }
+updateURL(variantId) {
+  if (!window.location.pathname.includes('/products/')) return;
+  window.history.replaceState({}, '', `${this.dataset.url}${variantId ? `?variant=${variantId}` : ''}`);
 }
 ```
 
-## External Library Integration
+## External Libraries
 
-**Check for library availability before initialization:**
+Initialise when the library is present, listen for its script's `load`
+otherwise, and destroy the instance in `disconnectedCallback`:
 
 ```javascript
-class ProductInfo extends HTMLElement {
-  connectedCallback() {
-    this.setupEventListeners();
-    
-    // Check if external library is loaded
-    if (typeof Swiper !== 'undefined') {
-      this.initSwiper();
-    }
-  }
+connectedCallback() {
+  document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
+  if (typeof Swiper !== 'undefined') this.initSwiper();
+}
 
-  initSwiper() {
-    this.swiper = new Swiper('.swiper', {
-      autoHeight: true,
-      direction: 'horizontal',
-      pagination: {
-        el: '.swiper-pagination',
-      },
-      navigation: {
-        prevEl: '.swiper-button-prev',
-        nextEl: '.swiper-button-next',
-      },
-    });
-  }
+initSwiper() {
+  this.swiper = new Swiper('.swiper', {
+    pagination: { el: '.swiper-pagination' },
+    navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
+  });
+}
 
-  setupEventListeners() {
-    // Listen for external script loading
-    document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
-  }
-
-  disconnectedCallback() {
-    // Clean up external library instances
-    this.swiper?.destroy();
-  }
+disconnectedCallback() {
+  this.swiper?.destroy();
 }
 ```
-
-**Loading external scripts in Liquid templates:**
 
 ```liquid
-<script src="{{ "swiper7.4.1.min.js" | asset_url }}" defer="defer" id="swiper-script"></script>
-<script src="{{ 'component-product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer="defer" id="swiper-script"></script>
 ```
 
-## Input Validation and Bounds Checking
+## Input Validation
 
-**Always validate and constrain input values:**
+Clamp numeric input to its `min`/`max`:
 
 ```javascript
-class ProductInfo extends HTMLElement {
-  onQuantitySelectorEvent(e) {
-    const quantityInput = this.quantitySelector.querySelector('input[type="number"]');
-    let currentValue = parseInt(quantityInput.value);
-    const minValue = parseInt(quantityInput.getAttribute('min')) || 0;
-    const maxValue = parseInt(quantityInput.getAttribute('max')) || Infinity;
+onQuantitySelectorEvent(e) {
+  const input = this.quantitySelector.querySelector('input[type="number"]');
+  const value = parseInt(input.value);
+  const min = parseInt(input.getAttribute('min')) || 0;
+  const max = parseInt(input.getAttribute('max')) || Infinity;
 
-    if (e.target.name === 'minus' && currentValue > minValue) {
-      quantityInput.value = currentValue - 1;
-    } else if (e.target.name === 'plus' && currentValue < maxValue) {
-      quantityInput.value = currentValue + 1;
-    } else if (e.type === 'change') {
-      if (currentValue < minValue) {
-        quantityInput.value = minValue;
-      } else if (currentValue > maxValue) {
-        quantityInput.value = maxValue;
-      }
-    }
-  }
+  if (e.target.name === 'minus' && value > min) input.value = value - 1;
+  else if (e.target.name === 'plus' && value < max) input.value = value + 1;
+  else if (e.type === 'change') input.value = Math.min(Math.max(value, min), max);
 }
 ```
 
-## Data Parsing and JSON Handling
-
-**Parse JSON data with error handling:**
-
-```javascript
-class ProductInfo extends HTMLElement {
-  getSelectedVariant(html) {
-    const selectedVariant = html.querySelector('[data-selected-variant]')?.innerHTML;
-    return !!selectedVariant ? JSON.parse(selectedVariant) : null;
-  }
-}
-```
-
-**Embed JSON data in Liquid templates:**
+## JSON from Liquid
 
 ```liquid
 <script type="application/json" data-selected-variant>
@@ -392,100 +225,57 @@ class ProductInfo extends HTMLElement {
 </script>
 ```
 
+```javascript
+getSelectedVariant(html) {
+  const json = html.querySelector('[data-selected-variant]')?.innerHTML;
+  return json ? JSON.parse(json) : null;
+}
+```
+
 ## URLs and Query Parameters
 
-**Build query strings with `URL` and `searchParams`. Never concatenate.**
-
-The URL you are appending to often already has a query string, and you rarely
-control where it came from. Product URLs returned by the **product
-recommendations API** arrive carrying `?pr_prod_strat=…&pr_rec_id=…` — so a
-concatenated `?variant=` produces a second `?` and the parameter is silently
-dropped:
+Build query strings with `URL` and `searchParams`; never concatenate. Product
+URLs from the recommendations API already carry `?pr_prod_strat=…`, so a
+concatenated `?variant=` is silently dropped:
 
 ```javascript
-// Bad — yields /products/x?pr_prod_strat=collection?variant=123
+// Bad — /products/x?pr_prod_strat=collection?variant=123
 const url = product.url + '?variant=' + variantId;
 
-// Good — replaces the key if present, appends if not
+// Good — replaces the key if present, appends if not, encodes the value
 const url = new URL(product.url, window.location.origin);
 url.searchParams.set('variant', variantId);
 ```
 
-`searchParams.set` also encodes the value and overwrites an existing key rather
-than duplicating it, both of which hand-built strings get wrong.
+Read with `new URL(...).searchParams.get('variant')`, not a regex. Pass
+`window.location.origin` whenever the input may be relative; `new URL('/products/x')` throws.
 
-Reading is the same story — `new URL(...).searchParams.get('variant')` rather
-than a regex over `location.search`.
+## AbortController
 
-Pass `window.location.origin` as the second argument whenever the input may be
-a relative path; `new URL('/products/x')` alone throws.
-
-## DOM Manipulation Patterns
-
-**Update specific sections with helper methods:**
+Cancel the previous request before starting the next, and in `disconnectedCallback`:
 
 ```javascript
-class ProductInfo extends HTMLElement {
-  updateSourceFromDestination = (html, id) => {
-    const source = html.getElementById(`${id}`);
-    const destination = this.querySelector(`#${id}`);
-    if (source && destination) {
-      destination.innerHTML = source.innerHTML;
-    }
-  };
+async renderSection(hasDifferentProductUrl, productUrl) {
+  this.abortController?.abort();
+  this.abortController = new AbortController();
 
-  updateVariantInputs(variantId) {
-    this.querySelectorAll(`#product-form-${this.dataset.section}, #product-form-installment-${this.dataset.section}`).forEach(
-      (productForm) => {
-        const input = productForm.querySelector('input[name="id"]');
-        input.value = variantId ?? '';
-      }
-    );
-  }
-}
-```
-
-## AbortController for Request Cancellation
-
-**Use AbortController to cancel previous requests:**
-
-```javascript
-class ProductInfo extends HTMLElement {
-  abortController = undefined;
-
-  async renderSection(hasDifferentProductUrl, productUrl) {
-    // Cancel previous request
-    this.abortController?.abort();
-    this.abortController = new AbortController();
-
-    try {
-      const response = await fetch(`${productUrl}?option_values=${this.selectedOptionValues}&section_id=${this.dataset.section}`, {
-        signal: this.abortController.signal,
-      });
-      
-      const responseText = await response.text();
-      // Process response
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('Fetch aborted by user');
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
-  disconnectedCallback() {
-    this.abortController?.abort();
+  try {
+    const response = await fetch(`${productUrl}?section_id=${this.dataset.section}`, {
+      signal: this.abortController.signal,
+    });
+    const html = new DOMParser().parseFromString(await response.text(), 'text/html');
+    this.updateSourceFromDestination(html, `price-${this.dataset.section}`);
+  } catch (error) {
+    if (error.name !== 'AbortError') console.error(error);
   }
 }
 ```
 
 **Whatever closes a UI state must abort the request that state started** — in
-the one method every dismissal routes through, and *before* its `isOpen` early
-return, because a `close()` on an already-closed panel is exactly a redundant
-dismissal and must still cancel. Otherwise a late response reopens the panel
-after the shopper dismissed it. Predictive search, the cart drawer, quick-add
-and a variant re-render all have this shape.
+the one method every dismissal routes through, before its `isOpen` early
+return, so a redundant dismissal still cancels. Otherwise a late response
+reopens the panel after the shopper dismissed it (predictive search, cart
+drawer, quick-add, variant re-render).
 
 ```javascript
 close(returnFocus = false) {
@@ -499,62 +289,47 @@ close(returnFocus = false) {
 
 ## Product forms
 
-- **Read a form's attributes with `getAttribute`.** A product form holds
-  `<input name="id">` (the variant), and named controls shadow the form
-  element's own properties: `form.id` is that input, so a selector built from
-  it matches nothing and nothing throws. The same holds for controls named
-  `action`, `method`, `name` or `submit`.
-- **A section that renders its own selling-plan UI on a product page must turn
-  off the subscription app's auto-inject.** Recharge's legacy widget injects
-  into the first `form[action*="/cart/add"]` it finds; its documented switch is
-  `window.DISABLE_RECHARGE = true`, set inline before window load; without it
-  the page renders two purchase UIs.
+- **Read a form's attributes with `getAttribute`.** `<input name="id">` shadows
+  `form.id`, so a selector built from it matches nothing and nothing throws. The
+  same holds for controls named `action`, `method`, `name` or `submit`.
+- **A section that renders its own selling-plan UI must turn off the
+  subscription app's auto-inject.** Recharge's legacy widget injects into the
+  first `form[action*="/cart/add"]`; its switch is `window.DISABLE_RECHARGE = true`,
+  set inline before window load, or the page renders two purchase UIs.
 
 ## Error Handling
-
-**Always handle errors gracefully:**
 
 ```javascript
 const fetchData = async (url) => {
   try {
     const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
     console.error('Fetch error:', error);
-    // Return fallback data or empty state
     return null;
   }
 };
 ```
 
-## Type Safety with JSDoc
+## JSDoc
 
-**Always annotate function parameters, return types, and complex objects:**
+Annotate parameters, return types and complex objects:
 
 ```javascript
 /**
  * @typedef {Object} ProductData
- * @property {string} id - Product identifier
- * @property {number} price - Product price
- * @property {boolean} [available] - Availability status (optional)
+ * @property {string} id
+ * @property {number} price
+ * @property {boolean} [available]
  */
 
 /**
- * Updates product pricing display
- * @param {ProductData} product - The product to update
- * @param {HTMLElement} container - Target container element
+ * @param {ProductData} product
+ * @param {HTMLElement} container
  * @returns {Promise<void>}
- * @throws {Error} If container element is invalid
  */
 const updateProductDisplay = async (product, container) => {
-  if (!(container instanceof HTMLElement)) {
-    throw new Error('Invalid container element');
-  }
-  // Implementation
+  // …
 };
 ```

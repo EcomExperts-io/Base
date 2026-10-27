@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
 """Measure a theme before touching it — lineage, conventions, compliance, what is left.
 
-Writes the answers to docs/ai-workflow/state-of-the-theme.md (or stdout). The
-/recon-theme skill reads the result and copies the measured conventions into
-the fork's rules. Where the fork's convention and Base's rule disagree, the
-fork's wins in the fork.
-
 Usage
 -----
   python3 .claude/scripts/recon-theme.py [--base-path ../Base | --ref base/development]
                                          [--live-url https://www.example.com] [--stdout] [--json]
 
---live-url adds the live feature inventory: what the published storefront
-loads that the theme code does not show — app embeds, tracking pixels, popup
-and chat scripts, markets, a page builder, rich-text metafield HTML.
-Base is read from --base-path, else the worktree recorded by base-link.sh,
-else the `base` remote. Without any, the lineage section is skipped.
+Notes:
+- Writes docs/ai-workflow/state-of-the-theme.md (or stdout); the /recon-theme skill copies the measured conventions
+  into the fork's rules, and where the fork and Base disagree the fork wins in the fork.
+- --live-url adds what the published storefront loads that the code does not show: app embeds, pixels, popups, chat,
+  markets, a page builder, rich-text metafield HTML.
+- Base is read from --base-path, else the worktree base-link.sh recorded, else the `base` remote; with none, lineage is skipped.
 """
 
 import collections
@@ -232,10 +228,8 @@ def tooling():
 
 
 # ---------------------------------------------------------------------------
-# live feature inventory — what the published storefront loads
+# live feature inventory — vendor fingerprints, by what they do to a build; a match is a name in the report, not a verdict
 # ---------------------------------------------------------------------------
-# Vendor fingerprints, by what they do to a build. A match is a name in the
-# report, not a verdict; the skill says what each class means for the work.
 VENDORS = {
     "tracking": [
         ("Google Tag Manager", r"googletagmanager\.com/gtm"), ("GA4 / gtag", r"gtag\(|googletagmanager\.com/gtag"),

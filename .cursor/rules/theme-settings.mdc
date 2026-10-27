@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/theme-settings.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1500886127 -->
+<!-- checksum: 2395162966 -->
 
 
 # Settings Schema Standards
@@ -40,17 +40,6 @@ alwaysApply: false
 
 ## Setting Categories
 
-**Typography:**
-- `font_picker` for font selections
-- `range` for font sizes (12-72px)
-- `select` for font weights
-
-**Layout:**
-- `range` for spacing (0-100px)
-- `select` for layout options
-- `checkbox` for feature toggles
-
-**Performance:**
-- `checkbox` for lazy loading
-- `select` for image quality
-- `number` for pagination limits
+- **Typography:** `font_picker` for fonts, `range` for sizes (12–72px), `select` for weights
+- **Layout:** `range` for spacing (0–100px), `select` for layout options, `checkbox` for toggles
+- **Performance:** `checkbox` for lazy loading, `select` for image quality, `number` for pagination limits

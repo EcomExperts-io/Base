@@ -5,7 +5,7 @@
 ## The trap
 
 - **Symptom.** A section's override of a shared component's custom property has no effect — buttons render as white filled pills while the section CSS sets `--button-background: transparent`.
-- **Cause.** Every section that renders the component emits its stylesheet again, so a page loads `component-button.css` nine times and the section stylesheet sits *before* most copies. Equal specificity, so the copy at index 9 wins, and seven more copies follow it.
+- **Cause.** Every section that renders the component emits its stylesheet again, so a page loads `component-button.css` nine times and the section stylesheet sits *before* most copies; at equal specificity the later copy wins.
   ```
   0: critical.css
   5: component-button.css
@@ -23,8 +23,7 @@
 
 ### Why it is easy to misdiagnose
 
-- The `stylesheet_tag` order inside the section's own file looks correct; the duplicates come from other sections further down the page.
-- Adding or removing a section in `templates/index.json` changes the outcome, because it changes how many later copies exist.
+- The `stylesheet_tag` order inside the section's own file looks correct; the duplicates come from sections further down the page, so adding or removing a section in `templates/index.json` changes the outcome.
 - `sheet.cssRules` throws `SecurityError` for assets served from `cdn.shopify.com`, so a `document.styleSheets` walk silently returns nothing.
 - **Check.** Read the `<link>` order instead.
   ```js
@@ -35,7 +34,7 @@
 
 ## What to do instead
 
-- **Fix.** Put the change in the component as a variant — its own file has one internal source order, identical in every copy — and delete the section's override block.
+- **Fix.** Put the change in the component as a variant — one internal source order, identical in every copy — and delete the section's override block.
   ```css
   .button--ghost {
     --button-background: transparent;
@@ -50,7 +49,7 @@
 Ranked options when a section needs a shared component to look different:
 
 1. **A variant on the component** — for a reusable treatment ("transparent on a photo"). Document it in the snippet's `@param` list.
-2. **A custom property the component reads but does not redeclare on its own element.** A property declared on the element beats an inherited value from any ancestor, whatever the ancestor selector's specificity or source order — so if the component sets it on itself (`.button--outline { --button-background: #fff }`), an ancestor override does nothing; use option 1 or 3. If the component only reads it, an ancestor declaration is immune to stylesheet order.
+2. **A custom property the component reads but does not redeclare on its own element.** A property declared on the element beats any inherited value, whatever the ancestor's specificity or source order — so if the component sets it on itself (`.button--outline { --button-background: #fff }`), an ancestor override does nothing; use option 1 or 3. If the component only reads it, an ancestor declaration is immune to stylesheet order.
 3. **Double the class** — `.hero-strip-card__button.button` (0,2,0) beats any single-class component rule regardless of order. Last resort; say why in a comment.
 
 ## Related: a size modifier reset by the responsive block

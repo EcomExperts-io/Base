@@ -4,31 +4,15 @@
 Usage
 -----
   assemble-templates.py --fragments <dir> --templates a,b [--live-path <live theme dir> | --orders orders.json]
-                        [--layout landing] [--write]
+                        [--layout landing] [--write]        # without --write it only reports; exit 1 on any error
   assemble-templates.py --validate-file templates/page.x.json [templates/...]
 
-Without --write it only reports. Exit 1 on any error or missing fragment.
-
-Notes
------
-Shopify reports none of these before the push: a `t:` value left in a template
-renders the key path to the shopper; a range off its step or a `<br>` in an
-`inline_richtext` is rejected on upload and 500s every route; an unknown
-setting is dropped without a word.
-
-Fragments
----------
-<fragments>/<agent>/<template>.json holds, per live section key:
-  { "<key>": { "type": "...", "settings": {...}, "blocks": {...}, "block_order": [...],
-               "disabled": false,
-               "_position": "start" | "end" | {"after": "<key>"}   (new sections only) }
-    | { "<key>": { "_merged_into": "<other key>" } }   (a live section absorbed by another)
-    | { "<key>": { "_skip": "why" } } }                 (deliberately not built)
-Keys starting with `_` never reach the template.
-
-Order comes from the live template when --live-path points at a pulled live
-theme (templates/page.<name>.json there); otherwise from --orders, a JSON file
-{"<template>": ["key", ...]}; otherwise from the fragments as found.
+Notes:
+- Shopify reports none of these before the push: a `t:` value in a template renders the key path to the shopper; a range
+  off its step or a `<br>` in an `inline_richtext` is rejected on upload and 500s every route; an unknown setting is dropped.
+- A fragment is <fragments>/<agent>/<template>.json: per live section key, {type, settings, blocks, block_order, disabled,
+  "_position": "start"|"end"|{"after": key}}, or {"_merged_into": key}, or {"_skip": "why"}. Keys starting with `_` never reach the template.
+- Order comes from --live-path (templates/page.<name>.json of a pulled live theme), else --orders ({"<template>": [keys]}), else the fragments.
 """
 
 import argparse

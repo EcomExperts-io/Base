@@ -1,9 +1,8 @@
 # Incidents
 
 One file per fix that a rule, gate or check should have prevented, created by
-`/record-incident` the moment it happens and read by `doctor.py` (the open
-count every session), `check-tooling-drift.py` (what is waiting to be
-harvested) and `/harvest` (what goes up to Base).
+`/record-incident` the moment it happens; read by `doctor.py` (the open
+count), `check-tooling-drift.py` (what waits to be harvested) and `/harvest`.
 
 Frontmatter a script can read:
 
@@ -23,9 +22,8 @@ python3 .claude/scripts/new-incident.py --list --open
 
 An incident lives in the repo where it happened and does not travel with the
 tooling overlay; the rule it produces does. Once harvested, the incident file
-is deleted — its lesson is in the rule, and the story has no reader. This
-README is the one file in the directory that the overlay carries down, so the
-directory exists in a fork on arrival.
+is deleted — its lesson is in the rule. This README is the one file the
+overlay carries down, so the directory exists in a fork on arrival.
 
 ## Where harvested incidents landed
 

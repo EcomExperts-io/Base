@@ -5,23 +5,19 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/schemas.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 4291329878 -->
+<!-- checksum: 3684837455 -->
 
 
 # Schema Standards
 
-Every section and block must include a `{% schema %}` tag with valid JSON structure.
-
-**Schemas are written inline**, inside the `{% schema %}` tag in the section or
-block's own `.liquid` file. This theme has no `schemas/` directory and no
-`npm run build:schemas` step — earlier versions of this rule described one, but
-neither exists here. Do not look for them and do not create them.
+Every section and block has a `{% schema %}` tag with valid JSON, written
+inline in its own `.liquid` file. There is no `schemas/` directory and no
+build step; do not create them.
 
 ## Required settings on every section
 
-A section schema is not complete without these. The full pattern, including the
-matching `{%- style -%}` block and the one permitted exception, is in
-`sections.md` — this is the schema-side summary:
+The full pattern, with the matching `{%- style -%}` block and the one
+permitted exception, is in `sections.md`:
 
 | Setting | Type | Label |
 |---|---|---|
@@ -31,46 +27,30 @@ matching `{%- style -%}` block and the one permitted exception, is in
 | `padding_top_mobile` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_top_mobile` |
 | `padding_bottom_mobile` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_bottom_mobile` |
 
-Plus a `presets` array — without one, a merchant cannot add the section in the
-theme editor at all.
-
-All four padding settings are unconditional; the mobile pair is its own value,
-not a multiple of the desktop one (ruled 2026-09-17, see `sections.md`).
-`color_scheme` may be omitted only with a Liquid comment explaining why, per
-`sections.md`.
+Plus a `presets` array, or a merchant cannot add the section. All four padding
+settings are unconditional; `color_scheme` may be omitted only with a Liquid
+comment saying why.
 
 ## Labels must be translation keys
 
-Every `label`, `content`, `info`, and preset `name` uses a `t:` key resolving in
-`locales/en.default.schema.json`. Never a bare English string.
+Every `label`, `content`, `info` and preset `name` is a `t:` key resolving in
+`locales/en.default.schema.json`; never a bare English string, even where an
+older Base section has one.
 
 ```json
 { "type": "range", "id": "padding_top", "label": "t:sections.all.padding.padding_top" }
 ```
 
-not
+## `range` needs at least three steps
 
-```json
-{ "type": "range", "id": "padding_top", "label": "Padding Top" }
-```
-
-Some existing Base sections use bare English labels for padding. Those predate
-this rule; match the `t:` form above, not them.
+`(max - min) / step` below 3 fails the theme upload; `check-conventions.py`
+reports it.
 
 ## `name` is capped at 25 characters
 
-Theme Check's `ValidSchemaName` fails a schema whose `name` exceeds 25
-characters. It is a hard limit, it is not obvious from the error, and it is
-easy to hit with a descriptive name:
-
-```json
-"name": "Complete Your Stack Drawer"   // 26 — fails
-"name": "Complete Your Stack"          // 19 — fine
-```
-
-The limit is on `name` only. Preset names, labels and headings are unaffected —
-put the longer wording in the preset name, which is what a merchant actually
-reads in the theme editor:
+Theme Check's `ValidSchemaName` fails a schema `name` over 25 characters.
+Preset names and labels are unaffected, so the longer wording goes in the
+preset name, which is what the merchant reads:
 
 ```json
 {
@@ -79,169 +59,46 @@ reads in the theme editor:
 }
 ```
 
-Count it before you commit; the pre-commit Theme Check will otherwise tell you
-at the worst moment.
-
 ## Blocks are capped at 50; settings are not
 
-A section may define at most **50 blocks**. `max_blocks` lowers that ceiling; it
-cannot raise it. Exceeding it is a real deploy failure.
-
-There is **no documented maximum on the `settings` array**. A section with sixty
-settings is hard to use and probably wants splitting, but it is a usability
-judgement, not a validation or deploy risk, and must never be reported as one.
-
-The distinction matters because the two are easy to conflate. A wrongly claimed
-limit sends someone chasing a failure that cannot happen, and they lose more time
-proving it is fine than they would have spent on a real defect.
+A section defines at most **50 blocks**; `max_blocks` can lower that, not
+raise it. There is **no documented maximum on `settings`** — a sixty-setting
+section is a usability judgement, never a validation or deploy risk, and must
+not be reported as one.
 
 ## Limits the upload enforces and Theme Check does not
 
-Each of these passes Theme Check and every local gate, then fails on upload —
-and one rejected file leaves `theme dev` serving a 500 on every route, or the
-old file, with the error only in the dev-server terminal.
+Each passes Theme Check and every local gate, then fails on upload — and one
+rejected file leaves `theme dev` serving a 500 on every route, with the error
+only in the dev-server terminal.
 
 | Rejected on upload | Do instead |
 |---|---|
-| A second `product` setting in the section's own `settings` ("can only be inserted once"); a block's settings are not limited — Base's shop-the-look block carries four | put the second picker in a block's settings |
+| A second `product` setting in the section's own `settings` ("can only be inserted once"); a block's settings are not limited | put the second picker in a block's settings |
 | `visible_if` on an `article_list` or `blog` setting ("not a valid attribute"); other resource pickers untested | drop the condition, name the source in the label |
 | A multi-line text metafield as the dynamic source of a `text` setting; a `textarea` takes no dynamic source at all | a `richtext` setting, connected as `"<p>{{ … \| metafield_tag }}</p>"` |
 | More than 3,400 keys in a locale file | see `locales.md` |
 
 `check-conventions.py` flags the first two. The third depends on the store's
-metafield type, so after writing a template with dynamic sources, curl the page
+metafield type: after writing a template with dynamic sources, curl the page
 and grep for "Upload Errors" before measuring anything.
 
 **Two things that upload fine and render nothing.** A `shopify://shop_images/…`
 value on an `image_picker` resolves blank when the file is an older generic
 upload the picker never lists, although `'<name>' | file_url` finds it — give
 the setting a `text` fallback that takes the file name. And a template setting
-uploaded before its section's schema defines it is dropped silently and not
-re-uploaded when the schema lands; see `templates.md`.
+uploaded before its section's schema defines it is dropped silently; see
+`templates.md`.
 
-## Schema Structure
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["name", "settings"],
-  "properties": {
-    "name": {
-      "type": "string",
-      "maxLength": 50
-    },
-    "tag": {
-      "type": "string",
-      "enum": ["div", "section", "aside", "header", "footer", "main"]
-    },
-    "class": {
-      "type": "string"
-    },
-    "settings": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["type", "id", "label"],
-        "properties": {
-          "type": {
-            "enum": ["text", "textarea", "number", "range", "color", "checkbox", "select", "radio", "collection", "product", "blog", "page", "header", "paragraph", "image_picker", "font_picker", "video", "richtext"]
-          },
-          "id": {
-            "type": "string",
-            "pattern": "^[a-z][a-z0-9_]*$"
-          },
-          "label": {
-            "type": "string",
-            "maxLength": 30
-          },
-          "visible_if": {
-            "type": "string",
-            "pattern": "\\{\\{\\s+[a-zA-Z_][a-zA-Z0-9_]*\\s+\\}\\}"
-          }
-        }
-      }
-    },
-    "blocks": {
-      "type": "array",
-      "maxItems": 20,
-      "items": {
-        "type": "object",
-        "required": ["type", "name", "settings"],
-        "properties": {
-          "type": {
-            "type": "string",
-            "pattern": "^(@theme|@app|[a-z][a-z0-9_]*)$"
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 30
-          },
-          "settings": {
-            "type": "array"
-          }
-        }
-      }
-    },
-    "presets": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["name"],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "settings": {
-            "type": "object"
-          }
-        }
-      }
-    }
-  }
-}
-```
+## Setting types
 
-## Setting Types and Usage
+[Input settings](https://shopify.dev/docs/storefronts/themes/architecture/settings/input-settings)
+are what the merchant edits; [sidebar settings](https://shopify.dev/docs/storefronts/themes/architecture/settings/sidebar-settings)
+(`header`, `paragraph`) guide them.
 
-### Input settings
+## Labels and order
 
-These are the bulk of the settings with which the merchant will interact.
-
-See [input settings documentation](https://shopify.dev/docs/storefronts/themes/architecture/settings/input-settings)
-
-### Sidebar settings
-
-These are informative settings to guide the merchant.
-
-See [sidebar settings documentation](https://shopify.dev/docs/storefronts/themes/architecture/settings/sidebar-settings)
-
-
-## Best practices
-
-### Label Guidelines
-
-- Keep labels concise (under 30 characters)
-- Setting type provides context - "Columns" not "Number of columns"
-- No verb-based labels for checkboxes
-- Use title case: "Show Vendor" not "show vendor"
-
-
-### Setting Organization Rules
-
-**1. Resource Pickers First**
-- Collection, product, blog, page pickers come first
-- These are required for section functionality
-
-**2. Visual Impact Order**
-- Layout settings (columns, spacing)
-- Typography settings (fonts, sizes)
-- Color settings (background, text)
-- Padding/margin last
-
-**3. Group settings using Headers**
-```json
-{
-  "type": "header",
-  "content": "Layout"
-}
-```
+- Labels under 30 characters, title case, no verb on a checkbox; the type
+  gives context — "Columns", not "Number of columns"
+- Resource pickers first, then layout, typography, colour, and padding last
+- Group with `{ "type": "header", "content": "t:…" }`

@@ -1,29 +1,17 @@
 #!/usr/bin/env python3
-"""Which of the three situations is this session in? One line, from what the repo holds.
-
-The three situations: A — a fresh rebuild, B — joining a rebuild midway,
-C — correcting after QA.
-
-What it reads (all local, all cheap)
-  * the origin remote — Base itself is none of the three
-  * docs/ai-workflow/state-of-the-theme.md — exists? measured when?
-  * docs/ai-workflow/reference-map.md (or figma-frame-map.md) — how many bands
-  * verify reports: docs/ai-workflow/verify/*/report.md and .claude/verify/*/report.json
-  * docs/ai-workflow/progress.json — stages closed and QA rounds, written by
-    --close-stage and --qa-round below (the playbook and the QA-loop skill call them)
-  * the branch name, and how many of the last 15 non-merge commits are [FIX]
-  * how deep the history is
-
-The verdict is a reading, not a ruling: it says "looks like", gives the
-evidence, and names the next step for that situation. A person who knows
-better overrules it by running something else.
+"""Which of the three situations is this session in — A fresh rebuild, B joining midway, C correcting after QA?
 
 Usage
 -----
-  where-are-we.py                    one line for the session (default)
-  where-are-we.py --json             the signals and the verdict
-  where-are-we.py --close-stage <n> "<name>"   record a stage closed, on this branch, today
-  where-are-we.py --qa-round <open-issues>     record a QA round picked up (open issue count)
+  where-are-we.py                               one line for the session (default)
+  where-are-we.py --json                        the signals and the verdict
+  where-are-we.py --close-stage <n> "<name>"    record a stage closed, on this branch, today
+  where-are-we.py --qa-round <open-issues>      record a QA round picked up (open issue count)
+
+Notes:
+- Reads only local files: the origin remote (Base itself is none of the three), state-of-the-theme.md, the reference map,
+  verify reports, docs/ai-workflow/progress.json (written by --close-stage and --qa-round), the branch name and [FIX] commits.
+- The verdict is a reading, not a ruling: it says "looks like", gives the evidence and names the next step.
 """
 
 import datetime

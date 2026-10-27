@@ -6,11 +6,8 @@ Usage:
     python3 .claude/scripts/report-compliance.py --json
 
 Notes:
-- Not a gate: it always exits 0. It counts the whole theme, every
-  `sections/*.liquid`, staged or not; the gate only ever sees new work.
-- Capability, not spelling: see CONTRACT NOTE below. This reports whether a
-  merchant *has* a control, not whether it is spelled the way the worked
-  example spells it.
+- Not a gate: it always exits 0. It counts the whole theme, every `sections/*.liquid`, staged or not.
+- Capability, not spelling: it reports whether a merchant *has* a control, not whether its id matches the worked example.
 """
 
 import glob
@@ -29,44 +26,19 @@ CONTRACT_CHECK = ".claude/scripts/check-section-contract.py"
 RULE = ".claude/rules/sections.md"
 REFERENCE = ".claude/skills/scaffold-section/reference-section.liquid"
 
-# ---------------------------------------------------------------------------
-# CONTRACT NOTE — why this does not test for `padding_top` / `padding_bottom`
-# ---------------------------------------------------------------------------
-# check-section-contract.py tests for those two literal setting ids. For a gate
-# on new work that is correct: one spelling keeps new sections uniform, and a
-# gate has to be mechanical.
-#
-# For a standing count it is wrong, and `sections/dynamic-grid.liquid` is the
-# proof. It exposes `spacing_top_desktop`, `spacing_bottom_desktop`,
-# `spacing_top_mobile` and `spacing_bottom_mobile` — four range controls where
-# the contract asks for two, giving the merchant independent desktop and mobile
-# vertical rhythm. It is MORE capable than the contract requires, and the id
-# check calls it a violation. Counting it as one would park a permanent phantom
-# in a number whose entire value is that people trust it.
-#
-# So the question asked here is the one the rule is actually about: **does a
-# merchant have a numeric control over the space above and below this section?**
-# A section that answers yes under a different spelling is counted compliant and
-# reported separately as "compliant, non-standard ids" — so the naming drift
-# stays visible without being scored as a missing control. Fix the spelling in
-# new work; do not let it distort the measurement of old work.
+# Capability, not spelling. check-section-contract.py tests the literal ids `padding_top`/`padding_bottom`, right for a
+# gate on new work. A standing count must not: `sections/dynamic-grid.liquid` exposes spacing_{top,bottom}_{desktop,mobile},
+# more than the contract asks, and the id test would park a permanent phantom in the number. Non-standard ids are listed apart.
 SPACING_WORDS = ("padding", "spacing", "margin", "space")
 
-# `range` is what the contract's worked example uses and what every compliant
-# Base section uses. `number` is accepted because it is still a merchant
-# control over vertical rhythm, which is the capability being measured; nothing
-# in Base uses it today. Types that cannot express a spacing value — `select`,
-# `checkbox` — deliberately do not count.
+# `range` is the contract's spelling; `number` still gives a merchant a spacing value, so it counts (nothing in Base
+# uses it). `select` and `checkbox` cannot express a spacing value and deliberately do not.
 SPACING_CONTROL_TYPES = {"range", "number"}
 
 STANDARD_IDS = {"top": "padding_top", "bottom": "padding_bottom"}
 
-# The mobile pair (mobile padding is its own merchant value, not
-# `padding_top | times: 0.75` — see sections.md) is required by the gate on NEW
-# sections. This report deliberately does not fold it into the headline
-# number: every section written before the ruling lacks it. It is counted and
-# printed on its own line instead, so the retrofit gap is visible without the
-# number people rely on being redefined under them.
+# The mobile pair is required by the gate on NEW sections only; every section before the ruling lacks it, so it is
+# counted and printed on its own line rather than folded into the headline number.
 MOBILE_IDS = {"top": "padding_top_mobile", "bottom": "padding_bottom_mobile"}
 
 WIDTH = 74
@@ -90,11 +62,8 @@ def load_contract():
 
 
 def spacing_side(setting):
-    """'top', 'bottom' or None — which edge this setting controls, if any.
-
-    Matched on whole words so that an id like `bottomless_grid` cannot pass and
-    `spacing_bottom_mobile` can.
-    """
+    """'top', 'bottom' or None — which edge this setting controls. Whole words, so `bottomless_grid` fails and
+    `spacing_bottom_mobile` passes."""
     if not isinstance(setting, dict):
         return None
     if setting.get("type") not in SPACING_CONTROL_TYPES:
@@ -111,12 +80,7 @@ def spacing_side(setting):
 
 
 def has_color_scheme(settings):
-    """Capability again: the control is a `color_scheme` setting, whatever its id.
-
-    The gate tests `id == "color_scheme"`. A section that typed the setting
-    correctly and named it `colour_scheme` gives the merchant exactly the same
-    control, so it is counted here.
-    """
+    """Capability again: a `color_scheme`-typed setting counts whatever its id (`colour_scheme` gives the same control)."""
     for s in settings:
         if not isinstance(s, dict):
             continue
@@ -161,11 +125,8 @@ def audit(path, src, contract):
         row["error"] = err
         return row
 
-    # Counted before the exemption returns below, and so deliberately wider
-    # than the gate's count: the gate exempts a non-addable section from the
-    # whole contract, but a hardcoded English label still needs a locale key
-    # whether or not a merchant can place the section. `localization.md` has no
-    # merchant-addability exception.
+    # Counted before the exemption below, so wider than the gate's count: a hardcoded English label needs a locale key
+    # whether or not a merchant can place the section (`localization.md` has no merchant-addability exception).
     row["bare_labels"] = len(contract.BARE_LABEL_RE.findall(schema_body(contract, src)))
 
     settings = [s for s in (schema.get("settings") or []) if isinstance(s, dict)]

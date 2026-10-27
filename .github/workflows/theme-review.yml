@@ -135,12 +135,9 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        # Both scripts read the git INDEX (`git diff --cached --diff-filter=A`,
-        # `git show :<path>`), which is empty on a runner. `git reset --soft
-        # <base>` moves HEAD only, so the index then reads base..head and
-        # --diff-filter=A lists the sections this PR ADDS. HEAD is put back
-        # afterwards. The contract script's "COMMIT BLOCKED" banner is shared
-        # with the hook and left as is.
+        # Both scripts read the git INDEX, which is empty on a runner. `git reset --soft <base>` moves HEAD only, so
+        # the index then reads base..head and --diff-filter=A lists the sections this PR ADDS; HEAD is put back after.
+        # The "COMMIT BLOCKED" banner is shared with the hook and left as is.
         run: |
           set -eu
 

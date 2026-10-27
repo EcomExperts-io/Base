@@ -5,37 +5,14 @@ Usage
 -----
   python3 .claude/scripts/commerce-check.py --url <product page URL> [--widths 393,768,1024,1440]
       [--discount-code CODE] [--market CC] [--out .claude/verify/commerce] [--allow-live] [--no-mutate]
-
-The URL is a product page on the dev server (http://127.0.0.1:9292/products/x)
-or the development theme's preview (https://store/products/x?preview_theme_id=ID).
---no-mutate loads the page and checks the engine only — nothing is added.
-Exit 0 when every step passed, 1 when any failed, 2 on usage, 3+ as live-parity.
-
-What it checks, per width (393, 768, 1024, 1440 by default)
-  engine     window.Cart with add/change/update/refresh, and #cart-data seeded
-  add        submitting the real product form adds one line; the drawer opens;
-             [data-cart-count] updates
-  change     the quantity stepper link changes the line to 2 and keeps its
-             properties (Shopify replaces properties on /cart/change)
-  discount   with --discount-code: the code is applied and /cart.js lists it
-             as applicable (Liquid's cart JSON has none)
-  remove     the remove link empties the cart and the empty state renders
-  market     with --market CC: the localization form switches country and
-             prices re-render in that market's currency, then switches back
-
-What it does not do — and says so in the report
-  logged-in  no credentials are entered by this script; a person logs in
-             once in the browser pane and walks add/change/remove by hand
-  safari     Chrome only; the QA checklist carries the WebKit row
-  checkout   never clicked; the cart is emptied at the end of the run
+  --no-mutate checks the engine only, adds nothing. Exit 0 every step passed, 1 any failed, 2 usage, 3+ as live-parity.py.
 
 Notes:
-- Each result is read from the engine's `cart:change` event, never from a
-  fixed sleep, which reads a stale DOM and looks exactly like a broken cart.
-- The theme the page rendered is asserted from Shopify.theme (a leaked preview
-  cookie makes "ours" the live theme — refused unless --allow-live); analytics
-  hosts are blocked so test adds fire no pixels; one Chrome, one run slot,
-  closed on exit (laptop rules, via live-parity.py).
+- Steps per width: engine (window.Cart, #cart-data), add, change (properties kept), discount, remove, market; the cart
+  is emptied at the end. Not covered, and the report says so: a logged-in customer, Safari, checkout.
+- Each result is read from the engine's `cart:change` event, never after a sleep: a stale DOM looks exactly like a broken cart.
+- The rendered theme is asserted from Shopify.theme: a leaked preview cookie makes "ours" the live theme (refused unless --allow-live).
+- Analytics hosts are blocked so test adds fire no pixels; one Chrome, one run slot, closed on exit (via live-parity.py).
 """
 
 import datetime

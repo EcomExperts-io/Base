@@ -1,19 +1,13 @@
 #!/bin/sh
-# Attach Base to a client repo — as a remote, as a worktree, and as a reference
-# directory — whether or not the two share any git history.
+# Attach Base to a client repo as a remote, a worktree and a reference directory, with or without shared history.
 #
-# Usage, run anywhere inside the client repo:   sh .claude/scripts/base-link.sh
-# Safe to re-run. Writes only: the remote, the worktree, .claude/.cache/base-link.json
+# Usage, anywhere inside the client repo: sh .claude/scripts/base-link.sh
+#   Safe to re-run. Writes only the remote, the worktree and .claude/.cache/base-link.json.
 #
 # Notes:
-#   * A worktree can check out any fetched ref, so `git worktree add <dir>
-#     base/development` is a real Base checkout beside the client repo with no
-#     merge attempted. /harvest edits and opens Base PRs from it.
-#   * `claude --add-dir <that dir>` lets a session read Base as reference. Its
-#     rules are NOT loaded from there; the client's own rule copies must win.
-#   * The remote is what pull-base-tooling.py reads from and check-tooling-drift.py
-#     compares against. Pushing to it is disabled so a stray `git push base`
-#     cannot happen; /harvest pushes to Base's URL explicitly.
+#   * The worktree is a checkout of base/development beside the client repo; /harvest edits and opens Base PRs from it.
+#   * `claude --add-dir <worktree>` reads Base as reference only; its rules are not loaded, the client's copies win.
+#   * The remote feeds pull-base-tooling.py and check-tooling-drift.py; pushing to it is disabled.
 
 set -e
 cd "$(git rev-parse --show-toplevel)"

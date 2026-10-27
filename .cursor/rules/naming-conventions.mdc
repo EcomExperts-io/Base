@@ -5,88 +5,39 @@ alwaysApply: true
 ---
 
 <!-- GENERATED from .claude/rules/naming-conventions.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3859245229 -->
+<!-- checksum: 394739925 -->
 
 
 # Architecture Standards
 
-## Section Naming and Structure
+## Sections
 
-### Section File Naming
-- **DO NOT** use `main-` prefix for new sections
-- The `main-` prefix is reserved for main template sections in the `@templates` folder
-- Name sections based on their functionality:
-  - `featured-collections.liquid`
-  - `featured-products.liquid`
-  - `image-banner.liquid`
-  - `hero-banner.liquid`
-  - `testimonials.liquid`
+- **No `main-` prefix** on new sections; it is reserved for template main
+  sections. Name by function: `featured-products`, `image-banner`, `testimonials`.
+- Files: `sections/[name].liquid`, `assets/section-[name].css`,
+  `assets/section-[name].js` — CSS and JS optional.
+- An inline `<script>` is fine up to roughly 100 lines; beyond that, or once it
+  is complex, it moves to `assets/section-[name].js`.
 
-### Section Structure Example
 ```liquid
 <product-info
-  data-url="{{ product.url}}"
+  data-url="{{ product.url }}"
   data-section="{{ section.id }}"
   class="color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding"
 >
-  <!-- Section content here -->
+  …
 </product-info>
 ```
 
-### Section JavaScript
-JavaScript for sections is optional. Inline scripts inside a section are allowed for small amounts of logic. As a guideline, keep inline scripts to roughly 100 lines or fewer. If the script exceeds ~100 lines or becomes complex, move it into `assets/section-[section-name].js`. When adding JavaScript to sections, use custom elements:
+## Snippets
 
-**File naming:** `section-[section-name].js`
-- `section-featured-collections.js`
-- `section-featured-products.js`
-- `section-image-banner.js`
+- Almost every snippet is prefixed `component-`, named by function:
+  `component-product-card`, `component-cart-drawer`, `component-filters-sidebar`.
+- Files: `snippets/component-[name].liquid`, `assets/component-[name].css`,
+  `assets/component-[name].js`.
 
-**Custom Element Structure:**
-```javascript
-if (!customElements.get('custom-element')) {
-  customElements.define(
-    'custom-element',
-    class CustomElement extends HTMLElement {
-      constructor() {
-        super();
-      }
+## JavaScript is a custom element
 
-      connectedCallback() {
-        // Initialize component when added to DOM
-      }
-
-      disconnectedCallback() {
-        // Cleanup when removed from DOM
-      }
-    }
-  );
-}
-```
-
-### Section CSS
-**File naming:** `section-[section-name].css`
-- `section-featured-collections.css`
-- `section-featured-products.css`
-- `section-image-banner.css`
-
-## Snippet Naming and Structure
-
-### Snippet File Naming
-- **99% of the time** snippets are prefixed with `component-`
-- Name based on functionality:
-  - `component-product-card.liquid`
-  - `component-cart-drawer.liquid`
-  - `component-filters-sidebar.liquid`
-
-### Snippet JavaScript
-When adding JavaScript to snippets, use custom elements:
-
-**File naming:** `component-[component-name].js`
-- `component-product-card.js`
-- `component-cart-drawer.js`
-- `component-filters-sidebar.js`
-
-**Custom Element Structure:** (Same as sections)
 ```javascript
 if (!customElements.get('product-card')) {
   customElements.define(
@@ -97,43 +48,18 @@ if (!customElements.get('product-card')) {
       }
 
       connectedCallback() {
-        // Initialize component
+        // Initialise when added to the DOM
       }
 
       disconnectedCallback() {
-        // Cleanup
+        // Clean up
       }
     }
   );
 }
 ```
 
-### Snippet CSS
-**File naming:** `component-[component-name].css`
-- `component-product-card.css`
-- `component-cart-drawer.css`
-- `component-filters-sidebar.css`
-
-## Examples
-
-### Section Example: Featured Products
-**Files:**
-- `sections/featured-products.liquid`
-- `assets/section-featured-products.js`
-- `assets/section-featured-products.css`
-
-### Component Example: Product Card
-**Files:**
-- `snippets/component-product-card.liquid`
-- `assets/component-product-card.js`
-- `assets/component-product-card.css`
-
 ## Shared vs. Section-Owned — the decision test
-
-The recurring question: something works on several pages — does it become one
-shared `component-*` file, or a `section-*` file per page?
-
-**Apply this test.**
 
 > Is the behaviour and appearance genuinely the *same* thing in every place it
 > is used, differing only in content and configuration values?
@@ -141,43 +67,23 @@ shared `component-*` file, or a `section-*` file per page?
 > - **Yes** → one shared `component-*` file, built so consumers configure it.
 > - **No** → separate `section-*` files, one per section.
 
-Both answers already exist in this codebase and both are correct in context:
-
 | Case | Answer | Why |
 |---|---|---|
-| Base's three product carousels — Featured Products, Related Products, Featured Collections v2 | **Separate** `section-*` files | Each wraps Swiper with genuinely different configuration, breakpoints and slide structure. They are three different carousels that happen to share a library. |
-| A scroll-snap-plus-dots carousel used by several content sections | **One shared** `component-*` | Identical behaviour and markup contract; only the cards inside and the values differ. |
-
-The second case is the "genuine atomic UI primitive"; the test above is how
-to tell whether you are in it, rather than having to judge the phrase.
+| Base's three product carousels — Featured Products, Related Products, Featured Collections v2 | **Separate** `section-*` files | Each wraps Swiper with different configuration, breakpoints and slide structure |
+| A scroll-snap-plus-dots carousel used by several content sections | **One shared** `component-*` | Identical behaviour and markup contract; only the cards and values differ |
 
 ### Building a shared primitive so it stays shared
 
-If the test says shared, build it to absorb the *next* design rather than
-hardcoding the first one:
+- Behaviour toggles via data attributes on the element — dots, snap alignment,
+  items per view, loop — not branching on a page name or class.
+- Appearance via CSS custom properties the consuming section sets.
+- No consumer-specific names inside — no `if (page === 'about')`.
 
-- Behaviour toggles via data attributes on the element — dots on/off, snap
-  alignment, items per view, loop. Not branching on a page name or a class.
-- Appearance via CSS custom properties the consuming section sets, so a new
-  design is new values rather than a new file.
-- No consumer-specific names anywhere inside — no `if (page === 'about')`.
-
-If a new design cannot be expressed in configuration and needs the primitive's
-internals edited, that is the test telling you it was a "No" — split it.
+A new design that needs the primitive's internals edited is the test saying
+"No": split it.
 
 ### Naming follows actual scope, not origin
 
-A `section-*` file must not be loaded by more than one unrelated section. If
-something turns out to be genuinely shared, it is renamed to `component-*` —
-it does not keep the name of whichever page happened to need it first.
-
-The failure it prevents: a `section-about-carousel.js` loaded by eight sections
-across four pages, its name still claiming single-page scope. **When you widen
-a file's scope, rename it in the same change.**
-
-## Key Rules Summary
-1. **Sections:** No `main-` prefix for new sections; name by function, not by page
-1a. **Scope:** Apply the decision test above before sharing or duplicating; rename when scope widens
-2. **JavaScript:** Use custom elements when JS is needed (JS files are optional)
-3. **Naming:** Consistent prefixes (`section-` or `component-`)
-4. **File Types:** When present, match naming across `.liquid`, `.js`, and `.css` files (JS/CSS optional)
+A `section-*` file is loaded by one section. When something turns out to be
+shared, rename it `component-*` **in the same change** that widens its scope;
+`check-conventions.py` reports a `section-*` asset loaded by more than one section.

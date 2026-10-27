@@ -24,19 +24,14 @@ RULES_DIR = ".claude/rules"
 ALWAYS_APPLY_ALLOWLIST = {
     "rules-of-engagement",
     "naming-conventions",
-    # How work is reviewed, and what the platform already handles. Both are org
-    # policy rather than file-type convention: they apply to a change in any
-    # file, and to a reviewer who is reading rather than writing. GitBot also
-    # loads code-review-policy by name, so scoping it by glob would not reduce
-    # what a review costs — only what an authoring task pays.
+    # Org policy rather than file-type convention: both apply to a change in any file and to a reviewer who is reading.
+    # GitBot also loads code-review-policy by name, so scoping it by glob would save an authoring task only.
     "code-review-policy",
     "storefront-infrastructure",
 }
 
-# Ceiling on rule lines injected when editing one file of each kind. Not style
-# targets: the point at which something has gone structurally wrong, normally
-# a large rule scoped more widely than it needs to be. The next rule that
-# pushes a target over has to say why, here, in the same commit.
+# Ceiling on rule lines injected when editing one file of each kind: the point at which a rule is scoped more widely
+# than it needs to be, not a style target. The rule that pushes a target over says why here, in the same commit.
 INJECTION_CAPS = {
     "snippets/component-example.liquid": 2600,
     "sections/example.liquid": 3050,
@@ -44,10 +39,8 @@ INJECTION_CAPS = {
     "assets/section-example.js": 1400,
 }
 
-# Headings that must live in exactly one rule. The CSS split put markup-side
-# decisions (class names, custom properties set in a style attribute) in
-# css-in-markup.md and stylesheet-side decisions in css-standards.md. If a
-# heading reappears in both, the split has been undone by hand.
+# Headings that must live in exactly one rule: markup-side CSS decisions are css-in-markup.md, stylesheet-side are
+# css-standards.md. A heading in both means the split has been undone by hand.
 UNIQUE_HEADINGS = [
     "## BEM Naming Convention",
     "## Scoping CSS to Instances of Sections and Blocks",
@@ -79,11 +72,8 @@ def frontmatter(text):
 
 
 def paths_of(fm):
-    """The `paths:` globs from a frontmatter block, or None for always-apply.
-
-    Accepts both the inline form (`paths: "a,b"`) and the indented YAML list,
-    because sync-ai-config.sh accepts both and the two have to agree.
-    """
+    """The `paths:` globs from a frontmatter block, or None for always-apply. Accepts the inline form and the
+    indented YAML list, because sync-ai-config.sh accepts both and the two have to agree."""
     if fm is None:
         return None
     out, inlist = [], False

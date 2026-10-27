@@ -2,19 +2,14 @@
 """Run Theme Check, but only fail on offenses in files this change touches.
 
 Usage:
-  (default)        the staged set — the pre-commit hook
-  --files <paths>  an explicit set — the Stop hook passes what changed this turn
-
-Exit 0 = nothing to answer for. Exit 1 = an error in a file you named.
-A Theme Check that cannot run at all is a skip, never a block, and says so.
+  check-theme-staged.py                  the staged set — the pre-commit hook
+  check-theme-staged.py --files <paths>  an explicit set — the Stop hook passes what changed this turn
+Exit 0 = nothing to answer for. Exit 1 = an error in a file you named. A Theme Check that cannot run is a skip, and says so.
 
 Notes:
-- Theme Check has no per-file argument, so the whole-theme scan runs and only
-  offenses in the named files fail. Warnings never block; only severity
-  `error` does.
-- The Shopify CLI needs Node 22+ and dies at startup on older versions. When
-  the PATH node is too old and ~/.nvm has one that works, that one is used,
-  and the result always says which Node it ran on, or why it could not.
+- Theme Check has no per-file argument, so the whole theme is scanned and only errors (never warnings) in the named files fail.
+- The Shopify CLI needs Node 22+ and dies at startup on older versions; when PATH's node is too old and ~/.nvm has one
+  that works, that one is used, and the result always says which Node it ran on, or why it could not.
 """
 
 import glob

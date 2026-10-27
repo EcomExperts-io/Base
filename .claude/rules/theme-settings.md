@@ -36,17 +36,6 @@ paths:
 
 ## Setting Categories
 
-**Typography:**
-- `font_picker` for font selections
-- `range` for font sizes (12-72px)
-- `select` for font weights
-
-**Layout:**
-- `range` for spacing (0-100px)
-- `select` for layout options
-- `checkbox` for feature toggles
-
-**Performance:**
-- `checkbox` for lazy loading
-- `select` for image quality
-- `number` for pagination limits
+- **Typography:** `font_picker` for fonts, `range` for sizes (12–72px), `select` for weights
+- **Layout:** `range` for spacing (0–100px), `select` for layout options, `checkbox` for toggles
+- **Performance:** `checkbox` for lazy loading, `select` for image quality, `number` for pagination limits

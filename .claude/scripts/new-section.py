@@ -31,24 +31,18 @@ REFERENCE = ".claude/skills/scaffold-section/reference-section.liquid"
 RULE = ".claude/rules/sections.md"
 SIDEBAR = "docs/.vitepress/config.mts"
 
-# Theme Check's ValidSchemaName fails a schema `name` longer than this. It is a
-# hard limit, the error does not say so, and it is easy to hit with a
-# descriptive name. It applies to `name` only — the longer wording goes in the
-# preset name, which is what a merchant actually reads in the theme editor.
+# Theme Check's ValidSchemaName fails a schema `name` longer than this; the error does not say so. It applies to `name`
+# only, so the longer wording goes in the preset name, which is what a merchant reads in the theme editor.
 MAX_SCHEMA_NAME = 25
 
-# The padding boilerplate's breakpoint, inherited from Dawn and shared by 31
-# sections here. It is NOT the theme's layout breakpoint, and it must not be
-# unified with the component breakpoint detected below: changing it in one
-# section desynchronises that section's mobile padding from every other one.
+# The padding boilerplate's breakpoint, inherited from Dawn and shared by 31 sections. It is NOT the layout breakpoint
+# detected below: changing it in one section desynchronises that section's mobile padding from every other one.
 PADDING_BREAKPOINT = 750
 
 SECTION_NAME_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 
-# Named for a page rather than for a job. A page-prefixed name stops being
-# descriptive the first time the section is reused. Warned rather than
-# blocked: `collection-hero` may be genuinely about collections rather than
-# about one page.
+# Named for a page rather than for a job: stops being descriptive the first time the section is reused. Warned, not
+# blocked: `collection-hero` may be genuinely about collections.
 PAGE_PREFIXES = ("home-", "homepage-", "about-", "landing-", "pdp-", "plp-", "contact-")
 
 # Words this theme's own docs sidebar capitalises differently from str.title().
@@ -89,12 +83,8 @@ def repo_root():
 
 
 def detect_container_class(repo):
-    """Which container class this theme's sections actually use.
-
-    A fork often introduces its own container, and two containers are
-    frequently identical at 1440 and different at 1920, so the one the theme
-    already ships is counted rather than assumed.
-    """
+    """Which container class this theme's sections actually use. Two containers are often identical at 1440 and
+    different at 1920, so the one the theme ships is counted rather than assumed."""
     counts = Counter()
     for path in sorted((repo / "sections").glob("*.liquid")):
         for attr in CLASS_ATTR_RE.findall(path.read_text(encoding="utf-8", errors="ignore")):
@@ -107,11 +97,7 @@ def detect_container_class(repo):
 
 
 def detect_component_breakpoint(repo):
-    """The `min-width` this theme's own section CSS settled on.
-
-    The rule says to grep the theme and match it; this is that grep. Distinct
-    from PADDING_BREAKPOINT above: two numbers, two jobs.
-    """
+    """The `min-width` this theme's own section CSS settled on. Distinct from PADDING_BREAKPOINT: two numbers, two jobs."""
     counts = Counter()
     for path in sorted((repo / "assets").glob("section-*.css")):
         counts.update(MEDIA_MIN_WIDTH_RE.findall(path.read_text(encoding="utf-8", errors="ignore")))
@@ -121,11 +107,7 @@ def detect_component_breakpoint(repo):
 
 
 def related_sections(repo, name):
-    """Existing sections sharing a word with the new name.
-
-    Not a check — a prompt to look before adding a section that does what an
-    existing one already does.
-    """
+    """Existing sections sharing a word with the new name: a prompt to look before duplicating one, not a check."""
     words = set(name.split("-"))
     hits = []
     for path in sorted((repo / "sections").glob("*.liquid")):
@@ -145,12 +127,8 @@ def titleize(name):
 
 
 def element_tag(name):
-    """A custom element name must contain a hyphen.
-
-    `customElements.define('testimonials', ...)` throws a SyntaxError and the
-    whole module fails to evaluate, so a single-word section gets a `-section`
-    suffix on its tag while keeping its own name for files and classes.
-    """
+    """A custom element name must contain a hyphen: `customElements.define('testimonials', ...)` throws and the whole
+    module fails, so a single-word section gets a `-section` suffix on its tag only."""
     return name if "-" in name else f"{name}-section"
 
 
@@ -400,15 +378,8 @@ ${notes_tail}
 # --------------------------------------------------------------------------
 
 def build_schema(name, title):
-    """The schema, built as data so it cannot be malformed JSON.
-
-    A section whose `{% schema %}` does not parse blocks the commit outright;
-    generating from a dict removes the whole category.
-
-    Locale keys use the section handle verbatim: `locales/en.default.schema.json`
-    already keys its sections that way (`main-cart-items`, `custom-liquid`), so
-    the key is one less thing to translate between when reading the file.
-    """
+    """The schema, built as data so it cannot be malformed JSON (a `{% schema %}` that does not parse blocks the commit).
+    Locale keys use the section handle verbatim, as `locales/en.default.schema.json` already keys its sections."""
     return {
         "name": f"t:sections.{name}.name",
         "tag": "section",
@@ -631,16 +602,8 @@ def render(name, with_js, container, component_breakpoint):
 # --------------------------------------------------------------------------
 
 def contract_problems(repo, path, src):
-    """Run the pre-commit contract check's own `check()` over the generated file.
-
-    Imported rather than reimplemented, so this scaffolder cannot drift from the
-    gate it is supposed to satisfy: if the contract gains a requirement, this
-    script starts failing on its own output the same day.
-
-    Returns None when the checker cannot be loaded. A missing checker is a
-    warning, not a refusal — a scaffolder that will not run because a sibling
-    script was renamed is worse than one that writes a compliant file unverified.
-    """
+    """Run check-section-contract.py's own `check()` over the generated file, so the scaffolder cannot drift from the gate.
+    Returns None when the checker cannot be loaded: a missing checker is a warning, not a refusal."""
     checker = repo / CONTRACT_CHECK
     if not checker.is_file():
         return None
@@ -655,12 +618,8 @@ def contract_problems(repo, path, src):
 
 
 def docs_interpolation_problems(markdown):
-    """Lines carrying a Liquid mustache outside a fenced block.
-
-    Mirrors `.claude/scripts/check-docs-interpolation.py`, which reads staged git
-    content and so cannot be pointed at a string. VitePress compiles every docs
-    page as a Vue template and evaluates mustaches in inline spans.
-    """
+    """Lines carrying a Liquid mustache outside a fenced block. Mirrors check-docs-interpolation.py, which reads staged
+    git content and cannot be pointed at a string; VitePress evaluates mustaches in inline spans."""
     problems, in_fence = [], False
     for number, line in enumerate(markdown.split("\n"), 1):
         if FENCE_RE.match(line):
@@ -678,12 +637,8 @@ def docs_interpolation_problems(markdown):
 # --------------------------------------------------------------------------
 
 def refuse(headline, body):
-    """Print a blocking message in the pre-commit hook's format and return 1.
-
-    Same shape as check-section-contract.py's output on purpose: a refusal from
-    the scaffolder and a refusal from the gate are the same event arriving at
-    different times, and they should not look like two different tools.
-    """
+    """Print a blocking message in the pre-commit hook's format and return 1: a refusal from the scaffolder and one from
+    the gate are the same event and should not look like two tools."""
     print()
     print("=" * 74)
     print(f"  {headline}")

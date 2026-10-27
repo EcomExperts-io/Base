@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 """Create, list and update incident files — the record a rule is later made from.
 
-Fields that matter for harvesting
----------------------------------
-  scope               generic | client   — the CLAUDE.md test: would this be true
-                      in a Shopify theme that is not this client's?
-  should_have_caught  the rule, check or skill that should have prevented it —
-                      the field that turns a list of incidents into a queue of
-                      standards gaps
-  status              open | harvested | client-only
-
 Usage
 -----
   new-incident.py --slug t-key-in-template --title "…" --scope generic \
@@ -17,8 +8,11 @@ Usage
   new-incident.py --list [--open]
   new-incident.py --set-status docs/ai-workflow/incidents/<file>.md harvested --pr <url>
 
-surfaced-by is one of: theme-500, theme-check, gate, hook, review, qa, designer,
-eyeball, verify, ci, other.
+Notes:
+- --scope is generic | client: the CLAUDE.md test, would this be true in a Shopify theme that is not this client's?
+- --should-have-caught names the rule, check or skill that should have prevented it; it turns the list into a queue of gaps.
+- --surfaced-by is one of theme-500, theme-check, gate, hook, review, qa, designer, eyeball, verify, ci, other.
+- status is open | harvested | client-only.
 """
 
 import datetime

@@ -1,18 +1,12 @@
 #!/bin/sh
-# Talk to a store's Storefront MCP endpoint — the read-only catalog, policies
-# and cart tools Shopify exposes on every store at /api/mcp, no auth required.
-#
-# Notes:
-#   A password-protected or development store exposes fewer tools (often only
-#   policies/FAQs); the tools/list call below says which are available.
+# Talk to a store's Storefront MCP endpoint: the read-only catalog, policies and cart tools at /api/mcp, no auth.
 #
 # Usage:
 #   storefront-mcp.sh <store-handle-or-domain> list
 #   storefront-mcp.sh <store-handle-or-domain> call <tool> '<json-arguments>'
-# Examples:
-#   storefront-mcp.sh acme list
-#   storefront-mcp.sh acme call search_shop_catalog '{"query":"vitamin","context":"recon"}'
-#   storefront-mcp.sh acme call search_shop_policies_and_faqs '{"query":"shipping"}'
+#   e.g. storefront-mcp.sh acme call search_shop_catalog '{"query":"vitamin","context":"recon"}'
+#
+# Note: a password-protected or development store exposes fewer tools (often only policies/FAQs); `list` says which.
 
 STORE="$1"; CMD="$2"; TOOL="$3"; ARGS="${4:-{\}}"
 if [ -z "$STORE" ] || [ -z "$CMD" ]; then

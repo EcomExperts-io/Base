@@ -1,7 +1,7 @@
 # Your first build
 
-One page, one hour: a section that passes the gate, verified against its frame,
-on a branch. Every place you stall is a tooling defect, not yours: `/record-incident` it.
+One section, one hour: it passes the gate, is verified against its frame,
+and sits on a branch. Every place you stall is a tooling defect: `/record-incident` it.
 
 ## 0. What you need
 
@@ -18,10 +18,10 @@ npm install
 npm run setup
 ```
 
-`setup` wires the commit gate (`.githooks/` or husky), regenerates the Cursor
-mirror and runs the doctor; `sh .claude/scripts/setup.sh` is the same thing if
-npm has no such script. Every doctor line that is not `OK` has the fix beside
-it. Fix them. If there is no `.claude/` yet, or `doctor` says the tooling is missing:
+`setup` wires the commit gate, regenerates the Cursor mirror and runs the
+doctor (`sh .claude/scripts/setup.sh` if npm has no such script). Fix every
+doctor line that is not `OK`; the fix is beside it. If there is no `.claude/`
+yet, or `doctor` says the tooling is missing:
 
 ```bash
 sh .claude/scripts/base-link.sh || git clone https://github.com/EcomExperts-io/Base.git ../Base && sh ../Base/.claude/scripts/base-link.sh
@@ -48,9 +48,9 @@ echo '{"env":{"SHOPIFY_FLAG_STORE":"<store-handle>"}}' > .claude/settings.local.
 ## 3. Build the section
 
 Start `claude` in the repo. The first lines are the theme's state — doctor
-status, tooling drift, compliance number, open incidents, most-missed rules; if
-they are missing the SessionStart hook is not firing: a stall. Then paste this,
-with your frame's values, and expect the following in order:
+status, drift, compliance, open incidents, most-missed rules; if they are
+missing the SessionStart hook is not firing: a stall. Paste this with your
+frame's values, and expect the following in order:
 
 ```text
 Build the <section name> section from Figma using our Base Theme standards.
@@ -61,12 +61,12 @@ Set a /goal so a fresh evaluator decides when it is done.
 
 1. **Readiness** — a frame score; if not green, a designer message instead of a build.
 2. **Scaffold** — four padding settings, `color_scheme` and a preset in the schema; every string a key.
-3. **The per-edit gate** — findings after each file Claude writes. One or two
-   on a first pass is normal; "missing padding_top" surviving to the end is not.
+3. **The per-edit gate** — findings after each file Claude writes; "missing
+   padding_top" surviving to the end is a stall.
 4. **Verification** — `/run-theme`, then `/verify-against-reference` renders at
    1440 and 390, diffs against the frame, writes `.claude/verify/<slug>/report.md`.
    Open the side-by-side it names and look.
-5. **The turn ends only when the gate passes** — the Stop hook refuses a failing new file; Claude fixes it.
+5. **The turn ends only when the gate passes** — the Stop hook refuses a failing new file.
 
 ## 4. Prove it
 
@@ -74,20 +74,19 @@ Set a /goal so a fresh evaluator decides when it is done.
 python3 .claude/scripts/report-compliance.py | head -12
 ```
 
-The compliant count is one higher than the session's opening line said. Then:
+The compliant count is one higher than the session's opening line. Then:
 
 ```bash
 git add -A && git commit -m "[FEATURE]: Add the <section name> section"
 ```
 
-The commit runs the gate again and stages the regenerated `.cursor/`. No pull
-request from this exercise unless asked.
+The commit runs the gate again and stages the regenerated `.cursor/`. No PR unless asked.
 
 ## 5. Say what stalled
 
 Anything that made you stop and ask a person — a missing command, a hook that
-did not fire, a message you did not understand — is a defect in this workflow.
-`/record-incident` each one with `should_have_caught` = `docs/ai-workflow/first-build.md`.
+did not fire, a message you did not understand — is `/record-incident` with
+`should_have_caught` = `docs/ai-workflow/first-build.md`.
 
 ## What "done" looks like
 

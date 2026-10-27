@@ -6,286 +6,114 @@ paths:
 
 # Modern HTML Standards
 
-Use the latest evergreen browser features for better user experience and simpler code.
-All features should be supported in the last two versions of all major browsers.
-All necessary features must be "Baseline widely available".
-Progressive enhancement features may be "Baseline 2024".
-These are strictly for UX improvements that are non-blocking for conversions.
+Everything a shopper needs to buy must be "Baseline widely available".
+Progressive enhancement may use "Baseline 2024", for non-blocking UX only.
 
 ## Native Interactive Elements
 
-**Expandable Content:**
-- Use `<details>` and `<summary>` instead of JavaScript toggles
-- Perfect for FAQs, product details, filters
-- For an animated accordion, see the `<details>` usage in
-  `snippets/component-filters-sidebar.liquid` and `sections/product.liquid`
-- Chrome slots a `<details>` element's content under `::details-content`, which
-  the theme's `*` box-sizing reset cannot match — so a declared height on a row
-  inside `<details>` silently gains its padding. Re-assert
-  `box-sizing: border-box` on the `<details>` root and on the `<summary>` (it is
-  slotted separately); every descendant that says `inherit` is repaired with it.
+**Expandable content:** `<details>` and `<summary>`, not a JavaScript toggle —
+FAQs, product details, filters. For an animated accordion copy the `<details>`
+in `snippets/component-filters-sidebar.liquid` and `sections/product.liquid`.
+Chrome slots a `<details>` element's content under `::details-content`, which
+the theme's `*` box-sizing reset cannot match, so a declared height on a row
+inside `<details>` silently gains its padding: re-assert `box-sizing: border-box`
+on the `<details>` root and on the `<summary>`.
 
-**Modals and Popups:**
-- Use `<dialog>` for modals instead of custom overlays
-- Built-in focus management and backdrop clicks
-- See `assets/component-product-media-modal.js` — the only `showModal()` in
-  the theme, and the pattern to copy
+**Modals:** `<dialog>`, not a custom overlay. `assets/component-product-media-modal.js`
+is the only `showModal()` in the theme and the pattern to copy.
 
-**Tooltips and Menus:**
-- Use `popover` attribute for floating content
-- Automatic positioning and dismissal
+**Tooltips and menus:** the `popover` attribute.
 
-**Forms:**
-- Use `<search>` element for search forms
-- Use `<output>` for form calculations and results
-
-### Input Types (HTML5+)
-```html
-<input type="text">        <!-- Basic text input -->
-<input type="email">       <!-- Email with validation -->
-<input type="tel">         <!-- Telephone numbers -->
-<input type="url">         <!-- URLs with validation -->
-<input type="search">      <!-- Search field with clear button -->
-<input type="password">    <!-- Password field -->
-
-<!-- Numeric inputs -->
-<input type="number">      <!-- Numeric input with spinner -->
-<input type="range">       <!-- Slider control -->
-
-<!-- Date/Time inputs -->
-<input type="date">        <!-- Date picker -->
-<input type="time">        <!-- Time picker -->
-<input type="datetime-local"> <!-- Date and time picker -->
-<input type="month">       <!-- Month picker -->
-<input type="week">        <!-- Week picker -->
-
-<!-- Selection inputs -->
-<input type="checkbox">    <!-- Checkbox -->
-<input type="radio">       <!-- Radio button -->
-<input type="color">       <!-- Color picker -->
-<input type="file">        <!-- File upload -->
-
-<!-- Action inputs -->
-<input type="submit">      <!-- Submit button -->
-<input type="reset">       <!-- Reset button -->
-<input type="button">      <!-- Generic button -->
-<input type="image">       <!-- Image button -->
-
-<!-- Hidden -->
-<input type="hidden">      <!-- Hidden data -->
-```
-
-### Container Elements
-```html
-<!-- Form container -->
-<form>                     <!-- Form wrapper -->
-<fieldset>                 <!-- Group related inputs -->
-<legend>                   <!-- Fieldset label -->
-
-<!-- Modern semantic containers -->
-<search>                   <!-- Search form container (HTML5.3) -->
-```
-
-### Text Areas
-```html
-<textarea>                 <!-- Multi-line text input -->
-```
-
-### Selection Elements
-```html
-<select>                   <!-- Dropdown menu -->
-<option>                   <!-- Option in dropdown -->
-<optgroup>                 <!-- Group options -->
-<datalist>                 <!-- Autocomplete suggestions -->
-```
-
-### Labels and Output
-```html
-<label>                    <!-- Input label -->
-<output>                   <!-- Calculation/result display -->
-```
-
-### Buttons
-```html
-<button type="submit">     <!-- Submit form -->
-<button type="reset">      <!-- Reset form -->
-<button type="button">     <!-- Generic button -->
-```
-
-### Progress and Meters
-```html
-<progress>                 <!-- Progress indicator -->
-<meter>                    <!-- Gauge/measurement display -->
-```
-
-### Modern Form Attributes
-```html
-<!-- Validation attributes -->
-required                   <!-- Field must be filled -->
-pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" <!-- Regex validation -->
-minlength="5"              <!-- Minimum character length -->
-maxlength="50"             <!-- Maximum character length -->
-min="1"                    <!-- Minimum numeric value -->
-max="100"                  <!-- Maximum numeric value -->
-step="0.01"                <!-- Numeric increment -->
-
-<!-- Autocomplete attributes -->
-autocomplete="name"        <!-- Enable specific autocomplete -->
-autocomplete="off"         <!-- Disable autocomplete -->
-list="suggestions"         <!-- Link to datalist -->
-
-<!-- Input hints -->
-placeholder="Enter email"  <!-- Placeholder text -->
-autofocus                  <!-- Focus on page load -->
-readonly                   <!-- Read-only field -->
-disabled                   <!-- Disabled field -->
-multiple                   <!-- Multiple file/email selection -->
-
-<!-- Form behavior -->
-formnovalidate            <!-- Skip validation (on submit buttons) -->
-formaction="/alt-submit"  <!-- Alternative submission URL -->
-formmethod="post"         <!-- Override form method -->
-formenctype="multipart/form-data" <!-- Override encoding -->
-```
-
-Use [client-side form validation](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Form_validation) to ensure valid date is being sent to the server.
-
-## Modern CSS Features
-
-**Layout:**
-- `container-queries` for responsive components
-- `aspect-ratio` for maintaining proportions
-- `scroll-snap` for carousel behavior
-
-**Styling:**
-- `color-mix()` for dynamic color generation (used for progressive enhancement)
-- `view-transitions` for smooth page transitions
-- `@layer` for CSS cascade control
-
-**Interactions:**
-- `:has()` selector for parent styling
-- `@media (prefers-reduced-motion)` for accessibility
+**Forms:** `<search>` around a search form; `<output>` for a calculated result;
+the specific input type (`email`, `tel`, `url`, `search`, `number`, `date`);
+`<fieldset>`/`<legend>` for a group; native validation attributes (`required`,
+`pattern`, `min`, `max`, `step`, `minlength`, `maxlength`) and `autocomplete`
+on personal fields rather than JavaScript validation.
 
 ## Progressive Enhancement
 
-Use features that are `Baseline Widely Available`.
+1. Semantic HTML that works without JavaScript
+2. CSS for visual enhancement
+3. JavaScript for advanced interaction and accessibility
+4. Never break core functionality for older browsers
 
-1. **Start with semantic HTML** that works without JavaScript
-2. **Layer on CSS** for visual enhancement
-3. **Add JavaScript** for advanced interactions and accessibility
-4. **Polyfill** for modern browsers if necessary for critical interactions
-5. **Never break core functionality** for older browsers
+## Accessibility
 
-## Accessibility Features
-
-**Focus Management:**
-- Use `tabindex="0"` for custom interactive elements
-- Never use positive tabindex values
-- Ensure keyboard navigation works naturally
-- Ensure focus is trapped in modal contexts
-
-**Screen Readers:**
-- Use semantic HTML elements
-- Add `aria-label` when visual context isn't enough
-- Use `aria-expanded` for collapsible content
-- Use `role` where native semantics do not already say it (the attribute is `role`; `aria-role` does not exist)
-
-**Motion Preferences:**
-
-Write CSS where animations can be disabled if reduced motion is preferred.
-
-```css
-@media (prefers-reduced-motion: reduce) {
-  .carousel {
-    scroll-behavior: auto;
-  }
-}
-```
+The standard is `accessibility.md`. In markup: `tabindex="0"` on a custom
+interactive element and never a positive value; focus trapped inside a modal;
+`aria-expanded` on collapsible content; `role` only where native semantics do
+not already say it (the attribute is `role`; `aria-role` does not exist);
+motion disabled under `@media (prefers-reduced-motion: reduce)`.
 
 ## Mark what comes from the store: `data-verify-mask`
 
-Live values — product titles, prices, review counts, images the store
-supplies — never match a design mock, so a pixel comparison of the rendered
-page against its Figma frame lights them up as differences that are not
-defects. The `verify-against-reference` skill masks those regions before it diffs,
-and it finds them by one attribute:
+Live values — product titles, prices, review counts, store images — never
+match a design mock, so `verify-against-reference` masks them before it diffs.
+It finds them by one attribute, placed on the element whose box should be
+ignored, not on a wrapper:
 
 ```liquid
 <span class="product-card__price" data-verify-mask>{{ card_product.price | money }}</span>
 ```
 
-Put it on the element whose box should be ignored, not on a wrapper. It has no
-runtime effect. It also documents the rule that Figma is design-only: anything
-carrying it is, by definition, a value the design could not have supplied.
+It has no runtime effect, and it documents that Figma is design-only.
 
 ## ID Naming Convention
 
-Use `CamelCase` for IDs and append section/block identifiers:
+`CamelCase`, suffixed with the section or block id — the only values
+guaranteed unique on a page:
 
 ```html
-<!-- Section IDs -->
 <section id="FeaturedCollection-{{ section.id }}">
-
-<!-- Block IDs -->
 <div id="ProductCard-{{ block.id }}">
-
-<!-- Element IDs -->
-<dialog id="ProductModal-{{ product.id }}-{{ section|block.id }}">
-<form id="ProductForm-{{ product.id }}-{{ section|block.id }}">
+<dialog id="ProductModal-{{ product.id }}-{{ section.id }}">
 ```
-
-Section and block IDs are the only things we can guarantee are unique, and so should always be included in `id`s.
 
 ## Examples
 
 **Expandable FAQ:**
 ```html
 <details class="faq">
-  <summary class="faq__question">
-    {{ 'faq.shipping_question' | t }}
-  </summary>
-  <div class="faq__answer">
-    {{ 'faq.shipping_answer' | t }}
-  </div>
+  <summary class="faq__question">{{ 'faq.shipping_question' | t }}</summary>
+  <div class="faq__answer">{{ 'faq.shipping_answer' | t }}</div>
 </details>
 ```
 
-**Modal Dialog:**
+**Modal dialog:**
 ```html
-<button class="product__quick-view" onclick="ProductModal{{ product.id }}.showModal()">
+<button type="button" class="product__quick-view" data-dialog="ProductModal-{{ product.id }}-{{ section.id }}">
   {{ 'products.quick_view' | t }}
 </button>
 
-<dialog id="ProductModal{{ product.id }}" class="product-modal">
+<dialog id="ProductModal-{{ product.id }}-{{ section.id }}" class="product-modal">
   <form method="dialog">
-    <button type="submit" class="modal__close">
-      {{ 'general.close' | t }}
-    </button>
+    <button type="submit" class="modal__close">{{ 'general.close' | t }}</button>
   </form>
   <div class="modal__content">
-    {% render 'product-details', product: product %}
+    {% render 'component-product-details', product: product %}
   </div>
 </dialog>
 ```
 
-**Popover Menu:**
+**Popover menu:**
 ```html
-<button popovertarget="CartMenu" class="header__cart">
+<button type="button" popovertarget="CartMenu-{{ section.id }}" class="header__cart">
   {{ 'cart.title' | t }} ({{ cart.item_count }})
 </button>
 
-<div id="CartMenu" popover class="cart-popover">
-  {% render 'cart-drawer' %}
+<div id="CartMenu-{{ section.id }}" popover class="cart-popover">
+  {% render 'component-cart-drawer' %}
 </div>
 ```
 
-**Search Form:**
+**Search form:**
 ```html
 <search class="header__search">
   <form action="{{ routes.search_url }}" method="get">
     <input
       type="search"
       name="q"
+      aria-label="{{ 'general.search' | t }}"
       placeholder="{{ 'general.search_placeholder' | t }}"
       value="{{ search.terms | escape }}"
     >
@@ -294,12 +122,8 @@ Section and block IDs are the only things we can guarantee are unique, and so sh
 </search>
 ```
 
-**Product Card:**
-
-Settings come in as custom properties on the wrapper; responsiveness is a
-`min-width` media query in the stylesheet. Do not reach for a container query
-— `css-standards.md` and `sections.md` both rule them out, and the theme has
-zero uses.
+**Product card** — settings come in as custom properties; responsiveness is a
+`min-width` media query in the stylesheet, never a container query:
 
 ```html
 <div class="product-card" style="--product-card-gap: {{ settings.gap }}px;">
@@ -308,22 +132,13 @@ zero uses.
   </div>
   <div class="product-card__info">
     <h3>{{ product.title | escape }}</h3>
-    <output class="product-card__price">
-      {{ product.price | money }}
-    </output>
+    <output class="product-card__price" data-verify-mask>{{ product.price | money }}</output>
   </div>
 </div>
 ```
 
 ## Avoid These Patterns
 
-**Don't use custom JavaScript for:**
-- Show/hide toggles (use `<details>`)
-- Modal overlays (use `<dialog>`)
-- Tooltips (use `popover`)
-- Form validation (use native HTML5)
-
-**Don't create:**
-- Custom dropdown menus (use `<select>` or `popover`)
-- Custom accordions (use `<details>`)
-- Custom tabs (use CSS `:target` or native behavior)
+Custom JavaScript for show/hide toggles, accordions (`<details>`), modals
+(`<dialog>`), tooltips and dropdown menus (`popover`, `<select>`), or form
+validation (native attributes).

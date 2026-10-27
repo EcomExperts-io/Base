@@ -1,6 +1,6 @@
 # Hover state pitfalls
 
-Hover, focus and toggled-state CSS that looks right in review and does nothing, or the wrong thing, on screen — and the traps in measuring it.
+Hover, focus and toggled-state CSS that reads right and renders wrong, and the traps in measuring it.
 
 ## 1. A later hover rule silently undoes a selected state
 
@@ -37,7 +37,7 @@ Hover, focus and toggled-state CSS that looks right in review and does nothing, 
 
 - **Symptom.** The image zooms on card hover while the title stays dead.
 - **Cause.** `.card__title a:hover` fires only over the `<a>`, which wraps the title text alone; a card whose link's `::after` covers the whole card gets one event for both.
-- **Fix.** Where nothing is a whole-card link, drive from the card and add `:focus-within` for keyboard users. No hover on non-interactive elements.
+- **Fix.** Where nothing is a whole-card link, drive from the card and add `:focus-within` for keyboard users; no hover on non-interactive elements.
   ```css
   .category-tiles__card:hover .category-tiles__image,
   .category-tiles__card:focus-within .category-tiles__image { … }
@@ -47,7 +47,7 @@ Hover, focus and toggled-state CSS that looks right in review and does nothing, 
 
 - **Transitions race the assertion.** `getComputedStyle` right after a synthetic hover returns a mid-transition value; `el.style.width = '16px'` read on the same tick reads the old value. Inject `*, *::before, *::after { transition: none !important; }` and read instantly.
 - **Screenshot coordinates are scaled.** `scale = screenshotWidth / window.innerWidth`; confirm the target with `document.elementFromPoint(sx / scale, sy / scale)`.
-- **Cross-origin stylesheets cannot be enumerated.** Theme CSS comes from `cdn.shopify.com`, so `sheet.cssRules` throws and a `document.styleSheets` walk finds nothing; on a dev-server page it can yield nothing too. Fetch the stylesheet text and test selectors with `querySelectorAll`. A regex audit that keeps only the last line of a multi-line selector list reports "all good".
+- **Cross-origin stylesheets cannot be enumerated.** Theme CSS comes from `cdn.shopify.com`, so `sheet.cssRules` throws and a `document.styleSheets` walk finds nothing. Fetch the stylesheet text and test selectors with `querySelectorAll`; a regex audit that keeps only the last line of a multi-line selector list reports "all good".
 
 ## 7. A selector matching zero elements is not necessarily wrong
 

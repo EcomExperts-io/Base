@@ -1,19 +1,15 @@
 #!/bin/sh
-# The git mechanics of sending a generic learning up to Base from inside a
-# client repo, without shared history and without copying files by hand.
+# Git mechanics of sending a generic learning up to Base from a client repo, with no shared history.
 #
 # Usage:
-#   harvest.sh start <slug>                         -> a branch in the Base worktree
+#   harvest.sh start <slug>                                  -> a branch in the Base worktree
 #   ...edit the rule/reference in the worktree, commit there...
 #   harvest.sh open <slug> "<title>" <body-file> [--no-pr]   -> push + PR
 #
 # Notes:
-#   * The worktree is the one base-link.sh created (a checkout of base/development
-#     beside this repo).
-#   * Pushing goes to Base's URL explicitly because the `base` remote has pushing
-#     disabled.
-#   * BASE_URL and BASE_REPO are overridable so the script can be exercised against
-#     a local bare clone in a test.
+#   * The worktree is the one base-link.sh created beside this repo.
+#   * Pushes go to Base's URL explicitly: the `base` remote has pushing disabled.
+#   * BASE_URL and BASE_REPO are overridable so a test can point at a local bare clone.
 
 set -e
 ROOT=$(git rev-parse --show-toplevel)

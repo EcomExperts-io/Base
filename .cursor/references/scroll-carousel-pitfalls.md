@@ -1,6 +1,6 @@
 # Scroll-carousel pitfalls
 
-Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and in measuring one. Base itself uses Swiper from `layout/theme.liquid`; this applies to a theme that built its own.
+Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and in measuring one. Base uses Swiper from `layout/theme.liquid`; this applies to a theme that built its own.
 
 ## 1. `ResizeObserver` on the track does not fire when images load
 
@@ -18,7 +18,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 
 - **Symptom.** A script sets `scrollLeft` and asserts on the readout: "the counter never advances", when the counter is fine.
 - **Cause.** Under `scroll-behavior: smooth` the assignment starts an animation; `scrollLeft` read on the same tick returns the old value.
-- **Fix.** The drag handler does the same through an `is-dragging` class, so the track follows the pointer 1:1.
+- **Fix.** Switch to `auto` for the read (the drag handler does the same through an `is-dragging` class, so the track follows the pointer 1:1).
   ```js
   const prev = track.style.scrollBehavior;
   track.style.scrollBehavior = 'auto';
@@ -30,7 +30,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 
 - **Symptom.** The counter reads `6/6` while the filtered carousel shows zero slides.
 - **Cause.** `data-total="{{ slide_count }}"` is right at first paint and never updated by filters or tabs.
-- **Fix.** Mark which case applies rather than guessing in JS:
+- **Fix.** Mark which case applies:
   - **Auto total** (override left at 0): emit `data-total-auto` and count slides that have a box, `offsetWidth > 0 || offsetHeight > 0` — a `display: none` slide has neither.
   - **Explicit total** (typed, or `collection.all_products_count`): show it verbatim; never recount.
   - Dots: one per scrollable page, `ceil(scrollWidth / clientWidth)`, not one per slide — with 3.3 slides in view, slide-count dots outnumber the positions the track can reach.
@@ -38,7 +38,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 ## 4. Pointer drag: exclude touch, and suppress the click it would trigger
 
 - **Symptom.** A drag that ends over a slide's `<a>` navigates; the browser's native image-drag fights the gesture.
-- **Cause.** A pointer drag ends with a click. Touch already scrolls natively with momentum, so a JS drag is for mouse and pen only.
+- **Cause.** A pointer drag ends with a click; touch already scrolls natively, so a JS drag is for mouse and pen only.
 - **Fix.** Return early on `pointerType === 'touch'`, `preventDefault()` on `dragstart`, and suppress the click in the capture phase, gated on distance (the completed-drag form is in §11).
   ```js
   onClickCapture(event) {
@@ -58,7 +58,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 ## 6. Min-content width silently inflates carousel cards (two layers)
 
 - **Symptom.** Titles spill out of their card into the next slide, and the card's image renders wider than the card itself.
-- **Cause.** An item's automatic minimum size overrides the width you set, at two levels, and fixing one leaves the other. A flex slide with `flex: 0 0 auto` and an explicit `width` still has `min-width: auto`, so a `white-space: nowrap` title widens it. Inside it, a `display: grid` tile with only `grid-template-rows` set has an implicit `auto` column, also floored by min-content, so the media at `width: 100%` of that column outgrows the tile.
+- **Cause.** Automatic minimum size overrides the width you set at two levels. A flex slide with `flex: 0 0 auto` and an explicit `width` still has `min-width: auto`, so a `white-space: nowrap` title widens it; inside it, a `display: grid` tile with only `grid-template-rows` set has an implicit `auto` column floored by min-content, so media at `width: 100%` of that column outgrows the tile.
 - **Fix.**
   ```css
   .scroll-carousel__slide { min-width: 0; }                 /* let the computed width win */
@@ -69,7 +69,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 ## 7. `grid-row` without `grid-column` creates an implicit column
 
 - **Symptom.** Overlaying the add-to-cart on the image shrinks the media by exactly the button's width; `gridTemplateColumns` reads `"260.453px 40px"` on a 300px card.
-- **Cause.** Row 1 / column 1 is already occupied by the media, so auto-placement puts the action in a new implicit column that takes its width out of column 1. Explicitly placed items resolve before auto-placed ones, so pinning only some children moves the problem.
+- **Cause.** Row 1 / column 1 is occupied by the media, so auto-placement puts the action in a new implicit column that takes its width out of column 1; pinning only some children moves the problem.
   ```css
   .product-tile__action { grid-row: 1; align-self: end; justify-self: end; }   /* lands in an implicit column 2 */
   ```
@@ -83,8 +83,8 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 ## 8. Progress-thumb travel must be measured against the bar, not the track
 
 - **Symptom.** The thumb overshoots the end of its bar on the last slide and sits on top of the counter.
-- **Cause.** Mixed reference widths: `--carousel-thumb-width` is a percentage of the bar, while the offset was `ratio * (1 - visibleFraction) * track.clientWidth` in pixels of the track. The counter and the flex gap make the bar narrower than the track, so at `ratio: 1` the thumb runs past by `(1 - visibleFraction) * (trackWidth - barWidth)`.
-- **Fix.** Publish only the 0..1 position from JS and let CSS do the arithmetic in the bar's units; an inset (`left`), not `translateX`, because a translate percentage resolves against the thumb and an inset against the bar.
+- **Cause.** Mixed reference widths: `--carousel-thumb-width` is a percentage of the bar, the offset was `ratio * (1 - visibleFraction) * track.clientWidth` in track pixels, and the bar is narrower than the track, so at `ratio: 1` the thumb runs past by `(1 - visibleFraction) * (trackWidth - barWidth)`.
+- **Fix.** Publish only the 0..1 position from JS and let CSS do the arithmetic in the bar's units — an inset (`left`), not `translateX`, because a translate percentage resolves against the thumb.
   ```js
   this.style.setProperty('--carousel-thumb-width', `${visibleFraction * 100}%`);
   this.style.setProperty('--carousel-thumb-ratio', `${ratio}`);
@@ -101,7 +101,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 ## 9. Dot index must come from scroll *progress*, not scrollLeft ÷ viewport
 
 - **Symptom.** The last dot never lights; at the end of the track the indicator sits on the middle dot of three.
-- **Cause.** Total travel is `scrollWidth - clientWidth`, not `pages × clientWidth`. At `scrollWidth 823`, `clientWidth 343` the track travels 1.4 viewports while `ceil()` counts 3 dots, so `scrollLeft / clientWidth` tops out at 1 — whenever `per_view` is fractional. Same root cause as §8: a position computed against one length and applied to another.
+- **Cause.** Total travel is `scrollWidth - clientWidth`, not `pages × clientWidth`. At `scrollWidth 823`, `clientWidth 343` the track travels 1.4 viewports while `ceil()` counts 3 dots, so `scrollLeft / clientWidth` tops out at 1 whenever `per_view` is fractional. Same root cause as §8.
   ```js
   const pages = Math.ceil(scrollWidth / clientWidth);      // 3
   const page  = Math.round(scrollLeft / clientWidth);      // tops out at 1
@@ -115,8 +115,8 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 
 ## 10. A hidden browser pane will not commit programmatic scrolls
 
-- **Symptom.** `track.scrollLeft = 137` reads back `0` on a live, overflowing track — via `scrollBy`/`scrollTo` too, with snap disabled. Assigning the *end* position happens to persist, which makes it look intermittent.
-- **Cause.** The Browser pane is hidden, so the scroller never commits. Nothing is wrong with the page.
+- **Symptom.** `track.scrollLeft = 137` reads back `0` on a live, overflowing track — via `scrollBy`/`scrollTo` too, with snap disabled; assigning the *end* position persists, so it looks intermittent.
+- **Cause.** The Browser pane is hidden, so the scroller never commits.
 - **Fix.** Check `tabs_context` (or `document.documentElement.clientWidth` being 0 when un-emulated) before blaming the handler, and test scroll-derived logic by feeding the position in.
   ```js
   Object.defineProperty(track, 'scrollLeft', { get: () => value, set: () => {}, configurable: true });
@@ -127,7 +127,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
 ## 11. `setPointerCapture` on pointerdown steals every click inside the track
 
 - **Symptom.** A button inside the track responds to the keyboard but not the mouse — space works, click does not.
-- **Cause.** While pointer capture is active the following `click` is dispatched at the capturing element, so it never reaches the button; and the track enters drag mode on a plain press.
+- **Cause.** While pointer capture is active the following `click` is dispatched at the capturing element, never the button; and the track enters drag mode on a plain press.
   ```js
   this.track.setPointerCapture?.(event.pointerId);   /* on pointerdown: retargets the click */
   this.track.classList.add('is-dragging');            /* drag mode on a plain press */
@@ -145,7 +145,7 @@ Traps in a CSS scroll-snap `<scroll-carousel>` (snippet plus custom element) and
     this.track.scrollLeft = this.dragOriginScroll - delta;
   }
   ```
-  Tie click-suppression to a completed drag, not a lingering distance — a drag that ends outside the track leaves a stale `dragDistance` and the next click gets eaten:
+  Tie click-suppression to a completed drag, not a lingering distance — a drag ending outside the track leaves a stale `dragDistance` that eats the next click:
   ```js
   onPointerUp() { this.suppressClick = this.dragDistance > DRAG_THRESHOLD; }
   onClickCapture(e) { if (!this.suppressClick) return; this.suppressClick = false; e.preventDefault(); e.stopPropagation(); }

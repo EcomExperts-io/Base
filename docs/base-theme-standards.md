@@ -3,22 +3,20 @@
 The architecture an AI tool or a developer builds against, and the rulings
 behind it. Conventions are in `.claude/rules/`; this document is what Base
 *is*: how its pages are put together, which parts are the standard and which
-are legacy, and what has been decided. Architecture decisions are ruled on by
-the Head of Engineering; open items are at the end.
+are legacy, and what has been decided. The Head of Engineering rules on
+architecture; open items are at the end.
 
 ## 1. Purpose
 
 Any Figma file or live page becomes Base Theme–standard code with minimal
 human touch-up: the AI reads the design (Figma MCP) and the store (Shopify
 MCP), builds against these standards and the rules, verifies against the
-reference, and a developer reviews. The AI must know both what the design is
-and how it is to be built, without the architecture being re-explained.
+reference, and a developer reviews.
 
 Not the goal: redesigning Base to taste, turning a build into a Base refactor,
-or locking the knowledge into one tool — `.claude/` is canonical and the Cursor
+or locking the knowledge into one tool — `.claude/` is canonical; the Cursor
 and Codex copies are generated. Base is a simplified take on Shopify's Dawn;
-its current code is not gospel, and where it contradicts the rules, the rules
-win and the gap is logged here.
+where its code contradicts the rules, the rules win and the gap is logged here.
 
 ## 2. Collection and PDP
 
@@ -37,8 +35,8 @@ and URL state: sections do; components render and handle local interaction.
 | Variant change and partial PDP update | `section-product.js` (`ProductInfo`) | Coordinates price, SKU, inventory, media, forms |
 | A carousel of product cards | the section's own JS | Container layout, never card internals |
 
-Put JS with the smallest reusable owner. Card-intrinsic behaviour is component
-JS; multi-region page updates are section JS. Alpine holds ephemeral UI state
+Put JS with the smallest reusable owner: card-intrinsic behaviour is component
+JS, multi-region page updates are section JS. Alpine holds ephemeral UI state
 (drawer open, show more); custom elements fetch, sync the URL and update
 several regions.
 
@@ -123,18 +121,16 @@ window.Cart = {
 One promise queue, so rapid clicks cannot race; `cart-busy` on `<html>` while
 anything is pending; `cart:change` on `document` with `{ action, payload,
 response, cart, previousCart, sections, source }` on success and `cart:error`
-on failure. Before each mutation it collects the `.shopify-section` ids of
-every `cart-drawer` and `cart-page` and sends them as `sections=`, so the
-response carries their re-rendered HTML and each consumer extracts its own
-fragment. `add` returns the line item, not the cart, so the engine fetches
-`/cart.js` afterwards.
+on failure. Before each mutation it sends the `.shopify-section` ids of every
+`cart-drawer` and `cart-page` as `sections=`, so the response carries their
+re-rendered HTML and each consumer extracts its own fragment. `add` returns
+the line item, not the cart, so the engine fetches `/cart.js` afterwards.
 
 Wiring is delegation on markup that works without JS: `submit` on
 `form[action*="/cart/add"]`, `click` on `a[href*="/cart/change"]` and
 `.cart-item__remove` (quantity steps read the input's current value, debounced
 250 ms per line), `change` on `.cart-quantity input` and the note textarea.
-The markup is the API; inventing `data-cart-*` attributes adds a second
-contract for no gain.
+The markup is the API; `data-cart-*` attributes would be a second contract.
 
 | Consumer | Owns | Re-render |
 |---|---|---|
@@ -193,17 +189,17 @@ template for predictive results; a live region inside the swapped region;
 | Where does a mistake get recorded? | `/record-incident`, in the repo where it happened, committed at the moment it happens. Incidents stay there; the rules they produce travel. |
 | In what order is a store rebuilt? | By dependency: recon → foundations → commerce path → chrome → shared components → transactional templates → homepage and content → long tail (`rebuild-playbook.md`). |
 | How does a fork receive tooling and send learnings back without shared history? | `base-link.sh` adds Base as a remote and worktree; `pull-base-tooling.py` overlays three-way against a stamp; `/harvest` pushes from the worktree and opens the Base PR. |
-| Mobile padding: a multiple of desktop, or its own setting? | Its own setting. Measured ratios run from 0.43 to 1.70 and cross 1.0, so a constant is the wrong shape; a conditional defers the judgment to the worst moment. Four padding settings on every new section (ruled 2026-09-17). |
+| Mobile padding: a multiple of desktop, or its own setting? | Its own setting. Measured ratios run from 0.43 to 1.70 and cross 1.0, so a constant is the wrong shape and a conditional defers the judgment. Four padding settings on every new section. |
 
 ## 5. Open
 
 - **`templates/product.json` sets `image_ratio` on shop-the-look, which its
   schema never defines.** Shopify drops the key silently. Fix with the retrofit
   below, not in tooling work.
-- **Retrofit Base's own sections to the contract.** The reference
-  implementation is what agents copy, and every fork inherits its compliance
-  on day one (`report-compliance.py` gives the number). One additive theme PR:
-  the non-compliant sections, the bare labels, the `max-width` queries,
+- **Retrofit Base's own sections to the contract.** Agents copy the
+  reference implementation and every fork inherits its compliance
+  (`report-compliance.py` gives the number). One additive theme PR: the
+  non-compliant sections, the bare labels, the `max-width` queries,
   constructor wiring moved to `connectedCallback`. **Needs a ruling.**
 - **Admin API writes from a session** (pages, metafield definitions, menus)
   would close the "inert until someone creates the page" gap. Needs a scope

@@ -5,15 +5,11 @@ Usage: check-json.py <paths...> [--quiet]
 Exit 1 on a parse error or a locale over the cap. Warnings never fail.
 
 Notes:
-- Shopify's parser accepts `/* */` comment blocks (every template starts with
-  one) and trailing commas. Both are tolerated; a trailing comma is a warning
-  because Prettier, `json.load` and most editors reject it.
-- A file that does not parse even then is an error: a broken locale renders
-  key paths to the customer, a broken template 404s the page.
-- Shopify rejects a locale file with more than 3,400 keys ("Too many
-  translation keys") and the failed upload takes every page of the theme down;
-  Theme Check, Prettier and a JSON parse all pass it. The warning starts 100
-  keys early.
+- Shopify's parser accepts `/* */` blocks (every template starts with one) and trailing commas; both are tolerated,
+  a trailing comma is a warning because Prettier, `json.load` and most editors reject it.
+- A file that does not parse even then is an error: a broken locale renders key paths to the customer, a broken template 404s.
+- Shopify rejects a locale file over 3,400 keys ("Too many translation keys") and the failed upload takes the theme down;
+  Theme Check, Prettier and a JSON parse all pass it. The warning starts 100 keys early.
 """
 
 import json

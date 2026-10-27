@@ -6,35 +6,26 @@ argument-hint: <slug> "<what went wrong>"
 
 # record-incident
 
-Write it down now, in the shape the harvest can read.
-
-The record is made at the moment of failure, because that is the only moment
-all the details are in context, and it is committed, because a file nobody can
-see in a pull request does not exist.
+Write it down at the moment of failure, when the details are in context, as
+a committed file a pull request can show.
 
 ## When to record
 
-- A Shopify command failed or the theme 500'd because of a pattern a rule
-  should have named.
-- A gate, Theme Check or review caught something after the code was written
-  that a rule should have prevented before.
-- The design was misread, or something the design could not show was inferred
-  wrongly and had to be redone.
+- A Shopify command failed or the theme 500'd on a pattern a rule should name.
+- A gate, Theme Check or review caught what a rule should have prevented.
+- The design was misread, or something it could not show was inferred wrongly.
 - A CSS or browser behaviour had to be *measured* to understand.
-- A tool did not behave as documented (Figma page listing, a CLI on the wrong
-  Node, a hook that never fired).
+- A tool did not behave as documented.
 
-**Not an incident:** a design change, a new requirement, a normal bug in new
-code that nothing could reasonably have predicted. Do not inflate the queue;
-it is only useful if every entry is real.
+**Not an incident:** a design change, a new requirement, a normal bug nothing
+could have predicted. Every entry must be real.
 
 ## Steps
 
-1. **Apply the CLAUDE.md test** to decide `scope`: would this be true in a
-   Shopify theme that is not this client's? Yes → `generic`. No → `client`.
-   When unsure, `generic` — the harvest decides for real.
+1. **Apply the CLAUDE.md test** for `scope`: true in a theme that is not this
+   client's → `generic`; otherwise `client`; unsure → `generic`.
 
-2. **Create the file** — one command, then fill the four sections:
+2. **Create the file**, then fill the four sections:
 
    ```bash
    python3 .claude/scripts/new-incident.py \
@@ -47,32 +38,24 @@ it is only useful if every entry is real.
 
    It prints the path: `docs/ai-workflow/incidents/<date>-<slug>.md`.
 
-3. **Fill the four sections**, each a few sentences, written for someone who
-   was not in the session:
+3. **Fill the four sections**, a few sentences each, for someone who was not
+   in the session:
    - **What happened** — the symptom and the cause, with the file and line.
    - **How it surfaced** — who or what noticed, and how late.
    - **What fixed it** — the change, and how it was verified.
-   - **Which rule or check should have caught it, and why it did not** — the
-     field that turns an incident into a standards gap. If nothing could have,
-     say so; if a rule exists and was not followed, say which and why (not
-     loaded? too vague? contradicted by legacy code?).
+   - **Which rule or check should have caught it, and why it did not** — if
+     nothing could have, say so; if a rule exists and was not followed, say
+     which and why (not loaded? too vague? contradicted by legacy code?).
 
 4. **Leave `status: open`.** The drift check and the doctor count open
-   incidents; `/harvest` moves a generic one to Base and marks it
-   `harvested`. A `client` incident that will never go up is marked
-   `client-only` with `new-incident.py --set-status <file> client-only`.
+   incidents; `/harvest` marks a generic one `harvested`. A `client` incident
+   that will never go up: `new-incident.py --set-status <file> client-only`.
 
-5. **Commit it with the fix**, in the same change. An incident committed
-   beside the code it describes is reviewable; one written at the end of the
-   build is not written.
+5. **Commit it with the fix**, in the same change.
 
 ## Where it goes from here
 
-- The Stop hook's SessionStart context prints the open count every session.
-- `check-tooling-drift.py` lists local rule edits; an incident that led to a
-  rule edit in this repo is a harvest candidate by construction.
-- `/harvest <incident-file>` opens the Base pull request from inside this
-  repo — no history repair, no copying files by hand.
-
-Incidents are excluded from the tooling overlay on purpose: they belong to the
-repo that recorded them. What travels to Base is the rule the incident produces.
+SessionStart prints the open count; `check-tooling-drift.py` lists the rule
+edits an incident led to; `/harvest <incident-file>` opens the Base pull
+request from this repo. Incidents stay in the repo that recorded them; the
+rule they produce is what travels.

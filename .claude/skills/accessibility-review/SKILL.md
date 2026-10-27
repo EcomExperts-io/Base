@@ -6,38 +6,27 @@ argument-hint: <section-or-snippet-name | page URL>
 
 # accessibility-review
 
-Accessibility is the one review that blocks a merge (`code-review-policy.md`).
-This skill produces the findings a lead can act on: each names the control,
-the WCAG criterion, what a keyboard or screen-reader user actually experiences,
-and one fix.
+The one review that blocks a merge (`code-review-policy.md`); the standard is
+`.claude/rules/accessibility.md`, read first. Untranslated text is
+localization, unescaped output is security — neither is a finding here.
 
 **Invocation:** `/accessibility-review <section-or-snippet-name | page URL>`
-Example: `/accessibility-review component-filters-sidebar`
-
-The standard is `.claude/rules/accessibility.md`. Read it first; this skill is
-the procedure, that file is the bar. Untranslated text is localization and
-unescaped output is security — neither is an accessibility finding.
 
 ## Step 1 — Gather
 
 1. Read the target `.liquid` file, its `assets/*.css` and `assets/*.js`, and
-   any snippet it renders that carries a control (buttons, links, inputs,
-   dialogs, menus, sliders).
-2. Run the mechanical pass. The gate already greps for the six patterns that
-   recur most — CSS `order`, `white-space: nowrap` on controls,
-   `outline: none` on focus, motion with no reduced-motion override, a click
-   handler on a `div`, an `<img>` with no `alt`:
+   any snippet it renders that carries a control.
+2. Run the mechanical pass (CSS `order`, `nowrap` on controls, `outline:
+   none`, no reduced-motion override, a click handler on a `div`, no `alt`):
 
    ```bash
    python3 .claude/scripts/check-conventions.py --files <the files>
    ```
 
    Its findings are the floor, not the review.
-3. If the theme is running (`/run-theme`), open the page in the browser tools
-   and walk it with the keyboard: Tab through every control, open and close
-   every overlay, operate every carousel and accordion. Record what focus did,
-   not what the code says it should do. Without a running theme, say so in
-   the report and judge from the code only.
+3. If the theme is running (`/run-theme`), walk the page with the keyboard:
+   Tab through every control, open and close every overlay, operate every
+   carousel and accordion; record what focus did. Otherwise say so.
 
 ## Step 2 — Check, in the rule's order
 
@@ -57,32 +46,25 @@ Work through sections 1–11 of `accessibility.md` and record only what fails:
 | Overlays | a `<dialog>` without `aria-modal`; live region inside a region that re-renders |
 | Shopify specifics | `form` attributes on product forms; `aria-live` on the whole cart drawer instead of a status node |
 
-For Alpine-driven state, read the `x-data` and confirm the ARIA attributes
-(`aria-expanded`, `aria-controls`, `aria-selected`, `aria-hidden`) are bound to
-the same state the UI uses, not set once in markup.
+For Alpine-driven state, confirm the ARIA attributes are bound to the same
+`x-data` state the UI uses, not set once in markup.
 
 ## Step 3 — Report
 
-Findings only, at most eight, ordered by consequence (what a shopper cannot do
-first). Each one:
+Findings only, at most eight, ordered by what a shopper cannot do first. Each:
 
 - **File and line** (`path:line`)
 - **Criterion** — the WCAG 2.1 success criterion number and name
-- **What happens** — in a sentence, from the user's side: "focus stays on the
+- **What happens** — one sentence from the user's side: "focus stays on the
   page behind the drawer; Tab reaches nothing inside it"
-- **Fix** — one, specific and minimal, naming the house pattern to copy
-  (`accessibility.md` §10 lists the recurring ones)
+- **Fix** — one, minimal, naming the house pattern (`accessibility.md` §10)
 
-Then **what was not checked** — contrast without a running theme, screen
-reader behaviour without one at hand — stated plainly, never implied passed.
-
-Do **not** apply fixes. The developer reviews and approves; if asked to fix,
-the rules apply in full (a new string is a translation key, a new control is
-a real control).
+Then **what was not checked** — contrast or screen-reader behaviour without a
+running theme — stated, never implied passed. Do **not** apply fixes; the
+developer approves.
 
 ## Step 4 — Record what the rule should have caught
 
-A finding that a rule or the gate should have prevented is an incident:
-`/record-incident` with `should_have_caught` pointing at `accessibility.md`
-or `check-conventions.py`. Three of the same finding across sections is a
-standards gap, not three findings — say so.
+A finding a rule or the gate should have prevented is `/record-incident`
+with `should_have_caught` at `accessibility.md` or `check-conventions.py`.
+Three of the same finding across sections is a standards gap, not three findings.

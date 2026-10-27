@@ -1,25 +1,18 @@
 #!/usr/bin/env python3
 """Mechanical checks for the conventions in .claude/rules that a grep can decide.
 
-Modes
+Usage
 -----
-  --files <paths...>   report on these working-tree files; never blocks
-  --staged             pre-commit: added files block, modified files warn
-  --changed            working tree vs HEAD (the Stop hook): new files block
-  --all                every tracked theme file; report only
-                       (also sweeps docs/ for pages whose section or snippet is gone)
-  --block              with --changed or --all, exit 1 on blocking findings
-  --quiet              print nothing when there is nothing to say
+  check-conventions.py --files <paths...>   report on these working-tree files; never blocks
+  check-conventions.py --staged             pre-commit: added files block, modified files warn
+  check-conventions.py --changed            working tree vs HEAD (the Stop hook): new files block
+  check-conventions.py --all                every tracked theme file, report only; also sweeps docs/ for orphan pages
+  --block   with --changed or --all, exit 1 on blocking findings      --quiet   print nothing when there is nothing to say
 
-Notes
------
-A finding is *blocking* only when it has error severity AND sits in a file that
-is new. Modified files are reported, never gated: Base carries legacy that
-predates these rules.
-
-Two checks catch what takes the theme down with a 500 on every route and that
-Theme Check does not report: a `range` with fewer than three steps, and a `t:`
-key left in a template value.
+Notes:
+- A finding blocks only with error severity in a NEW file; modified files are reported, never gated (Base carries legacy).
+- Two checks catch a 500 on every route that Theme Check does not: a `range` with fewer than three steps, and a `t:`
+  key left in a template value.
 """
 
 import glob
@@ -32,10 +25,8 @@ import sys
 THEME_DIRS = ("sections/", "snippets/", "assets/", "layout/", "templates/",
               "locales/", "config/", "blocks/")
 
-# Files whose whole job is to hold the merchant's raw values. Hex is not a
-# finding there. snippets/css-variables.liquid is deliberately NOT here: a
-# literal hex in it is a brand colour no merchant setting controls, and GitBot
-# reports it.
+# Files whose job is to hold the merchant's raw values; hex is not a finding there. snippets/css-variables.liquid is
+# deliberately not here: a literal hex in it is a brand colour no merchant setting controls, and GitBot reports it.
 TOKEN_FILES = {"config/settings_schema.json", "config/settings_data.json"}
 
 # ---------------------------------------------------------------------------
@@ -129,12 +120,8 @@ def read(path):
 # CSS — runs on .css files and on the CSS blocks inside .liquid files
 # ---------------------------------------------------------------------------
 def blank_css_comments(text):
-    """Replace every `/* … */` body with spaces, keeping newlines.
-
-    A comment explaining why a pattern was *avoided* must not be reported as a
-    use of it. Blanking rather than deleting keeps every byte offset, so
-    `line_of` and the `offset` used for CSS inside Liquid stay exact.
-    """
+    """Replace every `/* … */` body with spaces, keeping newlines, so a comment about an avoided pattern is not
+    reported as a use of it. Blanking keeps every byte offset, so `line_of` and the CSS-in-Liquid `offset` stay exact."""
     return re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text, flags=re.S)
 
 
@@ -176,14 +163,8 @@ BLOCK_RE = re.compile(r"([^{}]+)\{([^{}]*)\}")
 
 
 def scan_css_gitbot(path, text, findings, offset=0):
-    """The CSS findings GitBot reports.
-
-    Minor: a hardcoded length, a physical property, a hex. Major: `order`,
-    `nowrap`, `outline: none` on `:focus`, an infinite animation with no
-    reduced-motion override. Lengths and physical properties are ONE finding
-    per file with a count, the way the review policy asks a reviewer to report
-    them.
-    """
+    """The CSS findings GitBot reports. Lengths and physical properties are ONE finding per file with a count,
+    the way the review policy asks a reviewer to report them."""
     hard, phys = [], []
     for m in DECL_RE.finditer(text):
         prop, value = m.group(1).lower(), m.group(2).strip()
@@ -232,13 +213,9 @@ def scan_css_gitbot(path, text, findings, offset=0):
 
 
 def scan_css_duplicates(path, lines, findings, offset=0):
-    """A run of DUP_RUN lines that already appeared earlier in the file.
-
-    An edit to the first copy of a property both copies declare is overridden
-    by the second, silently. Whole-line comparison after stripping indentation;
-    a window has to hold at least ten distinct non-blank lines so a stretch of
-    closing braces and blank lines never counts.
-    """
+    """A run of DUP_RUN lines that already appeared earlier in the file: an edit to the first copy is silently
+    overridden by the second. Whole-line comparison after stripping indentation; a window needs ten distinct non-blank
+    lines so closing braces and blank lines never count."""
     stripped = [ln.strip() for ln in lines]
     seen = {}
     i = 0
@@ -305,13 +282,8 @@ def key_exists(tree, key):
 
 
 def scan_schema_t_keys(path, text, findings, offset=0):
-    """Every `t:` value in a schema must resolve in the schema locale.
-
-    The contract check verifies the SHAPE of a label — that it is a `t:` key
-    and not bare English. A key with a typo, a key for a renamed section, and
-    a key nobody added all pass it and show only when a merchant opens the
-    theme editor.
-    """
+    """Every `t:` value in a schema must resolve in the schema locale. The contract check verifies only the SHAPE
+    of a label; a typo, a renamed section or a key nobody added shows only when a merchant opens the theme editor."""
     tree = locale(LOCALE_SCHEMA)
     if not isinstance(tree, dict):
         return
@@ -324,12 +296,8 @@ T_FILTER_RE = re.compile(r"""(['"])([A-Za-z0-9_.\-]+)\1\s*\|\s*t\b""")
 
 
 def scan_runtime_t_keys(path, text, findings):
-    """Every literal `'key' | t` must resolve in the runtime locale.
-
-    Only a string literal directly before `| t` is checked; a key built with
-    `append` is skipped rather than reported, so a runtime-composed key never
-    cries wolf. Liquid comments and the schema block are blanked first.
-    """
+    """Every literal `'key' | t` must resolve in the runtime locale. A key built with `append` is skipped, not reported;
+    Liquid comments and the schema block are blanked first."""
     tree = locale(LOCALE_RUNTIME)
     if not isinstance(tree, dict):
         return
@@ -502,13 +470,8 @@ def schema_ids(section_type):
 
 
 def scan_template_settings(path, text, findings):
-    """A template key its section's schema does not define is dropped on upload.
-
-    Shopify validates a template against the schema the store holds at that
-    moment; `theme dev` syncs files in watcher order, so a new setting and its
-    template value in one change lose the value silently when the template
-    goes up first. A typo in a key is the same finding.
-    """
+    """A template key its section's schema does not define is dropped on upload: `theme dev` syncs in watcher order,
+    so a new setting and its template value in one change lose the value when the template goes up first."""
     data = parse_json_tolerant(text)
     if not isinstance(data, dict):
         return
@@ -552,12 +515,8 @@ def scan_template_settings(path, text, findings):
 
 
 def scan_docs_orphans(deleted, findings, sweep=False):
-    """A docs page for a section or snippet that no longer exists.
-
-    Pure filename arithmetic: docs/sections/x.md needs sections/x.liquid.
-    Reported for the files this change deletes, or for every orphan on a
-    sweep.
-    """
+    """A docs page for a section or snippet that no longer exists: docs/sections/x.md needs sections/x.liquid.
+    Reported for the files this change deletes, or for every orphan on a sweep."""
     for kind in ("sections", "snippets"):
         for page in sorted(glob.glob(f"docs/{kind}/*.md")):
             src = f"{kind}/{os.path.basename(page)[:-3]}.liquid"

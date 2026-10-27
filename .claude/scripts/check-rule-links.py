@@ -17,10 +17,8 @@ import sys
 # A markdown link, [text](path). Anchors, URLs and mailto are not paths.
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 
-# A path named in prose or inside backticks. Deliberately conservative: it must
-# start with a known config root or a theme directory, and end in a file
-# extension or a slash. Anything looser produces false positives on prose like
-# "the sections/ directory" — which is why a bare word is never a candidate.
+# A path named in prose or inside backticks: it must start with a known config root or a theme directory and end in a
+# file extension or a slash. Anything looser matches prose like "the sections/ directory".
 INLINE_PATH_RE = re.compile(
     r"`([^`\s]*?(?:\.claude|\.cursor|sections|snippets|blocks|assets|locales|"
     r"templates|config|layout|docs)/[^`\s]*?)`"
@@ -69,10 +67,8 @@ def candidates(text):
 def resolve(ref, source):
     """Resolve a reference relative to its source file, then to the repo root."""
     ref = ref.split("#", 1)[0].strip()
-    # `assets/critical.css:162` is a citation, not a filename: CLAUDE.md asks
-    # for "file_path:line_number". The range form `assets/cart.js:201-206` and
-    # the list form `sections/header.liquid:48,73` are the same citation, so a
-    # repeated `[-,]\d+` group covers spans, lists, and both mixed.
+    # `assets/critical.css:162`, `assets/cart.js:201-206` and `sections/header.liquid:48,73` are citations
+    # (CLAUDE.md asks for file_path:line_number), not filenames: a repeated `[-,]\d+` group covers all three.
     ref = re.sub(r":\d+(?:[-,]\d+)*(?::\d+)?$", "", ref)
     if not ref or ref.startswith(SKIP_PREFIXES):
         return None

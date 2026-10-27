@@ -1,28 +1,18 @@
 #!/usr/bin/env python3
-"""How far has this repo's AI tooling drifted from Base — in both directions?
+"""How far this repo's AI tooling has drifted from Base, in both directions, against the `.base-version` stamp.
 
-Diffs against the Base commit recorded in `.base-version`:
-
-  HARVEST candidates   files this repo edited since the stamp and Base did not
-                       — a client measurement (stays) or a generic trap (goes up, via /harvest)
-  PULL-DOWN candidates files Base changed since the stamp and this repo did not
-                       — run pull-base-tooling.py
-  BOTH changed         needs a human merge; pull-base-tooling.py stashes Base's copy
-
-The client-vs-generic guess is a heuristic on the added lines (pixel values,
-file counts and container classes read as client-specific) and is labelled a guess.
+Notes:
+- HARVEST candidates: files this repo edited and Base did not (a client measurement stays; a generic trap goes up via /harvest).
+- PULL-DOWN candidates: files Base changed and this repo did not (run pull-base-tooling.py). BOTH changed: a hand merge.
+- The client-vs-generic label is a heuristic on the added lines (pixel values, file counts, container classes) and says so.
+- A stamp from an unmerged Base feature branch is not on the ref: every file that branch touched shows as BOTH and
+  nothing as HARVEST, and the report says so instead of "distance unknown".
 
 Usage
 -----
-  python3 .claude/scripts/check-tooling-drift.py [--brief] [--json] [--ref base/development]
+  python3 .claude/scripts/check-tooling-drift.py [--brief] [--json] [--ref base/development] [--no-fetch] [--help]
   python3 .claude/scripts/check-tooling-drift.py --base-path ../Base
-  python3 .claude/scripts/check-tooling-drift.py --help
   --no-fetch  skip `git fetch base` (offline, or in CI where the remote is a checkout)
-
-When the stamped commit is not on the ref being compared against (the fork
-pulled its tooling from a Base feature branch that has not merged yet), every
-file that branch touched shows as BOTH changed and nothing as HARVEST. The
-report says so instead of printing "distance unknown".
 """
 
 import json
@@ -99,10 +89,8 @@ def main(argv):
     except RuntimeError:
         pass
     try:
-        # A count only means something when the stamp is an ancestor of the ref.
-        # A stamp taken from an unmerged feature branch is reachable in the repo
-        # but not on the ref, and `rev-list --count` would happily report a
-        # number that is not a distance.
+        # A count only means something when the stamp is an ancestor of the ref: a stamp from an unmerged feature branch
+        # is reachable in the repo but not on the ref, and `rev-list --count` would report a number that is not a distance.
         sh("git", "merge-base", "--is-ancestor", old_sha, source.sha, cwd=source.git_dir)
         behind = int(sh("git", "rev-list", "--count", f"{old_sha}..{source.sha}", cwd=source.git_dir).strip())
     except RuntimeError:

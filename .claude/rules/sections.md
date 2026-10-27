@@ -8,10 +8,9 @@ paths:
 
 ## The Merchant Settings Contract — required
 
-**Every section must expose these settings.** This is not a style
-preference; it is the contract that makes a section usable in the theme editor.
-The mobile pair applies to new work; existing sections are not retrofitted in
-passing (see the ruling below the worked example).
+**Every section exposes these settings.** A Figma frame specifies one spacing
+value and one background, so a build that matches the design has no reason to
+add a merchant control — which is why this contract is applied deliberately.
 
 | Setting | Required | Notes |
 |---|---|---|
@@ -19,22 +18,20 @@ passing (see the ruling below the worked example).
 | `padding_bottom` | **Always. No exceptions.** | Desktop. `range`, 0–100, step 4, default 40 |
 | `padding_top_mobile` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
 | `padding_bottom_mobile` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
-| `color_scheme` | Exposed by default | May be omitted **only** with a Liquid comment stating why (see below) |
+| `color_scheme` | Exposed by default | May be omitted **only** with a Liquid comment stating why |
 
-Plus a `presets` entry, so a merchant can actually add the section.
+Plus a `presets` entry, so a merchant can add the section at all.
 
-### Why this rule exists
-
-**A Figma frame specifies exactly one spacing value and one background
-colour**, so a build that matches the design has no reason to add a merchant
-control — and 30 of 31 new sections on one build shipped without any. Visual
-fidelity and the merchant contract are different success criteria; this one
-has to be applied deliberately.
+**Mobile padding is its own setting, never `padding_top | times: 0.75`.**
+Measured mobile/desktop ratios cross 1.0, so no constant expresses them.
+Existing sections still on the multiplier are legacy, not retrofitted in
+passing (the retrofit is an open item in `docs/base-theme-standards.md`).
 
 ### The colour-scheme exception
 
-Some designs fix a section's surface on purpose. When that is genuinely the
-case, hardcode it and say so in one line:
+A design that fixes a section's surface on purpose may hardcode it, with one
+comment saying so. No comment means it was forgotten, not decided. Padding has
+no equivalent exception.
 
 ```liquid
 {%- comment -%}
@@ -44,16 +41,9 @@ case, hardcode it and say so in one line:
 {%- endcomment -%}
 ```
 
-No comment means it was forgotten, not decided. The four padding settings have
-no equivalent exception — there is no design reason for a merchant not to
-adjust vertical rhythm, on either breakpoint.
-
 ## Section Structure
 
-This is Base's actual pattern, verified against `sections/promo-banner.liquid`
-and 36 other sections. **Load CSS with `stylesheet_tag`** (Base: 62 uses vs 4
-for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
-`defer`).
+**Load CSS with `stylesheet_tag`** and **JS as `type="module"`**.
 
 ```liquid
 {{ 'section-example-name.css' | asset_url | stylesheet_tag }}
@@ -91,16 +81,8 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
   "name": "t:names.example_name",
   "tag": "section",
   "settings": [
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "default": "scheme-1"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.all.padding.section_padding_heading"
-    },
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:sections.all.colors.label", "default": "scheme-1" },
+    { "type": "header", "content": "t:sections.all.padding.section_padding_heading" },
     {
       "type": "range",
       "id": "padding_top",
@@ -133,58 +115,29 @@ for `{% stylesheet %}`) and **load JS as `type="module"`** (Base: 40 uses, zero
 {% endschema %}
 ```
 
+The six `t:` keys resolve in `locales/en.default.schema.json`; use them.
+
 > **The `750px` above is the padding boilerplate's breakpoint, not the theme's
-> layout breakpoint.** Keep it — it is inherited from Dawn and 31 sections here
-> already use it, so changing it in one section desynchronises that section's mobile
-> padding from every other. Below it the mobile pair applies; at it and above,
-> the desktop pair. Your own component CSS is a separate decision: Base's
-> `section-*.css` is split evenly between `750px` and `769px`, so **in a client theme
-> forked from Base, grep `assets/` and match whatever that theme settled on** rather
-> than copying a number out of this file. Two numbers, two jobs — don't unify them.
+> layout breakpoint.** Keep it: changing it in one section desynchronises that
+> section's mobile padding from every other. Your component CSS is a separate
+> decision — grep `assets/` and match the breakpoint the theme settled on.
 
-> **`.page-width` is correct in Base and may not be in the theme you are working in.**
-> Base uses it in all 32 of its sections. A client theme often introduces its own
-> container with a different max-width, and the two are frequently **identical at
-> 1440** — so a section built and measured only at 1440 passes review and then reads
-> as broken on a large screen. Check which container class that theme's finished,
-> QI-passed pages use, and measure at 1920 and 393 as well as at the width the Figma
-> frame was drawn at.
+> **`.page-width` is Base's container; a client theme may use its own**, often
+> identical at 1440 and different on a large screen. Use the container its
+> QI-passed pages use, and measure at 1920 and 393 as well as the Figma width.
 
-> **If your section wrapper is a flex or grid container, give the element that
-> carries `.page-width` an explicit `inline-size: 100%`.** `.page-width` centres
-> itself with `margin-inline: auto`, and an auto cross-axis margin on a flex item
-> cancels the default `align-items: stretch` — so the container collapses to its
-> widest child and takes the band's alignment with it. Every computed style
-> still reports correct, because it is; only a pixel comparison shows it (same
-> shape as the custom-element `display` trap in `rules-of-engagement.md`).
-
-> **Mobile padding is its own merchant setting, not a multiple of the desktop
-> one.** Ruled 2026-09-17, adopted 2026-09-21; it replaces the
-> `padding_top | times: 0.75` boilerplate inherited from Dawn.
->
-> Measured mobile/desktop ratios run from 0.43 to 1.70, sometimes on the two
-> edges of one section, and a header can be tighter on desktop than on mobile.
-> A constant cannot express a ratio that crosses 1.0, so `0.75` was the wrong
-> shape, not the wrong number. A conditional ("add the mobile pair only when
-> the ratio is not about 0.75") leaves a judgment call before the section has
-> been measured. **Four settings always, no condition to evaluate.**
->
-> **Existing sections are not retrofitted as part of unrelated work.** None of
-> Base's 48 carries the mobile pair yet; a section still on the multiplier is
-> legacy, not a bug to fix while passing through — the same standing rule as
-> the 750/769 breakpoint split above. The retrofit is an open item in
-> `docs/base-theme-standards.md`. New sections carry all four.
-
-The six `t:` keys above all resolve in `locales/en.default.schema.json` today —
-use them rather than inventing new ones.
+> **A flex or grid section wrapper needs `inline-size: 100%` on the element
+> carrying `.page-width`.** Its `margin-inline: auto` cancels
+> `align-items: stretch`, so the container collapses to its widest child;
+> every computed style still reads correct (the same shape as the
+> custom-element `display` trap in `rules-of-engagement.md`).
 
 ## A preset-seeded block renders nothing until it has content
 
-A `presets` entry that seeds blocks hands the merchant blocks whose content
-settings are blank — design copy must not become a schema `default` — so the
-first thing they see after adding the section is a coloured band around an
-empty element. Skip a block whose content settings are all blank, and render
-nothing when none survives; pre-scan the way `shop-the-look.liquid` does:
+A preset that seeds blocks hands the merchant blank content settings (design
+copy must not become a schema `default`), so the first thing they see is a
+coloured band around nothing. Skip a block whose content settings are all
+blank, and render nothing when none survives:
 
 ```liquid
 {%- assign has_message = false -%}
@@ -200,19 +153,16 @@ markup never tests `blank`.
 
 ## Section Requirements
 
-- `{% schema %}` with valid JSON, and a `presets` entry
-- The settings above — four padding ranges and `color_scheme`
-- Semantic HTML; a `page-width` wrapper unless the section is deliberately full-bleed
-- CSS scoped to the section, in `assets/section-[name].css`
+- Semantic HTML; a `page-width` wrapper unless deliberately full-bleed
+- CSS in `assets/section-[name].css`, scoped to the section
 - **Translation keys for every string** — schema labels and user-facing text
-  alike. See `localization.md`; it applies to brand-new sections exactly as
-  much as to edits.
+  alike, in brand-new sections as much as edits (`localization.md`)
 - `{{ block.shopify_attributes }}` on every block-rendered element
 
 ## Declaring a section exempt
 
-A section a merchant cannot place is out of scope for the contract — but it has
-to **say so**, in a Liquid comment mentioning `presets`:
+A section a merchant cannot place is out of scope for `presets`, and says so
+in a Liquid comment mentioning `presets`:
 
 ```liquid
 {%- comment -%}
@@ -221,50 +171,33 @@ to **say so**, in a Liquid comment mentioning `presets`:
 {%- endcomment -%}
 ```
 
-Three cases qualify, and nothing else does:
-
 | Case | Example |
 |---|---|
 | Template main section | `product`, `cart`, `search`, `customers/*` |
 | Section-group member | `header` |
 | Render target, requested by other code | `pickup-availability`, `predictive-results` |
 
-A separate comment mentioning `color_scheme` exempts that one setting on a
-section that is otherwise in scope, for a design that fixes the surface on
-purpose. **Padding has no exemption at all.**
+A separate comment mentioning `color_scheme` exempts that one setting.
+**Padding has no exemption.**
 
-The check only runs on sections **added** in a commit, so this is about new
-work. Base's existing sections predate the contract and are not annotated: 17
-have no `presets` (most of them legitimately, being template mains), 7 are
-missing padding or `color_scheme`, and 20 carry bare English schema labels.
-Do not copy an existing section and assume its schema is compliant — measure
-against the list above, or start from
-`.claude/skills/scaffold-section/reference-section.liquid`, which is.
+Base's older sections predate the contract; do not copy one and assume its
+schema is compliant — start from `.claude/skills/scaffold-section/reference-section.liquid`.
 
 ## Naming
 
-Name sections by **function**, not by the page they first appear on. `hero`,
-`faq`, `selling-points` — not `home-hero` or `about-values`. A page-prefixed
-name stops being descriptive the first time the section is reused.
-
-`main-` is reserved for template main sections. Do not use it for new sections.
+Name by **function**, not by the page: `hero`, `faq`, `selling-points`, never
+`home-hero`. `main-` is reserved for template main sections.
 
 ## Do Not
 
 - **Do not** use `{% stylesheet %}` or `{% content_for 'blocks' %}` in a new
-  section. Both appear in older scaffolding examples, but Base uses
-  `stylesheet_tag` and a `section.blocks` loop almost everywhere. `content_for`
-  appears in exactly one Base section (`custom-section.liquid`) and is not the
-  general pattern.
-- **Do not** reach for container queries. Zero uses in Base; use the
-  `min-width` media queries the rest of the theme uses.
-- **Do not** follow `.claude/rules/examples/section-example.liquid`. It predates
-  this rule, teaches the two patterns above, and exposes none of the required
-  settings. The worked example in this file is the current one.
+  section; Base uses `stylesheet_tag` and a `section.blocks` loop.
+- **Do not** reach for container queries; the theme has none.
+- **Do not** follow `.claude/rules/examples/section-example.liquid`; it
+  predates this rule. The example in this file is the current one.
 
 ## Performance
 
-- `{% liquid %}` for multi-line logic
 - `loading="lazy"` on below-fold images
-- Scope CSS custom properties to the section via `style="--foo: {{ setting }};"`
-  rather than generating per-instance classes
+- Settings reach CSS as custom properties on the wrapper's `style` attribute,
+  not per-instance classes

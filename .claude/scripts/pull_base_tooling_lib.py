@@ -1,10 +1,5 @@
-"""Shared pieces of pull-base-tooling.py and check-tooling-drift.py.
-
-Kept in one place so the two scripts cannot disagree about what "tooling" is
-or how Base's files are read. A hyphenated script name cannot be imported, so
-the importable half lives here; pull-base-tooling.py re-exports nothing and
-imports this too.
-"""
+"""Shared pieces of pull-base-tooling.py and check-tooling-drift.py, so the two cannot disagree about what "tooling"
+is. A hyphenated script name cannot be imported, hence a separate module."""
 
 import json
 import subprocess
@@ -14,12 +9,8 @@ STAMP = ".base-version"
 
 
 def check_flags(argv, known, usage):
-    """Refuse to run on an argument the script does not know.
-
-    Returns an exit code to return at once, or None to carry on. `known` maps
-    each flag to whether it takes a value. This runs before anything is read or
-    written.
-    """
+    """Refuse to run on an argument the script does not know, before anything is read or written. Returns an exit
+    code to return at once, or None to carry on; `known` maps each flag to whether it takes a value."""
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -41,16 +32,12 @@ TOOLING_PREFIXES = (".claude/", ".githooks/", ".agents/", ".codex/", "docs/ai-wo
 TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", "AGENTS.md", ".github/workflows/theme-review.yml"}
 EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/", ".claude/.cache/",
                     ".claude/verify/", "docs/ai-workflow/incidents/")
-# The one file under the excluded incidents directory that does travel. Incidents
-# belong to the repo that recorded them, but the directory itself must exist in
-# a fork on arrival: rules and skills link to it, check-rule-links.py resolves
-# those links, and git cannot carry an empty directory.
+# The one file under the excluded incidents directory that does travel: rules and skills link to the directory,
+# check-rule-links.py resolves those links, and git cannot carry an empty directory.
 INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
-# Paths Base has renamed or removed, old -> new (or None). A fork that still
-# has the old path and never edited it (its bytes equal what Base shipped at
-# the stamp) loses it on the next pull; an edited copy is kept and listed for
-# a hand merge.
+# Paths Base has renamed or removed, old -> new (or None). A fork whose copy still equals what Base shipped at the
+# stamp loses it on the next pull; an edited copy is kept and listed for a hand merge.
 RETIRED = {
     ".claude/skills/verify-against-figma/SKILL.md": ".claude/skills/verify-against-reference/SKILL.md",
     ".claude/references/equal-height-column-pitfalls.md": ".claude/references/layout-pitfalls.md",

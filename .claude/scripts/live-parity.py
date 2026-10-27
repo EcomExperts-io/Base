@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
 """live-parity.py — compare a section (or a page) on LIVE against OURS, pixel for pixel, in headless Chrome.
 
-Usage: live-parity.py <subcommand> [options] — `--help` on a subcommand lists its options; the
-verify-against-reference skill carries the copy-paste examples.
-
-Laptop rules are built in: one live+ours Chrome pair per run, reused for every
-width, loaded one after the other; at most LIVE_PARITY_SLOTS (default 2) runs
-on the machine, a third waits and says so; both Chromes are closed when the run
-ends, on Ctrl-C and on SIGTERM too.
-
-Subcommands (every one writes report.json + report.md + PNGs into --out):
+Usage: live-parity.py <subcommand> [options]   (`--help` on a subcommand lists its options; all write report.json/.md + PNGs to --out)
   section      section box, element inventory (boxes + computed styles, paired live<->ours), pixel diff per width
   regress      `section`, but the "live" side is the QA-approved main theme (--main-theme <id>)
   page         every top-level .shopify-section: top/height per side, first divergence, full-page diff
@@ -17,18 +9,10 @@ Subcommands (every one writes report.json + report.md + PNGs into --out):
   hoverstyles  force :hover / :focus-visible / :active on every interactive element, compare the deltas
   motion       sample properties every N ms after a trigger on both sides; --keyframes dumps @keyframes
 
-Guarantees:
-  * the viewport is set with Emulation.setDeviceMetricsOverride (never --window-size); the page's own
-    innerWidth/clientWidth must equal the requested width or that width is refused;
-  * each side runs in its OWN Chrome with its OWN --user-data-dir, and the theme each side rendered is
-    read from Shopify.theme and asserted (a leaked preview cookie makes live render our theme);
-  * lazy media is forced (loading=eager, lazysizes unveil, stepped scroll driven from Python), fonts and
-    images are waited for, images that never load are recorded;
-  * fixed/sticky overlays outside the section are hidden (preview bar, chat, popups) unless --keep-fixed;
-  * animations are finished/paused, carousels stopped and reset, videos paused at t=0 (--freeze);
-  * ours is shifted so its section top has the same sub-pixel fraction as live's (--align-fraction);
-  * each side is captured twice and self-diffed, so motion that the freeze did not stop is reported;
-  * it exits non-zero with a message instead of writing a plausible wrong result.
+Notes:
+- One Chrome pair per run (own --user-data-dir each side), widths in sequence, at most LIVE_PARITY_SLOTS (default 2) runs; closed on exit, Ctrl-C, SIGTERM.
+- Viewport via Emulation.setDeviceMetricsOverride (a width the page does not report back is refused); each side's theme is asserted from Shopify.theme.
+- Lazy media forced, overlays hidden (--keep-fixed), motion frozen (--freeze), tops aligned (--align-fraction); each side is captured twice and self-diffed.
 """
 
 import argparse
@@ -119,8 +103,7 @@ def log(*parts):
 
 
 # ----------------------------------------------------------------------------------------------------------------
-# CDP client (adapted from REPO/.claude/scripts/render-screenshot.py). Differences: frames are parsed only once
-# complete, so a socket timeout never desynchronises the stream; events are buffered, not dropped.
+# CDP client (from render-screenshot.py); frames are parsed only once complete so a timeout never desyncs the stream.
 # ----------------------------------------------------------------------------------------------------------------
 class CDP:
     def __init__(self, ws_url, timeout=60):
@@ -448,8 +431,7 @@ class Browser:
 
 
 # ----------------------------------------------------------------------------------------------------------------
-# In-page library. Runs in an ISOLATED world (pristine built-ins; the page cannot break or see it). Page-JS
-# objects (Swiper instances, jQuery, Shopify.theme) are reached with small main-world snippets instead.
+# In-page library, run in an ISOLATED world (pristine built-ins; page JS cannot see it); page objects need main-world snippets.
 # ----------------------------------------------------------------------------------------------------------------
 JS_LIB = r"""
 (() => {
@@ -925,10 +907,9 @@ class Side:
             "(document.head||document.documentElement).appendChild(st);})()")})
 
     def fresh(self):
-        """Before every load after the first: blank document, no site cookies/storage, and Blink's memory cache
-        purged (critical memory-pressure signal). Blink prefers a higher-density srcset candidate it already holds
-        in memory, so without the purge a 390px render after a 1440px one shows the 1440px image. The HTTP disk
-        cache stays warm."""
+        """Before every load after the first: blank document, no site cookies/storage, Blink's memory cache purged.
+        Blink reuses a higher-density srcset candidate it already holds, so without the purge a 390px render after a
+        1440px one shows the 1440px image. The HTTP disk cache stays warm."""
         if self.loads:
             self.cdp.call("Page.navigate", {"url": "about:blank"})
             self.cdp.wait_event("Page.loadEventFired", timeout=10)
@@ -1855,9 +1836,6 @@ def write_section_report(out_dir, meta, results, errors, cmd):
         f.write("\n".join(L) + "\n")
 
 
-# ----------------------------------------------------------------------------------------------------------------
-# Commands
-# ----------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
 # page — every top-level section, both sides
 # ----------------------------------------------------------------------------------------------------------------

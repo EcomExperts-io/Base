@@ -1,19 +1,11 @@
 #!/bin/sh
 # Start a new client theme from Base, keeping the link back to Base intact.
 #
-# Usage, run from a Base clone:
-#   sh .claude/scripts/new-client-theme.sh git@github.com:EcomExperts-io/<Repo>.git ../<Dir>
+# Usage, from a Base clone: sh .claude/scripts/new-client-theme.sh git@github.com:EcomExperts-io/<Repo>.git ../<Dir>
+#   Leaves two remotes: origin (the client repo, day to day) and base (EcomExperts-io/Base, read-only upstream).
+#   Then `git fetch base && git merge base/development` pulls Base down; `git cherry-pick <sha>` sends a generic fix up.
 #
-# What you get:
-#   origin  the client repo, your day-to-day remote
-#   base    EcomExperts-io/Base, read-only upstream
-#
-#   git fetch base && git merge base/development     # pull Base improvements down
-#   git cherry-pick <sha>                            # send a generic fix up
-#
-# Notes:
-#   The link is established at commit zero or not at all: merging unrelated
-#   histories after the fact conflicts on essentially every file.
+# Note: the link is made at commit zero or not at all; merging unrelated histories later conflicts on nearly every file.
 
 set -e
 
