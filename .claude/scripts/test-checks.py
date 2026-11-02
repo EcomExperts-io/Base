@@ -362,12 +362,18 @@ with tempfile.TemporaryDirectory() as d:
 # where-are-we.py — the three situations, in throwaway repos
 # ---------------------------------------------------------------------------
 def www(cwd, *args):
-    r = subprocess.run([sys.executable, os.path.join(HERE, "where-are-we.py"), *args], capture_output=True, text=True, cwd=cwd)
+    r = subprocess.run([sys.executable, os.path.join(HERE, "where-are-we.py"), *args], capture_output=True, text=True, cwd=cwd, env=git_env())
     return r.stdout.strip()
 
 
+def git_env():
+    """A git hook exports GIT_DIR and GIT_INDEX_FILE; inherited by a throwaway repo's `git init` and
+    `git config`, they rewrite the real repository's config instead. Strip them."""
+    return {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+
+
 def fork(d, commits=1, subject="[BUILD]: Add a section"):
-    g = lambda *a: subprocess.run(["git", *a], cwd=d, capture_output=True, text=True, check=True)
+    g = lambda *a: subprocess.run(["git", *a], cwd=d, capture_output=True, text=True, check=True, env=git_env())
     g("init", "-q", "-b", "Develop"); g("config", "user.email", "t@example.com"); g("config", "user.name", "t")
     g("remote", "add", "origin", "https://github.com/EcomExperts-io/Example-Client.git")
     for k in range(commits):
@@ -401,18 +407,41 @@ with tempfile.TemporaryDirectory() as d:
 with tempfile.TemporaryDirectory() as d:
     g = fork(d, 1); g("remote", "set-url", "origin", "git@github.com:EcomExperts-io/Base.git")
     case("where-are-we: Base reads as Base itself", www(d).startswith("where-are-we: Base itself"), www(d)[:60])
+with tempfile.TemporaryDirectory() as decoy, tempfile.TemporaryDirectory() as d:
+    subprocess.run(["git", "init", "-q", decoy], check=True, env=git_env())
+    os.environ["GIT_DIR"] = os.path.join(decoy, ".git"); os.environ["GIT_INDEX_FILE"] = os.path.join(decoy, ".git", "index")
+    try:
+        fork(d, 1)
+    finally:
+        del os.environ["GIT_DIR"], os.environ["GIT_INDEX_FILE"]
+    bare = subprocess.run(["git", "config", "--local", "core.bare"], cwd=decoy, capture_output=True, text=True).stdout.strip()
+    user = subprocess.run(["git", "config", "--local", "user.name"], cwd=decoy, capture_output=True, text=True).stdout.strip()
+    case("test-checks: a throwaway repo ignores the GIT_DIR a hook exports, so the real repo's config is untouched",
+         os.path.isdir(os.path.join(d, ".git")) and bare == "false" and user == "", (bare, user))
+
+lp = load("live-parity")
+os.environ["PROGRAMFILES"] = r"C:\Program Files"
+try:
+    cands = lp.chrome_candidates()
+finally:
+    del os.environ["PROGRAMFILES"]
+rs = load("render-screenshot")
+case("chrome lookup: live-parity and render-screenshot try the Windows install path and bare `chrome` on PATH",
+     any(c.endswith(os.path.join("Google", "Chrome", "Application", "chrome.exe")) for c in cands) and "chrome" in cands
+     and callable(getattr(rs, "chrome_candidates", None)) and callable(getattr(rs, "kill_tree", None)) and callable(getattr(lp, "kill_tree", None)),
+     cands)
 
 # ---------------------------------------------------------------------------
 # preflight-status.py — in a throwaway client repo
 # ---------------------------------------------------------------------------
 def preflight(cwd, *args):
     r = subprocess.run([sys.executable, os.path.join(HERE, "preflight-status.py"), *args],
-                       capture_output=True, text=True, cwd=cwd)
+                       capture_output=True, text=True, cwd=cwd, env=git_env())
     return r.stdout.strip()
 
 
 with tempfile.TemporaryDirectory() as d:
-    g = lambda *a: subprocess.run(["git", *a], cwd=d, capture_output=True, text=True, check=True)
+    g = lambda *a: subprocess.run(["git", *a], cwd=d, capture_output=True, text=True, check=True, env=git_env())
     g("init", "-q", "-b", "Develop")
     g("config", "user.email", "t@example.com"); g("config", "user.name", "t")
     g("remote", "add", "origin", "https://github.com/EcomExperts-io/Example-Client.git")

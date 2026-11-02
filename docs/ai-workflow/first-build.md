@@ -7,6 +7,9 @@ and sits on a branch. Every place you stall is a tooling defect: `/record-incide
 
 - A Mac or Linux machine with **Node 22+** (`nvm install 24 && nvm alias default 24`), `python3`,
   Google Chrome, [`gh`](https://cli.github.com/) signed in, and Claude Code signed in.
+  The verify scripts (`live-parity.py`, `render-screenshot.py`) also run on Windows: use `py` where
+  `python3` is not on the PATH, and set `CHROME_BIN` when Chrome is installed somewhere other than
+  Program Files or LocalAppData. The hooks and shell scripts still assume a POSIX shell.
 - A staff account on the client store, and access to its Figma file.
 - **One known-good frame**: desktop and mobile node ids for one section, plus the file key.
 

@@ -193,8 +193,11 @@ def check_pillow():
 
 
 def check_chrome():
-    for c in ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-              shutil.which("google-chrome") or "", shutil.which("chromium") or "",
+    windows = [os.path.join(base, "Google", "Chrome", "Application", "chrome.exe")
+               for base in (os.environ.get("PROGRAMFILES"), os.environ.get("PROGRAMFILES(X86)"), os.environ.get("LOCALAPPDATA"))
+               if base]
+    for c in ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", *windows,
+              shutil.which("google-chrome") or "", shutil.which("chromium") or "", shutil.which("chrome") or "",
               os.environ.get("CHROME_BIN", "")):
         if c and os.path.exists(c):
             return ("OK", "chrome", "found (headless screenshots for verify-against-reference)", "")

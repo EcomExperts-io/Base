@@ -30,21 +30,44 @@ import time
 import urllib.error
 import urllib.request
 
-CHROME_CANDIDATES = (
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "google-chrome",
-    "google-chrome-stable",
-    "chromium",
-    "chromium-browser",
-)
+
+
+def chrome_candidates():
+    """Absolute paths are tested for existence, bare names on PATH. Windows installs land in Program Files,
+    Program Files (x86) or LocalAppData; CHROME_BIN covers anything else."""
+    windows = tuple(
+        os.path.join(base, "Google", "Chrome", "Application", "chrome.exe")
+        for base in (os.environ.get("PROGRAMFILES"), os.environ.get("PROGRAMFILES(X86)"), os.environ.get("LOCALAPPDATA"))
+        if base
+    )
+    return (
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        *windows,
+        "google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome",
+    )
+
+
+def kill_tree(proc):
+    """End Chrome and its helpers: the process tree on Windows, where proc.kill() leaves them running."""
+    try:
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            return
+    except (OSError, subprocess.SubprocessError):
+        pass
+    try:
+        proc.kill()
+    except OSError:
+        pass
 
 
 def find_chrome():
     if os.environ.get("CHROME_BIN"):
         return os.environ["CHROME_BIN"]
-    for c in CHROME_CANDIDATES:
+    for c in chrome_candidates():
         if os.path.isabs(c):
-            if os.access(c, os.X_OK):
+            if os.path.isfile(c) and os.access(c, os.X_OK):
                 return c
         else:
             found = shutil.which(c)
@@ -361,7 +384,7 @@ def main(argv):
                 ws.sock.close()
             except OSError:
                 pass
-        proc.kill()
+        kill_tree(proc)
         proc.wait(timeout=10)
         shutil.rmtree(profile, ignore_errors=True)
 
