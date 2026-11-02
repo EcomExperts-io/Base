@@ -20,7 +20,6 @@ import base64
 import collections
 import datetime
 import difflib
-import fcntl
 import hashlib
 import io
 import json
@@ -39,6 +38,11 @@ import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
+
+if os.name == "nt":
+    import msvcrt
+else:
+    import fcntl
 
 try:
     from PIL import Image, ImageChops, ImageDraw
@@ -65,10 +69,22 @@ UA_DESKTOP = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.3
               f"Chrome/{CHROME_MAJOR}.0.0.0 Safari/537.36")
 UA_MOBILE = ("Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) "
              f"Chrome/{CHROME_MAJOR}.0.0.0 Mobile Safari/537.36")
-CHROME_CANDIDATES = (
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "google-chrome", "google-chrome-stable", "chromium", "chromium-browser",
-)
+
+
+def chrome_candidates():
+    """Absolute paths are tested for existence, bare names on PATH. Windows installs land in Program Files,
+    Program Files (x86) or LocalAppData; CHROME_BIN covers anything else."""
+    windows = tuple(
+        os.path.join(base, "Google", "Chrome", "Application", "chrome.exe")
+        for base in (os.environ.get("PROGRAMFILES"), os.environ.get("PROGRAMFILES(X86)"), os.environ.get("LOCALAPPDATA"))
+        if base
+    )
+    return (
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        *windows,
+        "google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome",
+    )
+
 
 # Exit codes — a caller can tell "the tool failed" (>= 2) from "the tool ran" (0).
 EXIT_OK, EXIT_DIFF, EXIT_USAGE, EXIT_CHROME, EXIT_SELECTOR, EXIT_VIEWPORT, EXIT_THEME, EXIT_BLANK, EXIT_NAV, \
@@ -260,9 +276,9 @@ class CDP:
 def find_chrome():
     if os.environ.get("CHROME_BIN"):
         return os.environ["CHROME_BIN"]
-    for c in CHROME_CANDIDATES:
+    for c in chrome_candidates():
         if os.path.isabs(c):
-            if os.access(c, os.X_OK):
+            if os.path.isfile(c) and os.access(c, os.X_OK):
                 return c
         else:
             found = shutil.which(c)
@@ -274,6 +290,23 @@ def find_chrome():
 # ----------------------------------------------------------------------------------------------------------------
 # Concurrency guard: agents share one laptop. Each run holds one slot; at most LP_PARITY_SLOTS (default 2) runs at once.
 # ----------------------------------------------------------------------------------------------------------------
+def _lock(fh):
+    """Non-blocking exclusive lock on an open slot file; raises OSError when another process holds it."""
+    if os.name == "nt":
+        fh.seek(0)
+        msvcrt.locking(fh.fileno(), msvcrt.LK_NBLCK, 1)
+    else:
+        fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+
+def _unlock(fh):
+    if os.name == "nt":
+        fh.seek(0)
+        msvcrt.locking(fh.fileno(), msvcrt.LK_UNLCK, 1)
+    else:
+        fcntl.flock(fh, fcntl.LOCK_UN)
+
+
 class Slot:
     def __init__(self, n=None):
         self.n = n or int(os.environ.get("LIVE_PARITY_SLOTS", "2"))
@@ -285,9 +318,13 @@ class Slot:
         waited = 0
         while True:
             for i in range(self.n):
-                fh = open(os.path.join(d, f"slot-{i}.lock"), "w")
+                # "a+", not "w": opening must not truncate a slot another run holds (its pid line, and on
+                # Windows a locked byte range cannot be truncated at all). Truncate only once the lock is ours.
+                fh = open(os.path.join(d, f"slot-{i}.lock"), "a+")
                 try:
-                    fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    _lock(fh)
+                    fh.seek(0)
+                    fh.truncate()
                     fh.write(f"{os.getpid()} {time.ctime()}\n")
                     fh.flush()
                     self.fh = fh
@@ -304,10 +341,26 @@ class Slot:
     def __exit__(self, *exc):
         if self.fh:
             try:
-                fcntl.flock(self.fh, fcntl.LOCK_UN)
+                _unlock(self.fh)
                 self.fh.close()
             except OSError:
                 pass
+
+
+def kill_tree(proc):
+    """End a Chrome process and its helpers: the process group on POSIX, the process tree on Windows
+    (where start_new_session is ignored and proc.kill() leaves the helpers running)."""
+    try:
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        else:
+            os.killpg(proc.pid, 9)
+    except (OSError, subprocess.SubprocessError):
+        try:
+            proc.kill()
+        except OSError:
+            pass
 
 
 OPEN_BROWSERS = set()
@@ -349,13 +402,7 @@ class Browser:
             pass
         self.cdp = None
         if self.proc and self.proc.poll() is None:
-            try:
-                os.killpg(self.proc.pid, 9)  # the whole group: renderer/GPU/network helpers too
-            except OSError:
-                try:
-                    self.proc.kill()
-                except OSError:
-                    pass
+            kill_tree(self.proc)
             try:
                 self.proc.wait(timeout=15)
             except Exception:
@@ -1728,7 +1775,7 @@ def md_escape(s):
 def write_section_report(out_dir, meta, results, errors, cmd):
     rep = {"tool": "lp-parity.py", "command": cmd, "generated": datetime.datetime.now().isoformat(timespec="seconds"),
            "meta": meta, "widths": results, "errors": errors}
-    with open(os.path.join(out_dir, "report.json"), "w") as f:
+    with open(os.path.join(out_dir, "report.json"), "w", encoding="utf-8") as f:
         json.dump(rep, f, indent=1, default=str)
     L = []
     L.append(f"# live-parity {meta['mode']} — {meta.get('title', '')}")
@@ -1832,7 +1879,7 @@ def write_section_report(out_dir, meta, results, errors, cmd):
         L.append("## Errors")
         for e in errors:
             L.append(f"- {e['width']}: {md_escape(e['error'])}")
-    with open(os.path.join(out_dir, "report.md"), "w") as f:
+    with open(os.path.join(out_dir, "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
 
 
@@ -1922,7 +1969,7 @@ def cmd_page(args):
                         if args.live_only:
                             png = os.path.join(snap_dir, f"{slug}-{w}.png")
                             il.save(png)
-                            with open(os.path.join(snap_dir, f"{slug}-{w}.json"), "w") as f:
+                            with open(os.path.join(snap_dir, f"{slug}-{w}.json"), "w", encoding="utf-8") as f:
                                 json.dump({"url": url, "width": w, "height": args.height, "doc_height": pl["doc_height"],
                                            "theme": pl["theme"], "captured": datetime.datetime.now().isoformat(timespec="seconds"),
                                            "sections": pl["sections"]}, f, indent=1)
@@ -1985,7 +2032,7 @@ def cmd_page(args):
 
 
 def write_page_report(out_dir, args, results, errors):
-    with open(os.path.join(out_dir, "report.json"), "w") as f:
+    with open(os.path.join(out_dir, "report.json"), "w", encoding="utf-8") as f:
         json.dump({"tool": "lp-parity.py page", "command": " ".join(sys.argv), "results": results, "errors": errors}, f, indent=1, default=str)
     L = [f"# live-parity page", ""]
     for r in results:
@@ -2021,7 +2068,7 @@ def write_page_report(out_dir, args, results, errors):
         L.append("")
     for e in errors:
         L.append(f"- ERROR {e.get('url')} {e['width']}: {md_escape(e['error'])}")
-    with open(os.path.join(out_dir, "report.md"), "w") as f:
+    with open(os.path.join(out_dir, "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
 
 
@@ -2135,7 +2182,7 @@ def cmd_hoverstyles(args):
             for sd in (live, ours):
                 if sd:
                     sd.close()
-    with open(os.path.join(out_dir, "report.json"), "w") as f:
+    with open(os.path.join(out_dir, "report.json"), "w", encoding="utf-8") as f:
         json.dump({"tool": "lp-parity.py hoverstyles", "command": " ".join(sys.argv), "states": states, "results": results,
                    "errors": errors}, f, indent=1, default=str)
     L = ["# live-parity hoverstyles", "", f"- live `{args.live_url}` `{args.live_sel}`", f"- ours `{args.ours_url}` `{args.ours_sel}`",
@@ -2165,7 +2212,7 @@ def cmd_hoverstyles(args):
             L.append("")
     for e in errors:
         L.append(f"- ERROR {e['width']}: {md_escape(e['error'])}")
-    with open(os.path.join(out_dir, "report.md"), "w") as f:
+    with open(os.path.join(out_dir, "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
     print(f"live-parity hoverstyles: " + " ".join(f"{r['width']}:{r['mismatching']}/{r['paired']} differ" for r in results)
           + f"  -> {os.path.join(out_dir, 'report.md')}")
@@ -2379,7 +2426,7 @@ def cmd_motion(args):
             for sd in (live, ours):
                 if sd:
                     sd.close()
-    with open(os.path.join(out_dir, "report.json"), "w") as f:
+    with open(os.path.join(out_dir, "report.json"), "w", encoding="utf-8") as f:
         json.dump({"tool": "lp-parity.py motion", "command": " ".join(sys.argv), "results": results, "errors": errors}, f, indent=1, default=str)
     L = ["# live-parity motion", "", f"- live `{args.live_url}` `{args.live_sel}` trigger `{tl}`",
          f"- ours `{args.ours_url}` `{args.ours_sel}` trigger `{to_}`",
@@ -2429,7 +2476,7 @@ def cmd_motion(args):
             L.append("")
     for e in errors:
         L.append(f"- ERROR {e['width']}: {md_escape(e['error'])}")
-    with open(os.path.join(out_dir, "report.md"), "w") as f:
+    with open(os.path.join(out_dir, "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
     print(f"live-parity motion: " + " ".join(f"{r['width']}:{len(r['rows'])} rows" for r in results) + f"  -> {os.path.join(out_dir, 'report.md')}")
     return EXIT_WIDTH_ERRORS if errors else EXIT_OK
@@ -2512,9 +2559,9 @@ def load_steps(spec):
         raise Fatal("states needs --steps (a JSON list or @file.json)", EXIT_USAGE)
     try:
         if spec.startswith("@"):
-            return json.load(open(spec[1:]))
+            return json.load(open(spec[1:], encoding="utf-8"))
         if os.path.exists(spec):
-            return json.load(open(spec))
+            return json.load(open(spec, encoding="utf-8"))
         return json.loads(spec)
     except (OSError, json.JSONDecodeError) as e:
         raise Fatal(f"--steps is not valid JSON: {e}", EXIT_USAGE)
@@ -2587,7 +2634,10 @@ def main(argv):
     import atexit
     import signal
     atexit.register(close_all_browsers)
-    for sg in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+    for stream in (sys.stdout, sys.stderr):  # page text in log lines must not crash a cp1252 console
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
+    for sg in (signal.SIGTERM, signal.SIGINT) + ((signal.SIGHUP,) if hasattr(signal, "SIGHUP") else ()):
         signal.signal(sg, _on_signal)
     ap = argparse.ArgumentParser(prog="live-parity.py", description=__doc__.split("\n\n")[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
