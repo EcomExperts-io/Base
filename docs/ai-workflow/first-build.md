@@ -10,6 +10,8 @@ and sits on a branch. Every place you stall is a tooling defect: `/record-incide
   The verify scripts (`live-parity.py`, `render-screenshot.py`) also run on Windows: use `py` where
   `python3` is not on the PATH, and set `CHROME_BIN` when Chrome is installed somewhere other than
   Program Files or LocalAppData. The hooks and shell scripts still assume a POSIX shell.
+  Their run slots live in `~/.cache/live-parity/slots` (`LIVE_PARITY_SLOTS_DIR` moves them), per machine
+  and without git, so sessions in different checkouts count against the same browser cap.
 - A staff account on the client store, and access to its Figma file.
 - **One known-good frame**: desktop and mobile node ids for one section, plus the file key.
 

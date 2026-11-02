@@ -159,8 +159,9 @@ python3 .claude/scripts/live-parity.py section \
 - Iterate at `--widths 1440,393` plus the pair either side of each live
   breakpoint (`749,750`); the full default list once, at the end.
 - **Laptop rules are built in:** one Chrome pair per run, reused for every
-  width; `LIVE_PARITY_SLOTS` caps concurrent runs; both closed on exit. Never
-  in parallel or in the background.
+  width; `LIVE_PARITY_SLOTS` caps concurrent runs across every checkout on
+  the machine (slot files under `~/.cache/live-parity/slots`); both closed on
+  exit. Never in parallel or in the background.
 
 Read `report.md` in `--out`, per width: **diff %** and **worst bands** with
 `status` (`compared`; `hidden-both`, fine; `hidden-one-side`, a real

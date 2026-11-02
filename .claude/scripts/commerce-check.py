@@ -228,14 +228,17 @@ def main(argv):
               "discount_code": bool(args["--discount-code"]), "market": args["--market"], "mutated": not flags["--no-mutate"],
               "steps": results, "passed": sum(1 for r in results if r["ok"]), "failed": sum(1 for r in results if r["ok"] is False),
               "skipped": sum(1 for r in results if r["ok"] is None), "not_automated": ["logged-in", "safari", "checkout"]}
-    with open(os.path.join(args["--out"], "report.json"), "w") as f:
+    with open(os.path.join(args["--out"], "report.json"), "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
     lines = [f"# Commerce check — {url}", "", f"Generated {report['generated']}; {report['passed']} passed, {report['failed']} failed, {report['skipped']} skipped.", "",
              "| width | step | result | evidence |", "|---|---|---|---|"]
     for r in results:
-        lines.append(f"| {r['width']} | {r['step']} | {'ok' if r['ok'] else 'skip' if r['ok'] is None else '**FAIL**'} | {r['evidence'].replace('|', '\\\\|')} |")
+        # Escaped outside the f-string: a backslash inside an f-string expression is a SyntaxError before Python 3.12.
+        evidence = r["evidence"].replace("|", "\\|")
+        result = "ok" if r["ok"] else "skip" if r["ok"] is None else "**FAIL**"
+        lines.append(f"| {r['width']} | {r['step']} | {result} | {evidence} |")
     lines += ["", "Not automated, walked by a person: logged in (add, change, remove), Safari on iPhone and Mac, checkout handoff.", ""]
-    with open(os.path.join(args["--out"], "report.md"), "w") as f:
+    with open(os.path.join(args["--out"], "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"commerce-check: {report['passed']} passed, {report['failed']} failed, {report['skipped']} skipped -> {os.path.join(args['--out'], 'report.md')}")
     return 1 if failed else 0
