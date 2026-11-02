@@ -216,9 +216,12 @@ once the field is filled. *Serious.*
 - **Do not use a heading for size**, and do not use a `<p class="h2">` where a
   heading belongs. Level and appearance are separate: keep the level right and
   change the class.
-- **An unconstrained heading-level setting is a defect at the point it is added.**
-  Offering h1–h6 on every section lets merchants build a broken outline. Reserve
-  h1 for the page title; restrict section headings to subordinate levels.
+- **A heading-level setting is a defect when its default breaks the outline** —
+  a section that defaults to h1 on templates that already have one, or to a
+  level that skips (h2 → h4). A setting whose default keeps the outline right
+  is a merchant control, often asked for on purpose (SEO projects set the
+  level per page); a level a merchant *could* choose badly is a note in the
+  summary, not a finding. Reserve h1 for the page title in defaults.
 - **Landmarks**: one `<main>` per page, plus `<header>`, `<nav>`, `<footer>`.
   More than one `<nav>` means each needs `aria-label`. *Minor* to *Serious.*
 - **Lists must be lists.** A row of `<div>`s that reads as a list should be
@@ -242,6 +245,12 @@ once the field is filled. *Serious.*
   a `{% style %}` block, or a literal hex in CSS. Compute the ratio and state it
   in the finding. Where colours come from a merchant colour scheme, do not guess;
   but a hardcoded colour against a known scheme background is fair game.
+  **Compute only what both colours are in front of you for**: the text colour
+  and the background it actually sits on, both literal in the diff or the file.
+  When either comes from a variable, a setting or a parent you cannot see,
+  there is no ratio to state — and no finding. A ratio that is wrong sends a
+  developer to measure it and come back with the real one (JonesRoad, Oct 2026:
+  1.5:1 reported, 3.5–3.7:1 measured).
 - **A template's `custom_css` does not fix a section's colour**; the section
   ships the failing default to every other template. Fix it in the section:
   a colour that passes, or a colour setting whose default passes and whose
@@ -335,8 +344,10 @@ A native element beats ARIA; wrong ARIA is worse than none.
   belongs in `locales/*.json` behind `| t`. This includes accessible names, alt
   text fallbacks, and visually hidden text. *Serious.*
 - **New section settings that can produce inaccessible output are defects when
-  the setting is added** — an unconstrained heading-level picker, a colour picker
-  with no contrast guidance, a toggle that can remove a label or an alt text.
+  the setting is added** — a heading-level picker whose default breaks the
+  outline (§6), a toggle that can remove a label or an alt text. A colour
+  picker is not a defect for what a merchant might pick; its default is
+  judged like any colour.
 - **`.visually-hidden` must keep the element in the accessibility tree**: the
   clip-rect pattern, never `display: none` or `visibility: hidden`.
 - **`{% render %}` with an `id` argument** is how a repeated snippet stays
@@ -350,6 +361,16 @@ A native element beats ARIA; wrong ARIA is worse than none.
 - Decorative images correctly marked `alt=""`.
 - A WCAG criterion cited with no concrete user impact.
 - Contrast where the colours come from merchant settings you cannot see.
+- **A target size or a clipped label that depends on layout you cannot see** —
+  a flex or grid parent, inherited padding, a positioned ancestor. A size the
+  diff sets outright (`width: 16px` on the control itself) is fair; a size the
+  layout decides is not (JonesRoad, Oct 2026: 24×24 and 71×26 measured live
+  where 16px was reported).
+- **A bug that breaks a control for everyone** — a malformed condition, a
+  section that never renders, items left hidden. That is a correctness
+  defect for the main review, not an accessibility one: this pass reports
+  what keyboard and assistive-technology users get *differently*.
+- **Code an app installs and owns** (`code-review-policy.md`).
 - A missing `<label>` where an adequate `aria-label` or `aria-labelledby` exists.
 - Anything needing a guess about merchant content, product data, or copy.
 - Naming, structure or style preferences with no accessibility consequence.
