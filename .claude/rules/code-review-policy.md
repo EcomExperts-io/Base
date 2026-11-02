@@ -53,6 +53,34 @@ Only assert a platform limit you can name and point at (`schemas.md`,
 `liquid.md`). Only call something a parse failure if you can show it breaks;
 an undocumented spelling is not automatically invalid.
 
+## Review this change, on this theme
+
+**Only what the change introduced.** A line that is the same as on the base
+branch, code moved from one file to another unchanged, or code that came in
+by merging the base branch into this one is not this change's finding. If it
+is wrong, it was wrong before; say so in the summary at most.
+
+**The rules describe Base; a fork may predate them.** Where a rule names a
+Base mechanism — `window.Cart` in `assets/cart.js`, colour schemes, the
+section padding settings — it applies to a theme that has that mechanism.
+On a theme without it, do not ask for it: the change follows what the theme
+already uses. Check the file list or the full content before asserting the
+mechanism exists.
+
+**Match the file for style.** A style-level rule (media-query direction, the
+`screen` media type, hardcoded colours in a file with no colour scheme, an
+inline `<style>` in a family of sections that all use one) is not reported
+on a line that follows the convention the rest of the same file already
+uses. Mixing two conventions in one file is worse than either. Converting a
+file is a separate task, not a finding on the line that matched it.
+
+**Code that is not ours is not reviewed.** A file an app installs and owns —
+an app's loader snippet (Shoplift's A/B testing loader), an app's own
+section (Rivo's loyalty sections), anything whose header says an app
+generated it —
+is not changed by us and not reported on. Mention it in the summary if it
+matters to the release.
+
 ## Respect documented intent
 
 Where an author has written a comment explaining why something is deliberate or

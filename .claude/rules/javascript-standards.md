@@ -138,7 +138,11 @@ onCartUpdate(e) {
 }
 ```
 
-**Every cart mutation goes through `window.Cart` (`assets/cart.js`):**
+**Every cart mutation goes through `window.Cart` (`assets/cart.js`)** — on a
+theme that has `assets/cart.js`. An older fork without it keeps its own
+cart helper (`window.addToCart`, a Liquid Ajax Cart bridge, direct
+`/cart/*.js` calls used throughout); a change there follows that helper and
+is not asked to route through an engine the theme does not have:
 
 ```javascript
 Cart.add(new FormData(form), form);
