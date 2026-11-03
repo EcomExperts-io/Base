@@ -6,9 +6,11 @@ docstring says. Add a case here with every change to a check.
 Usage: test-checks.py [--verbose]
 """
 
+import glob
 import importlib.util
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -430,6 +432,48 @@ case("chrome lookup: live-parity and render-screenshot try the Windows install p
      any(c.endswith(os.path.join("Google", "Chrome", "Application", "chrome.exe")) for c in cands) and "chrome" in cands
      and callable(getattr(rs, "chrome_candidates", None)) and callable(getattr(rs, "kill_tree", None)) and callable(getattr(lp, "kill_tree", None)),
      cands)
+
+# Every script compiles on the oldest Python doctor.py accepts (3.9): a backslash inside an f-string expression,
+# fine on 3.12, is a SyntaxError there and takes the whole script down before main() runs.
+def oldest_python():
+    found = []
+    for cand in ("python3.9", "python3.10", "python3.11", "/usr/bin/python3", sys.executable):
+        exe = shutil.which(cand) if not os.path.isabs(cand) else (cand if os.path.isfile(cand) else None)
+        if not exe:
+            continue
+        v = subprocess.run([exe, "-c", "import sys; print(sys.version_info[0], sys.version_info[1])"], capture_output=True, text=True)
+        if v.returncode == 0:
+            found.append((tuple(int(x) for x in v.stdout.split()), exe))
+    return min(found)
+
+py_version, py_exe = oldest_python()
+sources = sorted(glob.glob(os.path.join(HERE, "*.py")) + glob.glob(os.path.join(HERE, "..", "hooks", "*.py")))
+r = subprocess.run([py_exe, "-c", "import sys\nfor f in sys.argv[1:]:\n    compile(open(f, encoding='utf-8').read(), f, 'exec')"] + sources,
+                   capture_output=True, text=True)
+case(f"portability: every script and hook compiles on Python {py_version[0]}.{py_version[1]} (the oldest on this machine; the floor is 3.9)",
+     r.returncode == 0 and len(sources) > 10, (py_exe, r.stderr[-200:]))
+
+# The run slots are per machine, not per checkout, and finding them needs no git: a laptop's browser cap is one
+# number across every repo on it, and the scripts also run on a machine with no git at all.
+with tempfile.TemporaryDirectory() as d:
+    os.environ["LIVE_PARITY_SLOTS_DIR"] = os.path.join(d, "slots")
+    try:
+        lp2 = load("live-parity")
+    finally:
+        del os.environ["LIVE_PARITY_SLOTS_DIR"]
+    nogit = {k: v for k, v in os.environ.items() if k != "PATH"}
+    nogit["PATH"] = os.path.join(d, "empty-path")
+    os.makedirs(nogit["PATH"])
+    r = subprocess.run([sys.executable, os.path.join(HERE, "live-parity.py"), "--help"], capture_output=True, text=True, env=nogit)
+    case("live-parity: run slots honour LIVE_PARITY_SLOTS_DIR, default under ~/.cache, and --help works with git off the PATH",
+         lp2.SLOTS_DIR == os.path.join(d, "slots") and lp.SLOTS_DIR.startswith(os.path.expanduser("~")) and ".claude" not in lp.SLOTS_DIR
+         and r.returncode == 0 and "section" in r.stdout, (lp2.SLOTS_DIR, lp.SLOTS_DIR, r.returncode, r.stderr[-120:]))
+
+with open(os.path.join(HERE, "live-parity.py"), encoding="utf-8") as f:
+    lp_src = f.read()
+case("live-parity: third-party review widgets are in the known-overlay list, so page mode hides them on both sides",
+     all(sel in lp_src for sel in (".jdgm-widget", ".yotpo", "#stamped-main-widget", "#looxReviews", "[data-oke-widget]", '[class*="junip-"]')),
+     "")
 
 # ---------------------------------------------------------------------------
 # preflight-status.py — in a throwaway client repo

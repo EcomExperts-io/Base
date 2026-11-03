@@ -52,14 +52,9 @@ except ImportError:  # pragma: no cover
 
 
 
-def _repo_root():
-    r = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True)
-    return r.stdout.strip() if r.returncode == 0 else os.getcwd()
-
-
-# Run slots live under the repo's cache so every session on this checkout
-# shares the same cap (the laptop overheats past three browsers).
-SLOTS_DIR = os.path.join(_repo_root(), ".claude", ".cache", "parity-slots")
+# Run slots live per machine, not per checkout: the cap is on the laptop's browsers, and
+# two sessions in two repos must count against the same one. No git needed to find it.
+SLOTS_DIR = os.environ.get("LIVE_PARITY_SLOTS_DIR") or os.path.join(os.path.expanduser("~"), ".cache", "live-parity", "slots")
 # Our development theme's id: from --ours-theme, else the preview_theme_id in
 # --ours-url, else "any" (the theme assertion is then off on our side — say so).
 DEV_THEME_ID = None
@@ -613,7 +608,12 @@ JS_LIB = r"""
       '#shopify-pc__banner', '#shopify-pc__prefs', '#gorgias-chat-container', '#chat-button', '#dummy-chat-button-iframe',
       '#attentive_overlay', '#attentive_creative', '.needsclick[class*="kl-private"]', 'div[class*="kl-private-reset"]',
       '[id^="alia-"]', '[class^="alia-"]', '#onetrust-consent-sdk', '.cc-window', '#launcher', '#hubspot-messages-iframe-container',
-      'iframe[title*="chat" i]', 'iframe[id*="chat" i]', '#okendo-reviews-modal', '.okeReviews-reviewsModal'];
+      'iframe[title*="chat" i]', 'iframe[id*="chat" i]', '#okendo-reviews-modal', '.okeReviews-reviewsModal',
+      // Review widgets load different reviews on each side, so they diff on identical sections. Hidden, not
+      // removed: the box still counts in the layout. mark() keeps anything inside the section under comparison.
+      '[data-oke-widget]', '.okeReviews', '.jdgm-widget', '.jdgm-carousel-wrapper', '.yotpo-widget-instance', '.yotpo',
+      '#stamped-main-widget', '.stamped-main-widget', '#looxReviews', '.loox-rating', '.junip-store-key', '[class*="junip-"]',
+      '.ruk_rating_snippet', '#ReviewsWidget'];
     const hidden = [];
     const mark = (el, why) => {
       if (el.hasAttribute('data-lpp-hidden')) return;
