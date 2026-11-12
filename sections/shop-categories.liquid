@@ -107,13 +107,13 @@
 
 {% schema %}
 {
-  "name": "Shop Categories",
+  "name": "t:names.shop_categories",
   "tag": "section",
   "class": "section-shop-categories",
   "settings": [
     {
       "type": "header",
-      "content": "Section Settings"
+      "content": "t:headers.section_settings"
     },
     {
       "type": "color_scheme",
@@ -123,7 +123,7 @@
     },
     {
       "type": "header",
-      "content": "Section Padding"
+      "content": "t:headers.section_padding"
     },
     {
       "type": "range",
@@ -132,7 +132,7 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Top padding",
+      "label": "t:sections.all.padding.padding_top",
       "default": 36
     },
     {
@@ -142,38 +142,38 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Bottom padding",
+      "label": "t:sections.all.padding.padding_bottom",
       "default": 36
     }
   ],
   "blocks": [
     {
       "type": "category",
-      "name": "Category",
+      "name": "t:names.category",
       "settings": [
         {
           "type": "collection",
           "id": "collection",
-          "label": "Collection"
+          "label": "t:general.collection"
         },
         {
           "type": "text",
           "id": "custom_title",
-          "label": "Custom Title",
-          "info": "Override collection title"
+          "label": "t:labels.custom_title",
+          "info": "t:info.override_collection_title"
         },
         {
           "type": "image_picker",
           "id": "custom_image",
-          "label": "Custom Image",
-          "info": "Override collection image"
+          "label": "t:labels.custom_image",
+          "info": "t:info.override_collection_image"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Shop Categories",
+      "name": "t:names.shop_categories",
       "blocks": [
         {
           "type": "category"

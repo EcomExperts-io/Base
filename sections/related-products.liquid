@@ -292,7 +292,7 @@
 
 {% schema %}
 {
-  "name": "Related products",
+  "name": "t:names.related_products",
   "tag": "section",
   "class": "section",
   "enabled_on": {
@@ -301,13 +301,13 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Dynamic recommendations use order and product information to change and improve over time. [Learn more](https://help.shopify.com/themes/development/recommended-products)"
+      "content": "t:headers.dynamic_recommendations_use_order_and_product_information_to"
     },
     {
       "type": "inline_richtext",
       "id": "heading",
       "default": "You may also like",
-      "label": "Heading"
+      "label": "t:general.heading"
     },
     {
       "type": "select",
@@ -315,40 +315,40 @@
       "options": [
         {
           "value": "h2",
-          "label": "Small"
+          "label": "t:options.size.small"
         },
         {
           "value": "h1",
-          "label": "Medium"
+          "label": "t:options.medium"
         },
         {
           "value": "h0",
-          "label": "Large"
+          "label": "t:options.size.large"
         }
       ],
       "default": "h1",
-      "label": "Heading size"
+      "label": "t:labels.heading_size"
     },
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:general.layout"
     },
     {
       "type": "select",
       "id": "layout_style",
-      "label": "Style",
+      "label": "t:labels.style",
       "options": [
         {
           "value": "grid",
-          "label": "Grid"
+          "label": "t:options.grid"
         },
         {
           "value": "carousel",
-          "label": "Carousel"
+          "label": "t:options.carousel"
         }
       ],
       "default": "grid",
-      "info": "Display products in a grid or carousel slider"
+      "info": "t:info.display_products_in_a_grid_or_carousel_slider"
     },
     {
       "type": "range",
@@ -357,7 +357,7 @@
       "max": 10,
       "step": 1,
       "default": 4,
-      "label": "Maximum products to show"
+      "label": "t:labels.maximum_products_to_show"
     },
     {
       "type": "range",
@@ -366,12 +366,12 @@
       "max": 6,
       "step": 1,
       "default": 4,
-      "label": "Number of columns on desktop",
-      "info": "Only applies to grid layout"
+      "label": "t:labels.number_of_columns_on_desktop",
+      "info": "t:info.only_applies_to_grid_layout"
     },
     {
       "type": "header",
-      "content": "Product card"
+      "content": "t:headers.product_card"
     },
     {
       "type": "select",
@@ -379,112 +379,112 @@
       "options": [
         {
           "value": "adapt",
-          "label": "Adapt to image"
+          "label": "t:options.adapt_to_image"
         },
         {
           "value": "portrait",
-          "label": "Portrait"
+          "label": "t:options.portrait"
         },
         {
           "value": "square",
-          "label": "Square"
+          "label": "t:options.square"
         }
       ],
       "default": "adapt",
-      "label": "Image ratio"
+      "label": "t:labels.image_ratio"
     },
     {
       "type": "checkbox",
       "id": "show_vendor",
       "default": false,
-      "label": "Show vendor"
+      "label": "t:labels.show_vendor_2"
     },
     {
       "type": "select",
       "id": "enable_quick_add",
       "default": "standard",
-      "label": "Quick add",
-      "info": "Show quick add button on product cards",
+      "label": "t:labels.quick_add",
+      "info": "t:info.show_quick_add_button_on_product_cards",
       "options": [
         {
           "value": "standard",
-          "label": "Standard"
+          "label": "t:options.standard"
         },
         {
           "value": "none",
-          "label": "None"
+          "label": "t:options.none"
         }
       ]
     },
     {
       "type": "header",
-      "content": "Variant swatches"
+      "content": "t:headers.variant_swatches"
     },
     {
       "type": "checkbox",
       "id": "enable_swatches",
       "default": true,
-      "label": "Enable swatches",
-      "info": "Show variant swatches on product cards"
+      "label": "t:labels.enable_swatches",
+      "info": "t:info.show_variant_swatches_on_product_cards"
     },
     {
       "type": "text",
       "id": "swatch_trigger",
-      "label": "Swatch trigger",
+      "label": "t:labels.swatch_trigger",
       "default": "Color",
-      "info": "Product option name to display as swatches (e.g., 'Color', 'Size')"
+      "info": "t:info.product_option_name_to_display_as_swatches_e"
     },
     {
       "type": "select",
       "id": "swatch_type",
-      "label": "Swatch type",
+      "label": "t:labels.swatch_type",
       "options": [
         {
           "value": "color",
-          "label": "Color based"
+          "label": "t:options.color_based"
         },
         {
           "value": "image",
-          "label": "Image based"
+          "label": "t:options.image_based"
         }
       ],
       "default": "image",
-      "info": "Display swatches using color values or variant images"
+      "info": "t:info.display_swatches_using_color_values_or_variant_images"
     },
     {
       "type": "header",
-      "content": "Colors"
+      "content": "t:general.colors"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
+      "label": "t:labels.color_scheme",
       "default": "scheme-1"
     },
     {
       "type": "header",
-      "content": "Mobile"
+      "content": "t:headers.mobile"
     },
     {
       "type": "select",
       "id": "columns_mobile",
       "default": "2",
-      "label": "Number of columns on mobile",
-      "info": "Only applies to grid layout",
+      "label": "t:labels.number_of_columns_on_mobile",
+      "info": "t:info.only_applies_to_grid_layout",
       "options": [
         {
           "value": "1",
-          "label": "1 column"
+          "label": "t:options.1_column"
         },
         {
           "value": "2",
-          "label": "2 columns"
+          "label": "t:options.2_columns_2"
         }
       ]
     },
     {
       "type": "header",
-      "content": "Section padding"
+      "content": "t:sections.all.padding.section_padding_heading"
     },
     {
       "type": "range",
@@ -493,7 +493,7 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Top padding",
+      "label": "t:sections.all.padding.padding_top",
       "default": 36
     },
     {
@@ -503,13 +503,13 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Bottom padding",
+      "label": "t:sections.all.padding.padding_bottom",
       "default": 36
     }
   ],
   "presets": [
     {
-      "name": "Related products"
+      "name": "t:names.related_products"
     }
   ]
 }

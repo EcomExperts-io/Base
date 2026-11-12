@@ -252,7 +252,7 @@
 
 {% schema %}
 {
-  "name": "Announcement Bar",
+  "name": "t:names.announcement_bar",
   "enabled_on": {
     "groups": ["header"]
   },
@@ -260,25 +260,25 @@
     {
       "type": "checkbox",
       "id": "show_announcement",
-      "label": "Show announcement",
+      "label": "t:labels.show_announcement",
       "default": true
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background color",
+      "label": "t:labels.background_color_2",
       "default": "#000000"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text color",
+      "label": "t:labels.text_color",
       "default": "#FFFFFF"
     },
     {
       "type": "range",
       "id": "auto_rotate_interval",
-      "label": "Auto-rotate interval (seconds)",
+      "label": "t:labels.auto_rotate_interval_seconds",
       "min": 2,
       "max": 15,
       "step": 1,
@@ -288,28 +288,28 @@
   "blocks": [
     {
       "type": "announcement",
-      "name": "Announcement",
+      "name": "t:names.announcement",
       "settings": [
         {
           "type": "text",
           "id": "text",
-          "label": "Text",
+          "label": "t:labels.text",
           "default": "Welcome to our store"
         },
         {
           "type": "text",
           "id": "link_text",
-          "label": "Link text"
+          "label": "t:labels.link_text"
         },
         {
           "type": "url",
           "id": "link_url",
-          "label": "Link URL"
+          "label": "t:labels.link_url"
         },
         {
           "type": "text",
           "id": "emoji",
-          "label": "Emoji",
+          "label": "t:labels.emoji",
           "default": "🎉"
         }
       ]
@@ -317,7 +317,7 @@
   ],
   "presets": [
     {
-      "name": "Announcement Bar",
+      "name": "t:names.announcement_bar",
       "blocks": [
         {
           "type": "announcement"

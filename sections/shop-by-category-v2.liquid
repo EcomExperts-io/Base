@@ -86,7 +86,7 @@
 
 {% schema %}
 {
-  "name": "Shop By Category V2",
+  "name": "t:names.shop_by_category_v2",
   "tag": "section",
   "class": "shop-by-category-v2",
   "settings": [
@@ -99,17 +99,17 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:general.heading",
       "default": "Shop By Category V2"
     },
     {
       "type": "header",
-      "content": "Spacing Settings"
+      "content": "t:headers.spacing_settings"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding Top",
+      "label": "t:labels.padding_top",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -119,7 +119,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding Bottom",
+      "label": "t:labels.padding_bottom",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -130,30 +130,30 @@
   "blocks": [
     {
       "type": "category_card",
-      "name": "Category Card",
+      "name": "t:names.category_card",
       "settings": [
         {
           "type": "image_picker",
           "id": "image_desktop",
-          "label": "Image"
+          "label": "t:labels.image"
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Title",
+          "label": "t:options.text_style.title",
           "default": "Title"
         },
         {
           "type": "url",
           "id": "link",
-          "label": "Link"
+          "label": "t:labels.link"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Shop By Category V2",
+      "name": "t:names.shop_by_category_v2",
       "blocks": [{ "type": "category_card" }, { "type": "category_card" }, { "type": "category_card" }, { "type": "category_card" }]
     }
   ]

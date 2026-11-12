@@ -1,65 +1,65 @@
 {% schema %}
 {
-  "name": "Dynamic Grid",
+  "name": "t:names.dynamic_grid",
   "settings": [
     {
       "type": "header",
-      "content": "Section Title and Description"
+      "content": "t:headers.section_title_and_description"
     },
     {
       "type": "select",
       "id": "section_content_alignment",
-      "label": "Content Alignment",
+      "label": "t:labels.content_alignment",
       "default": "center",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" },
+        { "value": "right", "label": "t:options.alignment.right" }
       ]
     },
     {
       "type": "select",
       "id": "section_content_alignment_mobile",
-      "label": "Content Alignment (Mobile)",
+      "label": "t:labels.content_alignment_mobile",
       "default": "center",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" },
+        { "value": "right", "label": "t:options.alignment.right" }
       ]
     },
     {
       "type": "text",
       "id": "title",
-      "label": "Title"
+      "label": "t:options.text_style.title"
     },
     {
       "type": "color",
       "id": "section_title_color",
-      "label": "Title Color",
+      "label": "t:labels.title_color",
       "default": "#000000"
     },
     {
       "type": "select",
       "id": "section_title_font_weight",
-      "label": "Title Font Weight",
+      "label": "t:labels.title_font_weight",
       "default": "normal",
       "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "bold", "label": "Bold" }
+        { "value": "normal", "label": "t:options.normal" },
+        { "value": "bold", "label": "t:options.bold" }
       ]
     },
     {
       "type": "checkbox",
       "id": "section_uppercase_title",
-      "label": "Uppercase Title",
-      "info": "If enabled, the title will be uppercase.",
+      "label": "t:labels.uppercase_title",
+      "info": "t:info.if_enabled_the_title_will_be_uppercase",
       "default": false
     },
     {
       "type": "range",
       "id": "section_title_font_size_desktop",
-      "label": "Title Font Size (Desktop)",
+      "label": "t:labels.title_font_size_desktop",
       "min": 10,
       "max": 40,
       "step": 1,
@@ -68,7 +68,7 @@
     {
       "type": "range",
       "id": "section_title_font_size_mobile",
-      "label": "Title Font Size (Mobile)",
+      "label": "t:labels.title_font_size_mobile",
       "min": 10,
       "max": 40,
       "step": 1,
@@ -77,25 +77,25 @@
     {
       "type": "textarea",
       "id": "section_description",
-      "label": "Description"
+      "label": "t:labels.description"
     },
     {
       "type": "color",
       "id": "section_description_color",
-      "label": "Description Color",
+      "label": "t:labels.description_color",
       "default": "#000000"
     },
     {
       "type": "checkbox",
       "id": "section_uppercase_description",
-      "label": "Uppercase Description",
-      "info": "If enabled, the description will be uppercase.",
+      "label": "t:labels.uppercase_description",
+      "info": "t:info.if_enabled_the_description_will_be_uppercase",
       "default": false
     },
     {
       "type": "range",
       "id": "section_description_font_size_desktop",
-      "label": "Description Font Size (Desktop)",
+      "label": "t:labels.description_font_size_desktop",
       "min": 10,
       "max": 40,
       "step": 1,
@@ -104,7 +104,7 @@
     {
       "type": "range",
       "id": "section_description_font_size_mobile",
-      "label": "Description Font Size (Mobile)",
+      "label": "t:labels.description_font_size_mobile",
       "min": 10,
       "max": 40,
       "step": 1,
@@ -113,17 +113,17 @@
     {
       "type": "text",
       "id": "button_text",
-      "label": "Button Text"
+      "label": "t:labels.button_text"
     },
     {
       "type": "url",
       "id": "button_url",
-      "label": "Button URL"
+      "label": "t:labels.button_url"
     },
     {
       "type": "range",
       "id": "section_button_font_size_desktop",
-      "label": "Button Font Size (Desktop)",
+      "label": "t:labels.button_font_size_desktop",
       "min": 10,
       "max": 40,
       "step": 1,
@@ -132,7 +132,7 @@
     {
       "type": "range",
       "id": "section_button_font_size_mobile",
-      "label": "Button Font Size (Mobile)",
+      "label": "t:labels.button_font_size_mobile",
       "min": 10,
       "max": 40,
       "step": 1,
@@ -141,35 +141,35 @@
     {
       "type": "color",
       "id": "button_background_color",
-      "label": "Button Background Color",
+      "label": "t:labels.button_background_color",
       "default": "#ffffff"
     },
     {
       "type": "color",
       "id": "section_button_text_color",
-      "label": "Button Text Color",
+      "label": "t:labels.button_text_color",
       "default": "#000"
     },
     {
       "type": "color",
       "id": "button_border_color",
-      "label": "Button Border Color",
+      "label": "t:labels.button_border_color",
       "default": "#000"
     },
     {
       "type": "header",
-      "content": "Section Settings"
+      "content": "t:headers.section_settings"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background Color",
+      "label": "t:labels.background_color",
       "default": "#ffffff"
     },
     {
       "type": "range",
       "id": "spacing_top_desktop",
-      "label": "Spacing Top (Desktop)",
+      "label": "t:labels.spacing_top_desktop",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -178,7 +178,7 @@
     {
       "type": "range",
       "id": "spacing_bottom_desktop",
-      "label": "Spacing Bottom (Desktop)",
+      "label": "t:labels.spacing_bottom_desktop",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -187,7 +187,7 @@
     {
       "type": "range",
       "id": "spacing_top_mobile",
-      "label": "Spacing Top (Mobile)",
+      "label": "t:labels.spacing_top_mobile",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -196,7 +196,7 @@
     {
       "type": "range",
       "id": "spacing_bottom_mobile",
-      "label": "Spacing Bottom (Mobile)",
+      "label": "t:labels.spacing_bottom_mobile",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -204,23 +204,23 @@
     },
     {
       "type": "header",
-      "content": "Grid Layout Settings"
+      "content": "t:headers.grid_layout_settings"
     },
     {
       "type": "select",
       "id": "style",
-      "label": "Style",
+      "label": "t:labels.style",
       "default": "text-below-image",
       "options": [
-        { "value": "text-on-image", "label": "Text on Image" },
-        { "value": "text-below-image", "label": "Text below Image" }
+        { "value": "text-on-image", "label": "t:options.text_on_image" },
+        { "value": "text-below-image", "label": "t:options.text_below_image" }
       ]
     },
     {
       "type": "range",
       "id": "text_on_image_top_position",
-      "label": "Text on Image Top Position",
-      "info": "Only applies if style is set to 'Text on Image'",
+      "label": "t:labels.text_on_image_top_position",
+      "info": "t:info.only_applies_if_style_is_set_to_text",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -229,59 +229,59 @@
     {
       "type": "select",
       "id": "text_on_image_alignment",
-      "label": "Text Alignment",
+      "label": "t:labels.text_alignment",
       "default": "center",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" },
+        { "value": "right", "label": "t:options.alignment.right" }
       ]
     },
     {
       "type": "select",
       "id": "rows_desktop",
-      "label": "Number of columns (desktop)",
+      "label": "t:labels.number_of_columns_desktop",
       "default": "3",
       "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" },
-        { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" },
-        { "value": "5", "label": "5" }
+        { "value": "1", "label": "t:options.1" },
+        { "value": "2", "label": "t:options.2" },
+        { "value": "3", "label": "t:options.3" },
+        { "value": "4", "label": "t:options.4" },
+        { "value": "5", "label": "t:options.5" }
       ]
     },
     {
       "type": "select",
       "id": "rows_tablet",
-      "label": "Number of columns (tablet)",
+      "label": "t:labels.number_of_columns_tablet",
       "default": "2",
       "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" },
-        { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" },
-        { "value": "5", "label": "5" }
+        { "value": "1", "label": "t:options.1" },
+        { "value": "2", "label": "t:options.2" },
+        { "value": "3", "label": "t:options.3" },
+        { "value": "4", "label": "t:options.4" },
+        { "value": "5", "label": "t:options.5" }
       ]
     },
     {
       "type": "select",
       "id": "rows_mobile",
-      "label": "Number of columns (mobile)",
+      "label": "t:labels.number_of_columns_mobile",
       "default": "1",
       "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" },
-        { "value": "3", "label": "3" }
+        { "value": "1", "label": "t:options.1" },
+        { "value": "2", "label": "t:options.2" },
+        { "value": "3", "label": "t:options.3" }
       ]
     },
     {
       "type": "header",
-      "content": "Global Block Settings"
+      "content": "t:headers.global_block_settings"
     },
     {
       "type": "range",
       "id": "title_font_size_desktop",
-      "label": "Title font size (desktop, px)",
+      "label": "t:labels.title_font_size_desktop_px",
       "min": 10,
       "max": 40,
       "default": 18
@@ -289,7 +289,7 @@
     {
       "type": "range",
       "id": "title_font_size_mobile",
-      "label": "Title font size (mobile, px)",
+      "label": "t:labels.title_font_size_mobile_px",
       "min": 10,
       "max": 40,
       "default": 16
@@ -297,34 +297,34 @@
     {
       "type": "color",
       "id": "title_font_color",
-      "label": "Title font color",
+      "label": "t:labels.title_font_color",
       "default": "#000000"
     },
     {
       "type": "checkbox",
       "id": "text_decoration",
-      "label": "Underline title",
-      "info": "If enabled, the title will be underlined. Only applies if style is set to 'Text below Image'",
+      "label": "t:labels.underline_title",
+      "info": "t:info.if_enabled_the_title_will_be_underlined_only",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "bold_title",
-      "label": "Bold title",
-      "info": "If enabled, the title will be bold.",
+      "label": "t:labels.bold_title",
+      "info": "t:info.if_enabled_the_title_will_be_bold",
       "default": false
     },
     {
       "type": "checkbox",
       "id": "title_uppercase",
-      "label": "Uppercase Title",
-      "info": "If enabled, the title will be uppercase.",
+      "label": "t:labels.uppercase_title",
+      "info": "t:info.if_enabled_the_title_will_be_uppercase",
       "default": false
     },
     {
       "type": "range",
       "id": "description_font_size_desktop",
-      "label": "Description font size (desktop, px)",
+      "label": "t:labels.description_font_size_desktop_px",
       "min": 10,
       "max": 40,
       "default": 18
@@ -332,7 +332,7 @@
     {
       "type": "range",
       "id": "description_font_size_mobile",
-      "label": "Description font size (mobile, px)",
+      "label": "t:labels.description_font_size_mobile_px",
       "min": 10,
       "max": 40,
       "default": 16
@@ -340,13 +340,13 @@
     {
       "type": "color",
       "id": "description_font_color",
-      "label": "Description font color",
+      "label": "t:labels.description_font_color",
       "default": "#000000"
     },
     {
       "type": "range",
       "id": "button_font_size",
-      "label": "Button font size (px)",
+      "label": "t:labels.button_font_size_px",
       "min": 10,
       "max": 30,
       "default": 14
@@ -354,45 +354,45 @@
     {
       "type": "checkbox",
       "id": "button_uppercase",
-      "label": "Uppercase Button",
-      "info": "If enabled, the button text will be uppercase.",
+      "label": "t:labels.uppercase_button",
+      "info": "t:info.if_enabled_the_button_text_will_be_uppercase",
       "default": false
     },
     {
       "type": "checkbox",
       "id": "button_underline",
-      "label": "Underline Button",
-      "info": "If enabled, the button will be underlined.",
+      "label": "t:labels.underline_button",
+      "info": "t:info.if_enabled_the_button_will_be_underlined",
       "default": false
     },
     {
       "type": "color",
       "id": "button_bg_color",
-      "label": "Button background color",
+      "label": "t:labels.button_background_color_2",
       "default": "#000000"
     },
     {
       "type": "color",
       "id": "button_text_color",
-      "label": "Button text color",
+      "label": "t:labels.button_text_color_2",
       "default": "#ffffff"
     }
   ],
   "blocks": [
     {
       "type": "block",
-      "name": "Grid Block",
+      "name": "t:names.grid_block",
       "settings": [
         {
           "type": "checkbox",
           "id": "custom_column_width",
-          "label": "Custom Column Width",
+          "label": "t:labels.custom_column_width",
           "default": false
         },
         {
           "type": "range",
           "id": "column_width_desktop",
-          "label": "Custom Column Width (Desktop)",
+          "label": "t:labels.custom_column_width_desktop",
           "min": 10,
           "max": 100,
           "default": 33,
@@ -401,7 +401,7 @@
         {
           "type": "range",
           "id": "column_width_tablet",
-          "label": "Custom Column Width (Tablet)",
+          "label": "t:labels.custom_column_width_tablet",
           "min": 10,
           "max": 100,
           "default": 33,
@@ -410,7 +410,7 @@
         {
           "type": "range",
           "id": "column_width_mobile",
-          "label": "Custom Column Width (Mobile)",
+          "label": "t:labels.custom_column_width_mobile",
           "min": 10,
           "max": 100,
           "default": 50,
@@ -419,48 +419,48 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "t:labels.image"
         },
         {
           "type": "image_picker",
           "id": "image_mobile",
-          "label": "Image (Mobile)"
+          "label": "t:labels.image_mobile"
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Title"
+          "label": "t:options.text_style.title"
         },
         {
           "type": "text",
           "id": "description",
-          "label": "Description"
+          "label": "t:labels.description"
         },
         {
           "type": "text",
           "id": "button_text",
-          "label": "Button Text"
+          "label": "t:labels.button_text"
         },
         {
           "type": "url",
           "id": "button_link",
-          "label": "Link"
+          "label": "t:labels.link"
         },
         {
           "type": "header",
-          "content": "Custom Styling",
-          "info": "Enable and configure custom styles for this block. If disabled, global section styles will be used."
+          "content": "t:headers.custom_styling",
+          "info": "t:info.enable_and_configure_custom_styles_for_this_block"
         },
         {
           "type": "checkbox",
           "id": "custom_styling_enabled",
-          "label": "Apply Custom Styling to this block",
+          "label": "t:labels.apply_custom_styling_to_this_block",
           "default": false
         },
         {
           "type": "range",
           "id": "font_size_desktop",
-          "label": "Title font size (desktop, px)",
+          "label": "t:labels.title_font_size_desktop_px",
           "min": 10,
           "max": 40,
           "default": 18,
@@ -469,7 +469,7 @@
         {
           "type": "range",
           "id": "font_size_mobile",
-          "label": "Title font size (mobile, px)",
+          "label": "t:labels.title_font_size_mobile_px",
           "min": 10,
           "max": 40,
           "default": 16,
@@ -478,21 +478,21 @@
         {
           "type": "checkbox",
           "id": "title_uppercase",
-          "label": "Uppercase Title",
+          "label": "t:labels.uppercase_title",
           "default": false,
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "color",
           "id": "font_color",
-          "label": "Title font color",
+          "label": "t:labels.title_font_color",
           "default": "#000000",
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
           "id": "description_font_size_desktop",
-          "label": "Description font size (desktop, px)",
+          "label": "t:labels.description_font_size_desktop_px",
           "min": 10,
           "max": 40,
           "default": 18,
@@ -501,7 +501,7 @@
         {
           "type": "range",
           "id": "description_font_size_mobile",
-          "label": "Description font size (mobile, px)",
+          "label": "t:labels.description_font_size_mobile_px",
           "min": 10,
           "max": 40,
           "default": 16,
@@ -510,14 +510,14 @@
         {
           "type": "color",
           "id": "description_font_color",
-          "label": "Description font color",
+          "label": "t:labels.description_font_color",
           "default": "#000000",
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
           "id": "button_font_size",
-          "label": "Button font size (px)",
+          "label": "t:labels.button_font_size_px",
           "min": 10,
           "max": 30,
           "default": 14,
@@ -526,30 +526,30 @@
         {
           "type": "checkbox",
           "id": "button_uppercase",
-          "label": "Uppercase Button",
-          "info": "If enabled, the button text will be uppercase.",
+          "label": "t:labels.uppercase_button",
+          "info": "t:info.if_enabled_the_button_text_will_be_uppercase",
           "default": false,
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "color",
           "id": "button_bg_color",
-          "label": "Button background color",
+          "label": "t:labels.button_background_color_2",
           "default": "#000000",
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "color",
           "id": "button_text_color",
-          "label": "Button text color",
+          "label": "t:labels.button_text_color_2",
           "default": "#ffffff",
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         },
         {
           "type": "range",
           "id": "text_on_image_top_position",
-          "label": "Text on Image Top Position",
-          "info": "Only applies if style is set to 'Text on Image'",
+          "label": "t:labels.text_on_image_top_position",
+          "info": "t:info.only_applies_if_style_is_set_to_text",
           "default": 50,
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}",
           "min": 0,
@@ -559,12 +559,12 @@
         {
           "type": "select",
           "id": "text_on_image_alignment",
-          "label": "Text Alignment",
+          "label": "t:labels.text_alignment",
           "default": "center",
           "options": [
-            { "value": "left", "label": "Left" },
-            { "value": "center", "label": "Center" },
-            { "value": "right", "label": "Right" }
+            { "value": "left", "label": "t:options.alignment.left" },
+            { "value": "center", "label": "t:options.alignment.center" },
+            { "value": "right", "label": "t:options.alignment.right" }
           ],
           "visible_if": "{{ block.settings.custom_styling_enabled == true }}"
         }
@@ -574,8 +574,8 @@
   "max_blocks": 20,
   "presets": [
     {
-      "name": "Dynamic Grid",
-      "category": "Custom"
+      "name": "t:names.dynamic_grid",
+      "category": "t:names.custom"
     }
   ]
 }

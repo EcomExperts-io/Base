@@ -143,7 +143,7 @@
 
 {% schema %}
 {
-  "name": "Featured Products",
+  "name": "t:names.featured_products",
   "tag": "section",
   "class": "featured-products",
   "settings": [
@@ -156,42 +156,42 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:general.heading",
       "default": "Shop the Pro Selection"
     },
     {
       "type": "text",
       "id": "subheading",
-      "label": "Subheading",
+      "label": "t:labels.subheading",
       "default": "Skate like the pros"
     },
     {
       "type": "text",
       "id": "view_all_text",
-      "label": "'View All' Link Text",
+      "label": "t:labels.view_all_link_text",
       "default": "View All"
     },
     {
       "type": "url",
       "id": "view_all_url",
-      "label": "'View All' Link URL"
+      "label": "t:labels.view_all_link_url"
     },
     {
       "type": "select",
       "id": "heading_alignment",
-      "label": "Heading Alignment",
+      "label": "t:labels.heading_alignment",
       "options": [
         {
           "value": "left",
-          "label": "Left"
+          "label": "t:options.alignment.left"
         },
         {
           "value": "center",
-          "label": "Center"
+          "label": "t:options.alignment.center"
         },
         {
           "value": "right",
-          "label": "Right"
+          "label": "t:options.alignment.right"
         }
       ],
       "default": "center"
@@ -199,37 +199,37 @@
     {
       "type": "checkbox",
       "id": "show_view_all_as_button",
-      "label": "Show 'View All' as Button",
+      "label": "t:labels.show_view_all_as_button",
       "default": true
     },
     {
       "type": "color",
       "id": "button_background_color",
-      "label": "Button Background Color",
+      "label": "t:labels.button_background_color",
       "default": "#2E2E2E"
     },
     {
       "type": "color",
       "id": "button_text_color",
-      "label": "Button Text Color",
+      "label": "t:labels.button_text_color",
       "default": "#ffffff"
     },
     {
       "type": "select",
       "id": "product_content_alignment",
-      "label": "Product Content Alignment",
+      "label": "t:labels.product_content_alignment",
       "options": [
         {
           "value": "left",
-          "label": "Left"
+          "label": "t:options.alignment.left"
         },
         {
           "value": "center",
-          "label": "Center"
+          "label": "t:options.alignment.center"
         },
         {
           "value": "right",
-          "label": "Right"
+          "label": "t:options.alignment.right"
         }
       ],
       "default": "left"
@@ -237,19 +237,19 @@
     {
       "type": "select",
       "id": "review_content_alignment",
-      "label": "Review Content Alignment",
+      "label": "t:labels.review_content_alignment",
       "options": [
         {
           "value": "left",
-          "label": "Left"
+          "label": "t:options.alignment.left"
         },
         {
           "value": "center",
-          "label": "Center"
+          "label": "t:options.alignment.center"
         },
         {
           "value": "right",
-          "label": "Right"
+          "label": "t:options.alignment.right"
         }
       ],
       "default": "left"
@@ -258,19 +258,19 @@
   "blocks": [
     {
       "type": "product_card",
-      "name": "Product Card",
+      "name": "t:names.product_card",
       "settings": [
         {
           "type": "product",
           "id": "product",
-          "label": "Product"
+          "label": "t:general.product"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Featured Products",
+      "name": "t:names.featured_products",
       "blocks": [
         { "type": "product_card" },
         { "type": "product_card" },

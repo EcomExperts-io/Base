@@ -90,13 +90,13 @@
 
 {% schema %}
 {
-  "name": "Logos",
+  "name": "t:names.logos",
   "tag": "section",
   "class": "logos",
   "settings": [
     {
       "type": "header",
-      "content": "Color Settings"
+      "content": "t:headers.color_settings"
     },
     {
       "type": "color_scheme",
@@ -106,27 +106,27 @@
     },
     {
       "type": "header",
-      "content": "Animation Settings"
+      "content": "t:headers.animation_settings"
     },
     {
       "type": "range",
       "id": "animation_duration",
-      "label": "Animation Duration",
+      "label": "t:labels.animation_duration",
       "min": 10,
       "max": 60,
       "step": 5,
       "unit": "s",
       "default": 30,
-      "info": "Duration for one complete scroll cycle (lower = faster)"
+      "info": "t:info.duration_for_one_complete_scroll_cycle_lower_faster"
     },
     {
       "type": "header",
-      "content": "Spacing Settings"
+      "content": "t:headers.spacing_settings"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding Top",
+      "label": "t:labels.padding_top",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -136,7 +136,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding Bottom",
+      "label": "t:labels.padding_bottom",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -145,12 +145,12 @@
     },
     {
       "type": "header",
-      "content": "Logo Settings"
+      "content": "t:headers.logo_settings"
     },
     {
       "type": "range",
       "id": "logo_height",
-      "label": "Logo Height",
+      "label": "t:labels.logo_height",
       "min": 40,
       "max": 120,
       "step": 10,
@@ -161,19 +161,19 @@
   "blocks": [
     {
       "type": "logo",
-      "name": "Logo",
+      "name": "t:names.logo",
       "settings": [
         {
           "type": "image_picker",
           "id": "logo",
-          "label": "Logo"
+          "label": "t:names.logo"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Logos",
+      "name": "t:names.logos",
       "blocks": [
         { "type": "logo" },
         { "type": "logo" },
