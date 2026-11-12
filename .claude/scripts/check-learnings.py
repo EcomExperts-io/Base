@@ -7,8 +7,13 @@ Usage
   check-learnings.py --brief               one line for the session context
   check-learnings.py --gate --range A..B   the pull-request gate: exit 1 on either finding below
   check-learnings.py --gate --staged       the same two findings on the index; the pre-commit prints them
+  check-learnings.py --signal <kind> "<what happened>"   note something a learning may come from (hooks and scripts call this)
+  check-learnings.py --pending [--hold]    the unanswered signals; with --hold, exit 3 the first time each is shown
+  check-learnings.py --dismiss "<why>"     answer the unanswered signals with a reason: nothing to learn
 
 Notes:
+- A signal is local to this machine (.claude/.cache/): a failed Shopify command, a blocked turn, a QA round, GitBot
+  findings. It is answered by a learning recorded after it, or by --dismiss. The same signal is raised once.
 - Open: a file under docs/ai-workflow/incidents/ whose status is still `open` — recorded, and neither applied
   (`new-incident.py --apply`) nor declined (`--decline`). The developer answers every proposal, yes or no.
 - Changes existing: a diff that rewrites or removes a line of a .claude/rules/this-store-*.md or a skill under
@@ -22,10 +27,13 @@ import json
 import os
 import subprocess
 import sys
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STORE_CHECKS = ".claude/this-store/checks.json"
 STORE_TEXT = (".claude/rules/this-store-", ".claude/skills/this-store-")
+SIGNALS = ".claude/.cache/learning-signals.json"
+INCIDENTS = "docs/ai-workflow/incidents"
 
 
 def load(name):
@@ -42,6 +50,40 @@ def git(*args):
 
 def open_learnings(inc):
     return [(path, fm) for path, fm in inc.incidents() if fm.get("status", "open") == "open"]
+
+
+def load_signals():
+    try:
+        data = json.load(open(SIGNALS))
+        return data if isinstance(data, list) else []
+    except (OSError, ValueError):
+        return []
+
+
+def save_signals(signals):
+    os.makedirs(os.path.dirname(SIGNALS), exist_ok=True)
+    json.dump(signals[-200:], open(SIGNALS, "w"), indent=1)
+
+
+def newest_learning():
+    """When the newest learning file was written; a learning recorded after a signal answers it."""
+    try:
+        files = [os.path.join(INCIDENTS, n) for n in os.listdir(INCIDENTS) if n.endswith(".md") and n != "README.md"]
+    except OSError:
+        return 0
+    return max((os.stat(f).st_mtime for f in files), default=0)
+
+
+def unanswered(signals):
+    newest = newest_learning()
+    changed = False
+    for sig in signals:
+        if not sig.get("answered") and newest >= sig.get("time", 0):
+            sig["answered"] = "a learning was recorded"
+            changed = True
+    if changed:
+        save_signals(signals)
+    return [sig for sig in signals if not sig.get("answered")]
 
 
 def changed_checks(old, new):
@@ -104,6 +146,52 @@ def main(argv):
     if not root:
         return 0
     os.chdir(root)
+    if "--signal" in argv:
+        i = argv.index("--signal")
+        kind = argv[i + 1] if i + 1 < len(argv) else ""
+        what = " ".join((argv[i + 2] if i + 2 < len(argv) else "").split())[:300]
+        if not kind or not what:
+            print("usage: check-learnings.py --signal <kind> \"<what happened>\"", file=sys.stderr)
+            return 2
+        signals = load_signals()
+        if not any(sig.get("kind") == kind and sig.get("what") == what for sig in signals):
+            signals.append({"kind": kind, "what": what, "time": time.time()})
+            save_signals(signals)
+        return 0
+
+    if "--dismiss" in argv:
+        i = argv.index("--dismiss")
+        why = (argv[i + 1] if i + 1 < len(argv) else "").strip()
+        if not why:
+            print("usage: check-learnings.py --dismiss \"<why there is nothing to learn>\"", file=sys.stderr)
+            return 2
+        signals = load_signals()
+        waiting = unanswered(signals)
+        for sig in waiting:
+            sig["answered"] = "dismissed: " + why
+        save_signals(signals)
+        print(f"{len(waiting)} signal(s) dismissed.")
+        return 0
+
+    if "--pending" in argv:
+        signals = load_signals()
+        waiting = unanswered(signals)
+        if not waiting:
+            return 0
+        fresh = [sig for sig in waiting if not sig.get("held")]
+        print("learning loop: this happened and nothing has been learned from it yet:")
+        for sig in waiting:
+            print(f"  - [{sig.get('kind')}] {sig.get('what')}")
+        print("If a rule, check or skill of this repo should have prevented it, run /record-incident and show the developer "
+              "the proposed change. If there is nothing to learn, say why: "
+              "python3 .claude/scripts/check-learnings.py --dismiss \"<why>\"")
+        if "--hold" in argv and fresh:
+            for sig in fresh:
+                sig["held"] = True
+            save_signals(signals)
+            return 3
+        return 0
+
     inc = load("new-incident")
     still_open = open_learnings(inc)
 
@@ -115,6 +203,10 @@ def main(argv):
             titles = "; ".join(fm.get("title", os.path.basename(path)) for path, fm in still_open[:5])
             more = f" (+{len(still_open) - 5} more)" if len(still_open) > 5 else ""
             print(f"learnings: {len(still_open)} open of {total} recorded, each waiting for a yes or a no — {titles}{more}")
+        waiting = unanswered(load_signals())
+        if waiting:
+            print(f"learning loop: {len(waiting)} thing(s) from an earlier session not yet learned from or dismissed — "
+                  "python3 .claude/scripts/check-learnings.py --pending")
         return 0
 
     if "--gate" not in argv:

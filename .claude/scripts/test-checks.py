@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True).stdout.strip()
@@ -693,6 +694,34 @@ with tempfile.TemporaryDirectory() as d:
     case("learnings: a declined learning is closed with its reason",
          r.returncode == 0 and 'declined_reason: "will not recur"' in open(os.path.join(d, "docs/ai-workflow/incidents/2026-01-04-one-off.md")).read()
          and "0 open of 3 recorded" in tool(d, "check-learnings.py", "--brief").stdout, r.stdout)
+
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 1)
+    L = lambda *a: tool(d, "check-learnings.py", *a)
+    L("--signal", "shopify", "a Shopify command failed: shopify theme push"); L("--signal", "shopify", "a Shopify command failed: shopify theme push")
+    r1 = L("--pending", "--hold"); r2 = L("--pending", "--hold")
+    case("signals: the same signal is raised once, holds the turn the first time it is shown and reports after that",
+         r1.returncode == 3 and r1.stdout.count("[shopify]") == 1 and r2.returncode == 0 and "[shopify]" in r2.stdout, (r1.returncode, r2.returncode, r1.stdout))
+    r = L("--dismiss", "a typo in the command"); r3 = L("--pending", "--hold")
+    case("signals: a dismissal with a reason answers it", "1 signal(s) dismissed" in r.stdout and r3.returncode == 0 and not r3.stdout, r3.stdout)
+    www(d, "--qa-round", "4")
+    r4 = L("--pending")
+    case("signals: a QA round with open issues raises one", "[qa] a QA round came back with 4 open issue(s)" in r4.stdout, r4.stdout)
+    time.sleep(0.05)
+    tool(d, "new-incident.py", "--slug", "qa-misread", "--title", "Misread the QA note", "--date", "2026-01-05")
+    r5 = L("--pending", "--hold")
+    case("signals: a learning recorded after a signal answers it", r5.returncode == 0 and not r5.stdout, r5.stdout)
+    tool(d, "preflight-status.py", "--record", "1", "2", "0")
+    case("signals: GitBot findings that needed a fix raise one", "[gitbot] GitBot reported 3 finding(s)" in L("--pending").stdout, L("--pending").stdout)
+    hook = lambda: subprocess.run([sys.executable, os.path.join(ROOT, ".claude", "hooks", "stop-gate.py")], input="{}", capture_output=True, text=True,
+                                  cwd=d, env=dict(git_env(), CLAUDE_PROJECT_DIR=d))
+    os.makedirs(os.path.join(d, ".claude/scripts"))
+    for n in ("check-learnings.py", "new-incident.py", "pull_base_tooling_lib.py"):
+        shutil.copy(os.path.join(HERE, n), os.path.join(d, ".claude/scripts", n))
+    h1 = hook(); h2 = hook()
+    case("stop gate: an unanswered signal holds the turn once with what to do, then is a report",
+         h1.returncode == 2 and "/record-incident" in h1.stderr and "--dismiss" in h1.stderr and h2.returncode == 0 and "systemMessage" in h2.stdout,
+         (h1.returncode, h1.stderr[:200], h2.returncode, h2.stdout[:200]))
 
 links = load("check-rule-links")
 case("rule links: a path in the store's own area is not a broken link in Base; a missing Base path still is",

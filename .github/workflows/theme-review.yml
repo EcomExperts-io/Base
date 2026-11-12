@@ -163,6 +163,26 @@ jobs:
           git reset --soft "${ORIG_HEAD}"
           [ "${contract}" -eq 0 ] && [ "${conventions}" -eq 0 ]
 
+      - name: Learnings are answered (blocking)
+        if: ${{ !cancelled() }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        # Fails while a learning under docs/ai-workflow/incidents/ is still `open`, and when this PR rewrites or
+        # removes an existing store rule or check with no learning that says why. Skipped in a repo whose tooling
+        # predates the script.
+        run: |
+          set -eu
+
+          if [ ! -f "${SCRIPTS}/check-learnings.py" ]; then
+            echo "check-learnings.py is not in this repo's tooling yet — skipped. Run pull-base-tooling.py."
+            exit 0
+          fi
+
+          git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null \
+            || git fetch --no-tags --quiet origin "${BASE_SHA}"
+
+          python3 "${SCRIPTS}/check-learnings.py" --gate --range "${BASE_SHA}..HEAD"
+
       - name: Setup Python 3.9 (the floor every script must still compile on)
         if: ${{ !cancelled() && hashFiles('.claude/scripts/test-checks.py') != '' }}
         uses: actions/setup-python@v5
@@ -207,6 +227,6 @@ jobs:
       - name: Tooling drift against Base
         if: ${{ !cancelled() && steps.base.outcome == 'success' && hashFiles('.base-version') != '' }}
         continue-on-error: true
-        # Report only: rules this repo edited since it last pulled Base
-        # (harvest candidates) and rules Base changed since (pull-down candidates).
+        # Report only: Base files this repo edited since it last pulled Base (to move into
+        # the store's own area) and rules Base changed since (pull-down candidates).
         run: python3 "${SCRIPTS}/check-tooling-drift.py" --base-path .base-tooling --no-fetch
