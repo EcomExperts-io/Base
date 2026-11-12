@@ -36,6 +36,10 @@ EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/"
 # check-rule-links.py resolves those links, and git cannot carry an empty directory.
 INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
+# Names a store owns — its own rules, checks and skills. Base ships none of them (check-ai-config.py refuses one in
+# Base), so a pull never writes, stashes or retires them and the drift report never counts them against Base.
+STORE_PREFIXES = (".claude/this-store/", ".claude/rules/this-store-", ".claude/skills/this-store-", ".agents/skills/this-store-")
+
 # Paths Base has renamed or removed, old -> new (or None). A fork whose copy still equals what Base shipped at the
 # stamp loses it on the next pull; an edited copy is kept and listed for a hand merge.
 RETIRED = {
@@ -60,9 +64,15 @@ def sh(*args, cwd=None, check=True):
     return r.stdout
 
 
+def is_store_owned(path):
+    return path.startswith(STORE_PREFIXES)
+
+
 def is_tooling(path):
     if path == INCIDENTS_README:
         return True
+    if is_store_owned(path):
+        return False
     if path.startswith(EXCLUDE_PREFIXES) or "__pycache__" in path or path.endswith(".pyc"):
         return False
     return path in TOOLING_FILES or path.startswith(TOOLING_PREFIXES)

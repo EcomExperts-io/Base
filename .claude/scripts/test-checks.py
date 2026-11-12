@@ -554,6 +554,62 @@ with tempfile.TemporaryDirectory() as d:
     case("plugin: no plugin installed exits 0 and names the fallback", r.returncode == 0 and "fallback" in r.stdout, r.stdout)
 
 # ---------------------------------------------------------------------------
+# the store's own area — a pull and the drift report against a throwaway Base and fork
+# ---------------------------------------------------------------------------
+def put(root, rel, text):
+    path = os.path.join(root, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    open(path, "w", encoding="utf-8").write(text)
+
+
+def tool(cwd, script, *args):
+    return subprocess.run([sys.executable, os.path.join(HERE, script), *args], capture_output=True, text=True, cwd=cwd, env=git_env())
+
+
+STORE_RULE = ".claude/rules/this-store-breakpoints.md"
+STORE_CHECKS = ".claude/this-store/checks.json"
+
+with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as d:
+    gb = fork(base, 1)
+    put(base, "CLAUDE.md", "# Base\n"); put(base, ".claude/rules/sections.md", "v1\n"); put(base, ".claude/rules/snippets.md", "v1\n")
+    gb("add", "."); gb("commit", "-q", "-m", "tooling v1")
+    sha1 = gb("rev-parse", "HEAD").stdout.strip()
+    g = fork(d, 1)
+    put(d, "CLAUDE.md", "# Base\n"); put(d, ".claude/rules/sections.md", "v1\n"); put(d, ".claude/rules/snippets.md", "v1\n")
+    put(d, ".base-version", json.dumps({"sha": sha1, "ref": "base/development", "date": "2026-01-01"}))
+    put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nthe store's own line\n")
+    put(d, STORE_CHECKS, "[]\n")
+    g("add", "."); g("commit", "-q", "-m", "fork")
+    put(base, ".claude/rules/sections.md", "v2\n"); put(base, STORE_RULE, "BASE WROTE THIS\n")
+    gb("add", "."); gb("commit", "-q", "-m", "tooling v2")
+    r = tool(d, "pull-base-tooling.py", "--base-path", base)
+    case("store area: a pull updates the Base rule the store never touched",
+         open(os.path.join(d, ".claude/rules/sections.md")).read() == "v2\n", r.stdout[-400:] + r.stderr[-200:])
+    case("store area: a pull never writes a store-owned file, even one Base carries by accident",
+         "the store's own line" in open(os.path.join(d, STORE_RULE)).read()
+         and not os.path.exists(os.path.join(d, ".claude/.cache/base-new", STORE_RULE)), r.stdout[-400:])
+    case("store area: the pull report lists the store's files as store-owned, not fork-only",
+         "store-owned (2)" in r.stdout and "fork-only" not in r.stdout, r.stdout[-400:])
+    put(d, ".claude/rules/snippets.md", "v1\nthis store uses 769px\n")
+    j = json.loads(tool(d, "check-tooling-drift.py", "--base-path", base, "--no-fetch", "--json").stdout or "{}")
+    case("drift: a Base file the store edited is listed as edited here; the store's own files are counted apart",
+         [e[0] for e in j.get("edited_here", [])] == [".claude/rules/snippets.md"]
+         and j.get("store_owned") == [STORE_RULE, STORE_CHECKS] and "harvest" not in j, j)
+    brief = tool(d, "check-tooling-drift.py", "--base-path", base, "--no-fetch", "--brief").stdout
+    case("drift: the session line says to move the edit to the store area and never says harvest",
+         "1 Base file(s) edited here (move to the store area)" in brief and "2 store-owned" in brief and "harvest" not in brief.lower(), brief)
+
+store_rules = aic.load_rules()
+store_rules["this-store-a"] = {"path": ".claude/rules/this-store-a.md", "text": "", "fm": "description: x", "body": "", "paths": None, "lines": 5}
+store_rules["this-store-b"] = {"path": ".claude/rules/this-store-b.md", "text": "", "fm": "description: x\npaths:\n  - x", "body": "", "paths": ["sections/**"], "lines": 5000}
+sp, sn = [], []
+aic.check(store_rules, sp, sn)
+case("ai-config: a store rule with no paths is refused; a scoped one is outside CLAUDE.md's inventory and Base's injection caps",
+     len(sp) == 1 and "this-store-a.md: a store rule with no `paths:`" in sp[0], sp)
+case("ai-config: the store's own rules are noted once they pass the line count",
+     any("the store's own rules are 5005 lines" in n for n in sn), sn)
+
+# ---------------------------------------------------------------------------
 verbose = "--verbose" in sys.argv
 failed = [r for r in RESULTS if not r[1]]
 for name, ok, detail in RESULTS:
