@@ -1,7 +1,7 @@
 # AGENTS.md
 
 <!-- GENERATED from CLAUDE.md by .claude/scripts/sync-ai-config.sh - do not edit here. The files it names live under .claude/; .codex/ holds the Codex wiring and the generated hooks and agents. -->
-<!-- checksum: 4141085868 -->
+<!-- checksum: 2470688853 -->
 
 Guidance for Codex (and any AI coding tool) working in the Base Theme
 repository, and in the client themes forked from it.
@@ -172,7 +172,7 @@ rule says so and why; the store's rule wins there.
 `/record-incident` records what went wrong, proposes the exact change to the
 store's own area, waits for the developer's yes, and applies it as a
 `[LEARN]:` commit. The Stop hook starts it; the pull-request gate
-(`check-learnings.py --gate`) fails while a learning is unanswered, or when
+(`check-learnings.py --gate`) fails while a learning recorded in that change is unanswered, or when
 an existing store rule or check is rewritten with no reason given.
 
 | | Where it goes |

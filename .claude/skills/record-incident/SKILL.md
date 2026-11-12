@@ -100,5 +100,6 @@ the store files. Run `sh .claude/scripts/sync-ai-config.sh` first; never edit
 ## What holds it
 
 SessionStart lists open learnings by title. The pull-request gate
-(`check-learnings.py --gate`) fails while one is still `open`, and when
+(`check-learnings.py --gate`) fails while one recorded in that change is
+still `open` (an older one is listed, not blocking), and when
 existing store rules or checks change with no `--changes-existing` reason.

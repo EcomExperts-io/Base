@@ -169,7 +169,7 @@ rule says so and why; the store's rule wins there.
 `/record-incident` records what went wrong, proposes the exact change to the
 store's own area, waits for the developer's yes, and applies it as a
 `[LEARN]:` commit. The Stop hook starts it; the pull-request gate
-(`check-learnings.py --gate`) fails while a learning is unanswered, or when
+(`check-learnings.py --gate`) fails while a learning recorded in that change is unanswered, or when
 an existing store rule or check is rewritten with no reason given.
 
 | | Where it goes |

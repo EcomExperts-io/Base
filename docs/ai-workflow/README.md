@@ -41,7 +41,7 @@ for each.
 | A Shopify command fails, a turn is blocked, a QA round or GitBot findings come back | Noted for the learning loop; the turn is held once until it is learned from (`/record-incident`) or dismissed with a reason | `PostToolUseFailure` and `Stop` hooks |
 | A `git push` in a client repo | A nudge to `/gitbot-preflight`: read GitBot's findings here and settle each one before the PR | `PostToolUse` hook on Bash |
 | A commit | The full pre-commit gate; the Cursor mirror regenerated and staged | `.githooks/pre-commit` (called from husky in client forks) |
-| A pull request — into any branch; the fork's trunk is the fork's decision | Base's reusable review workflow, run through a six-line caller in each fork; it fails while a learning is unanswered | `.github/workflows/theme-review.yml` |
+| A pull request — into any branch; the fork's trunk is the fork's decision | Base's reusable review workflow, run through a six-line caller in each fork; it fails while a learning recorded in that change is unanswered | `.github/workflows/theme-review.yml` |
 
 Modified legacy files are reported, never gated — you answer for what you add.
 Where a check is wrong for a theme, say so in the rule; do not disable hooks.

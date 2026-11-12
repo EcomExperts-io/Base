@@ -16,6 +16,8 @@ Notes:
   findings. It is answered by a learning recorded after it, or by --dismiss. The same signal is raised once.
 - Open: a file under docs/ai-workflow/incidents/ whose status is still `open` — recorded, and neither applied
   (`new-incident.py --apply`) nor declined (`--decline`). The developer answers every proposal, yes or no.
+- The gate fails on an open learning this change records or edits. One that was open before the change is listed and
+  does not fail it, so a backlog never blocks unrelated work.
 - Changes existing: a diff that rewrites or removes a line of a .claude/rules/this-store-*.md or a skill under
   .claude/skills/this-store-*/, or that removes a check or changes its pattern, files or severity in
   .claude/this-store/checks.json. Adding is free; changing what is there needs a learning in the same diff that
@@ -101,6 +103,12 @@ def changed_checks(old, new):
         return sorted(before)
     return sorted(cid for cid, e in before.items()
                   if cid not in after or any(e.get(k) != after[cid].get(k) for k in ("pattern", "files", "severity")))
+
+
+def in_change(staged, a, b):
+    """The learning files this change adds or edits."""
+    out = git("diff", "--cached", "--name-only", "--", INCIDENTS) if staged else git("diff", "--name-only", a, b, "--", INCIDENTS)
+    return set((out or "").split())
 
 
 def changes_existing(staged, a, b):
@@ -228,12 +236,17 @@ def main(argv):
     touched, declared = changes_existing(staged, a, b)
 
     problems = 0
-    if still_open:
-        problems += len(still_open)
-        print(f"  {len(still_open)} learning(s) recorded and not answered. Each one is applied or declined before the pull request:")
-        for path, fm in still_open:
+    mine = in_change(staged, a, b)
+    fresh = [(path, fm) for path, fm in still_open if path.replace(os.sep, "/") in mine]
+    older = len(still_open) - len(fresh)
+    if fresh:
+        problems += len(fresh)
+        print(f"  {len(fresh)} learning(s) recorded in this change and not answered. Each one is applied or declined before the pull request:")
+        for path, fm in fresh:
             print(f"    - {path} — {fm.get('title', '')}")
         print("    python3 .claude/scripts/new-incident.py --apply <file> --change <store file>   or   --decline <file> --reason \"…\"")
+    if older:
+        print(f"  {older} older learning(s) still open, from before this change — listed, not blocking: python3 .claude/scripts/check-learnings.py")
     if touched and not declared:
         problems += 1
         print("  This change rewrites or removes part of the store's existing rules or checks, and no learning says why:")

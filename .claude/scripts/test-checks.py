@@ -672,6 +672,9 @@ with tempfile.TemporaryDirectory() as d:
     gate = lambda *a: tool(d, "check-learnings.py", "--gate", *a)
     r = gate("--range", f"{base_sha}..HEAD")
     case("learnings: an open learning fails the pull-request gate and is named", r.returncode == 1 and inc_file in r.stdout, r.stdout)
+    r = gate("--range", "HEAD..HEAD")
+    case("learnings: a learning that was open before the change is listed and does not fail the gate",
+         r.returncode == 0 and "1 older learning(s) still open" in r.stdout, r.stdout)
     brief = tool(d, "check-learnings.py", "--brief").stdout
     case("learnings: the session line lists open learnings by title", "1 open of 1 recorded" in brief and "Built with the wrong container" in brief, brief)
     put(d, ".claude/rules/sections.md", "x\n")

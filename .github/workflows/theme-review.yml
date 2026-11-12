@@ -167,7 +167,7 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        # Fails while a learning under docs/ai-workflow/incidents/ is still `open`, and when this PR rewrites or
+        # Fails while a learning this PR records under docs/ai-workflow/incidents/ is still `open`, and when this PR rewrites or
         # removes an existing store rule or check with no learning that says why. Skipped in a repo whose tooling
         # predates the script.
         run: |
