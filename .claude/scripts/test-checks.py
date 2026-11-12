@@ -599,6 +599,51 @@ with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as d:
     case("drift: the session line says to move the edit to the store area and never says harvest",
          "1 Base file(s) edited here (move to the store area)" in brief and "2 store-owned" in brief and "harvest" not in brief.lower(), brief)
 
+with tempfile.TemporaryDirectory() as d:
+    put(d, "rules/this-store-layout.md", "x\n")
+    good = {"id": "old-container", "files": "sections/*.liquid", "pattern": r"class=\"[^\"]*\bcontainer\b",
+            "severity": "error", "why": "this store's container is page-width", "rule": "this-store-layout.md"}
+    put(d, "checks.json", json.dumps([
+        good,
+        dict(good, id="bad-regex", pattern="(unclosed"),
+        dict(good, id="no-why", why=""),
+        dict(good, id="no-rule", rule="this-store-missing.md"),
+        dict(good, id="base-rule", rule="sections.md"),
+        dict(good, id="matches-everything", pattern=".*"),
+        dict(good, id="old-container"),
+    ]))
+    checks, problems = conv.load_store_checks(os.path.join(d, "checks.json"), os.path.join(d, "rules"))
+    case("store checks: a usable entry loads; each unusable one is named and skipped without switching the rest off",
+         [c[0] for c in checks] == ["store:old-container"] and len(problems) == 6
+         and all(k in " ".join(problems) for k in ("bad-regex", "no-why", "no-rule", "base-rule", "matches-everything", "used twice")), problems)
+    f = []
+    conv.scan_store_checks("sections/hero.liquid", '<div>\n<div class="hero container">\n', checks, f)
+    g2 = []
+    conv.scan_store_checks("snippets/card.liquid", '<div class="container">', checks, g2)
+    case("store checks: a match is a finding on its line, with the store's severity, only in the files the entry names",
+         [(x.rule, x.line, x.severity) for x in f] == [("store:old-container", 2, "error")] and not g2, (rules(f), rules(g2)))
+    put(d, "broken.json", "{not json")
+    case("store checks: a file that is not JSON is one named problem, not a crash",
+         conv.load_store_checks(os.path.join(d, "broken.json"), d) == ([], [conv.load_store_checks(os.path.join(d, "broken.json"), d)[1][0]])
+         and "not valid JSON" in conv.load_store_checks(os.path.join(d, "broken.json"), d)[1][0])
+    case("store checks: no file means no checks and no problems", conv.load_store_checks(os.path.join(d, "absent.json"), d) == ([], []))
+
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 1)
+    put(d, ".claude/rules/this-store-layout.md", "x\n")
+    put(d, ".claude/this-store/checks.json", json.dumps([{"id": "old-container", "files": ["sections/*.liquid"], "pattern": "container",
+        "severity": "error", "why": "this store's container is page-width", "rule": "this-store-layout.md"}]))
+    g("add", "."); g("commit", "-q", "-m", "store check")
+    put(d, "sections/hero.liquid", '<div class="container"></div>\n')
+    r = tool(d, "check-conventions.py", "--changed", "--block", "--quiet")
+    case("store checks: an error in a new file blocks the stop gate's run and names the store rule",
+         r.returncode == 1 and "store:old-container" in r.stdout and ".claude/rules/this-store-layout.md" in r.stdout, r.stdout[-300:])
+    put(d, ".claude/this-store/checks.json", "[{\"id\": \"x\"}]")
+    r = tool(d, "check-conventions.py", "--changed", "--block", "--quiet")
+    case("store checks: a check that cannot run fails a blocking run and says which", r.returncode == 1 and "cannot run" in r.stdout and "`x`" in r.stdout, r.stdout[-300:])
+    r = tool(d, "check-conventions.py", "--files", "sections/hero.liquid", "--quiet")
+    case("store checks: the per-edit run reports a broken check and never blocks", r.returncode == 0 and "cannot run" in r.stdout, r.stdout[-300:])
+
 store_rules = aic.load_rules()
 store_rules["this-store-a"] = {"path": ".claude/rules/this-store-a.md", "text": "", "fm": "description: x", "body": "", "paths": None, "lines": 5}
 store_rules["this-store-b"] = {"path": ".claude/rules/this-store-b.md", "text": "", "fm": "description: x\npaths:\n  - x", "body": "", "paths": ["sections/**"], "lines": 5000}
