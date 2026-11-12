@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/living-documents.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 2452637450 -->
+<!-- checksum: 111879413 -->
 
 
 # Living Documents
@@ -33,16 +33,17 @@ follow-up to it.
 
 | What you learned | Where it goes |
 |---|---|
-| A convention this theme follows | the matching `.claude/rules/*.md` |
-| A trap in Liquid, Shopify or the platform, generic to any theme | the matching rule, **and up to Base** — see CLAUDE.md, "Flowing changes between Base and the forks" |
+| A convention, measurement or decision true of this client's theme | `.claude/rules/this-store-*.md` — never a file Base ships |
+| A pattern a grep can decide, in this client's theme | an entry in `.claude/this-store/checks.json` |
 | How a specific section or snippet works | `docs/sections/` or `docs/snippets/` |
-| A step in a procedure someone invokes | the matching `.claude/skills/*/SKILL.md` |
-| A CSS or browser trap you had to **measure** to find — a cascade order, a layout feedback loop, a state that reports correctly and renders wrong | `.claude/references/*-pitfalls.md`, **and up to Base** |
-| Something true only of this client's theme | that theme's rule copy, not Base |
-| A fix that a rule, gate or check **should have prevented** | `/record-incident` → `docs/ai-workflow/incidents/`, committed the moment it happens; then `/harvest` if it is generic |
+| A fix that a rule, gate or check **should have prevented** | `/record-incident`, the moment it happens: recorded, proposed to the developer, applied in the store's own area on a yes |
+| A trap generic to any Shopify theme | the same, with `scope: generic`; it is fixed here first and nothing is sent to Base |
+| In Base itself: a convention, a trap, a step in a procedure | the matching rule, `.claude/references/*-pitfalls.md` or `SKILL.md` |
 
 The rule paragraph is written from the incident, not the other way round, and
-an incident recorded at the end of a build is an incident not recorded.
+an incident recorded at the end of a build is an incident not recorded. The
+setup changes only on the developer's yes; a change that rewrites or removes
+an existing store rule or check says so and why.
 
 A **rule** is what to do, scoped by a `paths` glob and injected automatically.
 A **reference** is symptom, cause and fix for a trap too situational to inject

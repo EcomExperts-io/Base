@@ -20,8 +20,8 @@ overlay installs `.claude/` and regenerates `.cursor/` from it; if both exist
 and disagree, the drift report says so and a human picks.
 
 **The previous team's conventions win where they conflict with Base's** —
-half the theme already uses them. The recon records them in this repo's rule
-copies, not in Base.
+half the theme already uses them. The recon records them in this repo's own
+rules (`this-store-*.md`), never in a file Base ships.
 
 ## The dependency order
 

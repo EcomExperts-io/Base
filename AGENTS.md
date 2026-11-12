@@ -1,7 +1,7 @@
 # AGENTS.md
 
 <!-- GENERATED from CLAUDE.md by .claude/scripts/sync-ai-config.sh - do not edit here. The files it names live under .claude/; .codex/ holds the Codex wiring and the generated hooks and agents. -->
-<!-- checksum: 4259657633 -->
+<!-- checksum: 4141085868 -->
 
 Guidance for Codex (and any AI coding tool) working in the Base Theme
 repository, and in the client themes forked from it.
@@ -90,7 +90,7 @@ regenerates and stages the mirrors.
 Configured in `.claude/settings.json`, so it travels into every fork:
 
 - **SessionStart** injects doctor status, tooling drift from Base, the
-  compliance number, open incidents, the three most-missed rules, and which
+  compliance number, open learnings by title, the three most-missed rules, and which
   situation the repo looks like — fresh rebuild, joining midway, correcting
   after QA (`where-are-we.py`).
 - **PostToolUse** on every theme-file write runs the settings contract, the
@@ -98,7 +98,10 @@ Configured in `.claude/settings.json`, so it travels into every fork:
 - **Stop** refuses to end a turn while a *new* theme file fails the contract, a
   convention, JSON validity or Theme Check, and flags section work with no
   verify report newer than the change. Modified legacy is reported, not gated.
-- **PostToolUseFailure** on a Shopify command points at `/record-incident`.
+  It also holds the turn once on anything a learning may come from — a
+  blocked turn, a failed Shopify command, a QA round, GitBot findings — until
+  it is learned from (`/record-incident`) or dismissed with a reason.
+- **PostToolUseFailure** on a Shopify command notes it for that loop.
 - **PostToolUse** on a `git push` in a client repo points at
   `/gitbot-preflight`; the Stop hook says, once per turn, when a client
   branch's GitBot findings have not been read since its last commit.
@@ -113,9 +116,9 @@ for a fork whose `package.json` has no `setup` script).
 
 - `.claude/skills/` — `build-page-from-figma`, `build-section-from-live`,
   `scaffold-section`, `figma-readiness`, `run-theme`, `verify-against-reference`,
-  `record-incident`, `harvest`, `recon-theme`, `store-recon`, `close-qa-loop`,
+  `record-incident`, `recon-theme`, `store-recon`, `close-qa-loop`,
   `accessibility-review`, `gitbot-preflight`. Skills auto-invoke from their
-  descriptions; `harvest` is human-only because it pushes to Base.
+  descriptions.
 - The Notion card, the hand-off comment, QI bugs, Slack and branch names
   belong to the `agentic-os` plugin when it is installed; Base supplies the
   proof it quotes (`build-page-from-figma` Step 5).
@@ -142,22 +145,44 @@ No client fork shares git history with Base, and it does not need to.
   sibling worktree and a reference directory. `python3
   .claude/scripts/pull-base-tooling.py` overlays the tooling three-way
   against the `.base-version` stamp: Base's changes land where the fork never
-  touched the file; the fork's edits are kept and listed.
-  `check-tooling-drift.py` shows both directions.
-- **Up:** `/record-incident` the moment a fix lands that a rule should have
-  prevented. `/harvest` asks *would this be true in a Shopify theme that is
-  not this client's?*, edits the rule in the Base worktree, pushes to Base and
-  opens the PR, then marks the incident.
+  touched the file. `check-tooling-drift.py` shows what is waiting.
+- **Nothing goes up from a store.** What a store learns stays in that store.
+  Only whoever maintains Base moves a learning into it, by hand, after reading
+  `python3 .claude/scripts/learnings-report.py` — run from Base, it lists the
+  learnings every store marked `generic`.
+
+### The store's own area
+
+Three names belong to the store. Base ships none of them, a pull never
+writes them, and they are where a store's setup improves:
+
+| | |
+|---|---|
+| `.claude/rules/this-store-*.md` | the store's own rules, each scoped by a `paths` glob |
+| `.claude/this-store/checks.json` | the store's own pattern checks, run by `check-conventions.py` |
+| `.claude/skills/this-store-*/` | a procedure only this store needs |
+
+A store never edits a file Base ships: that file stops receiving Base's
+updates the moment it does, and `check-tooling-drift.py` lists it as one to
+move. Where a store does the opposite of a Base rule, a `this-store-*.md`
+rule says so and why; the store's rule wins there.
+
+### The learning loop
+
+`/record-incident` records what went wrong, proposes the exact change to the
+store's own area, waits for the developer's yes, and applies it as a
+`[LEARN]:` commit. The Stop hook starts it; the pull-request gate
+(`check-learnings.py --gate`) fails while a learning is unanswered, or when
+an existing store rule or check is rewritten with no reason given.
 
 | | Where it goes |
 |---|---|
-| A Liquid, Shopify or platform trap | **Base**, then forks pull it down |
-| A convention we want every client to follow | **Base** |
-| A measurement of *this* theme — breakpoints, container class, file counts | the client's rule copy only (`/recon-theme` writes them) |
-| A client's design decision | the client's rule copy only |
+| A measurement of *this* theme — breakpoints, container class, file counts | `this-store-*.md` (`/recon-theme` writes them) |
+| A client's design decision | `this-store-*.md` |
+| A trap this store hit, generic or not | fixed in the store's own area first; `scope: generic` flags it for Base's maintainer |
+| A convention every client should follow | **Base**, by its maintainer; forks pull it down |
 
-**Move the paragraph, not the file.** Generic principle upstream, measured
-specifics downstream. New client repos start from `new-client-theme.sh`.
+New client repos start from `new-client-theme.sh`.
 
 ## Two success criteria, kept separate
 

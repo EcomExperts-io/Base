@@ -61,9 +61,9 @@ Before you build anything, in this order:
      when they are not.
   3. Confirm the hook BLOCKS. Add a section with no padding settings and try to
      commit it. If it commits, you inherited the file and not the protection.
-  4. Do the measurement pass and write the answers into .claude/rules/sections.md
-     in THIS repo. Base is deliberately generic; the fork is where the numbers
-     live:
+  4. Do the measurement pass (/recon-theme) and write the answers into
+     .claude/rules/this-store-measurements.md in THIS repo. Base is deliberately
+     generic; the store's own rules are where the numbers live:
         - which container class the finished pages use, and its max-width
         - which breakpoint the majority of assets/section-*.css uses
         - the spacing constants the design actually repeats

@@ -7,7 +7,7 @@ argument-hint: [--live-url <storefront-url>]
 # recon-theme
 
 Read the repo before writing to it: the measurement is a script, the
-judgment a checklist, and the numbers land in the fork's rule copies.
+judgment a checklist, and the numbers land in the store's own rules.
 
 **Invocation:** `/recon-theme` — in the client repo, after
 `sh .claude/scripts/base-link.sh` (so lineage can be measured) and
@@ -71,11 +71,16 @@ exact sizes, the live URL and section key, and whether it is in scope.
 
 ## Step 3 — Record the measured conventions where agents read them
 
-Edit **this repo's** `.claude/rules/sections.md` (the breakpoint note under
-the padding boilerplate) and `snippets.md`, following the pattern Base's own
-`sections.md` uses: the measured value, the count behind it, the date. A
-previous team's edit whose numbers still hold stays; one that no longer holds
-is updated and noted in the state document. Base stays generic.
+Write them in **this repo's** `.claude/rules/this-store-measurements.md`,
+with a `description` and `paths:` covering `sections/**`, `snippets/**` and
+`assets/**`: the breakpoint, the container class, the spacing constants —
+each as the measured value, the count behind it and the date. Never edit
+`sections.md`, `snippets.md` or any other file Base ships: Base's copy stops
+updating the moment this repo changes it. Where the theme does the opposite
+of a Base rule, say so there and why; the store's rule wins.
+
+A previous team's edit to a Base rule file is moved into that store rule and
+Base's copy restored; `check-tooling-drift.py` lists them under EDITED HERE.
 
 Do not edit `.cursor/`; run `sh .claude/scripts/sync-ai-config.sh`.
 
@@ -95,7 +100,7 @@ the drift and compliance lines from the same measurements.
 
 ## Notes
 
-- Read-only apart from the state document and the rule copies. Record what
+- Read-only apart from the state document and the store's own rules. Record what
   the recon finds; `/record-incident` where a rule should have prevented it.
 - Without a Base checkout the lineage section is skipped and the document
   says so; `base-link.sh` needs no shared history.

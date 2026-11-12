@@ -35,13 +35,13 @@ for each.
 
 | When | What | Where it is configured |
 |---|---|---|
-| Session starts | Doctor status, tooling drift from Base, compliance number, open incidents, the three most-missed rules, and one line naming which of the three situations the repo looks like (fresh rebuild, joining midway, correcting after QA) with the evidence — injected as context | `SessionStart` hook |
+| Session starts | Doctor status, tooling drift from Base, compliance number, open learnings by title, the three most-missed rules, and one line naming which of the three situations the repo looks like (fresh rebuild, joining midway, correcting after QA) with the evidence — injected as context | `SessionStart` hook |
 | Claude writes a theme file | Settings contract, grep-level conventions, JSON validity on that one file, findings handed straight back | `PostToolUse` hook (~100 ms) |
 | Claude tries to end a turn | The same gate over everything changed this turn, plus Theme Check; a **new** file that fails blocks the turn; a section changed with no verify report newer than the change is flagged; a client branch whose GitBot findings have not been read since its last commit is named | `Stop` hook |
-| A Shopify command fails | A nudge to `/record-incident` while the details are in context | `PostToolUseFailure` hook |
+| A Shopify command fails, a turn is blocked, a QA round or GitBot findings come back | Noted for the learning loop; the turn is held once until it is learned from (`/record-incident`) or dismissed with a reason | `PostToolUseFailure` and `Stop` hooks |
 | A `git push` in a client repo | A nudge to `/gitbot-preflight`: read GitBot's findings here and settle each one before the PR | `PostToolUse` hook on Bash |
 | A commit | The full pre-commit gate; the Cursor mirror regenerated and staged | `.githooks/pre-commit` (called from husky in client forks) |
-| A pull request — into any branch; the fork's trunk is the fork's decision | Base's reusable review workflow, run through a six-line caller in each fork | `.github/workflows/theme-review.yml` |
+| A pull request — into any branch; the fork's trunk is the fork's decision | Base's reusable review workflow, run through a six-line caller in each fork; it fails while a learning is unanswered | `.github/workflows/theme-review.yml` |
 
 Modified legacy files are reported, never gated — you answer for what you add.
 Where a check is wrong for a theme, say so in the rule; do not disable hooks.
@@ -58,8 +58,8 @@ npm run setup                                  # hooks, mirror, doctor — or: s
 
 Then `/recon-theme` (lineage, conventions in use, compliance, what is left)
 and `/store-recon` (what the store has). The previous team's conventions win
-where they conflict with Base's; the recon writes them into this repo's rule
-copies. Build in the order in `.claude/workflows/rebuild-playbook.md`.
+where they conflict with Base's; the recon writes them into this repo's own
+rules (`this-store-*.md`). Build in the order in `.claude/workflows/rebuild-playbook.md`.
 
 ### 1. A human decides what to build and supplies the inputs
 
@@ -120,10 +120,11 @@ short fallback. QI logs bugs → `/close-qa-loop` fixes them against the same
 standards, through the plugin's `/fix-issues` when it is installed.
 
 Anything a rule, gate or check should have prevented → `/record-incident` the
-moment it happens: a committed file under `docs/ai-workflow/incidents/` with
-`scope`, `should_have_caught` and `status`. Generic incidents and rule edits
-→ `/harvest` opens the Base pull request from inside the client repo.
-`check-tooling-drift.py` lists what is waiting either way.
+moment it happens. It records what went wrong, shows the developer the exact
+change to this repo's own setup, and applies it on a yes — in
+`.claude/rules/this-store-*.md`, `.claude/this-store/checks.json` or a
+`this-store-*` skill, never in a file Base ships. Nothing leaves the repo;
+Base's maintainer reads the `generic` ones with `learnings-report.py`.
 
 ## A typical prompt
 
@@ -138,6 +139,9 @@ moment it happens: a committed file under `docs/ai-workflow/incidents/` with
 - **Base does not pass its own compliance report** (`report-compliance.py`);
   the retrofit is an open item in `docs/base-theme-standards.md`.
 - **No company-owned Figma template file** for designers to copy from.
+- **A correction given in chat is not detected.** The learning loop starts on
+  a failed command, a blocked turn, a QA round and GitBot findings; a
+  developer's correction relies on `/record-incident` being run.
 - **No Admin API writes.** A page template with no page in admin is inert;
   `/store-recon` names it, nothing creates it.
 
@@ -155,7 +159,7 @@ moment it happens: a committed file under `docs/ai-workflow/incidents/` with
 | New section | `/scaffold-section` |
 | Run the theme | `/run-theme` |
 | Verify against the design | `/verify-against-reference` |
-| Record / send up | `/record-incident` · `/harvest` |
+| Learn from a mistake | `/record-incident` · `check-learnings.py` |
 | Close QA issues | `/close-qa-loop` |
 | Machine and repo health | `python3 .claude/scripts/doctor.py` · `check-tooling-drift.py` · `report-compliance.py` · `check-conventions.py --all` |
 | Merge gate | `shopify-pr-reviewer` |
