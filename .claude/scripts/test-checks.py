@@ -644,6 +644,62 @@ with tempfile.TemporaryDirectory() as d:
     r = tool(d, "check-conventions.py", "--files", "sections/hero.liquid", "--quiet")
     case("store checks: the per-edit run reports a broken check and never blocks", r.returncode == 0 and "cannot run" in r.stdout, r.stdout[-300:])
 
+# ---------------------------------------------------------------------------
+# learnings — recorded, answered, and a change to what exists is declared
+# ---------------------------------------------------------------------------
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 1)
+    base_sha = g("rev-parse", "HEAD").stdout.strip()
+    r = tool(d, "new-incident.py", "--slug", "wrong-container", "--title", "Built with the wrong container", "--scope", "client",
+             "--surfaced-by", "qa", "--should-have-caught", ".claude/rules/sections.md", "--date", "2026-01-02")
+    inc_file = "docs/ai-workflow/incidents/2026-01-02-wrong-container.md"
+    case("learnings: a new record is open and carries the proposed-change section",
+         r.returncode == 0 and "status: open" in open(os.path.join(d, inc_file)).read()
+         and "## Proposed change to this repo's setup" in open(os.path.join(d, inc_file)).read(), r.stdout + r.stderr)
+    g("add", "."); g("commit", "-q", "-m", "record")
+    gate = lambda *a: tool(d, "check-learnings.py", "--gate", *a)
+    r = gate("--range", f"{base_sha}..HEAD")
+    case("learnings: an open learning fails the pull-request gate and is named", r.returncode == 1 and inc_file in r.stdout, r.stdout)
+    brief = tool(d, "check-learnings.py", "--brief").stdout
+    case("learnings: the session line lists open learnings by title", "1 open of 1 recorded" in brief and "Built with the wrong container" in brief, brief)
+    put(d, ".claude/rules/sections.md", "x\n")
+    r = tool(d, "new-incident.py", "--apply", inc_file, "--change", ".claude/rules/sections.md")
+    case("learnings: in a client repo --apply refuses a change to a Base file", r.returncode == 1 and "not in the store's own area" in r.stdout, r.stdout)
+    put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nUse page-width.\n")
+    put(d, STORE_CHECKS, json.dumps([{"id": "old-container", "files": "sections/*.liquid", "pattern": "container", "severity": "error", "why": "w", "rule": "this-store-breakpoints.md"}]))
+    r = tool(d, "new-incident.py", "--apply", inc_file, "--change", f"{STORE_RULE},{STORE_CHECKS}")
+    text = open(os.path.join(d, inc_file)).read()
+    case("learnings: --apply closes the record with the files changed and who approved",
+         r.returncode == 0 and "status: applied" in text and f"change: {STORE_RULE}, {STORE_CHECKS}" in text and 'approved_by: "t"' in text
+         and "## What happened" in text, text[:400])
+    g("add", "."); g("commit", "-q", "-m", "[LEARN]: container")
+    applied_sha = g("rev-parse", "HEAD").stdout.strip()
+    r = gate("--range", f"{base_sha}..HEAD")
+    case("learnings: an applied learning that only adds passes the gate", r.returncode == 0, r.stdout)
+    put(d, STORE_CHECKS, json.dumps([{"id": "old-container", "files": "sections/*.liquid", "pattern": "container", "severity": "warn", "why": "w", "rule": "this-store-breakpoints.md"}]))
+    put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nUse whatever container.\n")
+    g("add", "."); g("commit", "-q", "-m", "loosen")
+    r = gate("--range", f"{applied_sha}..HEAD")
+    case("learnings: weakening a check or rewriting a store rule with no reason fails the gate and names both",
+         r.returncode == 1 and "old-container" in r.stdout and STORE_RULE in r.stdout, r.stdout)
+    tool(d, "new-incident.py", "--slug", "container-too-strict", "--title", "The container check was wrong for landing pages", "--date", "2026-01-03")
+    inc2 = "docs/ai-workflow/incidents/2026-01-03-container-too-strict.md"
+    tool(d, "new-incident.py", "--apply", inc2, "--change", STORE_CHECKS, "--changes-existing", "landing pages use a full-bleed wrapper")
+    g("add", "."); g("commit", "-q", "-m", "[LEARN]: declare")
+    r = gate("--range", f"{applied_sha}..HEAD")
+    case("learnings: the same change passes once a learning in the diff says why", r.returncode == 0, r.stdout)
+    tool(d, "new-incident.py", "--slug", "one-off", "--title", "A one-off", "--date", "2026-01-04")
+    r = tool(d, "new-incident.py", "--decline", "docs/ai-workflow/incidents/2026-01-04-one-off.md", "--reason", "will not recur")
+    case("learnings: a declined learning is closed with its reason",
+         r.returncode == 0 and 'declined_reason: "will not recur"' in open(os.path.join(d, "docs/ai-workflow/incidents/2026-01-04-one-off.md")).read()
+         and "0 open of 3 recorded" in tool(d, "check-learnings.py", "--brief").stdout, r.stdout)
+
+links = load("check-rule-links")
+case("rule links: a path in the store's own area is not a broken link in Base; a missing Base path still is",
+     links.resolve(".claude/this-store/checks.json", "CLAUDE.md") is None
+     and links.resolve(".claude/rules/this-store-layout.md", "CLAUDE.md") is None
+     and links.resolve(".claude/rules/not-there.md", "CLAUDE.md") == ".claude/rules/not-there.md")
+
 store_rules = aic.load_rules()
 store_rules["this-store-a"] = {"path": ".claude/rules/this-store-a.md", "text": "", "fm": "description: x", "body": "", "paths": None, "lines": 5}
 store_rules["this-store-b"] = {"path": ".claude/rules/this-store-b.md", "text": "", "fm": "description: x\npaths:\n  - x", "body": "", "paths": ["sections/**"], "lines": 5000}
