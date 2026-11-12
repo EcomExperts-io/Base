@@ -569,10 +569,12 @@ def tool(cwd, script, *args):
 
 STORE_RULE = ".claude/rules/this-store-breakpoints.md"
 STORE_CHECKS = ".claude/this-store/checks.json"
+HARVEST, COACH, REPORT = ".claude/scripts/harvest.sh", ".claude/agents/shopify-standards-coach.md", ".claude/scripts/learnings-report.py"
 
 with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as d:
     gb = fork(base, 1)
     put(base, "CLAUDE.md", "# Base\n"); put(base, ".claude/rules/sections.md", "v1\n"); put(base, ".claude/rules/snippets.md", "v1\n")
+    put(base, HARVEST, "shipped\n"); put(base, COACH, "shipped\n"); put(base, REPORT, "base only\n")
     gb("add", "."); gb("commit", "-q", "-m", "tooling v1")
     sha1 = gb("rev-parse", "HEAD").stdout.strip()
     g = fork(d, 1)
@@ -580,10 +582,19 @@ with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as d:
     put(d, ".base-version", json.dumps({"sha": sha1, "ref": "base/development", "date": "2026-01-01"}))
     put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nthe store's own line\n")
     put(d, STORE_CHECKS, "[]\n")
+    put(d, HARVEST, "shipped\n"); put(d, COACH, "shipped\nthe store's edit\n"); put(d, REPORT, "base only\n")
     g("add", "."); g("commit", "-q", "-m", "fork")
     put(base, ".claude/rules/sections.md", "v2\n"); put(base, STORE_RULE, "BASE WROTE THIS\n")
+    gb("rm", "-q", HARVEST, COACH)
     gb("add", "."); gb("commit", "-q", "-m", "tooling v2")
     r = tool(d, "pull-base-tooling.py", "--base-path", base)
+    case("pull: a retired file and a Base-only file the store never edited are removed; an edited one is kept and listed",
+         not os.path.exists(os.path.join(d, HARVEST)) and not os.path.exists(os.path.join(d, REPORT))
+         and os.path.exists(os.path.join(d, COACH)) and "KEEP — retired in Base, edited here (1)" in r.stdout, r.stdout[-600:])
+    put(d, HARVEST, "shipped\n")
+    r2 = tool(d, "pull-base-tooling.py", "--base-path", base)
+    case("pull: an untouched retired file still goes when the stamp already sits past the commit that removed it",
+         not os.path.exists(os.path.join(d, HARVEST)) and "RETIRE (1)" in r2.stdout, r2.stdout[-600:])
     case("store area: a pull updates the Base rule the store never touched",
          open(os.path.join(d, ".claude/rules/sections.md")).read() == "v2\n", r.stdout[-400:] + r.stderr[-200:])
     case("store area: a pull never writes a store-owned file, even one Base carries by accident",

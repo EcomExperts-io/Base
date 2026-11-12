@@ -43,8 +43,9 @@ STORE_PREFIXES = (".claude/this-store/", ".claude/rules/this-store-", ".claude/s
 # What Base keeps for itself: read by nobody but whoever maintains Base, and never part of what a store pulls.
 BASE_ONLY = (".claude/scripts/learnings-report.py",)
 
-# Paths Base has renamed or removed, old -> new (or None). A fork whose copy still equals what Base shipped at the
-# stamp loses it on the next pull; an edited copy is kept and listed for a hand merge.
+# Paths Base has renamed or removed, old -> new (or None). A fork whose copy still equals something Base once shipped
+# loses it on the next pull; an edited copy is kept and listed for a hand merge. A BASE_ONLY file an older pull script
+# copied into a fork is retired the same way.
 RETIRED = {
     ".claude/skills/verify-against-figma/SKILL.md": ".claude/skills/verify-against-reference/SKILL.md",
     ".claude/references/equal-height-column-pitfalls.md": ".claude/references/layout-pitfalls.md",
@@ -115,3 +116,12 @@ class Source:
         sha = sha or self.sha
         r = subprocess.run(["git", "show", f"{sha}:{path}"], capture_output=True, cwd=self.git_dir)
         return r.stdout if r.returncode == 0 else None
+
+    def ever_shipped(self, path, content):
+        """Whether `content` is byte-for-byte a version of `path` that Base has had, at any commit up to this one."""
+        r = subprocess.run(["git", "log", "--format=%H", self.sha, "--", path], capture_output=True, text=True,
+                           cwd=self.git_dir)
+        for commit in r.stdout.split():
+            if self.read(path, commit) == content:
+                return True
+        return False
