@@ -205,7 +205,7 @@ the live theme, blocks analytics, never reaches checkout, empties the cart.
 Three rows it cannot automate go in the report and a person walks them:
 **logged in** (log in once in the browser pane; the script enters no
 credentials), **Safari** on iPhone and Mac (`dvh`, date inputs, `:has()`,
-sticky bars), the **checkout handoff**. The QA checklist carries the same.
+sticky bars), the **checkout handoff**. The hand-off's steps to QA carry the same.
 
 ## The report
 

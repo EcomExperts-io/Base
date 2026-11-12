@@ -47,7 +47,8 @@ Three files collide across every parallel branch; decide the convention now:
 
 ### 5. Branch names carry the ticket id
 
-`<client-id>.<ticket-id>/Project-<Name>`, the ticket id read from the tracker, not invented.
+`<client-id>.<ticket-id>/Project-<Name>`, the ticket id read from the tracker, not
+invented; the `agentic-os` plugin's `/kickoff` creates it.
 
 ## Part 2 — Session brief template
 
@@ -114,10 +115,9 @@ gets checked on at least three page types.
 Separately: (1) reuse plan, (2) code and architecture, (3) visual fidelity with
 measured numbers, (4) decisions taken, (5) assumptions and what you could not verify.
 
-Then post the handoff to the tracker **as comments, not page content** — four:
-backend configuration needed (name, type, consumer, what renders until it exists) /
-decisions taken (chosen, rejected, why, how to reverse) / developer handoff notes /
-how to test in plain English. Terse bullets, for someone who was not in the session.
+Then hand off with `build-page-from-figma` Step 5, the comment also carrying the
+backend configuration needed (name, type, consumer, what renders until it exists)
+and the decisions taken (chosen, rejected, why, how to reverse).
 
 Do not open a PR unless I ask.
 ```

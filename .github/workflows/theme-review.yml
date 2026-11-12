@@ -19,7 +19,8 @@ concurrency:
 jobs:
   review:
     name: Review
-    runs-on: ubuntu-latest
+    # Pinned: setup-python has no 3.9 build for the image ubuntu-latest moved to.
+    runs-on: ubuntu-24.04
     env:
       # The CLI is interactive and phones home by default; both are noise or a
       # hang in CI. Theme Check itself needs no store and no authentication.

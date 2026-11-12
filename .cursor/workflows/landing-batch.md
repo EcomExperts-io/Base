@@ -108,12 +108,10 @@ and tail, brace-balanced), gate, push, PR into the project branch,
 
 ### 6. Hand off
 
-Preview links to the lead in chat first. Then one comment on the card:
-GitHub details, theme name and id, live and preview links in pairs, dev notes
-(reused, new, decisions, live bugs not copied, not ported, not covered),
-open questions, and the QA checklist (`build-page-from-figma` Step 6,
-purchase-path rows included). One sub-task per real page. Delete the dev
-theme only when asked; `/record-incident` before the session ends.
+Preview links to the lead in chat first. Then `build-page-from-figma` Step 5,
+the comment also naming what was reused, what is new, live bugs not copied,
+and what was not ported or not covered. Delete the dev theme only when asked;
+`/record-incident` before the session ends.
 
 ---
 

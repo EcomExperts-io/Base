@@ -71,7 +71,7 @@ Scope and order are a human call; the AI does not choose what to work on next.
   its code, and verified with `live-parity.py` to 0%.
 - **Figma URL for desktop** and **for mobile** — a specific frame each, with
   `?node-id=` in it. Two frames with different specs, not one responsive one.
-- **Notion link** — the sub-task with the functional requirements, when one
+- **Notion link** — the card with the functional requirements, when one
   exists. Without one, the AI states every assumption it made.
 - **What to build**, in words.
 
@@ -113,9 +113,11 @@ evaluator decide when all three hold.
 
 ### 6. Hand-off, and the loop in both directions
 
-On the Notion sub-task: a comment for someone who was not in the session, the
-QA checklist in plain English, status set to Quality Inspection. QI logs
-issues → `/close-qa-loop` fixes them against the same standards.
+`build-page-from-figma` Step 5: the `agentic-os` plugin's `/handoff` posts the
+comment on the Notion card and quotes Base's proof — the gate, the verify
+report, the commerce report, GitBot's three numbers; without the plugin, a
+short fallback. QI logs bugs → `/close-qa-loop` fixes them against the same
+standards, through the plugin's `/fix-issues` when it is installed.
 
 Anything a rule, gate or check should have prevented → `/record-incident` the
 moment it happens: a committed file under `docs/ai-workflow/incidents/` with
