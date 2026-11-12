@@ -148,7 +148,7 @@
 
 {% schema %}
 {
-  "name": "Featured Collections V2",
+  "name": "t:names.featured_collections_v2",
   "tag": "section",
   "class": "featured-collections-v2",
   "settings": [
@@ -161,25 +161,25 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:general.heading",
       "default": "Find the perfect fit for your game"
     },
     {
       "type": "select",
       "id": "heading_alignment",
-      "label": "Heading Alignment",
+      "label": "t:labels.heading_alignment",
       "options": [
         {
           "value": "left",
-          "label": "Left"
+          "label": "t:options.alignment.left"
         },
         {
           "value": "center",
-          "label": "Center"
+          "label": "t:options.alignment.center"
         },
         {
           "value": "right",
-          "label": "Right"
+          "label": "t:options.alignment.right"
         }
       ],
       "default": "center"
@@ -187,12 +187,12 @@
     {
       "type": "range",
       "id": "total_products_limit",
-      "label": "Total Products Limit",
+      "label": "t:labels.total_products_limit",
       "min": 2,
       "max": 15,
       "step": 1,
       "default": 6,
-      "info": "Total number of products showing under each collection"
+      "info": "t:info.total_number_of_products_showing_under_each_collection"
     },
     {
       "type": "header",
@@ -255,18 +255,18 @@
     {
       "type": "text",
       "id": "swatch_trigger",
-      "label": "Swatch trigger",
+      "label": "t:labels.swatch_trigger",
       "default": "Color",
-      "info": "Enter the product option name to use for variant swatches (e.g. 'Color', 'Size', etc.)"
+      "info": "t:info.enter_the_product_option_name_to_use_for"
     },
     {
       "type": "header",
-      "content": "Layout Settings"
+      "content": "t:headers.layout_settings"
     },
     {
       "type": "range",
       "id": "product_grid_gap",
-      "label": "Product Grid Gap",
+      "label": "t:labels.product_grid_gap",
       "min": 10,
       "max": 30,
       "step": 2,
@@ -275,7 +275,7 @@
     {
       "type": "range",
       "id": "products_on_desktop",
-      "label": "Products on Desktop",
+      "label": "t:labels.products_on_desktop",
       "min": 2,
       "max": 6,
       "step": 1,
@@ -284,7 +284,7 @@
     {
       "type": "range",
       "id": "products_on_mobile",
-      "label": "Products on Mobile",
+      "label": "t:labels.products_on_mobile",
       "min": 2,
       "max": 6,
       "step": 2,
@@ -292,12 +292,12 @@
     },
     {
       "type": "header",
-      "content": "Spacing Settings"
+      "content": "t:headers.spacing_settings"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding Top",
+      "label": "t:labels.padding_top",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -307,7 +307,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding Bottom",
+      "label": "t:labels.padding_bottom",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -318,32 +318,32 @@
   "blocks": [
     {
       "type": "collection_card",
-      "name": "Collection Card",
+      "name": "t:names.collection_card",
       "limit": 5,
       "settings": [
         {
           "type": "collection",
           "id": "collection",
-          "label": "Collection"
+          "label": "t:general.collection"
         },
         {
           "type": "image_picker",
           "id": "custom_image",
-          "label": "Custom Image (optional)",
-          "info": "Overrides the collection image if set."
+          "label": "t:labels.custom_image_optional",
+          "info": "t:info.overrides_the_collection_image_if_set"
         },
         {
           "type": "text",
           "id": "custom_title",
-          "label": "Custom Title (optional)",
-          "info": "Overrides the collection title if set."
+          "label": "t:labels.custom_title_optional",
+          "info": "t:info.overrides_the_collection_title_if_set"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Featured Collections V2",
+      "name": "t:names.featured_collections_v2",
       "blocks": [
         { "type": "collection_card" },
         { "type": "collection_card" },

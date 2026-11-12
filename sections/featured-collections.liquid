@@ -91,7 +91,7 @@
 
 {% schema %}
 {
-  "name": "Featured Collections",
+  "name": "t:names.featured_collections",
   "tag": "section",
   "class": "featured-collections",
   "settings": [
@@ -104,31 +104,31 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:general.heading",
       "default": "Find the perfect fit for your game"
     },
     {
       "type": "text",
       "id": "subheading",
-      "label": "Subheading",
+      "label": "t:labels.subheading",
       "default": "Browse through our collections"
     },
     {
       "type": "select",
       "id": "heading_alignment",
-      "label": "Heading Alignment",
+      "label": "t:labels.heading_alignment",
       "options": [
         {
           "value": "left",
-          "label": "Left"
+          "label": "t:options.alignment.left"
         },
         {
           "value": "center",
-          "label": "Center"
+          "label": "t:options.alignment.center"
         },
         {
           "value": "right",
-          "label": "Right"
+          "label": "t:options.alignment.right"
         }
       ],
       "default": "center"
@@ -136,17 +136,17 @@
     {
       "type": "select",
       "id": "style",
-      "label": "Card Style",
+      "label": "t:labels.card_style",
       "options": [
-        { "value": "style1", "label": "Style 1 (Text/Button above or overlay)" },
-        { "value": "style2", "label": "Style 2 (Text/Button below image)" }
+        { "value": "style1", "label": "t:options.style_1_text_button_above_or_overlay" },
+        { "value": "style2", "label": "t:options.style_2_text_button_below_image" }
       ],
       "default": "style2"
     },
     {
       "type": "range",
       "id": "grid_gap",
-      "label": "Grid Gap",
+      "label": "t:labels.grid_gap_2",
       "default": 25,
       "unit": "px",
       "min": 0,
@@ -156,39 +156,39 @@
     {
       "type": "checkbox",
       "id": "hide_shop_now",
-      "label": "Hide 'Shop Now' Button",
+      "label": "t:labels.hide_shop_now_button",
       "default": true
     }
   ],
   "blocks": [
     {
       "type": "collection_card",
-      "name": "Collection Card",
+      "name": "t:names.collection_card",
       "limit": 5,
       "settings": [
         {
           "type": "collection",
           "id": "collection",
-          "label": "Collection"
+          "label": "t:general.collection"
         },
         {
           "type": "image_picker",
           "id": "custom_image",
-          "label": "Custom Image (optional)",
-          "info": "Overrides the collection image if set."
+          "label": "t:labels.custom_image_optional",
+          "info": "t:info.overrides_the_collection_image_if_set"
         },
         {
           "type": "text",
           "id": "custom_title",
-          "label": "Custom Title (optional)",
-          "info": "Overrides the collection title if set."
+          "label": "t:labels.custom_title_optional",
+          "info": "t:info.overrides_the_collection_title_if_set"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Featured Collections",
+      "name": "t:names.featured_collections",
       "blocks": [
         { "type": "collection_card" },
         { "type": "collection_card" },

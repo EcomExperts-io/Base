@@ -122,7 +122,7 @@
 
 {% schema %}
 {
-  "name": "Hero",
+  "name": "t:names.hero",
   "tag": "section",
   "class": "section-hero-banner",
   "settings": [
@@ -134,38 +134,38 @@
     },
     {
       "type": "header",
-      "content": "Background Settings"
+      "content": "t:headers.background_settings"
     },
     {
       "type": "radio",
       "id": "background_type",
-      "label": "Background Type",
+      "label": "t:labels.background_type",
       "options": [
-        { "value": "image", "label": "Image" },
-        { "value": "video", "label": "Video" }
+        { "value": "image", "label": "t:labels.image" },
+        { "value": "video", "label": "t:options.video" }
       ],
       "default": "image"
     },
     {
       "type": "image_picker",
       "id": "image_background",
-      "label": "Image Background"
+      "label": "t:labels.image_background"
     },
     {
       "type": "video",
       "id": "video_background_hosted",
-      "label": "Hosted Video Background"
+      "label": "t:labels.hosted_video_background"
     },
     {
       "type": "url",
       "id": "video_background_url",
-      "label": "Video URL (YouTube/Vimeo)",
-      "info": "Use hosted video above for better performance and reliability. External URLs might require custom JS for true background effect."
+      "label": "t:labels.video_url_youtube_vimeo",
+      "info": "t:info.use_hosted_video_above_for_better_performance_and_2"
     },
     {
       "type": "color",
       "id": "overlay_color",
-      "label": "Background Overlay Color",
+      "label": "t:labels.background_overlay_color",
       "default": "#000000"
     },
     {
@@ -175,101 +175,101 @@
       "max": 90,
       "step": 5,
       "unit": "%",
-      "label": "Background Overlay Opacity",
+      "label": "t:labels.background_overlay_opacity",
       "default": 30
     },
     {
       "type": "header",
-      "content": "Content Settings"
+      "content": "t:headers.content_settings"
     },
     {
       "type": "select",
       "id": "content_alignment",
-      "label": "Horizontal Alignment",
+      "label": "t:labels.horizontal_alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" },
+        { "value": "right", "label": "t:options.alignment.right" }
       ],
       "default": "center"
     },
     {
       "type": "select",
       "id": "vertical_alignment",
-      "label": "Vertical Alignment",
+      "label": "t:labels.vertical_alignment",
       "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "center", "label": "Center" },
-        { "value": "bottom", "label": "Bottom" }
+        { "value": "top", "label": "t:options.top" },
+        { "value": "center", "label": "t:options.alignment.center" },
+        { "value": "bottom", "label": "t:options.bottom" }
       ],
       "default": "bottom"
     },
     {
       "type": "text",
       "id": "stars_text",
-      "label": "Rating Text",
+      "label": "t:labels.rating_text",
       "default": "Trusted By 30,539+ Players"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:general.heading",
       "default": "END OF SEASON SALE"
     },
     {
       "type": "text",
       "id": "subheading",
-      "label": "Subheading",
+      "label": "t:labels.subheading",
       "default": "Pro level protection for every level"
     },
     {
       "type": "text",
       "id": "button_text",
-      "label": "Button Text",
+      "label": "t:labels.button_text",
       "default": "SAVE OVER 30%"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button Link"
+      "label": "t:labels.button_link"
     },
     {
       "type": "color",
       "id": "button_background_color",
-      "label": "Button Background Color",
+      "label": "t:labels.button_background_color",
       "default": "#FFFFFF"
     },
     {
       "type": "color",
       "id": "button_text_color",
-      "label": "Button Text Color",
+      "label": "t:labels.button_text_color",
       "default": "#000000"
     },
     {
       "type": "header",
-      "content": "Endorsement Settings"
+      "content": "t:headers.endorsement_settings"
     },
     {
       "type": "checkbox",
       "id": "show_endorsement",
-      "label": "Show Endorsement Block",
+      "label": "t:labels.show_endorsement_block",
       "default": true
     },
     {
       "type": "text",
       "id": "endorsement_name",
-      "label": "Endorser Name",
+      "label": "t:labels.endorser_name",
       "default": "TJ Oshie"
     },
     {
       "type": "image_picker",
       "id": "endorsement_signature_image",
-      "label": "Endorser Signature Image"
+      "label": "t:labels.endorser_signature_image"
     }
   ],
   "presets": [
     {
-      "name": "Hero"
+      "name": "t:names.hero"
     }
   ]
 }

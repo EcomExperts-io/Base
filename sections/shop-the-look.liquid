@@ -276,13 +276,13 @@
 
 {% schema %}
 {
-  "name": "Shop The Look",
+  "name": "t:names.shop_the_look",
   "tag": "section",
   "class": "section-shop-the-look",
   "settings": [
     {
       "type": "header",
-      "content": "Section Settings"
+      "content": "t:headers.section_settings"
     },
     {
       "type": "color_scheme",
@@ -292,7 +292,7 @@
     },
     {
       "type": "header",
-      "content": "Section Padding"
+      "content": "t:headers.section_padding"
     },
     {
       "type": "range",
@@ -301,7 +301,7 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Top padding",
+      "label": "t:sections.all.padding.padding_top",
       "default": 36
     },
     {
@@ -311,86 +311,86 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Bottom padding",
+      "label": "t:sections.all.padding.padding_bottom",
       "default": 36
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:general.heading",
       "default": "Shop The Look"
     },
     {
       "type": "url",
       "id": "view_all_url",
-      "label": "View All Link"
+      "label": "t:labels.view_all_link"
     },
     {
       "type": "text",
       "id": "view_all_text",
-      "label": "View All Text",
+      "label": "t:labels.view_all_text",
       "default": "VIEW ALL"
     },
     {
       "type": "header",
-      "content": "Product Card Settings"
+      "content": "t:headers.product_card_settings"
     },
     {
       "type": "checkbox",
       "id": "show_vendor",
-      "label": "Show Vendor",
+      "label": "t:labels.show_vendor",
       "default": false
     }
   ],
   "blocks": [
     {
       "type": "slide",
-      "name": "Slide",
+      "name": "t:names.slide",
       "settings": [
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "t:labels.image"
         },
         {
           "type": "header",
-          "content": "Products"
+          "content": "t:headers.products"
         },
         {
           "type": "product",
           "id": "product_1",
-          "label": "Product 1"
+          "label": "t:labels.product_1"
         },
         {
           "type": "product",
           "id": "product_2",
-          "label": "Product 2"
+          "label": "t:labels.product_2"
         },
         {
           "type": "product",
           "id": "product_3",
-          "label": "Product 3"
+          "label": "t:labels.product_3"
         },
         {
           "type": "product",
           "id": "product_4",
-          "label": "Product 4"
+          "label": "t:labels.product_4"
         },
         {
           "type": "header",
-          "content": "Hotspot 1"
+          "content": "t:headers.hotspot_1"
         },
         {
           "type": "checkbox",
           "id": "hotspot_1_enabled",
-          "label": "Enable Hotspot 1",
+          "label": "t:labels.enable_hotspot_1",
           "default": false
         },
         {
           "type": "textarea",
           "id": "hotspot_1_text",
-          "label": "Tooltip Content",
-          "info": "Text to display when hotspot is clicked"
+          "label": "t:labels.tooltip_content",
+          "info": "t:info.text_to_display_when_hotspot_is_clicked"
         },
         {
           "type": "range",
@@ -399,7 +399,7 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Horizontal Position",
+          "label": "t:labels.horizontal_position",
           "default": 30
         },
         {
@@ -409,24 +409,24 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Vertical Position",
+          "label": "t:labels.vertical_position",
           "default": 30
         },
         {
           "type": "header",
-          "content": "Hotspot 2"
+          "content": "t:headers.hotspot_2"
         },
         {
           "type": "checkbox",
           "id": "hotspot_2_enabled",
-          "label": "Enable Hotspot 2",
+          "label": "t:labels.enable_hotspot_2",
           "default": false
         },
         {
           "type": "textarea",
           "id": "hotspot_2_text",
-          "label": "Tooltip Content",
-          "info": "Text to display when hotspot is clicked"
+          "label": "t:labels.tooltip_content",
+          "info": "t:info.text_to_display_when_hotspot_is_clicked"
         },
         {
           "type": "range",
@@ -435,7 +435,7 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Horizontal Position",
+          "label": "t:labels.horizontal_position",
           "default": 50
         },
         {
@@ -445,24 +445,24 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Vertical Position",
+          "label": "t:labels.vertical_position",
           "default": 50
         },
         {
           "type": "header",
-          "content": "Hotspot 3"
+          "content": "t:headers.hotspot_3"
         },
         {
           "type": "checkbox",
           "id": "hotspot_3_enabled",
-          "label": "Enable Hotspot 3",
+          "label": "t:labels.enable_hotspot_3",
           "default": false
         },
         {
           "type": "textarea",
           "id": "hotspot_3_text",
-          "label": "Tooltip Content",
-          "info": "Text to display when hotspot is clicked"
+          "label": "t:labels.tooltip_content",
+          "info": "t:info.text_to_display_when_hotspot_is_clicked"
         },
         {
           "type": "range",
@@ -471,7 +471,7 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Horizontal Position",
+          "label": "t:labels.horizontal_position",
           "default": 70
         },
         {
@@ -481,24 +481,24 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Vertical Position",
+          "label": "t:labels.vertical_position",
           "default": 40
         },
         {
           "type": "header",
-          "content": "Hotspot 4"
+          "content": "t:headers.hotspot_4"
         },
         {
           "type": "checkbox",
           "id": "hotspot_4_enabled",
-          "label": "Enable Hotspot 4",
+          "label": "t:labels.enable_hotspot_4",
           "default": false
         },
         {
           "type": "textarea",
           "id": "hotspot_4_text",
-          "label": "Tooltip Content",
-          "info": "Text to display when hotspot is clicked"
+          "label": "t:labels.tooltip_content",
+          "info": "t:info.text_to_display_when_hotspot_is_clicked"
         },
         {
           "type": "range",
@@ -507,7 +507,7 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Horizontal Position",
+          "label": "t:labels.horizontal_position",
           "default": 60
         },
         {
@@ -517,7 +517,7 @@
           "max": 100,
           "step": 1,
           "unit": "%",
-          "label": "Vertical Position",
+          "label": "t:labels.vertical_position",
           "default": 70
         }
       ]
@@ -525,7 +525,7 @@
   ],
   "presets": [
     {
-      "name": "Shop The Look",
+      "name": "t:names.shop_the_look",
       "blocks": [
         {
           "type": "slide"

@@ -77,7 +77,7 @@
 
 {% schema %}
 {
-  "name": "Selling Points V2",
+  "name": "t:names.selling_points_v2",
   "tag": "section",
   "class": "selling-points-v2",
   "settings": [
@@ -89,12 +89,12 @@
     },
     {
       "type": "header",
-      "content": "Spacing Settings"
+      "content": "t:headers.spacing_settings"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding Top",
+      "label": "t:labels.padding_top",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -104,7 +104,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding Bottom",
+      "label": "t:labels.padding_bottom",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -113,45 +113,45 @@
     },
     {
       "type": "header",
-      "content": "Mobile Settings"
+      "content": "t:headers.mobile_settings"
     },
     {
       "type": "checkbox",
       "id": "enable_mobile_slider",
-      "label": "Enable Mobile Slider",
+      "label": "t:labels.enable_mobile_slider",
       "default": true,
-      "info": "When enabled, cards will display as a slider on mobile devices. When disabled, cards will stack vertically."
+      "info": "t:info.when_enabled_cards_will_display_as_a_slider"
     }
   ],
   "blocks": [
     {
       "type": "selling_point",
-      "name": "Selling Point",
+      "name": "t:names.selling_point",
       "settings": [
         {
           "type": "text",
           "id": "title",
-          "label": "Title",
+          "label": "t:options.text_style.title",
           "default": "15% OFF FIRST ORDER"
         },
         {
           "type": "textarea",
           "id": "description",
-          "label": "Description",
+          "label": "t:labels.description",
           "default": "Subscribe to our mailing list for 15% off your first order"
         },
         {
           "type": "url",
           "id": "link_url",
-          "label": "Link URL",
-          "info": "Optional: Add a link to make the entire card clickable"
+          "label": "t:labels.link_url",
+          "info": "t:info.optional_add_a_link_to_make_the_entire"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Selling Points V2",
+      "name": "t:names.selling_points_v2",
       "blocks": [
         { "type": "selling_point" },
         { "type": "selling_point" },

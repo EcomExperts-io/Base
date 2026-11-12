@@ -103,13 +103,13 @@
 
 {% schema %}
 {
-  "name": "Product Highlights",
+  "name": "t:names.product_highlights",
   "tag": "section",
   "class": "product-highlights",
   "settings": [
     {
       "type": "header",
-      "content": "Color Settings"
+      "content": "t:headers.color_settings"
     },
     {
       "type": "color_scheme",
@@ -119,12 +119,12 @@
     },
     {
       "type": "header",
-      "content": "Spacing Settings"
+      "content": "t:headers.spacing_settings"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding Top",
+      "label": "t:labels.padding_top",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -134,7 +134,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding Bottom",
+      "label": "t:labels.padding_bottom",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -143,41 +143,41 @@
     },
     {
       "type": "header",
-      "content": "Content Settings"
+      "content": "t:headers.content_settings"
     },
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Image"
+      "label": "t:labels.image"
     },
     {
       "type": "text",
       "id": "title",
-      "label": "Title",
+      "label": "t:options.text_style.title",
       "default": "Product Highlights Title"
     },
     {
       "type": "textarea",
       "id": "description",
-      "label": "Description",
+      "label": "t:labels.description",
       "default": "Product Highlights description will appear here."
     }
   ],
   "blocks": [
     {
       "type": "feature",
-      "name": "Feature",
+      "name": "t:names.feature",
       "limit": 4,
       "settings": [
         {
           "type": "image_picker",
           "id": "icon",
-          "label": "Icon"
+          "label": "t:labels.icon"
         },
         {
           "type": "text",
           "id": "text",
-          "label": "Text",
+          "label": "t:labels.text",
           "default": "Feature text"
         }
       ]
@@ -185,7 +185,7 @@
   ],
   "presets": [
     {
-      "name": "Product Highlights",
+      "name": "t:names.product_highlights",
       "blocks": [{ "type": "feature" }, { "type": "feature" }, { "type": "feature" }, { "type": "feature" }]
     }
   ]
