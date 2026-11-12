@@ -672,6 +672,15 @@ with tempfile.TemporaryDirectory() as d:
     gate = lambda *a: tool(d, "check-learnings.py", "--gate", *a)
     r = gate("--range", f"{base_sha}..HEAD")
     case("learnings: an open learning fails the pull-request gate and is named", r.returncode == 1 and inc_file in r.stdout, r.stdout)
+    with tempfile.TemporaryDirectory() as old:
+        shutil.copytree(HERE, os.path.join(old, "scripts"))
+        put(old, "scripts/check-conventions.py", "# an edited copy from before store checks\n")
+        put(d, STORE_CHECKS, "[]\n")
+        r = subprocess.run([sys.executable, os.path.join(old, "scripts", "check-learnings.py"), "--gate", "--range", "HEAD..HEAD"],
+                           capture_output=True, text=True, cwd=d, env=git_env())
+        os.remove(os.path.join(d, STORE_CHECKS))
+    case("learnings: store checks beside a checker too old to run them fail the gate and say so",
+         r.returncode == 1 and "is NOT being run" in r.stdout, r.stdout + r.stderr)
     r = gate("--range", "HEAD..HEAD")
     case("learnings: a learning that was open before the change is listed and does not fail the gate",
          r.returncode == 0 and "1 older learning(s) still open" in r.stdout, r.stdout)

@@ -16,6 +16,7 @@ Notes:
   findings. It is answered by a learning recorded after it, or by --dismiss. The same signal is raised once.
 - Open: a file under docs/ai-workflow/incidents/ whose status is still `open` — recorded, and neither applied
   (`new-incident.py --apply`) nor declined (`--decline`). The developer answers every proposal, yes or no.
+- The gate also fails when the store has checks and this repo's conventions checker is too old to run them.
 - The gate fails on an open learning this change records or edits. One that was open before the change is listed and
   does not fail it, so a backlog never blocks unrelated work.
 - Changes existing: a diff that rewrites or removes a line of a .claude/rules/this-store-*.md or a skill under
@@ -103,6 +104,20 @@ def changed_checks(old, new):
         return sorted(before)
     return sorted(cid for cid, e in before.items()
                   if cid not in after or any(e.get(k) != after[cid].get(k) for k in ("pattern", "files", "severity")))
+
+
+def checks_not_running():
+    """A line to print when this repo has store checks and its conventions checker is a copy that cannot load them."""
+    if not os.path.isfile(STORE_CHECKS):
+        return ""
+    try:
+        checker = open(os.path.join(HERE, "check-conventions.py"), encoding="utf-8", errors="replace").read()
+    except OSError:
+        checker = ""
+    if "load_store_checks" in checker:
+        return ""
+    return (f"store checks: {STORE_CHECKS} is NOT being run — this repo's .claude/scripts/check-conventions.py is an edited "
+            "copy from before store checks. Take Base's version (a tooling pull saves it under .claude/.cache/base-new/).")
 
 
 def in_change(staged, a, b):
@@ -211,6 +226,8 @@ def main(argv):
             titles = "; ".join(fm.get("title", os.path.basename(path)) for path, fm in still_open[:5])
             more = f" (+{len(still_open) - 5} more)" if len(still_open) > 5 else ""
             print(f"learnings: {len(still_open)} open of {total} recorded, each waiting for a yes or a no — {titles}{more}")
+        if checks_not_running():
+            print(checks_not_running())
         waiting = unanswered(load_signals())
         if waiting:
             print(f"learning loop: {len(waiting)} thing(s) from an earlier session not yet learned from or dismissed — "
@@ -236,6 +253,9 @@ def main(argv):
     touched, declared = changes_existing(staged, a, b)
 
     problems = 0
+    if checks_not_running():
+        problems += 1
+        print("  " + checks_not_running())
     mine = in_change(staged, a, b)
     fresh = [(path, fm) for path, fm in still_open if path.replace(os.sep, "/") in mine]
     older = len(still_open) - len(fresh)
