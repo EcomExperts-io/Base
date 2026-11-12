@@ -14,11 +14,16 @@ add a merchant control — which is why this contract is applied deliberately.
 
 | Setting | Required | Notes |
 |---|---|---|
-| `padding_top` | **Always. No exceptions.** | Desktop. `range`, 0–100, step 4, default 40 |
-| `padding_bottom` | **Always. No exceptions.** | Desktop. `range`, 0–100, step 4, default 40 |
-| `padding_top_mobile` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
-| `padding_bottom_mobile` | **Always. No exceptions.** | `range`, 0–100, step 4, default 40 |
+| `padding_top` | **Always**, except a render target with no visible markup (below) | Desktop. `range`, 0–100, step 4, default 40 |
+| `padding_bottom` | **Always**, except a render target with no visible markup (below) | Desktop. `range`, 0–100, step 4, default 40 |
+| `padding_top_mobile` | **Always**, except a render target with no visible markup (below) | `range`, 0–100, step 4, default 40 |
+| `padding_bottom_mobile` | **Always**, except a render target with no visible markup (below) | `range`, 0–100, step 4, default 40 |
 | `color_scheme` | Exposed by default | May be omitted **only** with a Liquid comment stating why |
+
+The default of 40 is for a content section. A section the design gives its own
+spacing — an announcement or countdown bar, a full-bleed banner — defaults to
+the design's value. A render target that outputs no visible markup (JSON, a
+script) has no padding settings, with a comment saying so.
 
 Plus a `presets` entry, so a merchant can add the section at all.
 

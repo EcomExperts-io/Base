@@ -25,6 +25,11 @@ permitted exception, is in `sections.md`:
 | `padding_top_mobile` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_top_mobile` |
 | `padding_bottom_mobile` | `range` 0–100, step 4, default 40 | `t:sections.all.padding.padding_bottom_mobile` |
 
+Labels use the theme's own shared padding keys: Base's are
+`t:sections.all.padding.*`; a Horizon fork uses `t:settings.padding_top_mobile`
+and its siblings. Check `locales/en.default.schema.json` before asking for a
+key — asking for one the theme lacks is a fix that cannot be applied.
+
 Plus a `presets` array, or a merchant cannot add the section. All four padding
 settings are unconditional; `color_scheme` may be omitted only with a Liquid
 comment saying why.

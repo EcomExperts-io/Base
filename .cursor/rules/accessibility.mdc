@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/accessibility.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 3895291551 -->
+<!-- checksum: 1062576112 -->
 
 
 # Accessibility standard
@@ -130,7 +130,7 @@ no `aria-labelledby`.
 once the field is filled. *Serious.*
 
 - **`for` must match a real, unique `id`.** A section or snippet can render more
-  than once per page, so ids must be scoped: `id="Newsletter-email-{{ section.id }}"`.
+  than once per page, so ids must be scoped: `id="NewsletterEmail-{{ section.id }}"`.
   An unscoped id means the label points at another section's field. *Serious.*
 - **Errors must be tied to their field** — `aria-describedby` pointing at the
   message, `aria-invalid="true"` on the field. A paragraph sitting nearby is not
@@ -285,7 +285,9 @@ A native element beats ARIA; wrong ARIA is worse than none.
 - **Motion** — animation or transition of position, size or rotation
   (`transform`, `translate`, `scale`, `rotate`, `top`/`left`, scroll-linked
   effects), parallax, and auto-advancing carousels — must be disabled under
-  `@media (prefers-reduced-motion: reduce)`. *Serious.*
+  `@media (prefers-reduced-motion: reduce)`. *Serious.* The override repeats
+  the selectors of the rule it neutralises, ids included — that is not an
+  id-selector or specificity finding.
 - **Opacity fades and colour transitions are not motion** (2.3.3 covers
   movement) and need no reduced-motion override. Do not report them, and do
   not report a reduced-motion block as incomplete for leaving them running.
@@ -329,6 +331,10 @@ A native element beats ARIA; wrong ARIA is worse than none.
 
 - **Scope ids with `section.id` or `block.id`.** A section can appear twice on a
   page, and duplicate ids break every `for` and `aria-*` association. *Serious.*
+  A fix names the id the way `html-standards.md` does — `CamelCase`, then the
+  id: `HowItWorks-{{ section.id }}`, never `how-it-works-{{ section.id }}`.
+  Suggesting a spelling the next review reports is how a fix becomes a loop
+  (Taos-Footwear, Nov 2026).
 - **Never emit merchant or customer input into an attribute unescaped.** Use
   `| escape`. Both a correctness and an accessibility defect.
 - **Inline `onclick` that interpolates a Liquid value is a defect.** An
@@ -352,9 +358,26 @@ A native element beats ARIA; wrong ARIA is worse than none.
 ## What not to report
 
 - Anything on a line the diff does not touch, or in a removed line.
+- **What an existing element already was, when the change only added to it.**
+  A line that gained an `aria-label` or a `role` on markup that was already
+  there is not a new anchor-as-button or a new missing name: the change made
+  it better. Report what the change *added* that is wrong, not what the line
+  was before it (WoollyClothingCo, JonesRoad's Notify Me markup on Main, Nov
+  2026).
+- **A defect in code written to fix an earlier finding, when that fix did what
+  was asked.** If the new code follows the fix the earlier finding gave, a
+  different complaint about the same lines is the reviewer changing its mind,
+  not a new defect: say it once in the summary as a suggestion. Voluspa's
+  alt-text fix took four rounds and was reverted (Nov 2026).
 - Decorative images correctly marked `alt=""`.
 - A WCAG criterion cited with no concrete user impact.
-- Contrast where the colours come from merchant settings you cannot see.
+- Contrast where the colours come from merchant settings you cannot see — a
+  colour scheme, a colour setting, a CSS variable. The merchant chooses them;
+  there is no pair to measure.
+- **Anything in a section's `{% schema %}`, or in settings data** (JSON
+  templates, `config/`, section groups): none of it renders.
+- **Markup Shopify or an app renders** — `payment_button`, `content_for_header`,
+  `{% form %}` output, app blocks: not the theme's to fix.
 - **A target size or a clipped label that depends on layout you cannot see** —
   a flex or grid parent, inherited padding, a positioned ancestor. A size the
   diff sets outright (`width: 16px` on the control itself) is fair; a size the

@@ -86,7 +86,8 @@ varying width is raised, not quietly built on a second responsive system.
 ## Media Queries
 
 - Mobile first: `min-width` queries only.
-- Use `screen` on every media query.
+- Use `screen` on every width query (`min-width`, `max-width`). Feature queries —
+  `prefers-reduced-motion`, `hover`, `pointer` — need none.
 - Breakpoint values: grep `assets/` and match what the theme settled on
   (`sections.md`); do not introduce a new scale.
 

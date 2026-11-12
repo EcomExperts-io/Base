@@ -32,7 +32,8 @@ so on, and `*.schema.json` holds the theme editor strings.
 
 ## Translation Guidelines
 
-- Descriptive, hierarchical `snake_case` keys, at most 3 levels deep
+- Descriptive, hierarchical `snake_case` keys, at most 3 levels deep in the
+  storefront `en.default.json`; the schema file follows Shopify's own nesting
 - Concise UI text; variables for dynamic content; consistent terminology
 - Schema strings go in `en.default.schema.json`, not here
 

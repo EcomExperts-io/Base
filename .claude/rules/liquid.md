@@ -13,7 +13,21 @@ paths:
 - Close tags in reverse order of opening
 - Dot notation: `product.title`, not `product['title']`
 - `{% render %}` for snippets; `{% section %}` for a static section
-- Escape anything printed into an attribute: `{{ value | escape }}`
+- Escape **free text** printed into an attribute: merchant `text`, `textarea`,
+  `richtext` and `html` settings, product, customer and cart strings, metafield
+  text. Values that cannot carry a quote are safe as they are: Shopify-built
+  URLs (`image_url`, `asset_url`, `file_url`), ids and keys, numbers, colour and
+  colour-scheme values, `range`, `checkbox` and `select` settings — and
+  `css-in-markup.md`'s custom-property pattern is correct unescaped. A `url`
+  setting without `| escape` is a style point, not security. Severity follows:
+  only free text unescaped is a security finding.
+
+### Often misreported — these are valid Liquid
+- `remove_last` and `replace_last` are real filters.
+- `a and b or c` evaluates **right to left** (`a and (b or c)`), not as in
+  JavaScript.
+- `{% break %}` and `{% continue %}` are tags; text after them on the line is
+  ignored, not a parse error.
 
 ## Traps
 
