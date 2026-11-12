@@ -1,7 +1,7 @@
 # AGENTS.md
 
 <!-- GENERATED from CLAUDE.md by .claude/scripts/sync-ai-config.sh - do not edit here. The files it names live under .claude/; .codex/ holds the Codex wiring and the generated hooks and agents. -->
-<!-- checksum: 1024306988 -->
+<!-- checksum: 1061529225 -->
 
 Guidance for Codex (and any AI coding tool) working in the Base Theme
 repository, and in the client themes forked from it.
@@ -116,6 +116,9 @@ for a fork whose `package.json` has no `setup` script).
   `record-incident`, `harvest`, `recon-theme`, `store-recon`, `close-qa-loop`,
   `accessibility-review`, `gitbot-preflight`. Skills auto-invoke from their
   descriptions; `harvest` is human-only because it pushes to Base.
+- The Notion card, the hand-off comment, QI bugs, Slack and branch names
+  belong to the `agentic-os` plugin when it is installed; Base supplies the
+  proof it quotes (`build-page-from-figma` Step 5).
 - `.claude/agents/` — `shopify-pr-reviewer`, the local review before a PR; it
   reads the verify report and the running theme, which GitBot cannot.
 - `.claude/workflows/` — `rebuild-playbook.md` (the dependency order for a

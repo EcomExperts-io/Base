@@ -70,7 +70,7 @@ python3 .claude/scripts/preflight-status.py --record <open> <fixed> <flagged>
 
 It stamps the branch's HEAD; the Stop hook names a client branch with commits
 GitBot has not been read for until this runs. The handoff
-(`build-page-from-figma` Step 6) quotes the three numbers.
+(`build-page-from-figma` Step 5) quotes the three numbers.
 
 Do not open the pull request with findings unread: GitBot updates the PR's
 check either way, and the difference is whether the lead or the developer

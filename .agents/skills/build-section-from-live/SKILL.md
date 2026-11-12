@@ -115,6 +115,6 @@ a new section's schema; restart the server before believing the page.
 
 ## 5. Hand off
 
-`build-page-from-figma` Steps 5–7: Notion updated, the QA checklist with the
-live URL beside the preview URL for every row, `/record-incident` the moment
-a trap a rule should have named costs more than a few minutes.
+`build-page-from-figma` Steps 5–6: the hand-off, with the live URL beside
+the preview URL for every page, and `/record-incident` the moment a trap a
+rule should have named costs more than a few minutes.

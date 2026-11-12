@@ -1,13 +1,12 @@
 ---
 name: build-page-from-figma
-description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, then update Notion and produce a QA checklist. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states. When the reference is the live site instead, Step 1 routes to build-section-from-live.
+description: Build a store page, section, shared component, overlay or interaction state from a Figma design against Base Theme standards, verify it, and hand it off with the proof. Use when asked to build, rebuild, or implement anything from a Figma frame — a page, a header or footer, a drawer or modal, or a set of states. When the reference is the live site instead, Step 1 routes to build-section-from-live.
 argument-hint: <figma-url-or-nodeId> [notion-task]
 ---
 
 # build-page-from-figma
 
-Figma frame in, Base-standard code out, Notion updated, QA checklist written
-for a non-technical reviewer.
+Figma frame in, Base-standard code out, verified, handed off with the proof.
 
 ## Not everything from Figma is a page
 
@@ -44,7 +43,7 @@ Before any Figma call, state back:
   in `docs/ai-workflow/reference-map.md`. Figma is the source of the look and
   never of data; live is the source of behaviour, copy and data, never of code.
   - **Live** → `/build-section-from-live`; its §4 verifies against live and
-    its §5 returns to Steps 5–7 here.
+    its §5 returns to Steps 5–6 here.
   - **Both** → design values from the frame; behaviour, copy and data shape
     from live; verify the look against the frame and the behaviour with
     `live-parity.py states`.
@@ -52,7 +51,7 @@ Before any Figma call, state back:
   carry stale keys
 - **Which frame** — a node ID, desktop or mobile
 - **Which template** the result belongs to
-- **The Notion sub-task**, if one was given
+- **The Notion card**, if one was given
 
 If any is missing or ambiguous, **ask**.
 
@@ -120,9 +119,16 @@ a person then walks the three rows it cannot: logged in, Safari, checkout.
 
 **GitBot:** in a client repo, after the push, `/gitbot-preflight` settles
 every finding — fixed, or flagged with the developer's reason — before the
-pull request. The handoff quotes its three numbers (open, fixed, flagged).
+pull request.
 
-Report all three separately, quoting the verify report's numbers.
+**Self-test:** with the `agentic-os` plugin, `/qa-precheck` is the QI's own
+run on the preview before the hand-off. Give it
+`.claude/verify/<slug>/report.json` and `commerce-check.py`'s report: their
+reference, pages and widths are its plan, and their numbers go in its
+one-line result.
+
+Report code, visual and functionality separately, quoting the verify report's
+numbers.
 
 Set a goal before building, so a fresh evaluator decides when it is done:
 
@@ -134,52 +140,35 @@ python3 .claude/scripts/check-conventions.py --changed --block exits 0.
 Stop after 25 turns if not met and report what remains.
 ```
 
-## Step 5 — Update Notion
+## Step 5 — Hand off
 
-Via Notion MCP, on the sub-task for this page:
+The Notion card, the hand-off comment, QI bugs, Slack and branch names belong
+to the `agentic-os` plugin; Base supplies the proof:
 
-1. **Set the status to Quality Inspection.** If part of the page is blocked,
-   or was built from screenshots, say so in the comment.
-2. **Post a comment**: what was built, decisions and why, what was left out,
-   every assumption a human should confirm. Written for someone who was not
-   in the session.
-3. **Post the QA checklist** — Step 6.
+- the gate: `check-conventions.py --changed --block` and
+  `check-section-contract.py --files`, passed or what remains;
+- `.claude/verify/<slug>/report.json`: `diff_pct` and `box_off` per width,
+  and what it lists as `unverified`;
+- `commerce-check.py`'s report: passed, failed, skipped, and the three rows
+  a person walked;
+- GitBot's open, fixed and flagged, from `/gitbot-preflight`;
+- every assumption, and anything blocked or built from screenshots.
 
-Ask which task if you do not have it; create none, and change nothing else.
+**With the plugin:** `/handoff`, given the list above for its _Dev checks_
+and _Known gaps_. It posts on approval and never changes the card's status.
 
-## Step 6 — QA checklist, in plain English
+**Without it:** show the draft; on approval post one comment on the card, for
+someone who was not in the session: what was built, decisions and why, what
+was left out, the proof above, then 4 to 10 numbered steps to QA. Each step
+names the page, the width and logged in or out, then the action and `Expect:`
+the result — something a non-technical reviewer checks in a browser, never
+code, settings, schema or file names. A page that sells includes the purchase
+path: add, change the quantity, remove, a discount code, a country switch,
+again logged in, again in Safari on an iPhone. Then set the status to Quality
+Inspection. Ask which card if you do not have it; create none, and change
+nothing else.
 
-**QA is non-technical.** Every item is something a person checks by looking
-at the page in a browser; never code, settings, schema, tokens or file names.
-
-**Write items like this:**
-
-- [ ] The heading reads "Find Your Formula"
-- [ ] There are 3 product cards on desktop, and you can swipe through them on a phone
-- [ ] The "Shop Now" button goes to the All Products page
-- [ ] Prices show in euros with the € symbol
-- [ ] On a phone, nothing is cut off at the right edge and the page does not scroll sideways
-- [ ] Every image loads — no grey or empty boxes
-- [ ] The dots under the cards move as you swipe
-
-**Never like this:**
-
-- ~~Verify `color_scheme` is exposed in the schema~~
-- ~~Confirm `padding_top_mobile` is read outside the media query~~
-- ~~Check `component-product-card` snippet is used~~
-
-**When the page sells anything, include the purchase path** in the reviewer's
-words: "Add the product to the cart from this page — the cart opens and shows
-it with the right price." "Change the quantity to 2 — the total updates."
-"Remove it — the cart says it is empty." "Enter the discount code <code> — the
-total drops." "Switch the country at the bottom of the page — prices show in
-that currency." "Do the add, change and remove again while logged in." "Do
-them on an iPhone in Safari."
-
-Group by what the reviewer is looking at — Desktop, Mobile, Links and buttons,
-Text and images — with what should happen and the obvious ways it goes wrong.
-
-## Step 7 — Record anything that went wrong
+## Step 6 — Record anything that went wrong
 
 A real mistake — the wrong thing built, a design misread, a re-prompt, a trap
 a rule should have named — is `/record-incident` **at the moment it happens**.
@@ -187,4 +176,4 @@ It writes a committed file under `docs/ai-workflow/incidents/` with what
 happened, how it surfaced, what fixed it and which rule or check should have
 caught it; `/harvest` takes a generic one up to Base.
 
-When QA logs issues in Notion, `/close-qa-loop` picks them up.
+When the QI logs bugs on the card, `/close-qa-loop` picks them up.
