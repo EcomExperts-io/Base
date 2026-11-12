@@ -723,6 +723,30 @@ with tempfile.TemporaryDirectory() as d:
          h1.returncode == 2 and "/record-incident" in h1.stderr and "--dismiss" in h1.stderr and h2.returncode == 0 and "systemMessage" in h2.stdout,
          (h1.returncode, h1.stderr[:200], h2.returncode, h2.stdout[:200]))
 
+with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as stores:
+    gb = fork(base, 1); gb("remote", "set-url", "origin", "git@github.com:EcomExperts-io/Base.git")
+    shutil.copy(os.path.join(ROOT, ".gitignore"), os.path.join(base, ".gitignore")); gb("add", "."); gb("commit", "-q", "-m", "ignore")
+    for name, scope in (("store-a", "generic"), ("store-b", "client")):
+        sd = os.path.join(stores, name); os.makedirs(sd); fork(sd, 1)
+        tool(sd, "new-incident.py", "--slug", "trap", "--title", f"A trap in {name}", "--scope", scope, "--date", "2026-01-06")
+    os.makedirs(os.path.join(stores, "store-c")); fork(os.path.join(stores, "store-c"), 1)
+    R = lambda *a: tool(base, "learnings-report.py", "--path", stores, *a)
+    out = R().stdout
+    case("report: lists the generic learning from one store and not the store-only one from another",
+         "store-a/2026-01-06-trap.md" in out and "A trap in store-a" in out and "store-b" not in out
+         and "3 repo(s) read, 2 with learnings; 1 generic learning(s) listed" in out, out)
+    R("--mark", "store-a/2026-01-06-trap.md", "taken")
+    out2 = R().stdout
+    case("report: a decided learning stops being listed, and the decision is kept outside git",
+         "store-a/" not in out2 and "1 already decided" in out2 and "[taken]" in R("--all").stdout
+         and not gb("status", "--porcelain").stdout.strip(), out2 + gb("status", "--porcelain").stdout)
+    r = tool(os.path.join(stores, "store-a"), "learnings-report.py", "--path", stores)
+    case("report: refuses to run in a store repo", r.returncode == 1 and "runs from Base" in r.stdout, r.stdout)
+lib = load("pull_base_tooling_lib")
+case("pull: the report is Base's own and never part of what a store pulls; harvest is retired from stores",
+     not lib.is_tooling(".claude/scripts/learnings-report.py") and lib.is_tooling(".claude/scripts/check-learnings.py")
+     and lib.RETIRED.get(".claude/skills/harvest/SKILL.md", 0) is None and lib.RETIRED.get(".claude/scripts/harvest.sh", 0) is None)
+
 links = load("check-rule-links")
 case("rule links: a path in the store's own area is not a broken link in Base; a missing Base path still is",
      links.resolve(".claude/this-store/checks.json", "CLAUDE.md") is None

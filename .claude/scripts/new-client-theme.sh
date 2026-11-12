@@ -71,15 +71,14 @@ Before you build anything, in this order:
   5. python3 .claude/scripts/report-compliance.py   — record the starting number
      so you can tell later whether you improved it or added to it.
   6. The first time a fix is needed that a rule or gate should have prevented,
-     run /record-incident. It writes docs/ai-workflow/incidents/<date>-<slug>.md
-     in THIS repo, committed. The gitignored mistake log this replaced was asked
-     for on every build and created on none.
+     run /record-incident. It records what went wrong, proposes the change to
+     THIS repo's own setup, and applies it on your yes — in
+     .claude/rules/this-store-*.md and .claude/this-store/checks.json, never in
+     a file Base ships.
 
 To pull Base improvements later:   git fetch base && git merge base/development
                                    (theme code) and python3 .claude/scripts/pull-base-tooling.py
-                                   (tooling, three-way — your measured rule edits survive)
-To send a generic fix upstream:    /harvest <incident-or-rule-file>  — or branch off
-                                   base/development, cherry-pick, PR to Base
+                                   (tooling — the store's own area is never touched)
 To see drift either way:           python3 .claude/scripts/check-tooling-drift.py
 
 NEXT

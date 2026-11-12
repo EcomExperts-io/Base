@@ -64,7 +64,7 @@ stage's work.
 - **Verify before hand-off**: `/verify-against-reference` per frame, report on
   disk, numbers quoted in the hand-off (`build-page-from-figma` Step 5).
 - **Record as you go**: `/record-incident` the moment a fix lands that a rule
-  should have prevented; `/harvest` the generic ones before the stage closes.
+  should have prevented, and answer its proposal before the stage closes.
 - **Gate**: `shopify-pr-reviewer` over the diff before a human sees the PR.
 
 ## Inheriting mid-rebuild

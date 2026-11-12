@@ -116,7 +116,7 @@ def signals():
 
 def verdict(s):
     if s["is_base"]:
-        return "base", "this is Base itself, not a client rebuild", "tooling work: the rules, checks and skills; `/record-incident` and `/harvest` land here"
+        return "base", "this is Base itself, not a client rebuild", "tooling work: the rules, checks and skills; `/record-incident` lands here, `learnings-report.py` reads the stores"
     fix_ratio = s["recent_fix"] / s["recent_commits"] if s["recent_commits"] else 0
     built = s["verify_reports"]
     rows = s["map_rows"]

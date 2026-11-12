@@ -5,7 +5,7 @@
 #   Safe to re-run. Writes only the remote, the worktree and .claude/.cache/base-link.json.
 #
 # Notes:
-#   * The worktree is a checkout of base/development beside the client repo; /harvest edits and opens Base PRs from it.
+#   * The worktree is a checkout of base/development beside the client repo, read as reference; nothing is pushed from it.
 #   * `claude --add-dir <worktree>` reads Base as reference only; its rules are not loaded, the client's copies win.
 #   * The remote feeds pull-base-tooling.py and check-tooling-drift.py; pushing to it is disabled.
 
@@ -62,8 +62,8 @@ Linked. From here:
   Read Base as reference in a session, without loading its rules:
       claude --add-dir "$WT"
 
-  Send a generic fix or rule up to Base from inside this repo:
-      /harvest <incident-or-rule-file>     (edits and pushes from $WT)
+  What this repo learns stays in this repo, in its own area:
+      /record-incident     (.claude/rules/this-store-*.md, .claude/this-store/checks.json)
 
 The worktree is a full Base checkout. Keep it current with:
       git -C "$WT" pull --ff-only

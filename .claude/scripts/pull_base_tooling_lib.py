@@ -40,6 +40,9 @@ INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 # Base), so a pull never writes, stashes or retires them and the drift report never counts them against Base.
 STORE_PREFIXES = (".claude/this-store/", ".claude/rules/this-store-", ".claude/skills/this-store-", ".agents/skills/this-store-")
 
+# What Base keeps for itself: read by nobody but whoever maintains Base, and never part of what a store pulls.
+BASE_ONLY = (".claude/scripts/learnings-report.py",)
+
 # Paths Base has renamed or removed, old -> new (or None). A fork whose copy still equals what Base shipped at the
 # stamp loses it on the next pull; an edited copy is kept and listed for a hand merge.
 RETIRED = {
@@ -47,6 +50,8 @@ RETIRED = {
     ".claude/references/equal-height-column-pitfalls.md": ".claude/references/layout-pitfalls.md",
     ".claude/references/vitepress-docs.md": None,
     ".claude/agents/shopify-standards-coach.md": None,
+    ".claude/skills/harvest/SKILL.md": None,
+    ".claude/scripts/harvest.sh": None,
     "docs/ai-workflow/figma-ai-friendly-design-practices.md": "docs/ai-workflow/figma-handoff.md",
     "docs/ai-workflow/figma-handoff-checklist.md": "docs/ai-workflow/figma-handoff.md",
     "docs/base-theme-standards/base-theme-ai-workflow-vision.md": "docs/base-theme-standards.md",
@@ -71,7 +76,7 @@ def is_store_owned(path):
 def is_tooling(path):
     if path == INCIDENTS_README:
         return True
-    if is_store_owned(path):
+    if is_store_owned(path) or path in BASE_ONLY:
         return False
     if path.startswith(EXCLUDE_PREFIXES) or "__pycache__" in path or path.endswith(".pyc"):
         return False
