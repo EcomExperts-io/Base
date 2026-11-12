@@ -10,7 +10,8 @@ Usage
   learnings-report.py --mark <repo>/<file> taken|skipped     record the decision, so the item stops being listed
 
 Notes:
-- Reads only: each repo's docs/ai-workflow/incidents/*.md on its default branch through `gh`, one repo at a time.
+- Reads only: one `gh` code search for docs/ai-workflow/incidents/*.md across the organisation, then each file found,
+  one at a time. Code search covers default branches and can trail a merge by a few minutes.
   A learning is listed when its `scope` is `generic`; nothing in a store repo is changed and nothing is sent to Base.
 - Runs from Base only, and is not part of the tooling a store pulls (BASE_ONLY in pull_base_tooling_lib.py).
 - The decisions live in .claude/.cache/, outside git, so no store's name enters Base.
@@ -68,26 +69,27 @@ def local_repos(parent):
 
 
 def remote_repos(org):
-    rc, out = run("gh", "repo", "list", org, "--limit", "500", "--no-archived", "--json", "name")
+    """One code search for every learning file in the organisation, then one read per file found."""
+    rc, out = run("gh", "search", "code", "--owner", org, f"path:{DIR}", "--limit", "1000",
+                  "--json", "repository,path")
     if rc != 0:
-        raise RuntimeError(f"`gh repo list {org}` failed — is gh installed and signed in? (gh auth status)")
-    for name in sorted(r["name"] for r in json.loads(out or "[]")):
-        if name == "Base":
+        raise RuntimeError(f"`gh search code --owner {org}` failed — is gh installed and signed in? (gh auth status)")
+    found = {}
+    for hit in json.loads(out or "[]"):
+        full = (hit.get("repository") or {}).get("nameWithOwner", "")
+        path = hit.get("path", "")
+        name = full.split("/")[-1]
+        if (not full or name == "Base" or not path.startswith(DIR + "/") or not path.endswith(".md")
+                or path.endswith("/README.md")):
             continue
-        rc, out = run("gh", "api", f"repos/{org}/{name}/contents/{DIR}")
-        try:
-            listing = json.loads(out) if rc == 0 else []
-        except ValueError:
-            listing = []
+        found.setdefault(full, set()).add(path)
+    for full in sorted(found):
         files = []
-        for item in listing if isinstance(listing, list) else []:
-            f = item.get("name", "")
-            if not f.endswith(".md") or f == "README.md":
-                continue
-            rc, text = run("gh", "api", f"repos/{org}/{name}/contents/{DIR}/{f}", "-H", "Accept: application/vnd.github.raw")
+        for path in sorted(found[full]):
+            rc, text = run("gh", "api", f"repos/{full}/contents/{path}", "-H", "Accept: application/vnd.github.raw")
             if rc == 0:
-                files.append((f, text))
-        yield name, files
+                files.append((os.path.basename(path), text))
+        yield full.split("/")[-1], files
 
 
 def load_ledger():
