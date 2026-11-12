@@ -262,8 +262,16 @@ def incidents_line():
     return f"incidents: {len(open_)} open of {len(files)} recorded"
 
 
+def check_plugin_contract():
+    rc, out = run([sys.executable, os.path.join(ROOT, ".claude/scripts/check-plugin-contract.py"), "--brief"])
+    detail = out.strip().replace("plugin contract: ", "", 1)
+    if rc == 0:
+        return ("OK", "agentic-os", detail, "")
+    return ("WARN", "agentic-os", detail.split(" — ")[0], "python3 .claude/scripts/check-plugin-contract.py")
+
+
 FAST = [check_hooks_wired, check_runtime_hooks, check_theme_check_config, check_node, check_python,
-        check_mcp_config, check_store, check_pillow, check_chrome, check_base_link]
+        check_mcp_config, check_store, check_pillow, check_chrome, check_base_link, check_plugin_contract]
 SLOW = [check_shopify_cli, check_figma_plugin, check_gh, check_hook_latency]
 
 

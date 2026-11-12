@@ -529,6 +529,31 @@ problems, advisory = contract.check("sections/x.liquid", contract_src(
 case("contract: seeded preset with a blank test is clean", not problems and not advisory, (problems, advisory))
 
 # ---------------------------------------------------------------------------
+# check-plugin-contract.py — against a throwaway plugin
+# ---------------------------------------------------------------------------
+plugin = load("check-plugin-contract")
+
+with tempfile.TemporaryDirectory() as d:
+    for skill, phrases in plugin.CONTRACT.items():
+        os.makedirs(os.path.join(d, "skills", skill))
+        open(os.path.join(d, "skills", skill, "SKILL.md"), "w").write("\n".join(p for p, _ in phrases))
+    case("plugin: a plugin carrying every phrase is clean", plugin.check(d) == [], plugin.check(d))
+    open(os.path.join(d, "skills", "handoff", "SKILL.md"), "w").write("_Dev checks_")
+    out = plugin.check(d)
+    case("plugin: a dropped phrase is named with what in Base depends on it",
+         any(s == "handoff" and "_Known gaps_" in p and w for s, p, w in out), out)
+    shutil.rmtree(os.path.join(d, "skills", "fix-issues"))
+    case("plugin: a renamed or removed skill is named", ("fix-issues", "skill not found") in [(s, p) for s, p, _ in plugin.check(d)])
+    r = subprocess.run([sys.executable, os.path.join(HERE, "check-plugin-contract.py"), "--brief", "--plugin-dir", d],
+                       capture_output=True, text=True)
+    case("plugin: drift exits 1 with one line under --brief", r.returncode == 1 and r.stdout.count("\n") == 1, r.stdout)
+
+with tempfile.TemporaryDirectory() as d:
+    r = subprocess.run([sys.executable, os.path.join(HERE, "check-plugin-contract.py")],
+                       capture_output=True, text=True, env=dict(os.environ, HOME=d, USERPROFILE=d))
+    case("plugin: no plugin installed exits 0 and names the fallback", r.returncode == 0 and "fallback" in r.stdout, r.stdout)
+
+# ---------------------------------------------------------------------------
 verbose = "--verbose" in sys.argv
 failed = [r for r in RESULTS if not r[1]]
 for name, ok, detail in RESULTS:
