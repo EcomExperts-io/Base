@@ -7,7 +7,9 @@ argument-hint: <slug> "<what went wrong>"
 # record-incident
 
 Record, propose, wait for a yes, apply. Nothing in the setup changes without
-the developer's answer, and nothing leaves this repo.
+the developer's answer, and nothing leaves this repo. The answer is given by
+the developer in their own terminal; never run `--approve` or `--decline`
+for them, and never delete a record to get past the gate.
 
 ## When
 
@@ -28,8 +30,13 @@ python3 .claude/scripts/new-incident.py \
   --title "<one line, what went wrong>" \
   --scope generic|client \
   --surfaced-by theme-500|theme-check|gate|hook|review|qa|designer|eyeball|verify|ci|other \
-  --should-have-caught <the rule, check or skill that should have prevented it>
+  --should-have-caught <the rule, check or skill that should have prevented it> \
+  [--signal <id>[,<id>]]
 ```
+
+`--signal` names what this learning answers, by the id shown in
+`python3 .claude/scripts/check-learnings.py --pending`. A signal about
+something else stays waiting.
 
 `scope`: true in a Shopify theme that is not this client's → `generic`;
 otherwise `client`. Generic is a flag for whoever maintains Base. It sends
@@ -58,11 +65,23 @@ check in `.claude/this-store/checks.json` when a grep can decide it; a
 hold. A change that rewrites or removes an existing rule or check is said in
 those words, with the reason.
 
-Wait for the answer. No answer is not a yes: leave the file `open`.
+Then give the developer the two commands, each in its own block, to run in
+their own terminal. They refuse to run through an agent's shell:
+
+```bash
+python3 .claude/scripts/new-incident.py --approve docs/ai-workflow/incidents/<file>.md
+```
+
+```bash
+python3 .claude/scripts/new-incident.py --decline docs/ai-workflow/incidents/<file>.md --reason "<why nothing changes>"
+```
+
+Wait for the answer. A yes in chat is not the answer: the record must read
+`approved`. No answer is not a yes: leave the file `open`.
 
 ## Step 3 — Apply, in the store's own area
 
-On a yes, make the change:
+Once the record reads `approved`, make the change:
 
 - **A rule** — `.claude/rules/this-store-<topic>.md`, with a `description` and
   a `paths:` glob in its frontmatter; what to do, then what breaks.
@@ -82,11 +101,8 @@ python3 .claude/scripts/new-incident.py --apply docs/ai-workflow/incidents/<file
   --change <store file>[,<store file>] [--changes-existing "<why>"]
 ```
 
-On a no:
-
-```bash
-python3 .claude/scripts/new-incident.py --decline docs/ai-workflow/incidents/<file>.md --reason "<why nothing changes>"
-```
+On a no the developer's `--decline` has already closed the record; change
+nothing.
 
 In Base itself there is no store area: the change goes in the rule, check or
 skill it belongs to, and `--apply` names that file.
@@ -100,5 +116,6 @@ the store files.
 
 SessionStart lists open learnings by title. The pull-request gate
 (`check-learnings.py --gate`) fails while one recorded in that change is
-still `open` (an older one is listed, not blocking), and when
+still `open` or `approved` and not applied (an older one is listed, not
+blocking), when an open one is deleted, and when
 existing store rules or checks change with no `--changes-existing` reason.

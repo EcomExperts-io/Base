@@ -8,14 +8,17 @@ Usage
   check-learnings.py --gate --range A..B   the pull-request gate: exit 1 on either finding below
   check-learnings.py --gate --staged       the same two findings on the index; the pre-commit prints them
   check-learnings.py --signal <kind> "<what happened>"   note something a learning may come from (hooks and scripts call this)
-  check-learnings.py --pending [--hold]    the unanswered signals; with --hold, exit 3 the first time each is shown
+  check-learnings.py --pending [--hold]    the unanswered signals, each with its id; with --hold, exit 3 the first time each is shown
+  check-learnings.py --answer <id>[,<id>…] <learning file>   those signals are answered by that learning (new-incident.py --signal calls this)
   check-learnings.py --dismiss "<why>"     answer the unanswered signals with a reason: nothing to learn
 
 Notes:
 - A signal is local to this machine (.claude/.cache/): a failed Shopify command, a blocked turn, a QA round, GitBot
-  findings. It is answered by a learning recorded after it, or by --dismiss. The same signal is raised once.
-- Open: a file under docs/ai-workflow/incidents/ whose status is still `open` — recorded, and neither applied
+  findings. It is answered by the learning that names it (`new-incident.py --signal <id>`), or by --dismiss; a
+  learning about something else answers nothing. The same signal is raised once.
+- Open: a file under docs/ai-workflow/incidents/ whose status is `open` or `approved` — recorded, and neither applied
   (`new-incident.py --apply`) nor declined (`--decline`). The developer answers every proposal, yes or no.
+- Deleting a learning that was still open counts as leaving it unanswered: the gate fails and names the file.
 - The gate also fails when the store has checks and this repo's conventions checker is too old to run them.
 - The gate fails on an open learning this change records or edits. One that was open before the change is listed and
   does not fail it, so a backlog never blocks unrelated work.
@@ -25,6 +28,7 @@ Notes:
   carries `changes_existing:` (`--apply … --changes-existing "<why>"`), so a gate is never quietly loosened.
 """
 
+import hashlib
 import importlib.util
 import json
 import os
@@ -52,7 +56,7 @@ def git(*args):
 
 
 def open_learnings(inc):
-    return [(path, fm) for path, fm in inc.incidents() if fm.get("status", "open") == "open"]
+    return [(path, fm) for path, fm in inc.incidents() if fm.get("status", "open") in inc.OPEN]
 
 
 def load_signals():
@@ -68,25 +72,23 @@ def save_signals(signals):
     json.dump(signals[-200:], open(SIGNALS, "w"), indent=1)
 
 
-def newest_learning():
-    """When the newest learning file was written; a learning recorded after a signal answers it."""
-    try:
-        files = [os.path.join(INCIDENTS, n) for n in os.listdir(INCIDENTS) if n.endswith(".md") and n != "README.md"]
-    except OSError:
-        return 0
-    return max((os.stat(f).st_mtime for f in files), default=0)
+def sid(sig):
+    """A short stable id for a signal, shown beside it and named by the learning that answers it."""
+    return sig.get("id") or hashlib.sha1(f"{sig.get('kind')}\n{sig.get('what')}".encode()).hexdigest()[:6]
 
 
 def unanswered(signals):
-    newest = newest_learning()
-    changed = False
-    for sig in signals:
-        if not sig.get("answered") and newest >= sig.get("time", 0):
-            sig["answered"] = "a learning was recorded"
-            changed = True
-    if changed:
-        save_signals(signals)
     return [sig for sig in signals if not sig.get("answered")]
+
+
+def deleted_open(inc, staged, a, b):
+    """Learning files this change deletes that were still open when deleted."""
+    if staged:
+        names, old_of = git("diff", "--cached", "--name-only", "--diff-filter=D", "--", INCIDENTS), (lambda p: git("show", f"HEAD:{p}"))
+    else:
+        names, old_of = git("diff", "--name-only", "--diff-filter=D", a, b, "--", INCIDENTS), (lambda p: git("show", f"{a}:{p}"))
+    return [p for p in (names or "").split("\n")
+            if p.endswith(".md") and inc.frontmatter(old_of(p) or "").get("status", "open") in inc.OPEN and inc.frontmatter(old_of(p) or "")]
 
 
 def changed_checks(old, new):
@@ -178,8 +180,26 @@ def main(argv):
             return 2
         signals = load_signals()
         if not any(sig.get("kind") == kind and sig.get("what") == what for sig in signals):
-            signals.append({"kind": kind, "what": what, "time": time.time()})
+            signals.append({"kind": kind, "what": what, "time": time.time(), "id": sid({"kind": kind, "what": what})})
             save_signals(signals)
+        return 0
+
+    if "--answer" in argv:
+        i = argv.index("--answer")
+        ids = [x.strip() for x in (argv[i + 1] if i + 1 < len(argv) else "").split(",") if x.strip()]
+        path = argv[i + 2] if i + 2 < len(argv) else ""
+        signals = load_signals()
+        waiting = {sid(sig): sig for sig in unanswered(signals)}
+        unknown = [x for x in ids if x not in waiting]
+        if not ids or not os.path.isfile(path) or unknown:
+            print("usage: check-learnings.py --answer <id>[,<id>…] <learning file>"
+                  + (f"\nno unanswered signal with id: {', '.join(unknown)}" if unknown else "")
+                  + (f"\nunanswered: {', '.join(sorted(waiting))}" if waiting else ""), file=sys.stderr)
+            return 2
+        for x in ids:
+            waiting[x]["answered"] = "learning: " + path.replace(os.sep, "/")
+        save_signals(signals)
+        print(f"{len(ids)} signal(s) answered by {path}.")
         return 0
 
     if "--dismiss" in argv:
@@ -204,9 +224,9 @@ def main(argv):
         fresh = [sig for sig in waiting if not sig.get("held")]
         print("learning loop: this happened and nothing has been learned from it yet:")
         for sig in waiting:
-            print(f"  - [{sig.get('kind')}] {sig.get('what')}")
-        print("If a rule, check or skill of this repo should have prevented it, run /record-incident and show the developer "
-              "the proposed change. If there is nothing to learn, say why: "
+            print(f"  - [{sig.get('kind')}] {sig.get('what')}   (signal {sid(sig)})")
+        print("If a rule, check or skill of this repo should have prevented it, run /record-incident with --signal <id> and "
+              "show the developer the proposed change. If there is nothing to learn, say why: "
               "python3 .claude/scripts/check-learnings.py --dismiss \"<why>\"")
         if "--hold" in argv and fresh:
             for sig in fresh:
@@ -264,7 +284,14 @@ def main(argv):
         print(f"  {len(fresh)} learning(s) recorded in this change and not answered. Each one is applied or declined before the pull request:")
         for path, fm in fresh:
             print(f"    - {path} — {fm.get('title', '')}")
-        print("    python3 .claude/scripts/new-incident.py --apply <file> --change <store file>   or   --decline <file> --reason \"…\"")
+        print("    The developer answers each one in their own terminal:  python3 .claude/scripts/new-incident.py --approve <file>"
+              "   or   --decline <file> --reason \"…\"\n    After a yes:  python3 .claude/scripts/new-incident.py --apply <file> --change <store file>")
+    gone = deleted_open(inc, staged, a, b)
+    if gone:
+        problems += len(gone)
+        print(f"  {len(gone)} learning(s) deleted while still unanswered. Restore each one and have it approved or declined:")
+        for path in gone:
+            print(f"    - {path}")
     if older:
         print(f"  {older} older learning(s) still open, from before this change — listed, not blocking: python3 .claude/scripts/check-learnings.py")
     if touched and not declared:
