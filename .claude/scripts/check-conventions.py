@@ -15,8 +15,13 @@ Notes:
   trunk (origin's default branch, else development, develop, main, master or staging); with no trunk found, it is HEAD.
 - Two checks catch a 500 on every route that Theme Check does not: a `range` with fewer than three steps, and a `t:`
   key left in a template value.
+- A store adds its own pattern checks in .claude/this-store/checks.json, a list of
+  {"id", "files", "pattern", "severity", "why", "rule"}: `files` is a glob or a list of globs, `pattern` a regular
+  expression, `rule` the .claude/rules/this-store-*.md it serves. They report as `store:<id>` under the same blocking
+  rule as the built-in ones; an entry that cannot be used is named and fails a blocking run.
 """
 
+import fnmatch
 import glob
 import json
 import os
@@ -83,6 +88,9 @@ DUP_RUN = 40
 
 SEVERITY_ORDER = {"error": 0, "warn": 1}
 
+STORE_CHECKS = ".claude/this-store/checks.json"
+STORE_RULE_PREFIX = "this-store-"
+
 
 class Finding:
     __slots__ = ("path", "line", "rule", "detail")
@@ -145,6 +153,68 @@ def read(path):
         return open(path, encoding="utf-8", errors="replace").read()
     except OSError:
         return None
+
+
+# ---------------------------------------------------------------------------
+# the store's own checks — pattern checks a store adds without editing this script
+# ---------------------------------------------------------------------------
+def load_store_checks(path=STORE_CHECKS, rules_dir=".claude/rules"):
+    """Returns (checks, problems). A usable entry is registered in RULES as `store:<id>`; an unusable one is
+    described in `problems` and skipped, so one bad line never switches the others off."""
+    raw = read(path)
+    if raw is None:
+        return [], []
+    try:
+        entries = json.loads(raw)
+    except ValueError as e:
+        return [], [f"{path}: not valid JSON — {e}"]
+    if not isinstance(entries, list):
+        return [], [f"{path}: must be a list of checks"]
+    checks, problems, seen = [], [], set()
+    for i, e in enumerate(entries, 1):
+        where = f"{path}: entry {i}"
+        if not isinstance(e, dict):
+            problems.append(f"{where}: must be an object")
+            continue
+        cid = str(e.get("id", "")).strip()
+        where = f"{where} (`{cid}`)" if cid else where
+        globs = e.get("files")
+        globs = [globs] if isinstance(globs, str) else globs
+        why = str(e.get("why", "")).strip()
+        rule = str(e.get("rule", "")).strip()
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", cid):
+            problems.append(f"{where}: `id` must be lowercase words joined by hyphens")
+        elif cid in seen:
+            problems.append(f"{where}: `id` is used twice")
+        elif not (isinstance(globs, list) and globs and all(isinstance(g, str) and g for g in globs)):
+            problems.append(f"{where}: `files` must be a glob or a list of globs, such as \"sections/*.liquid\"")
+        elif e.get("severity") not in SEVERITY_ORDER:
+            problems.append(f"{where}: `severity` must be \"error\" or \"warn\"")
+        elif not why:
+            problems.append(f"{where}: `why` is empty — one line saying what breaks")
+        elif not (rule.startswith(STORE_RULE_PREFIX) and rule.endswith(".md") and os.path.isfile(os.path.join(rules_dir, rule))):
+            problems.append(f"{where}: `rule` must name an existing {rules_dir}/{STORE_RULE_PREFIX}*.md")
+        else:
+            try:
+                rx = re.compile(str(e.get("pattern", "")), re.M)
+            except re.error as err:
+                problems.append(f"{where}: `pattern` is not a valid regular expression — {err}")
+                continue
+            if not rx.pattern or rx.search(""):
+                problems.append(f"{where}: `pattern` is empty or matches nothing-at-all, so it would flag every file")
+                continue
+            seen.add(cid)
+            RULES[f"store:{cid}"] = (e["severity"], why, rule)
+            checks.append((f"store:{cid}", globs, rx))
+    return checks, problems
+
+
+def scan_store_checks(path, text, checks, findings):
+    for rule_id, globs, rx in checks:
+        if not any(fnmatch.fnmatch(path, g) for g in globs):
+            continue
+        for m in rx.finditer(text):
+            findings.append(Finding(path, line_of(text, m.start()), rule_id))
 
 
 # ---------------------------------------------------------------------------
@@ -658,20 +728,31 @@ def main(argv):
         if mode == "staged":
             block = True
 
+    store_checks, store_problems = load_store_checks()
+    if store_problems:
+        print(f"  {STORE_CHECKS} has {len(store_problems)} check(s) that cannot run:")
+        for sp in store_problems:
+            print(f"    - {sp}")
+    broken_store_checks = bool(store_problems) and block
+
     checked = new | mod
     if not checked and not gone:
-        return 0
+        return 1 if broken_store_checks else 0
 
     findings = []
     for p in sorted(checked):
         scan_file(p, findings)
+        if store_checks:
+            text = read(p)
+            if text is not None:
+                scan_store_checks(p, text, store_checks, findings)
     scan_shared_section_assets(checked, findings)
     scan_docs_orphans(gone, findings, sweep=(mode == "all"))
 
     if not findings:
         if verbose and not quiet:
             print(f"Conventions OK ({len(checked)} file(s) checked).")
-        return 0
+        return 1 if broken_store_checks else 0
 
     blocking = [f for f in findings if f.severity == "error" and f.path in new]
     findings.sort(key=lambda f: (f.path, SEVERITY_ORDER[f.severity], f.line))
@@ -703,7 +784,7 @@ def main(argv):
         print("  A finding blocks only in a file this change ADDS. Fix it, or if the rule is")
         print("  wrong for this theme, say so in the rule file rather than working around it.")
     print()
-    return 1 if (blocking and block) else 0
+    return 1 if ((blocking and block) or broken_store_checks) else 0
 
 
 if __name__ == "__main__":

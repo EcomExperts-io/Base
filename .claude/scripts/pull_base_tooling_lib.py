@@ -36,13 +36,23 @@ EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/"
 # check-rule-links.py resolves those links, and git cannot carry an empty directory.
 INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
-# Paths Base has renamed or removed, old -> new (or None). A fork whose copy still equals what Base shipped at the
-# stamp loses it on the next pull; an edited copy is kept and listed for a hand merge.
+# Names a store owns — its own rules, checks and skills. Base ships none of them (check-ai-config.py refuses one in
+# Base), so a pull never writes, stashes or retires them and the drift report never counts them against Base.
+STORE_PREFIXES = (".claude/this-store/", ".claude/rules/this-store-", ".claude/skills/this-store-", ".agents/skills/this-store-")
+
+# What Base keeps for itself: read by nobody but whoever maintains Base, and never part of what a store pulls.
+BASE_ONLY = (".claude/scripts/learnings-report.py",)
+
+# Paths Base has renamed or removed, old -> new (or None). A fork whose copy still equals something Base once shipped
+# loses it on the next pull; an edited copy is kept and listed for a hand merge. A BASE_ONLY file an older pull script
+# copied into a fork is retired the same way.
 RETIRED = {
     ".claude/skills/verify-against-figma/SKILL.md": ".claude/skills/verify-against-reference/SKILL.md",
     ".claude/references/equal-height-column-pitfalls.md": ".claude/references/layout-pitfalls.md",
     ".claude/references/vitepress-docs.md": None,
     ".claude/agents/shopify-standards-coach.md": None,
+    ".claude/skills/harvest/SKILL.md": None,
+    ".claude/scripts/harvest.sh": None,
     "docs/ai-workflow/figma-ai-friendly-design-practices.md": "docs/ai-workflow/figma-handoff.md",
     "docs/ai-workflow/figma-handoff-checklist.md": "docs/ai-workflow/figma-handoff.md",
     "docs/base-theme-standards/base-theme-ai-workflow-vision.md": "docs/base-theme-standards.md",
@@ -60,9 +70,15 @@ def sh(*args, cwd=None, check=True):
     return r.stdout
 
 
+def is_store_owned(path):
+    return path.startswith(STORE_PREFIXES)
+
+
 def is_tooling(path):
     if path == INCIDENTS_README:
         return True
+    if is_store_owned(path) or path in BASE_ONLY:
+        return False
     if path.startswith(EXCLUDE_PREFIXES) or "__pycache__" in path or path.endswith(".pyc"):
         return False
     return path in TOOLING_FILES or path.startswith(TOOLING_PREFIXES)
@@ -100,3 +116,12 @@ class Source:
         sha = sha or self.sha
         r = subprocess.run(["git", "show", f"{sha}:{path}"], capture_output=True, cwd=self.git_dir)
         return r.stdout if r.returncode == 0 else None
+
+    def ever_shipped(self, path, content):
+        """Whether `content` is byte-for-byte a version of `path` that Base has had, at any commit up to this one."""
+        r = subprocess.run(["git", "log", "--format=%H", self.sha, "--", path], capture_output=True, text=True,
+                           cwd=self.git_dir)
+        for commit in r.stdout.split():
+            if self.read(path, commit) == content:
+                return True
+        return False

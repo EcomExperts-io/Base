@@ -1,8 +1,8 @@
 # Incidents
 
 One file per fix that a rule, gate or check should have prevented, created by
-`/record-incident` the moment it happens; read by `doctor.py` (the open
-count), `check-tooling-drift.py` (what waits to be harvested) and `/harvest`.
+`/record-incident` the moment it happens; read by `check-learnings.py` (the
+open list and the pull-request gate) and, from Base, `learnings-report.py`.
 
 Frontmatter a script can read:
 
@@ -11,21 +11,23 @@ Frontmatter a script can read:
 | `scope` | `generic` (true in a theme that is not this client's) / `client` |
 | `surfaced_by` | `theme-500`, `theme-check`, `gate`, `hook`, `review`, `qa`, `designer`, `eyeball`, `verify`, `ci`, `other` |
 | `should_have_caught` | the rule, check or skill that should have prevented it |
-| `status` | `open` / `harvested` / `client-only` |
+| `status` | `open` / `applied` / `declined` (older files: `harvested`, `client-only`) |
+| `change`, `approved_by`, `applied` | written by `--apply`: the store files changed, who said yes, when |
+| `changes_existing` | why an existing store rule or check was rewritten or removed |
+| `declined_reason` | written by `--decline` |
 
-Four sections: what happened, how it surfaced, what fixed it, which rule or
-check should have caught it and why it did not.
+Five sections: what happened, how it surfaced, what fixed it, which rule or
+check should have caught it and why it did not, the proposed change.
 
 ```bash
-python3 .claude/scripts/new-incident.py --list --open
+python3 .claude/scripts/check-learnings.py
 ```
 
-An incident lives in the repo where it happened and does not travel with the
-tooling overlay; the rule it produces does. Once harvested, the incident file
-is deleted — its lesson is in the rule. This README is the one file the
-overlay carries down, so the directory exists in a fork on arrival.
+An incident lives in the repo where it happened and is never sent anywhere.
+A pull request cannot merge while one is `open`. This README is the one file
+the overlay carries down, so the directory exists in a fork on arrival.
 
-## Where harvested incidents landed
+## Where Base's own incidents landed
 
 | Incident | Where it landed in Base |
 |---|---|

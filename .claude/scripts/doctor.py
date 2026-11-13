@@ -207,7 +207,7 @@ def check_chrome():
 
 def check_gh():
     if shutil.which("gh") is None:
-        return ("WARN", "gh", "not installed — /harvest cannot open Base PRs", "brew install gh && gh auth login")
+        return ("WARN", "gh", "not installed — pull requests cannot be opened or read from here", "brew install gh && gh auth login")
     rc, out = run(["gh", "auth", "status"], timeout=20)
     if rc == 0:
         return ("OK", "gh", "authenticated", "")
@@ -224,7 +224,7 @@ def check_base_link():
         return ("OK", "base link",
                 f"tooling stamped at Base {str(stamp.get('sha', '?'))[:9]} ({stamp.get('date', '?')})", "")
     if rc2 != 0:
-        return ("WARN", "base link", "no `base` remote — cannot pull tooling or harvest",
+        return ("WARN", "base link", "no `base` remote — cannot pull tooling",
                 "sh .claude/scripts/base-link.sh")
     return ("WARN", "base link", "base remote present but no .base-version stamp",
             "sh .claude/scripts/pull-base-tooling.sh")
@@ -255,11 +255,8 @@ def compliance_line():
 
 
 def incidents_line():
-    files = [f for f in glob.glob(os.path.join(ROOT, "docs", "ai-workflow", "incidents", "*.md"))
-             if open(f, errors="replace").read(64).startswith("---")]
-    open_ = [f for f in files
-             if not re.search(r"^status:\s*(harvested|client-only)", open(f, errors="replace").read(), re.M)]
-    return f"incidents: {len(open_)} open of {len(files)} recorded"
+    rc, out = run([sys.executable, os.path.join(ROOT, ".claude", "scripts", "check-learnings.py"), "--brief"], timeout=20)
+    return out.strip() if rc == 0 and out.strip() else "learnings: unavailable"
 
 
 def check_plugin_contract():

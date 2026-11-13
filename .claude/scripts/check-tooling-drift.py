@@ -2,11 +2,13 @@
 """How far this repo's AI tooling has drifted from Base, in both directions, against the `.base-version` stamp.
 
 Notes:
-- HARVEST candidates: files this repo edited and Base did not (a client measurement stays; a generic trap goes up via /harvest).
+- EDITED HERE: Base files this repo changed and Base did not. Every one stops receiving Base's updates cleanly; the
+  store's part belongs in the store's own area (.claude/rules/this-store-*.md, .claude/this-store/checks.json).
 - PULL-DOWN candidates: files Base changed and this repo did not (run pull-base-tooling.py). BOTH changed: a hand merge.
+- STORE-OWNED: the store's own rules, checks and skills. Counted, never compared with Base.
 - The client-vs-generic label is a heuristic on the added lines (pixel values, file counts, container classes) and says so.
 - A stamp from an unmerged Base feature branch is not on the ref: every file that branch touched shows as BOTH and
-  nothing as HARVEST, and the report says so instead of "distance unknown".
+  nothing as EDITED HERE, and the report says so instead of "distance unknown".
 
 Usage
 -----
@@ -22,7 +24,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pull_base_tooling_lib import Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
+from pull_base_tooling_lib import Source, check_flags, is_store_owned, is_tooling, load_stamp, sh  # noqa: E402
 
 KNOWN_FLAGS = {"--brief": False, "--json": False, "--ref": True, "--base-path": True, "--no-fetch": False}
 USAGE = __doc__.split("Usage\n-----\n", 1)[1]
@@ -81,8 +83,10 @@ def main(argv):
         return 0
     old_sha = stamp.get("sha")
 
+    tracked = [p for p in sh("git", "ls-files").split("\n") if p]
+    store_owned = sorted(p for p in tracked if is_store_owned(p))
     paths = set(source.files())
-    paths |= {p for p in sh("git", "ls-files").split("\n") if p and is_tooling(p)}
+    paths |= {p for p in tracked if is_tooling(p)}
     try:
         old_files = sh("git", "ls-tree", "-r", "--name-only", old_sha, cwd=source.git_dir)
         paths |= {p for p in old_files.split("\n") if p and is_tooling(p)}
@@ -96,7 +100,7 @@ def main(argv):
     except RuntimeError:
         behind = None
 
-    harvest, pull_down, both, fork_only = [], [], [], []
+    edited, pull_down, both, fork_only = [], [], [], []
     for path in sorted(paths):
         if path == ".github/workflows/theme-review.yml":
             continue
@@ -115,13 +119,14 @@ def main(argv):
         if fork_changed and base_changed and cur != new:
             both.append((path, classify(old, cur)))
         elif fork_changed and cur != new:
-            harvest.append((path, classify(old, cur)))
+            edited.append((path, classify(old, cur)))
         elif base_changed and cur != new:
             pull_down.append(path)
 
     if as_json:
         print(json.dumps({"stamp": stamp, "base": source.sha, "commits_behind": behind,
-                          "harvest": harvest, "pull_down": pull_down, "both": both, "fork_only": fork_only}, indent=2))
+                          "edited_here": edited, "pull_down": pull_down, "both": both, "fork_only": fork_only,
+                          "store_owned": store_owned}, indent=2))
         return 0
 
     if behind is not None:
@@ -130,15 +135,16 @@ def main(argv):
     else:
         came_from = stamp.get("ref", "?")
         behind_brief = (f"stamp not on {source.ref} (pulled from {came_from}) — "
-                        f"BOTH/HARVEST unreliable until that branch merges")
+                        f"BOTH/EDITED HERE unreliable until that branch merges")
         behind_txt = (f"stamp {old_sha[:9]} is not on {source.ref}; .base-version says it came from "
                       f"{came_from}. Until that branch lands on {source.ref}, every file it touched "
-                      f"reads as BOTH changed and nothing reads as HARVEST — that is the branch not "
+                      f"reads as BOTH changed and nothing reads as EDITED HERE — that is the branch not "
                       f"having merged, not drift")
     if brief:
         print(f"tooling: stamped {old_sha[:9]} ({stamp.get('date', '?')}), {behind_brief}; "
-              f"{len(harvest)} local edit(s) to harvest, {len(pull_down)} to pull down, {len(both)} need a merge"
-              + (" — python3 .claude/scripts/check-tooling-drift.py" if (harvest or pull_down or both) else ""))
+              f"{len(edited)} Base file(s) edited here (move to the store area), {len(pull_down)} to pull down, "
+              f"{len(both)} need a merge, {len(store_owned)} store-owned"
+              + (" — python3 .claude/scripts/check-tooling-drift.py" if (edited or pull_down or both) else ""))
         return 0
 
     print()
@@ -155,11 +161,13 @@ def main(argv):
                 print(f"      {it}")
         print()
 
-    block("HARVEST candidates", harvest, "edited here since the stamp, unchanged in Base. Client measurement stays; generic trap goes up via /harvest")
+    block("EDITED HERE", edited, "Base files this repo changed. Move the store's part into .claude/rules/this-store-*.md or .claude/this-store/checks.json and restore Base's copy, so its updates keep arriving")
     block("PULL-DOWN candidates", pull_down, "changed in Base since the stamp, untouched here. python3 .claude/scripts/pull-base-tooling.py")
     block("BOTH changed", both, "needs a hand merge; pull-base-tooling.py saves Base's copy under .claude/.cache/base-new/")
     if fork_only:
         block("fork-only", fork_only, "exist here, never in Base at either commit")
+    if store_owned:
+        block("STORE-OWNED", store_owned, "this store's own rules, checks and skills; Base never ships or overwrites them")
     print("  " + "-" * 70)
     print()
     return 0
