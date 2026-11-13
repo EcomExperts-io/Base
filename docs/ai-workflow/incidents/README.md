@@ -11,10 +11,11 @@ Frontmatter a script can read:
 | `scope` | `generic` (true in a theme that is not this client's) / `client` |
 | `surfaced_by` | `theme-500`, `theme-check`, `gate`, `hook`, `review`, `qa`, `designer`, `eyeball`, `verify`, `ci`, `other` |
 | `should_have_caught` | the rule, check or skill that should have prevented it |
-| `status` | `open` / `applied` / `declined` (older files: `harvested`, `client-only`) |
-| `change`, `approved_by`, `applied` | written by `--apply`: the store files changed, who said yes, when |
+| `status` | `open` / `approved` / `applied` / `declined` (older files: `harvested`, `client-only`) |
+| `approved_by`, `approved` | written by `--approve`, which only the developer's own terminal can run: who said yes, when |
+| `change`, `applied` | written by `--apply`: the store files changed, when |
 | `changes_existing` | why an existing store rule or check was rewritten or removed |
-| `declined_reason` | written by `--decline` |
+| `declined_reason` | written by `--decline`, also from the developer's own terminal |
 
 Five sections: what happened, how it surfaced, what fixed it, which rule or
 check should have caught it and why it did not, the proposed change.
@@ -24,7 +25,7 @@ python3 .claude/scripts/check-learnings.py
 ```
 
 An incident lives in the repo where it happened and is never sent anywhere.
-A pull request cannot merge while one is `open`. This README is the one file
+A pull request cannot merge while one it records is unanswered, or when it deletes an open one. This README is the one file
 the overlay carries down, so the directory exists in a fork on arrival.
 
 ## Where Base's own incidents landed
