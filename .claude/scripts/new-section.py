@@ -201,7 +201,7 @@ ${schema}
 )
 
 DISPLAY_RULE = Template(
-    """.${name} {
+    """
   /* <${tag}> is a custom element, and a custom element defaults to
      display: inline. An inline box paints no background around block children
      and ignores vertical padding, so the color scheme and the section padding
@@ -209,42 +209,43 @@ DISPLAY_RULE = Template(
      reports both, which is why this reads as correct in a DOM check and wrong
      on screen. */
   display: block;
-}
-
 """
 )
 
 CSS = Template(
     """/* sections/${name}.liquid */
 
-${display_rule}.${name}__heading {
-  margin: 0 0 2.4rem;
+.${name} {
+  --${name}-gap: 2.4rem;
+  --${name}-title-gap: 1.2rem;
+${display_rule}}
+
+.${name}__heading {
+  margin-block: 0 var(--${name}-gap);
 }
 
 .${name}__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2.4rem;
+  gap: var(--${name}-gap);
+
+  @media screen and (min-width: ${component_breakpoint}px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .${name}__item {
-  min-width: 0;
+  min-inline-size: 0;
 }
 
 .${name}__image {
   display: block;
-  width: 100%;
-  height: auto;
+  inline-size: 100%;
+  block-size: auto;
 }
 
 .${name}__title {
-  margin: 1.2rem 0 0;
-}
-
-@media screen and (min-width: ${component_breakpoint}px) {
-  .${name}__grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  margin-block: var(--${name}-title-gap) 0;
 }
 """
 )
@@ -259,20 +260,20 @@ JS = Template(
  * a listener that outlives its element accumulates one copy per edit.
  */
 
-export class ${cls} extends HTMLElement {
-  abortController = null;
-
-  connectedCallback() {
-    this.abortController = new AbortController();
-  }
-
-  disconnectedCallback() {
-    this.abortController?.abort();
-    this.abortController = null;
-  }
-}
-
 if (!customElements.get('${tag}')) {
+  class ${cls} extends HTMLElement {
+    abortController = null;
+
+    connectedCallback() {
+      this.abortController = new AbortController();
+    }
+
+    disconnectedCallback() {
+      this.abortController?.abort();
+      this.abortController = null;
+    }
+  }
+
   customElements.define('${tag}', ${cls});
 }
 """
@@ -314,7 +315,7 @@ ${element_row}| Blocks | `item` (image + title) |
 {%- endstyle -%}
 ```
 
-- **Responsive padding**: mobile padding is 75% of the desktop value; the full value applies at ${padding_breakpoint}px and up.
+- **Responsive padding**: `padding_top_mobile` and `padding_bottom_mobile` apply below ${padding_breakpoint}px; `padding_top` and `padding_bottom` apply at ${padding_breakpoint}px and up. Each of the four is its own merchant setting; none is derived from another.
 - **Color scheme**: the wrapper carries the theme's `color-` scheme class, so the section inherits the merchant's chosen palette rather than hardcoded colors.
 
 ---
@@ -337,7 +338,7 @@ ${schema}
 
 - **Heading**: optional section title; the element is omitted when blank.
 - **Color Scheme**: theme color scheme applied to the wrapper.
-- **Padding**: top and bottom spacing, 0–100px in steps of 4, default 40.
+- **Padding**: four settings — top and bottom, desktop and mobile — each 0–100px in steps of 4, default 40.
 
 ### Block Settings (Item)
 

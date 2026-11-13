@@ -6,6 +6,12 @@ writes {"schema": {...}, "storefront": {...}} to a fragment. This merges every
 fragment present, refusing to overwrite an existing key.
 
 Usage: python3 .claude/scripts/merge-locale-fragments.py <fragment-dir>
+
+Notes:
+- Reads what Shopify accepts: a leading `/* */` header and trailing commas.
+- Writes the header back unchanged, keeps every existing key in its place and
+  appends new keys at the end of their parent. Trailing commas are not written back.
+- A locale file that gains no key is not rewritten.
 """
 import json, re, pathlib, subprocess, sys
 
@@ -25,11 +31,18 @@ REPO = pathlib.Path(
     ).stdout.strip()
 )
 
+# A JSON string, or a comma followed only by whitespace and a closing bracket.
+TRAILING_COMMA = re.compile(r'"(?:\\.|[^"\\])*"|,(?=\s*[}\]])')
+
+def loads_tolerant(text):
+    """json.loads that also accepts trailing commas; commas inside strings are untouched."""
+    return json.loads(TRAILING_COMMA.sub(lambda m: "" if m.group(0) == "," else m.group(0), text))
+
 def load(p):
-    raw = p.read_text()
+    raw = p.read_text(encoding="utf-8")
     m = re.match(r'^\s*/\*.*?\*/\s*', raw, re.S)
     header = m.group(0) if m else ''
-    return header, json.loads(raw[len(header):])
+    return header, loads_tolerant(raw[len(header):])
 
 def deep_merge(dst, src, path, conflicts):
     for k, v in src.items():
@@ -58,7 +71,7 @@ def count_leaves(d):
     return sum(count_leaves(v) if isinstance(v, dict) else 1 for v in d.values())
 
 for f in frags:
-    frag = json.loads(f.read_text())
+    frag = loads_tolerant(f.read_text(encoding="utf-8"))
     for key in targets:
         block = frag.get(key) or {}
         if block:
@@ -68,7 +81,10 @@ for f in frags:
 
 for key, path in targets.items():
     header, data = loaded[key]
-    path.write_text(header + json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    if not added[key]:
+        print(f"{path.name}: +0 keys, not rewritten")
+        continue
+    path.write_text(header + json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"{path.name}: +{added[key]} keys")
 
 if conflicts:

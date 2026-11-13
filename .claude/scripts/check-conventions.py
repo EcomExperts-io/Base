@@ -3,14 +3,16 @@
 
 Usage
 -----
-  check-conventions.py --files <paths...>   report on these working-tree files; never blocks
+  check-conventions.py --files <paths...>   report on these working-tree files; blocks only with --block
   check-conventions.py --staged             pre-commit: added files block, modified files warn
   check-conventions.py --changed            working tree vs HEAD (the Stop hook): new files block
   check-conventions.py --all                every tracked theme file, report only; also sweeps docs/ for orphan pages
-  --block   with --changed or --all, exit 1 on blocking findings      --quiet   print nothing when there is nothing to say
+  --block   with --files, --changed or --all, exit 1 on blocking findings      --quiet   print nothing when there is nothing to say
 
 Notes:
 - A finding blocks only with error severity in a NEW file; modified files are reported, never gated (Base carries legacy).
+- NEW means the same in every mode: the file does not exist on the base branch. The base is the merge-base of HEAD and the
+  trunk (origin's default branch, else development, develop, main, master or staging); with no trunk found, it is HEAD.
 - Two checks catch a 500 on every route that Theme Check does not: a `range` with fewer than three steps, and a `t:`
   key left in a template value.
 - A store adds its own pattern checks in .claude/this-store/checks.json, a list of
@@ -111,6 +113,35 @@ def git(*args):
 
 def repo_root():
     return git("rev-parse", "--show-toplevel").strip()
+
+
+TRUNKS = ("development", "develop", "main", "master", "staging")
+_BASE = []
+
+
+def base_ref():
+    """The commit a file must be absent from to count as new: merge-base of HEAD and the trunk, else HEAD."""
+    if _BASE:
+        return _BASE[0]
+    run = lambda *a: subprocess.run(["git", *a], capture_output=True, text=True)
+    refs = run("for-each-ref", "--format=%(refname)", "refs/remotes/origin", "refs/heads").stdout.split()
+    head = run("symbolic-ref", "-q", "refs/remotes/origin/HEAD").stdout.strip()
+    ordered = ([head] if head else []) + [
+        r for prefix in ("refs/remotes/origin/", "refs/heads/") for t in TRUNKS
+        for r in refs if r.lower() == prefix + t]
+    base = "HEAD"
+    for ref in ordered:
+        mb = run("merge-base", "HEAD", ref)
+        if mb.returncode == 0 and mb.stdout.strip():
+            base = mb.stdout.strip()
+            break
+    _BASE.append(base)
+    return base
+
+
+def is_new(path):
+    """True when the path does not exist on the base branch."""
+    return subprocess.run(["git", "cat-file", "-e", f"{base_ref()}:{path}"], capture_output=True).returncode != 0
 
 
 def is_theme_file(path):
@@ -644,7 +675,7 @@ def scan_shared_section_assets(checked, findings):
 # ---------------------------------------------------------------------------
 # file selection
 # ---------------------------------------------------------------------------
-def file_sets(mode):
+def file_sets(mode, paths=()):
     """Return (new, modified, deleted) as sets of theme paths for the given mode."""
     new, mod, gone = set(), set(), set()
     if mode == "staged":
@@ -664,10 +695,15 @@ def file_sets(mode):
         mod -= new
     elif mode == "all":
         mod = {p for p in git("ls-files").split("\n") if p}
+    elif mode == "files":
+        mod = {p for p in paths if os.path.exists(p)}
     else:
         return set(), set(), set()
-    return ({p for p in new if is_theme_file(p)}, {p for p in mod if is_theme_file(p)},
-            {p for p in gone if is_theme_file(p)})
+    new, mod, gone = ({p for p in s if is_theme_file(p)} for s in (new, mod, gone))
+    if mode != "all":
+        promoted = {p for p in mod if is_new(p)}
+        new, mod = new | promoted, mod - promoted
+    return new, mod, gone
 
 
 def main(argv):
@@ -679,8 +715,8 @@ def main(argv):
     if "--files" in argv:
         paths = [a for a in argv[argv.index("--files") + 1:] if not a.startswith("--")]
         paths = [os.path.normpath(p) for p in paths]
-        new, mod, gone = set(), {p for p in paths if is_theme_file(p) and os.path.exists(p)}, set()
         mode = "files"
+        new, mod, gone = file_sets(mode, paths)
     else:
         mode = next((m for m in ("staged", "changed", "all") if f"--{m}" in argv), None)
         if mode is None:

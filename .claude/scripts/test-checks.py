@@ -555,6 +555,146 @@ with tempfile.TemporaryDirectory() as d:
     case("plugin: no plugin installed exits 0 and names the fallback", r.returncode == 0 and "fallback" in r.stdout, r.stdout)
 
 # ---------------------------------------------------------------------------
+# Theme Check — a checkout inside a `.claude/` folder is still checked, and every run says how many files it checked
+# ---------------------------------------------------------------------------
+patterns = tcs.ignore_patterns(ROOT)
+case("theme-check config: every ignore pattern is anchored to the theme root with a leading `/`",
+     patterns and all(p.startswith("/") for p in patterns), patterns)
+wt = "/r/.claude/worktrees/w"
+case("theme-staged: a theme file in a checkout under `.claude/worktrees/` is not ignored; that checkout's own `.claude/` is",
+     not tcs.is_ignored("sections/a.liquid", wt, patterns) and tcs.is_ignored(".claude/rules/examples/a.liquid", wt, patterns),
+     patterns)
+case("theme-staged: an unanchored `.claude/**` would ignore every file of that checkout",
+     tcs.is_ignored("sections/a.liquid", wt, [".claude/**"]) and not tcs.is_ignored("sections/a.liquid", "/r", [".claude/**"]))
+r = subprocess.run([sys.executable, os.path.join(HERE, "check-theme-staged.py"), "--files", "README.md"], capture_output=True, text=True)
+case("theme-staged: no .liquid or .json file named prints `checked 0 files` and passes",
+     r.returncode == 0 and "checked 0 files" in r.stdout, r.stdout.strip()[:120])
+r = subprocess.run([sys.executable, os.path.join(HERE, "check-theme-staged.py"), "--files", ".claude/rules/examples/section-example.liquid"],
+                   capture_output=True, text=True)
+case("theme-staged: only ignored files named prints `checked 0 files` and names the ignore patterns as the cause",
+     r.returncode == 0 and "checked 0 files" in r.stdout and "ignore pattern" in r.stdout, r.stdout.strip()[:160])
+
+
+# ---------------------------------------------------------------------------
+# A throwaway theme repo carrying this checkout's scripts, hooks and locales
+# ---------------------------------------------------------------------------
+def theme_repo(d):
+    g = fork(d, 1)
+    shutil.copytree(os.path.join(ROOT, ".claude", "scripts"), os.path.join(d, ".claude", "scripts"),
+                    ignore=shutil.ignore_patterns("__pycache__"))
+    shutil.copytree(os.path.join(ROOT, ".claude", "hooks"), os.path.join(d, ".claude", "hooks"))
+    shutil.copytree(os.path.join(ROOT, "locales"), os.path.join(d, "locales"))
+    for sub in ("assets", "sections", "docs/sections"):
+        os.makedirs(os.path.join(d, sub))
+    open(os.path.join(d, "assets", "section-old.css"), "w").write(".old {\n  display: block;\n}\n")
+    g("add", "."); g("commit", "-q", "-m", "[BUILD]: Theme")
+    return g
+
+
+def in_repo(d, script, *args, stdin=None, env=None):
+    cmd = ["sh", script] if script.endswith(".sh") else [sys.executable, script]
+    r = subprocess.run([*cmd, *args], capture_output=True, text=True, cwd=d, input=stdin, env=env or git_env())
+    return r.returncode, r.stdout + r.stderr
+
+
+BAD_CSS = ".x {\n  display: block;\n}\n\n@media screen and (max-width: 700px) {\n  .x {\n    display: none;\n  }\n}\n"
+
+# check-conventions.py — a file absent from the base branch is NEW in every mode
+with tempfile.TemporaryDirectory() as d:
+    d = os.path.realpath(d)
+    g = theme_repo(d)
+    conv_py = os.path.join(".claude", "scripts", "check-conventions.py")
+    g("checkout", "-q", "-b", "feature/x")
+    open(os.path.join(d, "assets", "section-new.css"), "w").write(BAD_CSS)
+    open(os.path.join(d, "assets", "section-old.css"), "w").write(BAD_CSS)
+    rc, out = in_repo(d, conv_py, "--files", "assets/section-new.css", "assets/section-old.css")
+    case("conventions: --files labels an untracked file NEW and a file from the base branch modified",
+         "section-new.css  [NEW]" in out and "section-old.css  [modified" in out and rc == 0, out[:300])
+    rc, out = in_repo(d, conv_py, "--files", "assets/section-new.css", "--block")
+    case("conventions: --files --block exits 1 on an error in a new file", rc == 1 and "1 blocking" in out, (rc, out[-200:]))
+    rc, out = in_repo(d, conv_py, "--files", "assets/section-old.css", "--block")
+    case("conventions: --files --block exits 0 on an error in a file from the base branch", rc == 0 and "0 blocking" in out, (rc, out[-200:]))
+    g("add", "assets/section-new.css"); g("commit", "-q", "-m", "[BUILD]: Add")
+    open(os.path.join(d, "assets", "section-new.css"), "a").write("\n")
+    labels = []
+    for mode in (("--files", "assets/section-new.css"), ("--changed",)):
+        labels.append("section-new.css  [NEW]" in in_repo(d, conv_py, *mode)[1])
+    g("add", "assets/section-new.css")
+    labels.append("section-new.css  [NEW]" in in_repo(d, conv_py, "--staged")[1])
+    case("conventions: a file committed on the branch and edited again is still NEW in --files, --changed and --staged",
+         labels == [True, True, True], labels)
+
+# post-edit-gate.sh — one line on a clean theme file, nothing on any other file
+if shutil.which("sh"):
+    with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as elsewhere:
+        d = os.path.realpath(d)
+        theme_repo(d)
+        open(os.path.join(d, "notes.md"), "w").write("x\n")
+        hook = os.path.join(".claude", "hooks", "post-edit-gate.sh")
+        payload = lambda rel: json.dumps({"tool_input": {"file_path": os.path.join(d, rel)}})
+        rc, out = in_repo(d, hook, stdin=payload("assets/section-old.css"))
+        case("post-edit hook: a clean theme file gets one line with the file, the checks run and `0 findings`",
+             rc == 0 and "assets/section-old.css (conventions): 0 findings." in out and out.count("\n") == 1, out[:200])
+        rc, out = in_repo(d, hook, stdin=payload("notes.md"))
+        case("post-edit hook: a file outside the theme folders prints nothing", rc == 0 and out == "", out[:200])
+        rc, out = in_repo(d, hook, stdin=payload("assets/section-old.css"), env=dict(git_env(), CLAUDE_PROJECT_DIR=elsewhere))
+        case("post-edit hook: the file's own repository is used when CLAUDE_PROJECT_DIR points at another checkout",
+             rc == 0 and "0 findings" in out, out[:200])
+        open(os.path.join(d, "assets", "section-new.css"), "w").write(BAD_CSS)
+        rc, out = in_repo(d, hook, stdin=payload("assets/section-new.css"))
+        case("post-edit hook: a new file with an error is reported as NEW", "[NEW]" in out and "css-max-width-query" in out, out[:300])
+
+# merge-locale-fragments.py — trailing commas in, header and key order kept
+with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as frags:
+    d = os.path.realpath(d)
+    theme_repo(d)
+    header = "/*\n * auto-generated header\n */\n"
+    schema_p = os.path.join(d, "locales", "en.default.schema.json")
+    front_p = os.path.join(d, "locales", "en.default.json")
+    open(schema_p, "w").write(header + '{\n  "zebra": {\n    "b": "has, comma }",\n    "a": "A",\n  },\n  "apple": "x",\n}\n')
+    front_before = open(front_p).read()
+    open(os.path.join(frags, "one.json"), "w").write('{"schema": {"zebra": {"c": "C"}, "mango": {"k": "K",},}, "storefront": {}}')
+    rc, out = in_repo(d, os.path.join(".claude", "scripts", "merge-locale-fragments.py"), frags)
+    after = open(schema_p).read()
+    try:
+        merged = json.loads(after[len(header):])
+    except ValueError:
+        merged = {}
+    case("merge-locale: a locale and a fragment with trailing commas merge without a crash",
+         rc == 0 and merged.get("mango") == {"k": "K"} and merged.get("zebra", {}).get("c") == "C", out[-200:])
+    case("merge-locale: the header is written back unchanged and existing keys keep their order, new keys last",
+         after.startswith(header + "{") and list(merged) == ["zebra", "apple", "mango"] and list(merged.get("zebra", {})) == ["b", "a", "c"]
+         and merged["zebra"]["b"] == "has, comma }", (list(merged), after[:60]))
+    case("merge-locale: a locale file that gains no key is not rewritten", open(front_p).read() == front_before)
+
+# new-section.py — the scaffold passes the checks it sits beside
+with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as frags:
+    d = os.path.realpath(d)
+    theme_repo(d)
+    rc, out = in_repo(d, os.path.join(".claude", "scripts", "new-section.py"), "logo-strip")
+    lines = out.split("\n")
+    try:
+        a = lines.index("    {"); b = lines.index("    }", a)
+        open(os.path.join(frags, "logo-strip.json"), "w").write("\n".join(lines[a:b + 1]))
+    except ValueError:
+        pass
+    in_repo(d, os.path.join(".claude", "scripts", "merge-locale-fragments.py"), frags)
+    made = ["sections/logo-strip.liquid", "assets/section-logo-strip.css", "assets/section-logo-strip.js"]
+    rc1, out1 = in_repo(d, os.path.join(".claude", "scripts", "check-conventions.py"), "--files", *made, "--verbose")
+    rc2, out2 = in_repo(d, os.path.join(".claude", "scripts", "check-section-contract.py"), "--files", made[0])
+    case("new-section: the scaffold, with its locale fragment merged, has 0 convention findings and passes the contract",
+         rc == 0 and "Conventions OK (3 file(s) checked)" in out1 and rc2 == 0, (out[-300:] if rc else out1[:600] + out2[:200]))
+    try:
+        doc = open(os.path.join(d, "docs", "sections", "logo-strip.md")).read()
+        js_out = open(os.path.join(d, made[2])).read()
+    except OSError:
+        doc = js_out = ""
+    case("new-section: the docs page describes mobile padding as its own setting, never as 75% of desktop",
+         "padding_top_mobile" in doc and "75%" not in doc and "its own merchant setting" in doc)
+    case("new-section: the JS defines the class inside the `customElements.get` guard and exports nothing",
+         "export " not in js_out and js_out.index("if (!customElements.get('logo-strip'))") < js_out.index("class LogoStrip"))
+
+# ---------------------------------------------------------------------------
 # the store's own area — a pull and the drift report against a throwaway Base and fork
 # ---------------------------------------------------------------------------
 def put(root, rel, text):
