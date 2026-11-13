@@ -1,0 +1,42 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "collection",
+      "settings": {
+        "products_per_page": 32,
+        "columns_desktop": 5,
+        "color_scheme": "",
+        "show_vendor": true,
+        "show_rating": false,
+        "quick_add": "standard",
+        "enable_swatches": true,
+        "swatch_type": "color",
+        "swatch_trigger": "Color",
+        "enable_infinite_scroll": true,
+        "button_text_color": "#838383",
+        "button_border_color": "#838383",
+        "button_background_color": "#ffffff",
+        "enable_filtering": true,
+        "filter_type": "drawer",
+        "collapse_filters": true,
+        "show_filter_count": true,
+        "enable_sorting": true,
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 32
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
