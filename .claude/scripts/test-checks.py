@@ -643,6 +643,56 @@ if shutil.which("sh"):
         rc, out = in_repo(d, hook, stdin=payload("assets/section-new.css"))
         case("post-edit hook: a new file with an error is reported as NEW", "[NEW]" in out and "css-max-width-query" in out, out[:300])
 
+# merge-locale-fragments.py — trailing commas in, header and key order kept
+with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as frags:
+    d = os.path.realpath(d)
+    theme_repo(d)
+    header = "/*\n * auto-generated header\n */\n"
+    schema_p = os.path.join(d, "locales", "en.default.schema.json")
+    front_p = os.path.join(d, "locales", "en.default.json")
+    open(schema_p, "w").write(header + '{\n  "zebra": {\n    "b": "has, comma }",\n    "a": "A",\n  },\n  "apple": "x",\n}\n')
+    front_before = open(front_p).read()
+    open(os.path.join(frags, "one.json"), "w").write('{"schema": {"zebra": {"c": "C"}, "mango": {"k": "K",},}, "storefront": {}}')
+    rc, out = in_repo(d, os.path.join(".claude", "scripts", "merge-locale-fragments.py"), frags)
+    after = open(schema_p).read()
+    try:
+        merged = json.loads(after[len(header):])
+    except ValueError:
+        merged = {}
+    case("merge-locale: a locale and a fragment with trailing commas merge without a crash",
+         rc == 0 and merged.get("mango") == {"k": "K"} and merged.get("zebra", {}).get("c") == "C", out[-200:])
+    case("merge-locale: the header is written back unchanged and existing keys keep their order, new keys last",
+         after.startswith(header + "{") and list(merged) == ["zebra", "apple", "mango"] and list(merged.get("zebra", {})) == ["b", "a", "c"]
+         and merged["zebra"]["b"] == "has, comma }", (list(merged), after[:60]))
+    case("merge-locale: a locale file that gains no key is not rewritten", open(front_p).read() == front_before)
+
+# new-section.py — the scaffold passes the checks it sits beside
+with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as frags:
+    d = os.path.realpath(d)
+    theme_repo(d)
+    rc, out = in_repo(d, os.path.join(".claude", "scripts", "new-section.py"), "logo-strip")
+    lines = out.split("\n")
+    try:
+        a = lines.index("    {"); b = lines.index("    }", a)
+        open(os.path.join(frags, "logo-strip.json"), "w").write("\n".join(lines[a:b + 1]))
+    except ValueError:
+        pass
+    in_repo(d, os.path.join(".claude", "scripts", "merge-locale-fragments.py"), frags)
+    made = ["sections/logo-strip.liquid", "assets/section-logo-strip.css", "assets/section-logo-strip.js"]
+    rc1, out1 = in_repo(d, os.path.join(".claude", "scripts", "check-conventions.py"), "--files", *made, "--verbose")
+    rc2, out2 = in_repo(d, os.path.join(".claude", "scripts", "check-section-contract.py"), "--files", made[0])
+    case("new-section: the scaffold, with its locale fragment merged, has 0 convention findings and passes the contract",
+         rc == 0 and "Conventions OK (3 file(s) checked)" in out1 and rc2 == 0, (out[-300:] if rc else out1[:600] + out2[:200]))
+    try:
+        doc = open(os.path.join(d, "docs", "sections", "logo-strip.md")).read()
+        js_out = open(os.path.join(d, made[2])).read()
+    except OSError:
+        doc = js_out = ""
+    case("new-section: the docs page describes mobile padding as its own setting, never as 75% of desktop",
+         "padding_top_mobile" in doc and "75%" not in doc and "its own merchant setting" in doc)
+    case("new-section: the JS defines the class inside the `customElements.get` guard and exports nothing",
+         "export " not in js_out and js_out.index("if (!customElements.get('logo-strip'))") < js_out.index("class LogoStrip"))
+
 # ---------------------------------------------------------------------------
 verbose = "--verbose" in sys.argv
 failed = [r for r in RESULTS if not r[1]]
