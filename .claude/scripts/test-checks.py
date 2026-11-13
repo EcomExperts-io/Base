@@ -10,6 +10,7 @@ import glob
 import importlib.util
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -567,6 +568,13 @@ def tool(cwd, script, *args):
     return subprocess.run([sys.executable, os.path.join(HERE, script), *args], capture_output=True, text=True, cwd=cwd, env=git_env())
 
 
+def developer(cwd, *args):
+    """new-incident.py as the developer at their terminal: the answer a subprocess without a terminal cannot give."""
+    code = ("import importlib.util, sys; s = importlib.util.spec_from_file_location('ni', sys.argv[1]); m = importlib.util.module_from_spec(s); "
+            "s.loader.exec_module(m); sys.exit(m.main(sys.argv[2:], developer=True))")
+    return subprocess.run([sys.executable, "-c", code, os.path.join(HERE, "new-incident.py"), *args], capture_output=True, text=True, cwd=cwd, env=git_env())
+
+
 STORE_RULE = ".claude/rules/this-store-breakpoints.md"
 STORE_CHECKS = ".claude/this-store/checks.json"
 HARVEST, COACH, REPORT = ".claude/scripts/harvest.sh", ".claude/agents/shopify-standards-coach.md", ".claude/scripts/learnings-report.py"
@@ -686,6 +694,16 @@ with tempfile.TemporaryDirectory() as d:
          r.returncode == 0 and "1 older learning(s) still open" in r.stdout, r.stdout)
     brief = tool(d, "check-learnings.py", "--brief").stdout
     case("learnings: the session line lists open learnings by title", "1 open of 1 recorded" in brief and "Built with the wrong container" in brief, brief)
+    put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nUse page-width.\n")
+    r = tool(d, "new-incident.py", "--apply", inc_file, "--change", STORE_RULE)
+    case("learnings: --apply refuses a learning the developer has not approved", r.returncode == 1 and "not approved" in r.stdout and "--approve" in r.stdout, r.stdout)
+    r = tool(d, "new-incident.py", "--approve", inc_file); r_no = tool(d, "new-incident.py", "--decline", inc_file, "--reason", "no")
+    case("learnings: with no person at a terminal, neither the yes nor the no can be given, and the developer's command is printed",
+         r.returncode == 1 and r_no.returncode == 1 and "in your own terminal" in r.stdout and "status: open" in open(os.path.join(d, inc_file)).read(), r.stdout)
+    r = developer(d, "--approve", inc_file)
+    case("learnings: the developer's yes marks it approved, and it still fails the gate until applied",
+         r.returncode == 0 and "status: approved" in open(os.path.join(d, inc_file)).read() and gate("--range", f"{base_sha}..HEAD").returncode == 1
+         and "1 open of 1 recorded" in tool(d, "check-learnings.py", "--brief").stdout, r.stdout)
     put(d, ".claude/rules/sections.md", "x\n")
     r = tool(d, "new-incident.py", "--apply", inc_file, "--change", ".claude/rules/sections.md")
     case("learnings: in a client repo --apply refuses a change to a Base file", r.returncode == 1 and "not in the store's own area" in r.stdout, r.stdout)
@@ -708,12 +726,19 @@ with tempfile.TemporaryDirectory() as d:
          r.returncode == 1 and "old-container" in r.stdout and STORE_RULE in r.stdout, r.stdout)
     tool(d, "new-incident.py", "--slug", "container-too-strict", "--title", "The container check was wrong for landing pages", "--date", "2026-01-03")
     inc2 = "docs/ai-workflow/incidents/2026-01-03-container-too-strict.md"
+    developer(d, "--approve", inc2)
     tool(d, "new-incident.py", "--apply", inc2, "--change", STORE_CHECKS, "--changes-existing", "landing pages use a full-bleed wrapper")
     g("add", "."); g("commit", "-q", "-m", "[LEARN]: declare")
     r = gate("--range", f"{applied_sha}..HEAD")
     case("learnings: the same change passes once a learning in the diff says why", r.returncode == 0, r.stdout)
     tool(d, "new-incident.py", "--slug", "one-off", "--title", "A one-off", "--date", "2026-01-04")
-    r = tool(d, "new-incident.py", "--decline", "docs/ai-workflow/incidents/2026-01-04-one-off.md", "--reason", "will not recur")
+    one_off = "docs/ai-workflow/incidents/2026-01-04-one-off.md"
+    g("add", "."); g("commit", "-q", "-m", "one-off"); before = g("rev-parse", "HEAD").stdout.strip()
+    g("rm", "-q", one_off); g("commit", "-q", "-m", "tidy")
+    r = gate("--range", f"{before}..HEAD")
+    case("learnings: deleting a learning that was still open fails the gate and names it", r.returncode == 1 and one_off in r.stdout and "deleted while still unanswered" in r.stdout, r.stdout)
+    g("revert", "--no-edit", "HEAD")
+    r = developer(d, "--decline", one_off, "--reason", "will not recur")
     case("learnings: a declined learning is closed with its reason",
          r.returncode == 0 and 'declined_reason: "will not recur"' in open(os.path.join(d, "docs/ai-workflow/incidents/2026-01-04-one-off.md")).read()
          and "0 open of 3 recorded" in tool(d, "check-learnings.py", "--brief").stdout, r.stdout)
@@ -730,10 +755,18 @@ with tempfile.TemporaryDirectory() as d:
     www(d, "--qa-round", "4")
     r4 = L("--pending")
     case("signals: a QA round with open issues raises one", "[qa] a QA round came back with 4 open issue(s)" in r4.stdout, r4.stdout)
-    time.sleep(0.05)
-    tool(d, "new-incident.py", "--slug", "qa-misread", "--title", "Misread the QA note", "--date", "2026-01-05")
-    r5 = L("--pending", "--hold")
-    case("signals: a learning recorded after a signal answers it", r5.returncode == 0 and not r5.stdout, r5.stdout)
+    L("--signal", "shopify", "a Shopify command failed: shopify theme check")
+    qa_id = re.search(r"\[qa\].*\(signal (\w+)\)", r4.stdout).group(1)
+    tool(d, "new-incident.py", "--slug", "unrelated", "--title", "Something else", "--date", "2026-01-05")
+    r5 = L("--pending")
+    case("signals: a learning that names no signal answers none", "[qa]" in r5.stdout and "[shopify]" in r5.stdout, r5.stdout)
+    r = tool(d, "new-incident.py", "--slug", "qa-misread", "--title", "Misread the QA note", "--date", "2026-01-05", "--signal", qa_id)
+    r6 = L("--pending")
+    case("signals: a learning answers the signal it names and leaves the other waiting",
+         r.returncode == 0 and "[qa]" not in r6.stdout and "[shopify]" in r6.stdout, r.stdout + r6.stdout)
+    r = tool(d, "new-incident.py", "--slug", "bad-id", "--title", "x", "--date", "2026-01-05", "--signal", "zzzzzz")
+    case("signals: naming a signal that is not waiting is an error that lists the ones that are", r.returncode == 2 and "no unanswered signal" in r.stdout, r.stdout)
+    L("--dismiss", "rehearsed")
     tool(d, "preflight-status.py", "--record", "1", "2", "0")
     case("signals: GitBot findings that needed a fix raise one", "[gitbot] GitBot reported 3 finding(s)" in L("--pending").stdout, L("--pending").stdout)
     hook = lambda: subprocess.run([sys.executable, os.path.join(ROOT, ".claude", "hooks", "stop-gate.py")], input="{}", capture_output=True, text=True,
