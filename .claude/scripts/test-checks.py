@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True).stdout.strip()
@@ -712,6 +713,238 @@ with tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as frags:
          "padding_top_mobile" in doc and "75%" not in doc and "its own merchant setting" in doc)
     case("new-section: the JS defines the class inside the `customElements.get` guard and exports nothing",
          "export " not in js_out and js_out.index("if (!customElements.get('logo-strip'))") < js_out.index("class LogoStrip"))
+
+# ---------------------------------------------------------------------------
+# the store's own area — a pull and the drift report against a throwaway Base and fork
+# ---------------------------------------------------------------------------
+def put(root, rel, text):
+    path = os.path.join(root, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    open(path, "w", encoding="utf-8").write(text)
+
+
+def tool(cwd, script, *args):
+    return subprocess.run([sys.executable, os.path.join(HERE, script), *args], capture_output=True, text=True, cwd=cwd, env=git_env())
+
+
+STORE_RULE = ".claude/rules/this-store-breakpoints.md"
+STORE_CHECKS = ".claude/this-store/checks.json"
+HARVEST, COACH, REPORT = ".claude/scripts/harvest.sh", ".claude/agents/shopify-standards-coach.md", ".claude/scripts/learnings-report.py"
+
+with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as d:
+    gb = fork(base, 1)
+    put(base, "CLAUDE.md", "# Base\n"); put(base, ".claude/rules/sections.md", "v1\n"); put(base, ".claude/rules/snippets.md", "v1\n")
+    put(base, HARVEST, "shipped\n"); put(base, COACH, "shipped\n"); put(base, REPORT, "base only\n")
+    gb("add", "."); gb("commit", "-q", "-m", "tooling v1")
+    sha1 = gb("rev-parse", "HEAD").stdout.strip()
+    g = fork(d, 1)
+    put(d, "CLAUDE.md", "# Base\n"); put(d, ".claude/rules/sections.md", "v1\n"); put(d, ".claude/rules/snippets.md", "v1\n")
+    put(d, ".base-version", json.dumps({"sha": sha1, "ref": "base/development", "date": "2026-01-01"}))
+    put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nthe store's own line\n")
+    put(d, STORE_CHECKS, "[]\n")
+    put(d, HARVEST, "shipped\n"); put(d, COACH, "shipped\nthe store's edit\n"); put(d, REPORT, "base only\n")
+    g("add", "."); g("commit", "-q", "-m", "fork")
+    put(base, ".claude/rules/sections.md", "v2\n"); put(base, STORE_RULE, "BASE WROTE THIS\n")
+    gb("rm", "-q", HARVEST, COACH)
+    gb("add", "."); gb("commit", "-q", "-m", "tooling v2")
+    r = tool(d, "pull-base-tooling.py", "--base-path", base)
+    case("pull: a retired file and a Base-only file the store never edited are removed; an edited one is kept and listed",
+         not os.path.exists(os.path.join(d, HARVEST)) and not os.path.exists(os.path.join(d, REPORT))
+         and os.path.exists(os.path.join(d, COACH)) and "KEEP — retired in Base, edited here (1)" in r.stdout, r.stdout[-600:])
+    put(d, HARVEST, "shipped\n")
+    r2 = tool(d, "pull-base-tooling.py", "--base-path", base)
+    case("pull: an untouched retired file still goes when the stamp already sits past the commit that removed it",
+         not os.path.exists(os.path.join(d, HARVEST)) and "RETIRE (1)" in r2.stdout, r2.stdout[-600:])
+    case("store area: a pull updates the Base rule the store never touched",
+         open(os.path.join(d, ".claude/rules/sections.md")).read() == "v2\n", r.stdout[-400:] + r.stderr[-200:])
+    case("store area: a pull never writes a store-owned file, even one Base carries by accident",
+         "the store's own line" in open(os.path.join(d, STORE_RULE)).read()
+         and not os.path.exists(os.path.join(d, ".claude/.cache/base-new", STORE_RULE)), r.stdout[-400:])
+    case("store area: the pull report lists the store's files as store-owned, not fork-only",
+         "store-owned (2)" in r.stdout and "fork-only" not in r.stdout, r.stdout[-400:])
+    put(d, ".claude/rules/snippets.md", "v1\nthis store uses 769px\n")
+    j = json.loads(tool(d, "check-tooling-drift.py", "--base-path", base, "--no-fetch", "--json").stdout or "{}")
+    case("drift: a Base file the store edited is listed as edited here; the store's own files are counted apart",
+         [e[0] for e in j.get("edited_here", [])] == [".claude/rules/snippets.md"]
+         and j.get("store_owned") == [STORE_RULE, STORE_CHECKS] and "harvest" not in j, j)
+    brief = tool(d, "check-tooling-drift.py", "--base-path", base, "--no-fetch", "--brief").stdout
+    case("drift: the session line says to move the edit to the store area and never says harvest",
+         "1 Base file(s) edited here (move to the store area)" in brief and "2 store-owned" in brief and "harvest" not in brief.lower(), brief)
+
+with tempfile.TemporaryDirectory() as d:
+    put(d, "rules/this-store-layout.md", "x\n")
+    good = {"id": "old-container", "files": "sections/*.liquid", "pattern": r"class=\"[^\"]*\bcontainer\b",
+            "severity": "error", "why": "this store's container is page-width", "rule": "this-store-layout.md"}
+    put(d, "checks.json", json.dumps([
+        good,
+        dict(good, id="bad-regex", pattern="(unclosed"),
+        dict(good, id="no-why", why=""),
+        dict(good, id="no-rule", rule="this-store-missing.md"),
+        dict(good, id="base-rule", rule="sections.md"),
+        dict(good, id="matches-everything", pattern=".*"),
+        dict(good, id="old-container"),
+    ]))
+    checks, problems = conv.load_store_checks(os.path.join(d, "checks.json"), os.path.join(d, "rules"))
+    case("store checks: a usable entry loads; each unusable one is named and skipped without switching the rest off",
+         [c[0] for c in checks] == ["store:old-container"] and len(problems) == 6
+         and all(k in " ".join(problems) for k in ("bad-regex", "no-why", "no-rule", "base-rule", "matches-everything", "used twice")), problems)
+    f = []
+    conv.scan_store_checks("sections/hero.liquid", '<div>\n<div class="hero container">\n', checks, f)
+    g2 = []
+    conv.scan_store_checks("snippets/card.liquid", '<div class="container">', checks, g2)
+    case("store checks: a match is a finding on its line, with the store's severity, only in the files the entry names",
+         [(x.rule, x.line, x.severity) for x in f] == [("store:old-container", 2, "error")] and not g2, (rules(f), rules(g2)))
+    put(d, "broken.json", "{not json")
+    case("store checks: a file that is not JSON is one named problem, not a crash",
+         conv.load_store_checks(os.path.join(d, "broken.json"), d) == ([], [conv.load_store_checks(os.path.join(d, "broken.json"), d)[1][0]])
+         and "not valid JSON" in conv.load_store_checks(os.path.join(d, "broken.json"), d)[1][0])
+    case("store checks: no file means no checks and no problems", conv.load_store_checks(os.path.join(d, "absent.json"), d) == ([], []))
+
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 1)
+    put(d, ".claude/rules/this-store-layout.md", "x\n")
+    put(d, ".claude/this-store/checks.json", json.dumps([{"id": "old-container", "files": ["sections/*.liquid"], "pattern": "container",
+        "severity": "error", "why": "this store's container is page-width", "rule": "this-store-layout.md"}]))
+    g("add", "."); g("commit", "-q", "-m", "store check")
+    put(d, "sections/hero.liquid", '<div class="container"></div>\n')
+    r = tool(d, "check-conventions.py", "--changed", "--block", "--quiet")
+    case("store checks: an error in a new file blocks the stop gate's run and names the store rule",
+         r.returncode == 1 and "store:old-container" in r.stdout and ".claude/rules/this-store-layout.md" in r.stdout, r.stdout[-300:])
+    put(d, ".claude/this-store/checks.json", "[{\"id\": \"x\"}]")
+    r = tool(d, "check-conventions.py", "--changed", "--block", "--quiet")
+    case("store checks: a check that cannot run fails a blocking run and says which", r.returncode == 1 and "cannot run" in r.stdout and "`x`" in r.stdout, r.stdout[-300:])
+    r = tool(d, "check-conventions.py", "--files", "sections/hero.liquid", "--quiet")
+    case("store checks: the per-edit run reports a broken check and never blocks", r.returncode == 0 and "cannot run" in r.stdout, r.stdout[-300:])
+
+# ---------------------------------------------------------------------------
+# learnings — recorded, answered, and a change to what exists is declared
+# ---------------------------------------------------------------------------
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 1)
+    base_sha = g("rev-parse", "HEAD").stdout.strip()
+    r = tool(d, "new-incident.py", "--slug", "wrong-container", "--title", "Built with the wrong container", "--scope", "client",
+             "--surfaced-by", "qa", "--should-have-caught", ".claude/rules/sections.md", "--date", "2026-01-02")
+    inc_file = "docs/ai-workflow/incidents/2026-01-02-wrong-container.md"
+    case("learnings: a new record is open and carries the proposed-change section",
+         r.returncode == 0 and "status: open" in open(os.path.join(d, inc_file)).read()
+         and "## Proposed change to this repo's setup" in open(os.path.join(d, inc_file)).read(), r.stdout + r.stderr)
+    g("add", "."); g("commit", "-q", "-m", "record")
+    gate = lambda *a: tool(d, "check-learnings.py", "--gate", *a)
+    r = gate("--range", f"{base_sha}..HEAD")
+    case("learnings: an open learning fails the pull-request gate and is named", r.returncode == 1 and inc_file in r.stdout, r.stdout)
+    with tempfile.TemporaryDirectory() as old:
+        shutil.copytree(HERE, os.path.join(old, "scripts"))
+        put(old, "scripts/check-conventions.py", "# an edited copy from before store checks\n")
+        put(d, STORE_CHECKS, "[]\n")
+        r = subprocess.run([sys.executable, os.path.join(old, "scripts", "check-learnings.py"), "--gate", "--range", "HEAD..HEAD"],
+                           capture_output=True, text=True, cwd=d, env=git_env())
+        os.remove(os.path.join(d, STORE_CHECKS))
+    case("learnings: store checks beside a checker too old to run them fail the gate and say so",
+         r.returncode == 1 and "is NOT being run" in r.stdout, r.stdout + r.stderr)
+    r = gate("--range", "HEAD..HEAD")
+    case("learnings: a learning that was open before the change is listed and does not fail the gate",
+         r.returncode == 0 and "1 older learning(s) still open" in r.stdout, r.stdout)
+    brief = tool(d, "check-learnings.py", "--brief").stdout
+    case("learnings: the session line lists open learnings by title", "1 open of 1 recorded" in brief and "Built with the wrong container" in brief, brief)
+    put(d, ".claude/rules/sections.md", "x\n")
+    r = tool(d, "new-incident.py", "--apply", inc_file, "--change", ".claude/rules/sections.md")
+    case("learnings: in a client repo --apply refuses a change to a Base file", r.returncode == 1 and "not in the store's own area" in r.stdout, r.stdout)
+    put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nUse page-width.\n")
+    put(d, STORE_CHECKS, json.dumps([{"id": "old-container", "files": "sections/*.liquid", "pattern": "container", "severity": "error", "why": "w", "rule": "this-store-breakpoints.md"}]))
+    r = tool(d, "new-incident.py", "--apply", inc_file, "--change", f"{STORE_RULE},{STORE_CHECKS}")
+    text = open(os.path.join(d, inc_file)).read()
+    case("learnings: --apply closes the record with the files changed and who approved",
+         r.returncode == 0 and "status: applied" in text and f"change: {STORE_RULE}, {STORE_CHECKS}" in text and 'approved_by: "t"' in text
+         and "## What happened" in text, text[:400])
+    g("add", "."); g("commit", "-q", "-m", "[LEARN]: container")
+    applied_sha = g("rev-parse", "HEAD").stdout.strip()
+    r = gate("--range", f"{base_sha}..HEAD")
+    case("learnings: an applied learning that only adds passes the gate", r.returncode == 0, r.stdout)
+    put(d, STORE_CHECKS, json.dumps([{"id": "old-container", "files": "sections/*.liquid", "pattern": "container", "severity": "warn", "why": "w", "rule": "this-store-breakpoints.md"}]))
+    put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nUse whatever container.\n")
+    g("add", "."); g("commit", "-q", "-m", "loosen")
+    r = gate("--range", f"{applied_sha}..HEAD")
+    case("learnings: weakening a check or rewriting a store rule with no reason fails the gate and names both",
+         r.returncode == 1 and "old-container" in r.stdout and STORE_RULE in r.stdout, r.stdout)
+    tool(d, "new-incident.py", "--slug", "container-too-strict", "--title", "The container check was wrong for landing pages", "--date", "2026-01-03")
+    inc2 = "docs/ai-workflow/incidents/2026-01-03-container-too-strict.md"
+    tool(d, "new-incident.py", "--apply", inc2, "--change", STORE_CHECKS, "--changes-existing", "landing pages use a full-bleed wrapper")
+    g("add", "."); g("commit", "-q", "-m", "[LEARN]: declare")
+    r = gate("--range", f"{applied_sha}..HEAD")
+    case("learnings: the same change passes once a learning in the diff says why", r.returncode == 0, r.stdout)
+    tool(d, "new-incident.py", "--slug", "one-off", "--title", "A one-off", "--date", "2026-01-04")
+    r = tool(d, "new-incident.py", "--decline", "docs/ai-workflow/incidents/2026-01-04-one-off.md", "--reason", "will not recur")
+    case("learnings: a declined learning is closed with its reason",
+         r.returncode == 0 and 'declined_reason: "will not recur"' in open(os.path.join(d, "docs/ai-workflow/incidents/2026-01-04-one-off.md")).read()
+         and "0 open of 3 recorded" in tool(d, "check-learnings.py", "--brief").stdout, r.stdout)
+
+with tempfile.TemporaryDirectory() as d:
+    g = fork(d, 1)
+    L = lambda *a: tool(d, "check-learnings.py", *a)
+    L("--signal", "shopify", "a Shopify command failed: shopify theme push"); L("--signal", "shopify", "a Shopify command failed: shopify theme push")
+    r1 = L("--pending", "--hold"); r2 = L("--pending", "--hold")
+    case("signals: the same signal is raised once, holds the turn the first time it is shown and reports after that",
+         r1.returncode == 3 and r1.stdout.count("[shopify]") == 1 and r2.returncode == 0 and "[shopify]" in r2.stdout, (r1.returncode, r2.returncode, r1.stdout))
+    r = L("--dismiss", "a typo in the command"); r3 = L("--pending", "--hold")
+    case("signals: a dismissal with a reason answers it", "1 signal(s) dismissed" in r.stdout and r3.returncode == 0 and not r3.stdout, r3.stdout)
+    www(d, "--qa-round", "4")
+    r4 = L("--pending")
+    case("signals: a QA round with open issues raises one", "[qa] a QA round came back with 4 open issue(s)" in r4.stdout, r4.stdout)
+    time.sleep(0.05)
+    tool(d, "new-incident.py", "--slug", "qa-misread", "--title", "Misread the QA note", "--date", "2026-01-05")
+    r5 = L("--pending", "--hold")
+    case("signals: a learning recorded after a signal answers it", r5.returncode == 0 and not r5.stdout, r5.stdout)
+    tool(d, "preflight-status.py", "--record", "1", "2", "0")
+    case("signals: GitBot findings that needed a fix raise one", "[gitbot] GitBot reported 3 finding(s)" in L("--pending").stdout, L("--pending").stdout)
+    hook = lambda: subprocess.run([sys.executable, os.path.join(ROOT, ".claude", "hooks", "stop-gate.py")], input="{}", capture_output=True, text=True,
+                                  cwd=d, env=dict(git_env(), CLAUDE_PROJECT_DIR=d))
+    os.makedirs(os.path.join(d, ".claude/scripts"))
+    for n in ("check-learnings.py", "new-incident.py", "pull_base_tooling_lib.py"):
+        shutil.copy(os.path.join(HERE, n), os.path.join(d, ".claude/scripts", n))
+    h1 = hook(); h2 = hook()
+    case("stop gate: an unanswered signal holds the turn once with what to do, then is a report",
+         h1.returncode == 2 and "/record-incident" in h1.stderr and "--dismiss" in h1.stderr and h2.returncode == 0 and "systemMessage" in h2.stdout,
+         (h1.returncode, h1.stderr[:200], h2.returncode, h2.stdout[:200]))
+
+with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as stores:
+    gb = fork(base, 1); gb("remote", "set-url", "origin", "git@github.com:EcomExperts-io/Base.git")
+    shutil.copy(os.path.join(ROOT, ".gitignore"), os.path.join(base, ".gitignore")); gb("add", "."); gb("commit", "-q", "-m", "ignore")
+    for name, scope in (("store-a", "generic"), ("store-b", "client")):
+        sd = os.path.join(stores, name); os.makedirs(sd); fork(sd, 1)
+        tool(sd, "new-incident.py", "--slug", "trap", "--title", f"A trap in {name}", "--scope", scope, "--date", "2026-01-06")
+    os.makedirs(os.path.join(stores, "store-c")); fork(os.path.join(stores, "store-c"), 1)
+    R = lambda *a: tool(base, "learnings-report.py", "--path", stores, *a)
+    out = R().stdout
+    case("report: lists the generic learning from one store and not the store-only one from another",
+         "store-a/2026-01-06-trap.md" in out and "A trap in store-a" in out and "store-b" not in out
+         and "3 repo(s) read, 2 with learnings; 1 generic learning(s) listed" in out, out)
+    R("--mark", "store-a/2026-01-06-trap.md", "taken")
+    out2 = R().stdout
+    case("report: a decided learning stops being listed, and the decision is kept outside git",
+         "store-a/" not in out2 and "1 already decided" in out2 and "[taken]" in R("--all").stdout
+         and not gb("status", "--porcelain").stdout.strip(), out2 + gb("status", "--porcelain").stdout)
+    r = tool(os.path.join(stores, "store-a"), "learnings-report.py", "--path", stores)
+    case("report: refuses to run in a store repo", r.returncode == 1 and "runs from Base" in r.stdout, r.stdout)
+lib = load("pull_base_tooling_lib")
+case("pull: the report is Base's own and never part of what a store pulls; harvest is retired from stores",
+     not lib.is_tooling(".claude/scripts/learnings-report.py") and lib.is_tooling(".claude/scripts/check-learnings.py")
+     and lib.RETIRED.get(".claude/skills/harvest/SKILL.md", 0) is None and lib.RETIRED.get(".claude/scripts/harvest.sh", 0) is None)
+
+links = load("check-rule-links")
+case("rule links: a path in the store's own area is not a broken link in Base; a missing Base path still is",
+     links.resolve(".claude/this-store/checks.json", "CLAUDE.md") is None
+     and links.resolve(".claude/rules/this-store-layout.md", "CLAUDE.md") is None
+     and links.resolve(".claude/rules/not-there.md", "CLAUDE.md") == ".claude/rules/not-there.md")
+
+store_rules = aic.load_rules()
+store_rules["this-store-a"] = {"path": ".claude/rules/this-store-a.md", "text": "", "fm": "description: x", "body": "", "paths": None, "lines": 5}
+store_rules["this-store-b"] = {"path": ".claude/rules/this-store-b.md", "text": "", "fm": "description: x\npaths:\n  - x", "body": "", "paths": ["sections/**"], "lines": 5000}
+sp, sn = [], []
+aic.check(store_rules, sp, sn)
+case("ai-config: a store rule with no paths is refused; a scoped one is outside CLAUDE.md's inventory and Base's injection caps",
+     len(sp) == 1 and "this-store-a.md: a store rule with no `paths:`" in sp[0], sp)
+case("ai-config: the store's own rules are noted once they pass the line count",
+     any("the store's own rules are 5005 lines" in n for n in sn), sn)
 
 # ---------------------------------------------------------------------------
 verbose = "--verbose" in sys.argv

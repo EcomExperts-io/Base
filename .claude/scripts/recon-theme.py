@@ -339,7 +339,7 @@ def render(d):
     w(f"Measured by `recon-theme.py` on {d['date']} at `{d['head']}`"
       + (f", against Base `{d['base']['sha']}` ({d['base']['kind']}: `{d['base']['where']}`)" if d["base"]["sha"] else ", with no Base to compare against") + ".")
     w("")
-    w("Numbers first; judgment in `/recon-theme`. Where this theme's convention and Base's rule disagree, this theme's wins here — half the theme already uses it. Record the measured values in this repo's `.claude/rules/sections.md` and `snippets.md`, not Base's.")
+    w("Numbers first; judgment in `/recon-theme`. Where this theme's convention and Base's rule disagree, this theme's wins here — half the theme already uses it. Record the measured values in this repo's `.claude/rules/this-store-measurements.md`, never in a file Base ships.")
     w("")
     if d.get("lineage"):
         w("## Lineage against Base")

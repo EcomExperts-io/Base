@@ -61,7 +61,14 @@ if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-conventions.py --staged || FAILED=1
 fi
 
-# --- 8. The checks check themselves ------------------------------------------
+# --- 8. Learnings: printed here, gated on the pull request ---------------------
+# An open learning waits for the developer's yes or no, which may come after this commit; the review workflow is
+# where it blocks. The same goes for a change to an existing store rule or check that no learning explains.
+if command -v python3 >/dev/null 2>&1; then
+  python3 .claude/scripts/check-learnings.py --gate --staged || true
+fi
+
+# --- 9. The checks check themselves ------------------------------------------
 # One fixture per promise a gate script makes.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/test-checks.py || FAILED=1

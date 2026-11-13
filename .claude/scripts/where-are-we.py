@@ -28,6 +28,8 @@ MAPS = ("docs/ai-workflow/reference-map.md", "docs/ai-workflow/figma-frame-map.m
 QA_BRANCH = re.compile(r"(qa|qi|fix|issue|bug|hotfix|reopen|correction)", re.I)
 TRUNKS = {"main", "master", "develop", "development", "staging"}
 
+LEARNINGS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "check-learnings.py")
+
 
 def git(*args):
     r = subprocess.run(["git", *args], capture_output=True, text=True)
@@ -114,7 +116,7 @@ def signals():
 
 def verdict(s):
     if s["is_base"]:
-        return "base", "this is Base itself, not a client rebuild", "tooling work: the rules, checks and skills; `/record-incident` and `/harvest` land here"
+        return "base", "this is Base itself, not a client rebuild", "tooling work: the rules, checks and skills; `/record-incident` lands here, `learnings-report.py` reads the stores"
     fix_ratio = s["recent_fix"] / s["recent_commits"] if s["recent_commits"] else 0
     built = s["verify_reports"]
     rows = s["map_rows"]
@@ -178,6 +180,9 @@ def main(argv):
         d = load_progress()
         d.setdefault("qa_rounds", []).append({"open": n, "date": datetime.date.today().isoformat(), "branch": git("branch", "--show-current")})
         save_progress(d)
+        if n and os.path.isfile(LEARNINGS):
+            subprocess.run([sys.executable, LEARNINGS, "--signal", "qa",
+                            f"a QA round came back with {n} open issue(s) on {git('branch', '--show-current')}"], capture_output=True)
         print(f"recorded: QA round with {n} open issue(s) — commit {PROGRESS} with the round's fixes")
         return 0
     s = signals()

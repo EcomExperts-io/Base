@@ -3,9 +3,11 @@
 
 Blocks (exit 2):  a new section missing the settings contract; a convention error in a NEW file; invalid JSON in
                   templates/locales/config; a Theme Check error in any file changed this session.
+Blocks once:      something a learning may come from (a blocked turn, a failed Shopify command, a QA round, GitBot
+                  findings) that has been neither learned from nor dismissed. Shown again as a report after that.
 Reports (JSON):   convention warnings in modified files; a Theme Check that could not run or checked 0 files;
                   section or snippet work with no newer verify report; a client branch whose GitBot findings have not
-                  been read since its last commit.
+                  been read since its last commit; learnings still open.
 
 Notes:
 - For the section contract, "new" means untracked or added since HEAD. For conventions, "new" means absent from the
@@ -17,6 +19,7 @@ Notes:
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -59,6 +62,29 @@ def cache_key(paths):
     return h.hexdigest()
 
 
+LEARNINGS = ".claude/scripts/check-learnings.py"
+RULE_ID = re.compile(r"^\s+(?:error|warn)\s+:\d+\s+([a-z0-9:-]+)", re.M)
+
+
+def learning_loop(py, advisory=""):
+    """Exit code for the turn, after the mechanical gate has passed or had nothing to check: 2 the first time an
+    unanswered signal is shown, 0 after that with the signals and the open learnings as a report."""
+    if not os.path.isfile(LEARNINGS):
+        if advisory:
+            print(json.dumps({"systemMessage": advisory[:3000]}))
+        return 0
+    rc, pending = run([py, LEARNINGS, "--pending", "--hold"], timeout=20)
+    if rc == 3:
+        sys.stderr.write("Base stop gate — " + pending.strip()[:3000] + "\n")
+        return 2
+    _, brief = run([py, LEARNINGS, "--brief"], timeout=20)
+    notes = [t.strip() for t in (pending, brief if "learnings: 0 open" not in brief else "") if t.strip()]
+    parts = ([advisory] if advisory else []) + (["Base learning loop:\n" + "\n".join(notes)] if notes else [])
+    if parts:
+        print(json.dumps({"systemMessage": "\n\n".join(parts)[:4000]}))
+    return 0
+
+
 def main():
     try:
         payload = json.load(sys.stdin)
@@ -68,21 +94,21 @@ def main():
     if not root:
         return 0
     os.chdir(root)
+    py = sys.executable
 
     new, mod = changed()
     every = new | mod
     if not every:
-        return 0
+        return learning_loop(py)
 
     key = cache_key(every)
     try:
         cached = json.load(open(CACHE))
         if cached.get("key") == key and cached.get("result") == "pass":
-            return 0
+            return learning_loop(py)
     except (OSError, json.JSONDecodeError):
         pass
 
-    py = sys.executable
     blockers, warnings = [], []
 
     new_sections = sorted(p for p in new if p.startswith("sections/") and p.endswith(".liquid"))
@@ -128,6 +154,9 @@ def main():
     json.dump({"key": key, "result": "fail" if blockers else "pass"}, open(CACHE, "w"))
 
     if blockers:
+        ids = sorted(set(RULE_ID.findall("\n".join(blockers))))
+        if os.path.isfile(LEARNINGS):
+            run([py, LEARNINGS, "--signal", "gate", "the stop gate blocked a turn on: " + (", ".join(ids) if ids else "a failing check")], timeout=20)
         sys.stderr.write(
             "Base stop gate: the turn cannot end while these fail. Fix them, then finish.\n"
             "(If a finding is wrong for this theme, tell the user which rule and why —\n"
@@ -136,9 +165,7 @@ def main():
         )
         return 2
 
-    if warnings:
-        print(json.dumps({"systemMessage": "Base stop gate — advisory only:\n" + "\n\n".join(warnings)[:3000]}))
-    return 0
+    return learning_loop(py, "Base stop gate — advisory only:\n" + "\n\n".join(warnings)[:3000] if warnings else "")
 
 
 if __name__ == "__main__":

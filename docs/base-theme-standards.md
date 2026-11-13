@@ -186,9 +186,9 @@ template for predictive results; a live region inside the swapped region;
 | `CollectionCarousel` and `CollectionInfo` in one file | A named exception: the carousel stays its own registered element so it survives the grid's innerHTML swap. Not a licence for multi-class section files. |
 | Is the search page the collection pattern? | Yes, down to the copied schema name. |
 | Keep the Cursor mirror? | Yes until the team's move to Claude Code is complete; it is generated, so it costs nothing to keep. |
-| Where does a mistake get recorded? | `/record-incident`, in the repo where it happened, committed at the moment it happens. Incidents stay there; the rules they produce travel. |
+| Where does a mistake get recorded? | `/record-incident`, in the repo where it happened, at the moment it happens: recorded, proposed to the developer, applied in that repo's own setup on a yes. |
 | In what order is a store rebuilt? | By dependency: recon → foundations → commerce path → chrome → shared components → transactional templates → homepage and content → long tail (`rebuild-playbook.md`). |
-| How does a fork receive tooling and send learnings back without shared history? | `base-link.sh` adds Base as a remote and worktree; `pull-base-tooling.py` overlays three-way against a stamp; `/harvest` pushes from the worktree and opens the Base PR. |
+| How does a fork receive tooling, and where do its learnings go? | `base-link.sh` adds Base as a remote and worktree; `pull-base-tooling.py` overlays three-way against a stamp. Learnings stay in the store's own area (`this-store-*` rules and checks); Base's maintainer reads the generic ones with `learnings-report.py`. |
 | Mobile padding: a multiple of desktop, or its own setting? | Its own setting. Measured ratios run from 0.43 to 1.70 and cross 1.0, so a constant is the wrong shape and a conditional defers the judgment. Four padding settings on every new section. |
 
 ## 5. Open

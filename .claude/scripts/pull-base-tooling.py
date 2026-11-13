@@ -5,6 +5,8 @@ Notes:
 - Per file: missing in the fork -> ADD; untouched since the stamp -> UPDATE; edited in the fork -> KEEP.
 - A KEEP where Base also changed (or with no stamp) saves Base's copy under .claude/.cache/base-new/; --force overwrites.
 - What is tooling is defined in pull_base_tooling_lib.py; fork-only files under those paths are listed, never removed.
+- A retired or Base-only file is removed when it still equals a version Base once shipped; an edited one is kept and listed.
+- The store's own area (.claude/rules/this-store-*.md, .claude/this-store/, .claude/skills/this-store-*/) is never read from Base or written.
 - The CI workflow is special: a fork gets the short caller of Base's reusable workflow, never a copy of the steps.
 - An unknown argument stops the script before anything is read or written; run base-link.sh first if `base` is missing.
 
@@ -22,7 +24,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pull_base_tooling_lib import RETIRED, STAMP, Source, check_flags, is_tooling, load_stamp, sh  # noqa: E402
+from pull_base_tooling_lib import BASE_ONLY, RETIRED, STAMP, Source, check_flags, is_store_owned, is_tooling, load_stamp, sh  # noqa: E402
 
 KNOWN_FLAGS = {"--ref": True, "--base-path": True, "--dry-run": False, "--force": False, "--stamp-only": False}
 USAGE = __doc__.split("Usage\n-----\n", 1)[1]
@@ -127,13 +129,12 @@ def main(argv):
                 f.write(new)
 
     retired, retired_kept = [], []
-    for old_path, new_path in RETIRED.items():
+    for old_path, new_path in list(RETIRED.items()) + [(p, None) for p in BASE_ONLY]:
         cur = read_local(old_path)
         if cur is None:
             continue
-        old = source.read(old_path, old_sha) if old_sha else None
         label = f"{old_path} -> {new_path or '(removed)'}"
-        if old is not None and cur == old:
+        if source.ever_shipped(old_path, cur):
             retired.append(label)
             if not dry:
                 os.remove(old_path)
@@ -145,8 +146,9 @@ def main(argv):
             retired_kept.append(label)
 
     base_set = set(source.files())
-    fork_only = [p for p in sh("git", "ls-files").split("\n")
-                 if p and is_tooling(p) and p not in base_set and p not in RETIRED]
+    tracked = [p for p in sh("git", "ls-files").split("\n") if p]
+    fork_only = [p for p in tracked if is_tooling(p) and p not in base_set and p not in RETIRED]
+    store_owned = [p for p in tracked if is_store_owned(p)]
 
     if not dry:
         write_stamp(source)
@@ -171,16 +173,19 @@ def main(argv):
     block("KEEP — retired in Base, edited here", retired_kept, "move the edits to the new path by hand, then delete the old")
     block(f"{verb}ADD", added)
     block(f"{verb}UPDATE", updated, "Base changed, this repo had not touched them")
-    block("KEEP — local edits", kept, "this repo edited them, Base did not: harvest candidates")
+    block("KEEP — local edits", kept, "this repo edited a Base file: move the store's part into .claude/rules/this-store-*.md")
     block("KEEP — both changed" if old_sha else "KEEP — differs, provenance unknown", conflicts,
           f"Base's copy {saved} under {STASH_DIR}/ to merge by hand; --force overwrites")
     block("fork-only", fork_only, "present here, absent in Base — left alone")
+    block("store-owned", store_owned, "this store's own rules, checks and skills — never read from Base, never written")
     print(f"  unchanged: {len(unchanged)}")
     print("  " + "-" * 70)
     if dry:
         print("  dry run — nothing written.")
     else:
         print(f"  stamped {STAMP}; .cursor/ regenerated.")
+        if any(p.startswith(".claude/scripts/pull") for p in added + updated):
+            print("  The pull script itself changed. Run it once more, so the new version retires what the old one could not.")
         print("  next:  sh .claude/scripts/setup.sh     then     python3 .claude/scripts/check-tooling-drift.py")
     print()
     return 0

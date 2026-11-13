@@ -21,6 +21,8 @@ import time
 RECORD = ".claude/.cache/gitbot-preflight.json"
 TRUNKS = ("main", "master", "develop", "development", "staging")
 
+LEARNINGS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "check-learnings.py")
+
 
 def git(*args):
     r = subprocess.run(["git", *args], capture_output=True, text=True)
@@ -41,6 +43,10 @@ def main(argv):
         os.makedirs(os.path.dirname(RECORD), exist_ok=True)
         json.dump({"branch": branch, "head": head, "time": int(time.time()),
                    "open": int(open_), "fixed": int(fixed), "flagged": int(flagged)}, open(RECORD, "w"))
+        found = int(open_) + int(fixed)
+        if found and os.path.isfile(LEARNINGS):
+            subprocess.run([sys.executable, LEARNINGS, "--signal", "gitbot",
+                            f"GitBot reported {found} finding(s) that needed a fix on {branch}@{head[:9]}"], capture_output=True)
         print(f"GitBot preflight recorded for {branch}@{head[:9]}: {open_} open, {fixed} fixed, {flagged} flagged.")
         return 0
 

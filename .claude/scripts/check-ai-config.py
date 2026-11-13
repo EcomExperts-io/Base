@@ -49,6 +49,27 @@ UNIQUE_HEADINGS = [
 
 
 
+# A store's own rules (.claude/rules/this-store-*.md) are the store's to pay for: outside Base's injection caps and
+# CLAUDE.md's inventory, always scoped, and noted once together they pass this many lines.
+STORE_RULE_PREFIX = "this-store-"
+STORE_RULES_NOTE_AT = 300
+STORE_AREA = (".claude/this-store/", ".claude/rules/this-store-", ".claude/skills/this-store-")
+
+
+def is_store_rule(name):
+    return name.startswith(STORE_RULE_PREFIX)
+
+
+def is_base():
+    r = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True)
+    return "EcomExperts-io/Base" in r.stdout
+
+
+def tracked_store_files():
+    r = subprocess.run(["git", "ls-files"], capture_output=True, text=True)
+    return sorted(p for p in r.stdout.split("\n") if p.startswith(STORE_AREA))
+
+
 def shell_interpreter(script):
     """The shell a script's shebang names, so a `#!/bin/bash` script is parsed by bash
     and a `#!/bin/sh` one by sh (dash on Linux, which rejects bash arrays)."""
@@ -135,7 +156,13 @@ def check(rules, problems, notes):
 
     # --- always-apply is deliberate ----------------------------------------
     unscoped = {n for n, r in rules.items() if r["fm"] is not None and r["paths"] is None}
-    for name in sorted(unscoped - ALWAYS_APPLY_ALLOWLIST):
+    for name in sorted(n for n in unscoped if is_store_rule(n)):
+        problems.append(
+            f"{rules[name]['path']}: a store rule with no `paths:`.\n"
+            "      A store rule is scoped to the files it is about, so it is paid for only\n"
+            "      where it applies. Add a `paths:` glob to its frontmatter."
+        )
+    for name in sorted(n for n in unscoped - ALWAYS_APPLY_ALLOWLIST if not is_store_rule(n)):
         problems.append(
             f"{rules[name]['path']}: always-apply (no `paths:`) but not in the allowlist.\n"
             "      Every task pays for this rule on every file. Either scope it with a\n"
@@ -152,13 +179,13 @@ def check(rules, problems, notes):
     # --- injection budget ---------------------------------------------------
     for target, cap in sorted(INJECTION_CAPS.items()):
         total = sum(
-            r["lines"] for r in rules.values()
-            if r["paths"] is None or matches(target, r["paths"])
+            r["lines"] for n, r in rules.items()
+            if not is_store_rule(n) and (r["paths"] is None or matches(target, r["paths"]))
         )
         if total > cap:
             loaded = sorted(
                 ((r["lines"], n) for n, r in rules.items()
-                 if r["paths"] is None or matches(target, r["paths"])),
+                 if not is_store_rule(n) and (r["paths"] is None or matches(target, r["paths"]))),
                 reverse=True,
             )
             top = ", ".join(f"{n} ({ln})" for ln, n in loaded[:3])
@@ -168,6 +195,21 @@ def check(rules, problems, notes):
                 "      Usually this means a big rule is scoped more widely than it needs\n"
                 "      to be. Narrow its `paths:`, or split the part that genuinely applies\n"
                 "      — that is what css-in-markup.md was carved out of css-standards.md for."
+            )
+
+    # --- the store's own area ------------------------------------------------
+    store_lines = sum(r["lines"] for n, r in rules.items() if is_store_rule(n))
+    if store_lines > STORE_RULES_NOTE_AT:
+        notes.append(
+            f"the store's own rules are {store_lines} lines (note at {STORE_RULES_NOTE_AT}). "
+            "Merge the ones that say the same thing and delete the ones that no longer hold."
+        )
+    if is_base():
+        for path in tracked_store_files():
+            problems.append(
+                f"{path}: a store-owned path in Base.\n"
+                "      Base ships nothing under .claude/this-store/, .claude/rules/this-store-* or\n"
+                "      .claude/skills/this-store-*: those names belong to each store."
             )
 
     # --- the CSS split has not been undone ---------------------------------
@@ -183,7 +225,7 @@ def check(rules, problems, notes):
     # --- CLAUDE.md inventory matches disk ----------------------------------
     if os.path.exists("CLAUDE.md"):
         claude = read("CLAUDE.md")
-        for name in sorted(rules):
+        for name in sorted(n for n in rules if not is_store_rule(n)):
             if f"`{name}.md`" not in claude:
                 problems.append(
                     f"{name}.md exists but is not listed in CLAUDE.md.\n"
@@ -230,8 +272,8 @@ def main():
         print(f"{len(rules)} rules, {sum(r['lines'] for r in rules.values())} lines total")
         for target, cap in sorted(INJECTION_CAPS.items()):
             total = sum(
-                r["lines"] for r in rules.values()
-                if r["paths"] is None or matches(target, r["paths"])
+                r["lines"] for n, r in rules.items()
+                if not is_store_rule(n) and (r["paths"] is None or matches(target, r["paths"]))
             )
             print(f"  {target:38} {total:>5} / {cap}")
 
