@@ -217,13 +217,6 @@ jobs:
         if: ${{ !cancelled() && hashFiles('docs/**/*.md') != '' }}
         run: python3 "${SCRIPTS}/check-docs-interpolation.py"
 
-      - name: AI config mirror is in sync
-        if: ${{ !cancelled() && hashFiles('.claude/rules/*.md') != '' }}
-        # --check writes nothing and exits 1 if the mirror has drifted from
-        # .claude/. The pre-commit hook regenerates the mirror, so this can only
-        # fail on a commit made with --no-verify.
-        run: sh "${SCRIPTS}/sync-ai-config.sh" --check
-
       - name: Tooling drift against Base
         if: ${{ !cancelled() && steps.base.outcome == 'success' && hashFiles('.base-version') != '' }}
         continue-on-error: true

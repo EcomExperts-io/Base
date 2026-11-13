@@ -29,9 +29,6 @@ else
 fi
 chmod +x .githooks/pre-commit .claude/hooks/*.sh 2>/dev/null || true
 
-echo "==> cursor mirror"
-sh .claude/scripts/sync-ai-config.sh | tail -1
-
 echo "==> cache directories"
 mkdir -p .claude/.cache .claude/verify
 

@@ -15,9 +15,9 @@ python3 .claude/scripts/pull-base-tooling.py      # three-way overlay: the previ
 
 then, in a session, `/recon-theme` (what is built, what they settled on, what
 is left) and `/store-recon` (what the store has). Read both documents before
-the first line of code. If the repo has a `.cursor/` but no `.claude/`, the
-overlay installs `.claude/` and regenerates `.cursor/` from it; if both exist
-and disagree, the drift report says so and a human picks.
+the first line of code. The overlay deletes `.cursor/`, `.agents/`, `.codex/`
+and `AGENTS.md`; if a previous team wrote its own conventions there, read them
+from git (`git show HEAD:<path>`) into `this-store-*.md` before committing.
 
 **The previous team's conventions win where they conflict with Base's** —
 half the theme already uses them. The recon records them in this repo's own

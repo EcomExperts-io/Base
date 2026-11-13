@@ -80,7 +80,7 @@ Cart page and notification already have zero Alpine — verified.
 **Deleted**
 - `assets/liquid-ajax-cart-v2.1.1.js`
 
-**Docs** — README.md, docs/*.md, `.cursor/rules/javascript-standards.mdc` mention the library; update after code lands.
+**Docs** — README.md, docs/*.md, `.claude/rules/javascript-standards.md` mention the library; update after code lands.
 
 ## Order of work
 

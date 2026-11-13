@@ -85,7 +85,7 @@ The compliant count is one higher than the session's opening line. Then:
 git add -A && git commit -m "[FEATURE]: Add the <section name> section"
 ```
 
-The commit runs the gate again and stages the regenerated `.cursor/`. No PR unless asked.
+The commit runs the gate again. No PR unless asked.
 
 ## 5. Say what stalled
 

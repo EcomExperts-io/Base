@@ -3,10 +3,6 @@
 
 Usage: check-rule-links.py [--all]
 Only files staged in this commit are checked; `--all` sweeps the whole tree.
-
-Notes:
-- Separate from `sync-ai-config.sh --check` because that script's remedy is
-  "re-run the sync", and a broken link is not fixed by regenerating the mirror.
 """
 
 import os
@@ -20,7 +16,7 @@ MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
 # A path named in prose or inside backticks: it must start with a known config root or a theme directory and end in a
 # file extension or a slash. Anything looser matches prose like "the sections/ directory".
 INLINE_PATH_RE = re.compile(
-    r"`([^`\s]*?(?:\.claude|\.cursor|sections|snippets|blocks|assets|locales|"
+    r"`([^`\s]*?(?:\.claude|sections|snippets|blocks|assets|locales|"
     r"templates|config|layout|docs)/[^`\s]*?)`"
 )
 
@@ -49,11 +45,6 @@ def all_files():
 
 
 def in_scope(path):
-    # .cursor/ is generated from .claude/ by sync-ai-config.sh. Checking it
-    # would report every finding twice and point the fix at a file that gets
-    # overwritten. Fix the source; the mirror follows.
-    if path.startswith(".cursor/"):
-        return False
     return path.endswith(".md") and (path.startswith(".claude/") or path == "CLAUDE.md")
 
 
@@ -142,8 +133,6 @@ def main():
         print()
     print("-" * 74)
     print("  Fix the path, or delete the reference if the file is gone.")
-    print("  If it is a file that should be mirrored into .cursor/, add it to")
-    print("  .claude/scripts/sync-ai-config.sh instead of relinking.")
     print()
     print("  Sweep the whole tree:  python3 .claude/scripts/check-rule-links.py --all")
     print("-" * 74)

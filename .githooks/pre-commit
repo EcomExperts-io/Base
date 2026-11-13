@@ -15,60 +15,46 @@ else
   echo "pre-commit: python3 not found, skipping the section contract check."
 fi
 
-# --- 2. Cursor mirror is regenerated, not policed -----------------------------
-# The mirror is derived from .claude/: regenerate it and stage only the generated tree, only after the generator
-# succeeded. The sync REFUSES to overwrite a hand-edited .mdc; that refusal fails the commit.
-if SYNC_OUT=$(sh .claude/scripts/sync-ai-config.sh 2>&1); then
-  git add .cursor .agents .codex AGENTS.md
-else
-  echo "$SYNC_OUT"
-  echo ""
-  echo "  .cursor/ could not be regenerated — see above. Move hand edits into"
-  echo "  .claude/ and commit again."
-  echo ""
-  FAILED=1
-fi
-
-# --- 3. Theme Check, scoped to staged files ---------------------------------
+# --- 2. Theme Check, scoped to staged files ---------------------------------
 # Theme Check scans the whole theme, so used directly a pre-existing offense would block everyone, including whoever
 # is committing the fix. Only errors in files this commit touches fail; a CLI that cannot start is a skip.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-theme-staged.py || FAILED=1
 fi
 
-# --- 4. Rules must not link files that are not there ------------------------
+# --- 3. Rules must not link files that are not there ------------------------
 # Scoped to staged files: a pre-existing broken link in a file you did not
 # touch is not your commit's problem. Sweep everything with --all after a fork.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-rule-links.py || FAILED=1
 fi
 
-# --- 5. The AI configuration itself must stay structurally sound -------------
+# --- 4. The AI configuration itself must stay structurally sound -------------
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-ai-config.py || FAILED=1
 fi
 
-# --- 6. Liquid examples in docs must not break the VitePress build ----------
+# --- 5. Liquid examples in docs must not break the VitePress build ----------
 # VitePress evaluates {{ }} in inline code spans as Vue expressions.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-docs-interpolation.py || FAILED=1
 fi
 
-# --- 7. Conventions a grep can decide ----------------------------------------
+# --- 6. Conventions a grep can decide ----------------------------------------
 # Errors block only in files this commit ADDS; in modified files they are
 # printed and let through.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-conventions.py --staged || FAILED=1
 fi
 
-# --- 8. Learnings: printed here, gated on the pull request ---------------------
+# --- 7. Learnings: printed here, gated on the pull request ---------------------
 # An open learning waits for the developer's yes or no, which may come after this commit; the review workflow is
 # where it blocks. The same goes for a change to an existing store rule or check that no learning explains.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/check-learnings.py --gate --staged || true
 fi
 
-# --- 9. The checks check themselves ------------------------------------------
+# --- 8. The checks check themselves ------------------------------------------
 # One fixture per promise a gate script makes.
 if command -v python3 >/dev/null 2>&1; then
   python3 .claude/scripts/test-checks.py || FAILED=1

@@ -40,7 +40,7 @@ for each.
 | Claude tries to end a turn | The same gate over everything changed this turn, plus Theme Check; a **new** file that fails blocks the turn; a section changed with no verify report newer than the change is flagged; a client branch whose GitBot findings have not been read since its last commit is named | `Stop` hook |
 | A Shopify command fails, a turn is blocked, a QA round or GitBot findings come back | Noted for the learning loop; the turn is held once until it is learned from (`/record-incident`) or dismissed with a reason | `PostToolUseFailure` and `Stop` hooks |
 | A `git push` in a client repo | A nudge to `/gitbot-preflight`: read GitBot's findings here and settle each one before the PR | `PostToolUse` hook on Bash |
-| A commit | The full pre-commit gate; the Cursor mirror regenerated and staged | `.githooks/pre-commit` (called from husky in client forks) |
+| A commit | The full pre-commit gate | `.githooks/pre-commit` (called from husky in client forks) |
 | A pull request — into any branch; the fork's trunk is the fork's decision | Base's reusable review workflow, run through a six-line caller in each fork; it fails while a learning recorded in that change is unanswered | `.github/workflows/theme-review.yml` |
 
 Modified legacy files are reported, never gated — you answer for what you add.

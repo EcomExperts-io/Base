@@ -576,8 +576,8 @@ case("theme-staged: only ignored files named prints `checked 0 files` and names 
      r.returncode == 0 and "checked 0 files" in r.stdout and "ignore pattern" in r.stdout, r.stdout.strip()[:160])
 
 
-case("theme-check config: every generated mirror folder is ignored",
-     all(p in patterns for p in ("/.claude/**", "/.cursor/**", "/.agents/**", "/.codex/**")), patterns)
+case("theme-check config: the .claude/ folder is ignored",
+     "/.claude/**" in patterns, patterns)
 case("theme-staged: a 0-based row from the CLI prints as a 1-based line; a missing row prints `?`",
      tcs.line_number({"start_row": 0}) == 1 and tcs.line_number({"start_row": 41}) == 42 and tcs.line_number({}) == "?")
 
@@ -751,6 +751,9 @@ with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as d:
     put(d, STORE_RULE, "---\ndescription: x\npaths:\n  - \"sections/**\"\n---\nthe store's own line\n")
     put(d, STORE_CHECKS, "[]\n")
     put(d, HARVEST, "shipped\n"); put(d, COACH, "shipped\nthe store's edit\n"); put(d, REPORT, "base only\n")
+    OTHER_AI = [".cursor/rules/sections.mdc", ".agents/skills/this-store-x/SKILL.md", ".codex/config.toml", "AGENTS.md"]
+    for rel in OTHER_AI:
+        put(d, rel, "a copy for another tool, edited\n")
     g("add", "."); g("commit", "-q", "-m", "fork")
     put(base, ".claude/rules/sections.md", "v2\n"); put(base, STORE_RULE, "BASE WROTE THIS\n")
     gb("rm", "-q", HARVEST, COACH)
@@ -759,6 +762,9 @@ with tempfile.TemporaryDirectory() as base, tempfile.TemporaryDirectory() as d:
     case("pull: a retired file and a Base-only file the store never edited are removed; an edited one is kept and listed",
          not os.path.exists(os.path.join(d, HARVEST)) and not os.path.exists(os.path.join(d, REPORT))
          and os.path.exists(os.path.join(d, COACH)) and "KEEP — retired in Base, edited here (1)" in r.stdout, r.stdout[-600:])
+    case("pull: the copies made for other AI tools are removed whole, edited or not, and listed as retired",
+         not any(os.path.lexists(os.path.join(d, t)) for t in (".cursor", ".agents", ".codex", "AGENTS.md"))
+         and r.stdout.count("a copy for another AI tool") == 4, r.stdout[-800:])
     put(d, HARVEST, "shipped\n")
     r2 = tool(d, "pull-base-tooling.py", "--base-path", base)
     case("pull: an untouched retired file still goes when the stamp already sits past the commit that removed it",
