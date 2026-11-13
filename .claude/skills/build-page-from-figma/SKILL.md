@@ -172,8 +172,8 @@ nothing else.
 
 A real mistake — the wrong thing built, a design misread, a re-prompt, a trap
 a rule should have named — is `/record-incident` **at the moment it happens**.
-It writes a committed file under `docs/ai-workflow/incidents/` with what
-happened, how it surfaced, what fixed it and which rule or check should have
-caught it; `/harvest` takes a generic one up to Base.
+It records what happened and which rule or check should have caught it,
+proposes the change to this repo's own setup, and applies it on the
+developer's yes.
 
 When the QI logs bugs on the card, `/close-qa-loop` picks them up.

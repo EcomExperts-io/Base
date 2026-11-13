@@ -25,6 +25,7 @@ INLINE_PATH_RE = re.compile(
 )
 
 SKIP_PREFIXES = ("http://", "https://", "mailto:", "#", "<")
+STORE_AREA = (".claude/this-store/", ".claude/rules/this-store-", ".claude/skills/this-store-")
 
 
 def repo_root():
@@ -80,6 +81,9 @@ def resolve(ref, source):
     # `assets/section-[section-name].js`. Both bracket styles are used in this
     # repo's scaffolding docs and neither is meant to resolve.
     if any(ch in ref for ch in "<>[]{}"):
+        return None
+    # The store's own area is each store's to create; Base documents the names and ships none of them.
+    if os.path.normpath(ref.lstrip("/")).startswith(STORE_AREA):
         return None
     rel = os.path.normpath(os.path.join(os.path.dirname(source), ref))
     if os.path.exists(rel):

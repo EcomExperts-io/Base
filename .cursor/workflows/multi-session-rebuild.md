@@ -154,7 +154,8 @@ Budget a parity pass over the merged integration branch, structured as: how
 checked / what matches / code defects / template content / store gaps /
 design questions / what could not be verified.
 
-## Harvest as you go
+## Learn as you go
 
-A generic trap goes up to Base in the same change that found it (CLAUDE.md,
-"Flowing changes between Base and the forks"); session scratch files do not survive.
+A trap is `/record-incident` in the same change that found it, applied in the
+store's own area (CLAUDE.md, "The learning loop"); session scratch files do
+not survive.
