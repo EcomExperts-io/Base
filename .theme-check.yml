@@ -1,9 +1,5 @@
 # Theme Check configuration
 #
-# Base had no Theme Check config at all, so it had never run here. A default
-# run over this theme reports 132 files inspected and a single offense — the
-# false positive disabled below — so turning it on costs essentially no noise.
-#
 # Scope note: Theme Check catches Liquid and schema correctness — undefined
 # objects, missing snippets, deprecated filters, malformed schema, translation
 # keys that do not resolve. It does NOT check the merchant settings contract or
@@ -28,6 +24,8 @@ ignore:
   - '/docs/**'
   - '/.claude/**'
   - '/.cursor/**'
+  - '/.agents/**'
+  - '/.codex/**'
   # The reusable review workflow checks Base out here in a client repo, for the
   # scripts fallback and the drift report. Its sections are not this theme's.
   - '/.base-tooling/**'

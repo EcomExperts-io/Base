@@ -574,6 +574,21 @@ case("theme-staged: only ignored files named prints `checked 0 files` and names 
      r.returncode == 0 and "checked 0 files" in r.stdout and "ignore pattern" in r.stdout, r.stdout.strip()[:160])
 
 
+case("theme-check config: every generated mirror folder is ignored",
+     all(p in patterns for p in ("/.claude/**", "/.cursor/**", "/.agents/**", "/.codex/**")), patterns)
+case("theme-staged: a 0-based row from the CLI prints as a 1-based line; a missing row prints `?`",
+     tcs.line_number({"start_row": 0}) == 1 and tcs.line_number({"start_row": 41}) == 42 and tcs.line_number({}) == "?")
+
+doctor = load("doctor")
+with tempfile.TemporaryDirectory() as d:
+    hooks = os.path.join(d, ".githooks"); os.makedirs(hooks)
+    empty = doctor.hooks_path_is_base(hooks)
+    open(os.path.join(hooks, "pre-commit"), "w").write("#!/bin/sh\n")
+    case("doctor: core.hooksPath passes as `.githooks` or as an absolute `.githooks` holding a pre-commit (a worktree); any other value fails",
+         doctor.hooks_path_is_base(".githooks") and doctor.hooks_path_is_base(hooks) and not empty
+         and not doctor.hooks_path_is_base("") and not doctor.hooks_path_is_base(d) and not doctor.hooks_path_is_base(".husky"))
+
+
 # ---------------------------------------------------------------------------
 # A throwaway theme repo carrying this checkout's scripts, hooks and locales
 # ---------------------------------------------------------------------------
@@ -611,6 +626,11 @@ with tempfile.TemporaryDirectory() as d:
          "section-new.css  [NEW]" in out and "section-old.css  [modified" in out and rc == 0, out[:300])
     rc, out = in_repo(d, conv_py, "--files", "assets/section-new.css", "--block")
     case("conventions: --files --block exits 1 on an error in a new file", rc == 1 and "1 blocking" in out, (rc, out[-200:]))
+    case("conventions: the banner reads BLOCKED only when the run exits 1",
+         "  BLOCKED —" in out and "NOT BLOCKED HERE" not in out, out[:200])
+    rc, out = in_repo(d, conv_py, "--files", "assets/section-new.css")
+    case("conventions: without --block the banner reads NOT BLOCKED HERE, BLOCKS AT COMMIT and the run exits 0",
+         rc == 0 and "NOT BLOCKED HERE, BLOCKS AT COMMIT —" in out and "  BLOCKED —" not in out, (rc, out[:200]))
     rc, out = in_repo(d, conv_py, "--files", "assets/section-old.css", "--block")
     case("conventions: --files --block exits 0 on an error in a file from the base branch", rc == 0 and "0 blocking" in out, (rc, out[-200:]))
     g("add", "assets/section-new.css"); g("commit", "-q", "-m", "[BUILD]: Add")

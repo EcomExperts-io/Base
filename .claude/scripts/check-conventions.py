@@ -7,7 +7,9 @@ Usage
   check-conventions.py --staged             pre-commit: added files block, modified files warn
   check-conventions.py --changed            working tree vs HEAD (the Stop hook): new files block
   check-conventions.py --all                every tracked theme file, report only; also sweeps docs/ for orphan pages
-  --block   with --files, --changed or --all, exit 1 on blocking findings      --quiet   print nothing when there is nothing to say
+  --block   with --files, --changed or --all, exit 1 on blocking findings; the banner reads BLOCKED only when the run
+            exits 1, and NOT BLOCKED HERE, BLOCKS AT COMMIT otherwise
+  --quiet   print nothing when there is nothing to say
 
 Notes:
 - A finding blocks only with error severity in a NEW file; modified files are reported, never gated (Base carries legacy).
@@ -681,9 +683,10 @@ def main(argv):
         by_file.setdefault(f.path, []).append(f)
 
     if blocking:
+        headline = "BLOCKED" if block else "NOT BLOCKED HERE, BLOCKS AT COMMIT"
         print()
         print("=" * 74)
-        print(f"  BLOCKED — {len(blocking)} convention error(s) in new file(s)")
+        print(f"  {headline} — {len(blocking)} convention error(s) in new file(s)")
         print("=" * 74)
     for path, items in by_file.items():
         tag = "NEW" if path in new else "modified — reported, not gated"
