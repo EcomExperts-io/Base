@@ -32,9 +32,8 @@ if (!customElements.get('product-info')) {
 
     connectedCallback() {
       this.setupEventListeners();
-      if (typeof Swiper !== 'undefined') {
-        this.initSwiper();
-      }
+      // initSwiper() is shown under "External Libraries"
+      if (window.Swiper) this.initSwiper();
     }
 
     disconnectedCallback() {
@@ -44,7 +43,6 @@ if (!customElements.get('product-info')) {
 
     setupEventListeners() {
       this.variantSelector?.addEventListener('change', this.onVariantChange.bind(this));
-      document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
       document.addEventListener('cart:change', this.onCartUpdate.bind(this));
     }
 
@@ -176,30 +174,50 @@ updateURL(variantId) {
 
 ## External Libraries
 
-Initialise when the library is present, listen for its script's `load`
-otherwise, and destroy the instance in `disconnectedCallback`:
+`layout/theme.liquid` loads Swiper in `<head>` with `defer`, and only on the
+`collection`, `product`, `index`, `page` and `search` templates. The script
+tag has no `id`:
+
+```liquid
+<script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer="defer"></script>
+```
+
+Load the section's own script with `type="module"`. A module script runs
+after every `defer` script that comes before it in the document, so
+`window.Swiper` is already set when `connectedCallback` runs. Do not wait for
+a `load` event and do not look the script tag up by id.
+
+```liquid
+<script src="{{ 'section-featured-products.js' | asset_url }}" type="module"></script>
+```
 
 ```javascript
 connectedCallback() {
-  document.getElementById('swiper-script').addEventListener('load', this.initSwiper.bind(this));
-  if (typeof Swiper !== 'undefined') this.initSwiper();
+  if (window.Swiper) this.initSwiper();
 }
 
 initSwiper() {
-  this.swiper = new Swiper('.swiper', {
-    pagination: { el: '.swiper-pagination' },
-    navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
+  this.swiper = new Swiper(this.querySelector('.swiper'), {
+    pagination: { el: this.querySelector('.swiper-pagination') },
+    navigation: {
+      prevEl: this.querySelector('.swiper-button-prev'),
+      nextEl: this.querySelector('.swiper-button-next'),
+    },
   });
 }
 
 disconnectedCallback() {
   this.swiper?.destroy();
+  this.swiper = null;
 }
 ```
 
-```liquid
-<script src="{{ 'swiper7.4.1.min.js' | asset_url }}" defer="defer" id="swiper-script"></script>
-```
+- Pass elements found with `this.querySelector`, never a global selector
+  string such as `'.swiper'`: a string matches every instance on the page, so
+  two sections would share one carousel.
+- On any other template `window.Swiper` is `undefined`. The `if` guard skips
+  the carousel there; the markup must still be usable without it.
+- Destroy the instance in `disconnectedCallback`.
 
 ## Input Validation
 
