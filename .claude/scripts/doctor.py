@@ -57,12 +57,22 @@ def load_json(path):
 # ---------------------------------------------------------------------------
 # checks — each returns (status, label, detail, fix)
 # ---------------------------------------------------------------------------
+def hooks_path_is_base(hooks_path):
+    """True when core.hooksPath is `.githooks`, or an absolute path to a `.githooks` folder that holds a pre-commit.
+    A git worktree shares the main checkout's config, so there the value is the main checkout's absolute path; that
+    hook changes into the worktree being committed, so it gates the worktree too."""
+    if hooks_path.rstrip("/\\") == ".githooks":
+        return True
+    return (os.path.isabs(hooks_path) and os.path.basename(hooks_path.rstrip("/\\")) == ".githooks"
+            and os.path.isfile(os.path.join(hooks_path, "pre-commit")))
+
+
 def check_hooks_wired():
     rc, out = run(["git", "config", "core.hooksPath"])
     hooks_path = out.strip()
     husky = os.path.join(ROOT, ".husky", "pre-commit")
-    if hooks_path == ".githooks":
-        return ("OK", "commit gate", "core.hooksPath = .githooks", "")
+    if hooks_path_is_base(hooks_path):
+        return ("OK", "commit gate", f"core.hooksPath = {hooks_path}", "")
     if os.path.exists(husky) and ".githooks/pre-commit" in open(husky, errors="replace").read():
         return ("OK", "commit gate", "husky pre-commit calls .githooks/pre-commit", "")
     return ("FAIL", "commit gate",

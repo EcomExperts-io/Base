@@ -56,6 +56,12 @@ def node_env():
     return env, v
 
 
+def line_number(off):
+    """The 1-based line of an offense. The CLI reports `start_row` 0-based."""
+    row = off.get("start_row")
+    return row + 1 if isinstance(row, int) else "?"
+
+
 def offenses(results, root):
     """(repo-relative path, offense) pairs from either JSON shape the CLI emits:
     CLI 4 is a list of files each holding `offenses` (`start_row`); CLI 5 is a
@@ -157,7 +163,7 @@ def main(argv):
     print(f"  ({len(targets)} file(s) checked{skipped}; node: {node_used})")
     print()
     for rel, off in blocking:
-        print(f"  {rel}:{off.get('start_row', '?')}")
+        print(f"  {rel}:{line_number(off)}")
         print(f"    [{off.get('check')}] {off.get('message')}")
         print()
     print("-" * 74)
