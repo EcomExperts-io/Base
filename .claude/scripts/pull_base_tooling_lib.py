@@ -28,8 +28,8 @@ def check_flags(argv, known, usage):
         i += 1
     return None
 
-TOOLING_PREFIXES = (".claude/", ".githooks/", ".agents/", ".codex/", "docs/ai-workflow/", "docs/base-theme-standards.md")
-TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", "AGENTS.md", ".github/workflows/theme-review.yml"}
+TOOLING_PREFIXES = (".claude/", ".githooks/", "docs/ai-workflow/", "docs/base-theme-standards.md")
+TOOLING_FILES = {".mcp.json", ".theme-check.yml", "CLAUDE.md", ".github/workflows/theme-review.yml"}
 EXCLUDE_PREFIXES = (".claude/settings.local.json", ".claude/agent-memory-local/", ".claude/.cache/",
                     ".claude/verify/", "docs/ai-workflow/incidents/")
 # The one file under the excluded incidents directory that does travel: rules and skills link to the directory,
@@ -38,7 +38,7 @@ INCIDENTS_README = "docs/ai-workflow/incidents/README.md"
 
 # Names a store owns — its own rules, checks and skills. Base ships none of them (check-ai-config.py refuses one in
 # Base), so a pull never writes, stashes or retires them and the drift report never counts them against Base.
-STORE_PREFIXES = (".claude/this-store/", ".claude/rules/this-store-", ".claude/skills/this-store-", ".agents/skills/this-store-")
+STORE_PREFIXES = (".claude/this-store/", ".claude/rules/this-store-", ".claude/skills/this-store-")
 
 # What Base keeps for itself: read by nobody but whoever maintains Base, and never part of what a store pulls.
 BASE_ONLY = (".claude/scripts/learnings-report.py",)
@@ -60,7 +60,12 @@ RETIRED = {
     "docs/base-theme-standards/base-theme-architecture-reference-header-cart-search.md": "docs/base-theme-standards.md",
     "docs/base-theme-standards/base-theme-compliance-checklist.md": "docs/base-theme-standards.md",
     "docs/base-theme-standards/base-theme-decisions-log.md": "docs/base-theme-standards.md",
+    ".claude/scripts/sync-ai-config.sh": None,
 }
+
+# Copies of .claude/ made for other AI tools, which Base no longer supports. Everything in them was generated from
+# .claude/ or configures a tool nobody runs, so a pull removes them whole, edited or not.
+RETIRED_TREES = (".cursor", ".agents", ".codex", "AGENTS.md")
 
 
 def sh(*args, cwd=None, check=True):

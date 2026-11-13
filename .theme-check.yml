@@ -23,9 +23,6 @@ ignore:
   - '/node_modules/**'
   - '/docs/**'
   - '/.claude/**'
-  - '/.cursor/**'
-  - '/.agents/**'
-  - '/.codex/**'
   # The reusable review workflow checks Base out here in a client repo, for the
   # scripts fallback and the drift report. Its sections are not this theme's.
   - '/.base-tooling/**'

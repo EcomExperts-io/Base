@@ -14,8 +14,8 @@ MCP), builds against these standards and the rules, verifies against the
 reference, and a developer reviews.
 
 Not the goal: redesigning Base to taste, turning a build into a Base refactor,
-or locking the knowledge into one tool — `.claude/` is canonical; the Cursor
-and Codex copies are generated. Base is a simplified take on Shopify's Dawn;
+or keeping AI configuration for tools other than Claude Code — `.claude/` is
+the only one. Base is a simplified take on Shopify's Dawn;
 where its code contradicts the rules, the rules win and the gap is logged here.
 
 ## 2. Collection and PDP

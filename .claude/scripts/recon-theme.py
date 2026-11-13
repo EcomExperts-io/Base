@@ -214,7 +214,6 @@ def pages(files):
 
 def tooling():
     out = {"claude_rules": len([p for p in os.listdir(".claude/rules") if p.endswith(".md")]) if os.path.isdir(".claude/rules") else 0,
-           "cursor_rules": len([p for p in os.listdir(".cursor/rules") if p.endswith(".mdc")]) if os.path.isdir(".cursor/rules") else 0,
            "hooks": ("husky" if os.path.isdir(".husky") else "") + (" .githooks" if os.path.isdir(".githooks") else ""),
            "hooks_path": sh("git", "config", "core.hooksPath").strip(),
            "runtime_hooks": bool(json.loads(read(".claude/settings.json") or "{}").get("hooks")) if os.path.exists(".claude/settings.json") else False,
@@ -405,7 +404,7 @@ def render(d):
     w("## Tooling")
     w("")
     t = d["tooling"]
-    w(f"- `.claude/rules`: {t['claude_rules']} files; `.cursor/rules`: {t['cursor_rules']}; runtime hooks configured: {'yes' if t['runtime_hooks'] else 'no'}")
+    w(f"- `.claude/rules`: {t['claude_rules']} files; runtime hooks configured: {'yes' if t['runtime_hooks'] else 'no'}")
     w(f"- commit hooks: {t['hooks'].strip() or 'none'} (core.hooksPath = `{t['hooks_path'] or 'unset'}`)")
     w(f"- CI: " + (", ".join(f"`{c}`" for c in t["ci"]) or "none"))
     w(f"- Base tooling stamp: " + (f"`{t['stamp'].get('sha', '?')[:9]}` ({t['stamp'].get('date', '?')})" if t["stamp"] else "none — run `sh .claude/scripts/base-link.sh` then `python3 .claude/scripts/pull-base-tooling.py`"))

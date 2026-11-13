@@ -104,7 +104,7 @@ def frontmatter(text):
 
 def paths_of(fm):
     """The `paths:` globs from a frontmatter block, or None for always-apply. Accepts the inline form and the
-    indented YAML list, because sync-ai-config.sh accepts both and the two have to agree."""
+    indented YAML list, because Claude Code reads both."""
     if fm is None:
         return None
     out, inlist = [], False

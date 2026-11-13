@@ -20,11 +20,12 @@ Usage
 import datetime
 import json
 import os
+import shutil
 import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pull_base_tooling_lib import BASE_ONLY, RETIRED, STAMP, Source, check_flags, is_store_owned, is_tooling, load_stamp, sh  # noqa: E402
+from pull_base_tooling_lib import BASE_ONLY, RETIRED, RETIRED_TREES, STAMP, Source, check_flags, is_store_owned, is_tooling, load_stamp, sh  # noqa: E402
 
 KNOWN_FLAGS = {"--ref": True, "--base-path": True, "--dry-run": False, "--force": False, "--stamp-only": False}
 USAGE = __doc__.split("Usage\n-----\n", 1)[1]
@@ -145,6 +146,16 @@ def main(argv):
         else:
             retired_kept.append(label)
 
+    for tree in RETIRED_TREES:
+        if not os.path.lexists(tree):
+            continue
+        retired.append(f"{tree} -> (removed: a copy for another AI tool)")
+        if not dry:
+            if os.path.isdir(tree) and not os.path.islink(tree):
+                shutil.rmtree(tree)
+            else:
+                os.remove(tree)
+
     base_set = set(source.files())
     tracked = [p for p in sh("git", "ls-files").split("\n") if p]
     fork_only = [p for p in tracked if is_tooling(p) and p not in base_set and p not in RETIRED]
@@ -152,8 +163,6 @@ def main(argv):
 
     if not dry:
         write_stamp(source)
-        if os.path.exists(".claude/scripts/sync-ai-config.sh"):
-            subprocess.run(["sh", ".claude/scripts/sync-ai-config.sh"], capture_output=True)
 
     verb = "would " if dry else ""
     saved = "would be saved" if dry else "saved"
@@ -183,7 +192,7 @@ def main(argv):
     if dry:
         print("  dry run — nothing written.")
     else:
-        print(f"  stamped {STAMP}; .cursor/ regenerated.")
+        print(f"  stamped {STAMP}.")
         if any(p.startswith(".claude/scripts/pull") for p in added + updated):
             print("  The pull script itself changed. Run it once more, so the new version retires what the old one could not.")
         print("  next:  sh .claude/scripts/setup.sh     then     python3 .claude/scripts/check-tooling-drift.py")

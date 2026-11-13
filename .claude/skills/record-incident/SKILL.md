@@ -94,8 +94,7 @@ skill it belongs to, and `--apply` names that file.
 ## Step 4 — Commit
 
 One commit, `[LEARN]: <what the setup now prevents>`, holding the record and
-the store files. Run `sh .claude/scripts/sync-ai-config.sh` first; never edit
-`.cursor/`.
+the store files.
 
 ## What holds it
 

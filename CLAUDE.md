@@ -78,9 +78,9 @@ Path-scoped: `sections.md`, `snippets.md`, `blocks.md`, `schemas.md`,
 properties on a `style` attribute), scoped to Liquid and CSS; the rest of CSS
 is `css-standards.md`, CSS only.
 
-`.cursor/` and the Codex copies (`.agents/skills`, `.codex/`, `AGENTS.md`)
-are generated from `.claude/`. **Edit `.claude/` only**; the pre-commit hook
-regenerates and stages the mirrors.
+`.claude/` is the only AI configuration. Base keeps no copies for other
+tools (`.cursor/`, `.agents/`, `.codex/`, `AGENTS.md`); a tooling pull removes
+them from a fork.
 
 ## What runs on its own
 

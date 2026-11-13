@@ -82,8 +82,6 @@ of a Base rule, say so there and why; the store's rule wins.
 A previous team's edit to a Base rule file is moved into that store rule and
 Base's copy restored; `check-tooling-drift.py` lists them under EDITED HERE.
 
-Do not edit `.cursor/`; run `sh .claude/scripts/sync-ai-config.sh`.
-
 ## Step 4 — Say what can be carried
 
 End the state document with a verdict, in this order:

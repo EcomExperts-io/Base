@@ -49,13 +49,6 @@ on every task. Rules stay short because references exist.
 
 ## The one hard constraint
 
-`.claude/` is canonical. Everything under `.cursor/`, plus `.agents/skills/`,
-`.codex/hooks/`, `.codex/agents/` and `AGENTS.md`, is **generated** by
-`.claude/scripts/sync-ai-config.sh`; the pre-commit hook regenerates and
-stages it. A hand-edit to a generated `.mdc` is detected by its checksum; a
-hand-edit to a copied skill or example is simply lost.
-
-**A merge conflict under `.cursor/` is never resolved by hand.** Resolve the
-`.md` if git asks, then run `sh .claude/scripts/sync-ai-config.sh` — it
-detects conflict markers in a generated file and regenerates it — and stage
-`.cursor/`.
+`.claude/` is the only AI configuration. Do not add a copy of it for another
+tool (`.cursor/`, `.agents/`, `.codex/`, `AGENTS.md`): nothing keeps a copy in
+step, and `pull-base-tooling.py` deletes those folders from a fork.

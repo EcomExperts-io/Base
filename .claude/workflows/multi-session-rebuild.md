@@ -42,8 +42,6 @@ Three files collide across every parallel branch; decide the convention now:
   keys, which turns a five-line conflict into a whole-file one.
 - **A shared icon set.** Every branch adds to the same `case` block; resolve
   as a union and keep every arm.
-- **Any generated mirror** (`.cursor/**`). Never hand-merge; regenerate from
-  `.claude/` with the sync script.
 
 ### 5. Branch names carry the ticket id
 
