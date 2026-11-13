@@ -3,11 +3,13 @@
 
 Blocks (exit 2):  a new section missing the settings contract; a convention error in a NEW file; invalid JSON in
                   templates/locales/config; a Theme Check error in any file changed this session.
-Reports (JSON):   convention warnings in modified files; a Theme Check that could not run; section or snippet work with
-                  no newer verify report; a client branch whose GitBot findings have not been read since its last commit.
+Reports (JSON):   convention warnings in modified files; a Theme Check that could not run or checked 0 files;
+                  section or snippet work with no newer verify report; a client branch whose GitBot findings have not
+                  been read since its last commit.
 
 Notes:
-- "New" means untracked or added since HEAD. Modified legacy is reported, never gated.
+- For the section contract, "new" means untracked or added since HEAD. For conventions, "new" means absent from the
+  base branch (check-conventions.py decides). Modified legacy is reported, never gated.
 - Claude Code lifts the refusal after eight consecutive blocks.
 - Results are cached against the changed files' mtimes, so an unchanged turn costs one stat() per file, not a Theme Check run.
 """
@@ -109,7 +111,7 @@ def main():
         rc, out = run([py, ".claude/scripts/check-theme-staged.py", "--files", *liquid_json], timeout=120)
         if rc:
             blockers.append(out.strip())
-        elif "did not run" in out:
+        elif "did not run" in out or "checked 0 files" in out:
             warnings.append(out.strip())
 
     if any(p.startswith(("sections/", "snippets/")) and p.endswith(".liquid") for p in every):

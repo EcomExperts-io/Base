@@ -19,14 +19,18 @@
 extends:
   - theme-check:recommended
 
+# A leading `/` anchors a pattern to the theme root. Without it Theme Check
+# matches the pattern at any depth of the absolute path, so `.claude/**` also
+# matches every file of a checkout that sits inside a `.claude/` folder
+# (a Claude worktree lives in `.claude/worktrees/<name>/`) and nothing is checked.
 ignore:
-  - 'node_modules/**'
-  - 'docs/**'
-  - '.claude/**'
-  - '.cursor/**'
+  - '/node_modules/**'
+  - '/docs/**'
+  - '/.claude/**'
+  - '/.cursor/**'
   # The reusable review workflow checks Base out here in a client repo, for the
   # scripts fallback and the drift report. Its sections are not this theme's.
-  - '.base-tooling/**'
+  - '/.base-tooling/**'
 
 # snippets/css-variables.liquid builds this up with `assign` inside a `for`
 # loop, which Theme Check cannot follow — it reports the variable as undefined

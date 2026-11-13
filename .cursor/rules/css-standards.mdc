@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 
 <!-- GENERATED from .claude/rules/css-standards.md by .claude/scripts/sync-ai-config.sh — do not edit here. -->
-<!-- checksum: 1774748324 -->
+<!-- checksum: 4274793201 -->
 
 
 # CSS Standards
@@ -27,22 +27,46 @@ attribute are in `css-in-markup.md`. New CSS goes in a `.css` file loaded with
 - A hardcoded value is set on a variable first, then used: `--touch-target-size: 44px;`.
 - **Never** hardcode colours; use the colour-scheme variables.
 
-Global variables live on `:root` in `snippets/css-variables.liquid`:
+Global variables are defined in `snippets/css-variables.liquid`. This is the
+complete list; no other global token exists:
+
+| Where | Variables |
+|---|---|
+| `:root` | `--page-width`, `--page-margin`, `--font-body-family`, `--font-body-style`, `--font-body-weight`, `--font-body-weight-bold`, `--font-body-scale`, `--font-heading-family`, `--font-heading-style`, `--font-heading-weight`, `--font-heading-scale` |
+| each `.color-<scheme>` class; the first scheme also on `:root` | `--color-background`, `--color-background-contrast`, `--color-foreground`, `--color-shadow`, `--color-button`, `--color-button-text`, `--color-secondary-button`, `--color-secondary-button-text`, `--color-link`, `--color-badge-foreground`, `--color-badge-background`, `--color-badge-border`, `--gradient-background` |
+
+There is no global spacing, font-size, border, focus or opacity token. A
+`var(--name)` that is not in the table must be declared in the same component.
+
+### Colour tokens are comma-separated triplets
+
+Every `--color-*` token holds three comma-separated numbers, for example
+`--color-foreground: 18,18,18`. Use exactly these two forms:
 
 ```css
-:root {
-  --page-width: 1400px;
-  --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+.card {
+  color: rgb(var(--color-foreground)); /* solid */
+  border: 1px solid rgba(var(--color-foreground), 0.2); /* with alpha */
 }
 ```
 
-Anything not global is scoped to its component, and may reference globals:
+Never write `rgb(var(--color-foreground) / 0.2)`. The slash form needs
+space-separated channels, so with a comma triplet the declaration is invalid
+and nothing paints. Never use a `--color-*` token bare
+(`color: var(--color-foreground)`); it is not a colour on its own.
+
+### Component variables
+
+Anything not global is declared on its component, prefixed with the component
+name, and may reference globals:
 
 ```css
 .facets {
-  --drawer-padding: var(--padding-md);
+  --facets-padding: 2rem;
   --facets-open-z-index: 4;
-  --facets-clear-shadow: 0px -4px 14px 0px rgb(var(--color-foreground-rgb) / var(--opacity-10));
+  --facets-clear-shadow: 0 -4px 14px 0 rgba(var(--color-foreground), 0.1);
+
+  padding: var(--facets-padding);
 }
 ```
 
@@ -55,20 +79,22 @@ Vary the variable, not the declaration:
 ```css
 /* Do this */
 .button {
-  background: rgb(var(--button-color) / 0.75);
+  --button-color: var(--color-button);
+
+  background: rgba(var(--button-color), 0.75);
 }
 
 .button--secondary {
-  --button-color: var(--secondary-color);
+  --button-color: var(--color-secondary-button);
 }
 
 /* Not this */
 .button {
-  background: rgb(var(--primary-color) / 0.75);
+  background: rgba(var(--color-button), 0.75);
 }
 
 .button--secondary {
-  background: rgb(var(--secondary-color) / 0.75);
+  background: rgba(var(--color-secondary-button), 0.75);
 }
 ```
 
@@ -141,7 +167,7 @@ RTL works by default.
   padding-inline: 2rem;
   padding-block: 1rem;
   margin-inline: auto;
-  border-inline-end: 1rem solid var(--color-background);
+  border-inline-end: 1rem solid rgb(var(--color-background));
   text-align: start;
   inset: 0;
 }
@@ -153,7 +179,7 @@ RTL works by default.
 .element {
   padding: 1rem 2rem;
   margin: 0 auto;
-  border-right: 1rem solid var(--color-background);
+  border-right: 1rem solid rgb(var(--color-background));
   text-align: left;
   top: 0;
   right: 0;
@@ -218,7 +244,7 @@ Every interactive element has a visible focus style, on `:focus-visible`:
 
 ```css
 .button:focus-visible {
-  outline: 2px solid rgb(var(--color-focus));
+  outline: 2px solid rgb(var(--color-foreground));
   outline-offset: 2px;
 }
 ```
@@ -250,6 +276,9 @@ Contrast and colour-as-the-only-cue are in `accessibility.md`, section 7.
 
 ```css
 .component {
+  /* 0. Component variables */
+  --component-padding: 2rem;
+
   /* 1. Layout & positioning */
   position: relative;
   display: flex;
@@ -258,16 +287,16 @@ Contrast and colour-as-the-only-cue are in `accessibility.md`, section 7.
   /* 2. Box model */
   width: 100%;
   margin: 0;
-  padding: var(--space-md);
-  border: 1px solid rgb(var(--color-border));
+  padding: var(--component-padding);
+  border: 1px solid rgba(var(--color-foreground), 0.2);
 
   /* 3. Typography */
   font-family: var(--font-body-family);
-  font-size: var(--font-size-base);
+  font-weight: var(--font-body-weight);
 
   /* 4. Visual */
-  background: rgb(var(--color-surface));
-  color: rgb(var(--color-text));
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
 
   /* 5. Animation & transforms */
   transition: transform 0.2s ease;
@@ -288,7 +317,7 @@ Contrast and colour-as-the-only-cue are in `accessibility.md`, section 7.
   overflow-wrap: break-word;
   min-width: 0; /* lets a flex item shrink below its content size */
   aspect-ratio: 1 / 1; /* no layout shift while the image loads */
-  background: rgb(var(--color-surface-secondary)); /* visible when the image is missing */
+  background: rgba(var(--color-foreground), 0.04); /* visible when the image is missing */
 }
 ```
 
@@ -334,7 +363,9 @@ second. `check-conventions.py` warns on a run of 40+ lines that repeats.
 ## Example Component Structure
 
 The section loads its stylesheet with `stylesheet_tag` and passes merchant
-settings in as custom properties on the wrapper (`css-in-markup.md`):
+settings in as custom properties on the wrapper (`css-in-markup.md`).
+`--featured-collection-columns` is set by the `style` attribute below;
+`--featured-collection-gap` is declared in the stylesheet:
 
 ```liquid
 {{ 'section-featured-collection.css' | asset_url | stylesheet_tag }}
@@ -350,9 +381,11 @@ settings in as custom properties on the wrapper (`css-in-markup.md`):
 ```css
 /* assets/section-featured-collection.css */
 .featured-collection__grid {
+  --featured-collection-gap: 2.4rem;
+
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--spacing-md);
+  gap: var(--featured-collection-gap);
 
   @media screen and (min-width: 750px) {
     grid-template-columns: repeat(var(--featured-collection-columns), 1fr);
