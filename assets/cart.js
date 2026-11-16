@@ -195,6 +195,11 @@ if (!Cart.state) {
 
 /* ----- add-to-cart forms ----- */
 
+/* Capture phase, so preventDefault runs before any listener bound on the form
+   itself. Shopify's shop_events_listener.js binds one to every /cart/add form
+   and records an add unless the event is already defaultPrevented; it also
+   records the /cart/add.js request, so a bubbling listener here sent every
+   pixel two product_added_to_cart events. */
 document.addEventListener('submit', (event) => {
   const form = event.target;
   if (!(form instanceof HTMLFormElement)) return;
@@ -218,7 +223,7 @@ document.addEventListener('submit', (event) => {
       if (button) button.disabled = false;
       spinner?.classList.add('hidden');
     });
-});
+}, true); 
 
 /* ----- line quantity changes (steppers, remove links, typed input) ----- */
 
